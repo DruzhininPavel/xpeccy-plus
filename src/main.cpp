@@ -567,6 +567,8 @@ int main(int ac,char** av) {
 				ethread.benchRecFinal = 1;
 			} else if (!strcmp(parg,"--bench-state")) {
 				bnState = av[i++];
+			} else if (!strcmp(parg,"--bench-keys")) {
+				ethread.benchKeys = av[i++];
 			} else if (!strcmp(parg,"--bench-loops")) {
 				fastload_bench(atoi(av[i++]));
 			} else if (!strcmp(parg,"--pc")) {

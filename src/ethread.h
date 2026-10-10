@@ -27,6 +27,7 @@ class xThread : public QThread {
 		int benchRecTake;	// a recording loaded is played to this frame and taken over, 0: no
 		int benchRecNmi;	// ...an NMI at this frame, 0: no
 		int benchRecFinal;	// the file is also read back and written finalized beside it
+		const char* benchKeys;	// keys pressed at frames counted from the bench start, NULL: none
 		int earBlock;		// the block the rom reads only part of, -1: none
 	public slots:
 		void stop();
