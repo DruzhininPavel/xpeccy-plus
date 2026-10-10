@@ -735,7 +735,13 @@ void loadConfig() {
 	if (!conf.zx) {
 		conf.zx = compCreate();
 		// what the machine says it is when software asks (ZX Evo does)
-		comp_set_identity(conf.zx, XPRODUCT, XBUILD_YMD, XRELEASE_BUILD);
+		int ymd = XBUILD_YMD;
+		if (xhost_time_fixed) {		// a frozen host clock freezes the build date the firmware shows
+			time_t t = (time_t)xhost_time_fixed;
+			struct tm* tm = gmtime(&t);
+			ymd = (tm->tm_year + 1900) * 10000 + (tm->tm_mon + 1) * 100 + tm->tm_mday;
+		}
+		comp_set_identity(conf.zx, XPRODUCT, ymd, XRELEASE_BUILD);
 		int vmaj = 0;
 		int vmin = 0;
 		sscanf(XVERSION_BASE, "%d.%d", &vmaj, &vmin);
