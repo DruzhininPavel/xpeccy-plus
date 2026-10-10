@@ -107,6 +107,7 @@ int pad_kbd_find(const QString&);		// GPK_NONE if the word is not one
 const char* pad_kbd_name(int);			// what the gui says
 QString pad_key_name(int);			// a host key, XKEY_*, as the gui says it
 const char* pad_role_name(int);			// Up, Down...
+int pad_role_bit(const char*);			// XJ_* of a row by its config word (up, fire2...), 0 if none
 QString pad_zx_name(int);			// a Spectrum key, JMAP_ZX's dir
 const char* pad_zx_keys();			// all forty of them, in the order of the keyboard
 QString pad_zx_ext_name(int);			// what Caps Shift and this key make, empty if nothing

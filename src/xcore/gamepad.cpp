@@ -373,6 +373,7 @@ static const char* customDef[PR_FIRE + 1] = {"Zq", "Za", "Zo", "Zp", "Z "};
 
 static const char* roleName[PR_JOY] = {"Up", "Down", "Left", "Right", "Fire", "Fire 2", "Fire 3", "Fire 4"};
 static const char* roleKey[PR_JOY] = {"up", "down", "left", "right", "fire", "fire2", "fire3", "fire4"};
+static const int roleBit[PR_JOY] = {XJ_UP, XJ_DOWN, XJ_LEFT, XJ_RIGHT, XJ_FIRE, XJ_BUT2, XJ_BUT3, XJ_BUT4};
 
 // "Gamepad up" and the rest: the d-pad and the left stick. A pad SDL knows
 // the layout of is bound by name, any other by number, as its first hat and
@@ -428,6 +429,13 @@ const char* pad_kbd_name(int k) {
 
 const char* pad_role_name(int r) {
 	return ((r >= 0) && (r < PR_JOY)) ? roleName[r] : "";
+}
+
+int pad_role_bit(const char* key) {
+	for (int r = 0; r < PR_JOY; r++) {
+		if (!strcmp(key, roleKey[r])) return roleBit[r];
+	}
+	return 0;
 }
 
 // in the keymap's zxKey terms: digits, small letters, Enter, Caps, Symbol, Space
@@ -781,9 +789,8 @@ static bool padSameBinding(const xJoyMapEntry& a, const xJoyMapEntry& b) {
 // Every input of every shown row, times every target of it.
 // the joystick row an XJ_* is
 static int vjoyRole(int xj) {
-	static const int bit[PR_JOY] = {XJ_UP, XJ_DOWN, XJ_LEFT, XJ_RIGHT, XJ_FIRE, XJ_BUT2, XJ_BUT3, XJ_BUT4};
 	for (int r = 0; r < PR_JOY; r++) {
-		if (bit[r] == xj) return r;
+		if (roleBit[r] == xj) return r;
 	}
 	return PR_JOY;
 }

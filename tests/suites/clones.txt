@@ -8,33 +8,33 @@ tsfm_pent       pent      open  50    300     snap/tsfm_volume_test_pentagon128.
 saa_pent        pent      auto  2500  300     tape/testsaa.tap                      mac:sound.saa=yes --bench-full
 gs_pent         pent      auto  3000  300     disk/ATWP2_GS.TRD                     mac:sound.gs=yes --bench-full
 vocoders_pent   pent      auto  3000  300     disk/thevocoders.scl                  --bench-full
-boot_p1024      pent1024  boot  0     400     -
+boot_p1024      pent1024  boot  0     400
 powerup_p1024   pent1024  auto  8000  300     disk/powerup2.trd
 greatsh_p1024   pent1024  auto  3000  300     disk/GREAT_SH.TRD
 16c_p1024       pent1024  open  50    100     snap/demo16c.sna
-boot_phoenix    phoenix   boot  0     400     -
+boot_phoenix    phoenix   boot  0     400
 dwot_phoenix    phoenix   auto  3000  300     disk/dwot.trd
 csp_phoenix     phoenix   auto  4000  300     disk/17993_cscsp26.trd
-boot_profi      profi     boot  0     400     -
+boot_profi      profi     boot  0     400
 ptest_profi     profi     auto  3000  300     disk/ptest.trd
 dwot_profi      profi     auto  3000  300     disk/dwot.trd
-memtest_profi   profi     boot  1200  300     -                                     keys:300:C6,320:C6,340:C6,360:C6,380:C6,420:E,600:E
-boot_profi3     profi3    boot  0     400     -
+memtest_profi   profi     boot  1200  300                                           keys:300:C6,320:C6,340:C6,360:C6,380:C6,420:E,600:E
+boot_profi3     profi3    boot  0     400
 ptest_profi3    profi3    auto  3000  300     disk/ptest.trd
 dwot_profi3     profi3    auto  3000  300     disk/dwot.trd
-checker_profi3  profi3    boot  800   300     -                                     keys:300:C6,320:C6,360:E
-monitor_profi3  profi3    boot  800   300     -                                     keys:300:C6,320:C6,340:C6,380:E
-boot_scorp      scorp     boot  0     400     -
+checker_profi3  profi3    boot  800   300                                           keys:300:C6,320:C6,360:E
+monitor_profi3  profi3    boot  800   300                                           keys:300:C6,320:C6,340:C6,380:E
+boot_scorp      scorp     boot  0     400
 border_scorp    scorp     auto  3000  300     disk/BORDER.scl
 dwot_scorp      scorp     auto  3000  300     disk/dwot.trd
-monitor_scorp   scorp     boot  800   300     -                                     keys:300:nmi,450:m
-boot_scorptp    scorptp   boot  0     400     -
+monitor_scorp   scorp     boot  800   300                                           keys:300:nmi,450:m
+boot_scorptp    scorptp   boot  0     400
 dwot_scorptp    scorptp   auto  3000  300     disk/dwot.trd
 stag_scorptp    scorptp   auto  3000  300     disk/zxstgdak.trd
-smuc_scorptp    scorptp   boot  600   300     -                                     keys:300:nmi
-smuchdd_scorptp scorptp   boot  800   300     -                                     keys:300:nmi,450:h
-boot_atm        atm2      boot  0     400     -
+smuc_scorptp    scorptp   boot  600   300                                           keys:300:nmi
+smuchdd_scorptp scorptp   boot  800   300                                           keys:300:nmi,450:h
+boot_atm        atm2      boot  0     400
 dwot_atm        atm2      auto  3000  300     disk/dwot.trd
 stag_atm        atm2      auto  3000  300     disk/zxstgdak.trd
-cpm_atm         atm2      boot  600   300     -                                     keys:300:E
+cpm_atm         atm2      boot  600   300                                           keys:300:E
 hardy_atm       atm2      auto  3600  300     disk/hardyatm.scl                     keys:3000:_,3200:1

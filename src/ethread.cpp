@@ -784,14 +784,16 @@ static unsigned long long bench_mix(unsigned long long h, const unsigned char* p
 
 // --bench-keys "F:keys[/N],...": pressed at frame F counted from the start of
 // the bench, held N frames (4). keys are matrix names as autostart types them,
-// '_' for space; "joy:" or "joyb:" and fire, up, down, left, right joined by
-// '+' are the two joysticks, "nmi" is the NMI button.
+// '_' for space; "joy:" or "joyb:" and joystick rows as a .pad names them (up,
+// fire2...) joined by '+' are the two joysticks, "nmi" is the NMI button.
+enum {BK_KEYS = 0, BK_JOY, BK_JOYB, BK_NMI};
+
 typedef struct {
-	int at;
-	int hold;
-	int joy;		// 0: keyboard, 1: joystick, 2: second joystick
-	int mask;
-	int state;		// 0: waiting, 1: down, 2: done
+	int at = 0;
+	int hold = 4;
+	int kind = BK_KEYS;
+	int mask = 0;		// XJ_* for a joystick
+	int state = 0;		// 0: waiting, 1: down, 2: done
 	std::string keys;
 } benchKey;
 
@@ -810,28 +812,21 @@ static void bench_keys_parse(const char* spec) {
 		if (col == std::string::npos) continue;
 		benchKey k;
 		k.at = atoi(tok.c_str());
-		k.hold = 4;
-		k.joy = 0;
-		k.mask = 0;
-		k.state = 0;
 		std::string key = tok.substr(col + 1);
 		size_t sl = key.rfind('/');
 		if ((sl != std::string::npos) && (sl > 0)) {
 			k.hold = atoi(key.c_str() + sl + 1);
 			key = key.substr(0, sl);
 		}
-		if (!key.compare(0, 4, "joy:") || !key.compare(0, 5, "joyb:")) {
-			k.joy = (key[3] == 'b') ? 2 : 1;
-			std::string dirs = key.substr(key.find(':') + 1) + "+";
+		if (key == "nmi") {
+			k.kind = BK_NMI;
+		} else if (!key.compare(0, 4, "joy:") || !key.compare(0, 5, "joyb:")) {
+			k.kind = (key[3] == 'b') ? BK_JOYB : BK_JOY;
+			std::string rows = key.substr(key.find(':') + 1) + "+";
 			size_t p = 0, q;
-			while ((q = dirs.find('+', p)) != std::string::npos) {
-				std::string d = dirs.substr(p, q - p);
+			while ((q = rows.find('+', p)) != std::string::npos) {
+				k.mask |= pad_role_bit(rows.substr(p, q - p).c_str());
 				p = q + 1;
-				if (d == "fire") k.mask |= XJ_FIRE;
-				else if (d == "up") k.mask |= XJ_UP;
-				else if (d == "down") k.mask |= XJ_DOWN;
-				else if (d == "left") k.mask |= XJ_LEFT;
-				else if (d == "right") k.mask |= XJ_RIGHT;
 			}
 		} else {
 			for (size_t i = 0; i < key.size(); i++)
@@ -843,21 +838,21 @@ static void bench_keys_parse(const char* spec) {
 }
 
 static void bench_key_set(Computer* comp, benchKey& k, int press) {
-	if (k.joy) {
-		Joystick* joy = (k.joy == 2) ? comp->joyb : comp->joy;
-		if (press) joyPress(joy, k.mask);
-		else joyRelease(joy, k.mask);
-		return;
+	switch (k.kind) {
+		case BK_JOY:
+		case BK_JOYB: {
+			Joystick* joy = (k.kind == BK_JOYB) ? comp->joyb : comp->joy;
+			if (press) joyPress(joy, k.mask);
+			else joyRelease(joy, k.mask);
+			break;
+		}
+		case BK_NMI:
+			if (press) comp_irq(IRQ_NMI, comp);
+			break;
+		default:
+			autostart_key(comp, k.keys.c_str(), press);
+			break;
 	}
-	if (k.keys == "nmi") {
-		if (press) comp_irq(IRQ_NMI, comp);
-		return;
-	}
-	cbHwKey cb = press ? comp->hw->keyp : comp->hw->keyr;
-	if (!cb) return;
-	keyEntry ent = {};
-	strncpy((char*)ent.zxKey, k.keys.c_str(), KEYSEQ_MAXLEN - 1);
-	cb(comp, &ent);
 }
 
 static void bench_keys_step(Computer* comp, int frame) {
@@ -1000,7 +995,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 		conf.snd.need = full ? 256 : 0;
 		emu_lock();
 		emuCycle(comp);
-		if (!bkList.empty()) bench_keys_step(comp, conf.vid.fcount - fk);
+		bench_keys_step(comp, conf.vid.fcount - fk);
 		emu_unlock();
 	}
 	// and on to an instruction anywhere in the frame, where a snapshot is
@@ -1050,7 +1045,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 		conf.snd.need = full ? 256 : 0;
 		emu_lock();
 		emuCycle(comp);
-		if (!bkList.empty()) bench_keys_step(comp, conf.vid.fcount - fk);
+		bench_keys_step(comp, conf.vid.fcount - fk);
 		emu_unlock();
 		if (hash) {
 			if (conf.vid.fcount != fl) {
