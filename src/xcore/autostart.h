@@ -18,3 +18,5 @@ int autostart_can(int hwid, int dif, int kind);
 void autostart_frame(Computer*);
 // the machine is being driven to the media: nothing of it is to be shown
 int autostart_busy();
+// press or let go of keys named as a keymap names them ("E", "Sp"...)
+void autostart_key(Computer*, const char* keys, int press);

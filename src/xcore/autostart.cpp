@@ -162,12 +162,16 @@ static int as_down = 0;		// the current key is pressed
 static int as_life = 0;		// frames left before giving up
 static int as_held = 0;		// fast mode and the blank screen are ours to undo
 
-static void as_key(Computer* comp, const asKey* k, int press) {
+void autostart_key(Computer* comp, const char* keys, int press) {
 	cbHwKey cb = press ? comp->hw->keyp : comp->hw->keyr;
 	if (!cb) return;
 	keyEntry ent = {};
-	strncpy((char*)ent.zxKey, k->keys, KEYSEQ_MAXLEN - 1);
+	strncpy((char*)ent.zxKey, keys, KEYSEQ_MAXLEN - 1);
 	cb(comp, &ent);
+}
+
+static void as_key(Computer* comp, const asKey* k, int press) {
+	autostart_key(comp, k->keys, press);
 }
 
 int autostart_busy() {

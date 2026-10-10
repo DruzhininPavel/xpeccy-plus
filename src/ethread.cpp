@@ -124,6 +124,7 @@ xThread::xThread() {
 	benchRecTake = 0;
 	benchRecFinal = 0;
 	benchRecNmi = 0;
+	benchKeys = NULL;
 	earBlock = -1;
 	conf.emu.fast = 0;
 	finish = 0;
@@ -781,6 +782,92 @@ static unsigned long long bench_mix(unsigned long long h, const unsigned char* p
 	return h;
 }
 
+// --bench-keys "F:keys[/N],...": pressed at frame F counted from the start of
+// the bench, held N frames (4). keys are matrix names as autostart types them,
+// '_' for space; "joy:" or "joyb:" and joystick rows as a .pad names them (up,
+// fire2...) joined by '+' are the two joysticks, "nmi" is the NMI button.
+enum {BK_KEYS = 0, BK_JOY, BK_JOYB, BK_NMI};
+
+typedef struct {
+	int at = 0;
+	int hold = 4;
+	int kind = BK_KEYS;
+	int mask = 0;		// XJ_* for a joystick
+	int state = 0;		// 0: waiting, 1: down, 2: done
+	std::string keys;
+} benchKey;
+
+static std::vector<benchKey> bkList;
+
+static void bench_keys_parse(const char* spec) {
+	bkList.clear();
+	std::string s(spec ? spec : "");
+	size_t pos = 0;
+	while (pos < s.size()) {
+		size_t end = s.find(',', pos);
+		if (end == std::string::npos) end = s.size();
+		std::string tok = s.substr(pos, end - pos);
+		pos = end + 1;
+		size_t col = tok.find(':');
+		if (col == std::string::npos) continue;
+		benchKey k;
+		k.at = atoi(tok.c_str());
+		std::string key = tok.substr(col + 1);
+		size_t sl = key.rfind('/');
+		if ((sl != std::string::npos) && (sl > 0)) {
+			k.hold = atoi(key.c_str() + sl + 1);
+			key = key.substr(0, sl);
+		}
+		if (key == "nmi") {
+			k.kind = BK_NMI;
+		} else if (!key.compare(0, 4, "joy:") || !key.compare(0, 5, "joyb:")) {
+			k.kind = (key[3] == 'b') ? BK_JOYB : BK_JOY;
+			std::string rows = key.substr(key.find(':') + 1) + "+";
+			size_t p = 0, q;
+			while ((q = rows.find('+', p)) != std::string::npos) {
+				k.mask |= pad_role_bit(rows.substr(p, q - p).c_str());
+				p = q + 1;
+			}
+		} else {
+			for (size_t i = 0; i < key.size(); i++)
+				if (key[i] == '_') key[i] = ' ';
+			k.keys = key;
+		}
+		bkList.push_back(k);
+	}
+}
+
+static void bench_key_set(Computer* comp, benchKey& k, int press) {
+	switch (k.kind) {
+		case BK_JOY:
+		case BK_JOYB: {
+			Joystick* joy = (k.kind == BK_JOYB) ? comp->joyb : comp->joy;
+			if (press) joyPress(joy, k.mask);
+			else joyRelease(joy, k.mask);
+			break;
+		}
+		case BK_NMI:
+			if (press) comp_irq(IRQ_NMI, comp);
+			break;
+		default:
+			autostart_key(comp, k.keys.c_str(), press);
+			break;
+	}
+}
+
+static void bench_keys_step(Computer* comp, int frame) {
+	for (benchKey& k : bkList) {
+		if ((k.state == 0) && (frame >= k.at)) {
+			bench_key_set(comp, k, 1);
+			k.state = 1;
+		}
+		if ((k.state == 1) && (frame >= k.at + k.hold)) {
+			bench_key_set(comp, k, 0);
+			k.state = 2;
+		}
+	}
+}
+
 // Runs the timed part: fast mode as run() does it, or full sound mixing with
 // a budget of 256 samples per cycle, the way the pacer hands them out.
 // hash folds every finished frame and every sample into one number, so two
@@ -901,11 +988,14 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 	// two builds being compared on different instructions
 	conf.emu.fast = full ? 0 : 1;
 	int f0 = conf.vid.fcount;
+	int fk = f0;			// --bench-keys counts from here
+	bench_keys_parse(benchKeys);
 	benchStop = f0 + skip;		// and on a frame, so both builds start measuring on the same one
 	while ((conf.vid.fcount - f0 < skip) && !conf.emu.pause) {
 		conf.snd.need = full ? 256 : 0;
 		emu_lock();
 		emuCycle(comp);
+		bench_keys_step(comp, conf.vid.fcount - fk);
 		emu_unlock();
 	}
 	// and on to an instruction anywhere in the frame, where a snapshot is
@@ -955,6 +1045,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 		conf.snd.need = full ? 256 : 0;
 		emu_lock();
 		emuCycle(comp);
+		bench_keys_step(comp, conf.vid.fcount - fk);
 		emu_unlock();
 		if (hash) {
 			if (conf.vid.fcount != fl) {

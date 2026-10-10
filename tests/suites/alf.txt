@@ -1,0 +1,11 @@
+# ALF TV Game, 64K and 128K: firmware, cartridge, snapshots, a game on the joysticks.
+# name          machine   how   skip  frames  file                  options
+boot_alf        alf       boot  0     400
+cart_alf        alf       open  500   300     alf/alf1.rom
+gt_alf          alf       open  50    300     snap/gt.sna
+game_alf        alf       open  2500  300     alf/alf1.rom          keys:500:joy:down,600:joy:down,700:joy:fire,1000:joy:fire,1300:joy:fire
+boot_alf128     alf128    boot  0     400
+cart_alf128     alf128    open  500   300     alf/alf1.rom
+powerup_alf128  alf128    open  50    300     snap/powerup3c.sna    --bench-full
+arcane_alf128   alf128    open  50    300     snap/Arcane.sna
+game_alf128     alf128    open  2500  300     alf/alf1.rom          keys:500:joy:down,600:joy:down,700:joy:fire,1000:joy:fire,1300:joy:fire
