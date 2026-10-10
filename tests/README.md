@@ -18,11 +18,25 @@ python tests/regress.py list
   ours to publish. `XPECCY_CORPUS` (or `--corpus`) is the folder the suite paths are relative
   to, `XPECCY_GOLDEN` (or `--golden`) holds one `<suite>.json` per suite.
 - **Suites** are `suites/<name>.txt`, one case a line:
-  `name machine auto|open skip frames file [extra emulator args]`. `auto` starts the image
-  with `--autostart`, `open` just opens it (a snapshot). The machine runs `skip` frames
-  unhashed, then `frames` hashed.
+  `name machine auto|open|boot skip frames file [options]`. `auto` starts the image with
+  `--autostart`, `open` just opens it (a snapshot), `boot` takes no image (`-`) and runs the
+  firmware from power-on. The machine runs `skip` frames unhashed, then `frames` hashed.
+  `list` ends with the number of cases per machine, marking any under 3.
+- **Options** set the case up; anything else is passed to the emulator (`--bench-full`):
+  - `cfg:SECTION.key=value` - a line in the case's `config.conf` (`cfg:TAPE.fast=yes`)
+  - `mac:section.key=value` - a line in `machines/<machine>.conf`, the patch over the
+    definition (`mac:sound.gs=yes`)
+  - `nvram:FILE` - becomes `nvram/<machine>.cmos`
+  - `sd:PATH`, `hdd:PATH` - an image or a folder as the SD card or the IDE master. It is
+    copied first, and a folder's files get one fixed mtime: the FAT served for a folder
+    carries the host's dates, which a fresh checkout would change.
+  - `put:PATH=FILE` - lays a file over the card copied just before (`put:bin/autoexec.bat=...`)
+  - `keys:F:KEYS,...` - `--bench-keys`: keys pressed at frame F counted from the start, held
+    4 frames (`/N` for N). Keys are matrix names as autostart types them (`E` Enter, `C`
+    Caps, `S` Symbol, `_` Space, `C6` down); `joy:fire+up` and `joyb:...` are the two
+    joysticks, `nmi` the NMI button.
 - Every case gets a fresh copy of the build's `config/`, so nothing carries over between
-  cases; they run in parallel (`-j`, half the CPU threads by default).
+  cases; they run in parallel (`-j`, half the CPU threads by default), the longest first.
 
 A difference is not a failure by itself: a change meant to alter timing moves the hashes of
 the machines it touches, and those are blessed once the change is checked against real

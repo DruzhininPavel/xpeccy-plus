@@ -35,14 +35,82 @@ FIELDS = ("frames", "sound", "ram", "cpu", "pc", "T")
 HASH_RE = re.compile(r"^hash: frames (\w+) sound (\w+) ram (\w+) cpu (\w+) pc (\w+) T (-?\d+)", re.M)
 
 
+HOWS = ("auto", "open", "boot")
+OPTS = ("cfg", "mac", "nvram", "sd", "hdd", "put", "keys")
+PINNED = 946684800  # 2000-01-01: a folder card's FAT carries the host mtimes
+
+
 class Case:
     def __init__(self, suite, name, machine, how, skip, frames, file, extra):
         self.suite, self.name, self.machine, self.how = suite, name, machine, how
-        self.skip, self.frames, self.file, self.extra = int(skip), int(frames), file, extra
+        self.skip, self.frames, self.file = int(skip), int(frames), file
+        # name:value options are the case's setup, anything else goes to the emulator
+        self.opts, self.extra = [], []
+        for e in extra:
+            k, sep, v = e.partition(":")
+            if sep and k in OPTS:
+                self.opts.append((k, v))
+            else:
+                self.extra.append(e)
 
     @property
     def key(self):
         return f"{self.suite}/{self.name}"
+
+    @property
+    def cost(self):
+        return (self.skip + self.frames) * (3 if "--bench-full" in self.extra else 1)
+
+
+def ini_lines(pairs):
+    """[(section.key, value)] as ini text, one block per section."""
+    secs = {}
+    for k, v in pairs:
+        sec, _, key = k.partition(".")
+        secs.setdefault(sec, []).append(f"{key} = {v}")
+    return "".join(f"[{s}]\n" + "\n".join(lines) + "\n\n" for s, lines in secs.items())
+
+
+def set_up(case, corpus, cfg, tmp):
+    """Apply a case's options to its fresh config; returns the emulator arguments they add."""
+    args, cfgs, macs, cards = [], [], [], []
+    for k, v in case.opts:
+        if k in ("cfg", "mac"):
+            (cfgs if k == "cfg" else macs).append(tuple(v.split("=", 1)))
+        elif k == "nvram":
+            (cfg / "nvram").mkdir(exist_ok=True)
+            shutil.copy(corpus / v, cfg / "nvram" / f"{case.machine}.cmos")
+        elif k in ("sd", "hdd"):
+            src, dst = corpus / v, tmp / f"{k}-{Path(v).name}"
+            # a copy, so the corpus is never written; a folder's mtimes pinned,
+            # or every checkout would serve another FAT
+            if src.is_dir():
+                shutil.copytree(src, dst)
+                for root, dirs, files in os.walk(dst):
+                    for n in dirs + files:
+                        os.utime(os.path.join(root, n), (PINNED, PINNED))
+                os.utime(dst, (PINNED, PINNED))
+            else:
+                shutil.copy(src, dst)
+            cards.append(dst)
+            if k == "sd":
+                args += ["--sdcard", str(dst)]
+            else:
+                cfgs.append(("MEDIA.hdd.master", str(dst)))
+        elif k == "put":
+            path, src = v.split("=", 1)
+            if not cards:
+                raise OSError("put: needs an sd: or hdd: folder before it")
+            shutil.copy(corpus / src, cards[-1] / path)
+            os.utime(cards[-1] / path, (PINNED, PINNED))
+        elif k == "keys":
+            args += ["--bench-keys", v]
+    if cfgs:
+        (cfg / "config.conf").write_text(ini_lines(cfgs), encoding="utf-8")
+    if macs:
+        (cfg / "machines").mkdir(exist_ok=True)
+        (cfg / "machines" / f"{case.machine}.conf").write_text(ini_lines(macs), encoding="utf-8")
+    return args
 
 
 def load_suite(name):
@@ -53,8 +121,8 @@ def load_suite(name):
         if not line or line.startswith("#"):
             continue
         f = shlex.split(line)
-        if len(f) < 6 or f[2] not in ("auto", "open"):
-            sys.exit(f"{path}:{n}: expected: name machine auto|open skip frames file [args...]")
+        if len(f) < 6 or f[2] not in HOWS:
+            sys.exit(f"{path}:{n}: expected: name machine auto|open|boot skip frames file|- [opts...]")
         cases.append(Case(name, f[0], f[1], f[2], f[3], f[4], f[5], f[6:]))
     return cases
 
@@ -80,14 +148,21 @@ def find_app(arg):
 
 def run_case(case, app, corpus, shots, timeout):
     image = corpus / case.file
-    if not image.exists():
+    if case.how != "boot" and not image.exists():
         return case, {"error": f"missing image {image}"}, 0.0
     with tempfile.TemporaryDirectory(prefix="xreg-") as tmp:
         # A fresh config each time: the app restores the last media and machine on start.
         cfg = Path(tmp) / "config"
         shutil.copytree(app / "config", cfg)
         cmd = [str(app / EXE), "--confdir", str(cfg), "-m", case.machine]
-        cmd += ["--autostart", str(image)] if case.how == "auto" else [str(image)]
+        if case.how == "auto":
+            cmd += ["--autostart", str(image)]
+        elif case.how == "open":
+            cmd += [str(image)]
+        try:
+            cmd += set_up(case, corpus, cfg, Path(tmp))
+        except OSError as e:
+            return case, {"error": f"setup: {e}"}, 0.0
         cmd += ["--bench-skip", str(case.skip), "--bench", str(case.frames), "--bench-hash"]
         if shots:
             cmd += ["--bench-shot", str(shots / f"{case.suite}-{case.name}.ppm")]
@@ -147,7 +222,9 @@ def execute(args, cases):
     results = {}
     t0 = time.monotonic()
     with cf.ThreadPoolExecutor(args.jobs) as pool:
-        futs = [pool.submit(run_case, c, app, corpus, shots, args.timeout) for c in cases]
+        # the longest first, so they do not finish last
+        futs = [pool.submit(run_case, c, app, corpus, shots, args.timeout)
+                for c in sorted(cases, key=lambda c: -c.cost)]
         for f in cf.as_completed(futs):
             case, res, dt = f.result()
             results[case.key] = res
@@ -210,8 +287,16 @@ def cmd_bless(args):
 
 
 def cmd_list(args):
-    for c in pick(args):
-        print(f"{c.key:28} {c.machine:9} {c.how:4} {c.skip:>5}+{c.frames:<5} {c.file}")
+    cases = pick(args)
+    for c in cases:
+        print(f"{c.key:28} {c.machine:12} {c.how:4} {c.skip:>5}+{c.frames:<5} {c.file}")
+    # every machine the build defines, and how many cases run it
+    count = {m.stem: 0 for m in (ROOT / "res" / "machines").glob("*.conf")}
+    for c in cases:
+        count[c.machine] = count.get(c.machine, 0) + 1
+    print()
+    for m in sorted(count):
+        print(f"{m:14} {count[m]:3}{'  < 3' if count[m] < 3 else ''}")
     return 0
 
 
