@@ -14,6 +14,7 @@
 #include <QKeySequence>
 class QKeyEvent;
 #include <QString>
+#include <QStringList>
 #include <QPoint>
 #include <QColor>
 #include <QFont>
@@ -234,6 +235,13 @@ enum {
 	BRK_ACT_COUNT,
 };
 
+// a point can open a measured stretch or close the last one opened
+enum {
+	BRK_SPAN_NONE = 0,
+	BRK_SPAN_OPEN,
+	BRK_SPAN_CLOSE
+};
+
 typedef struct {
 	unsigned off:1;
 	unsigned fetch:1;
@@ -243,7 +251,9 @@ typedef struct {
 	unsigned last:1;	// BRK_COND: condition was true on previous check
 	unsigned fired:1;	// BRK_COND: it fired on this instruction
 	unsigned onchg:1;	// BRK_COND: fire when it becomes true, not while it is
-	unsigned log:1;		// write a line to the event log on every hit
+	unsigned log:1;		// write a line to the breakpoint log on every hit
+	unsigned span:2;	// BRK_SPAN_*
+	int id;			// for good: the list is sorted and grown under it
 	int type;
 	int adr;	// start adr (mem), port(io)
 	int eadr;	// end adr
@@ -253,8 +263,21 @@ typedef struct {
 	int action;	// what to do
 	std::string cond;	// condition text, empty = unconditional
 	xExpr script;		// compiled condition
+	std::string logx;	// what a logged hit writes instead of the registers, comma-separated
+	std::vector<xExpr> logexp;	// compiled
+	unsigned dt;		// DT as the last hit saw it
+	long long lastT;	// tickTotal at the hit before, -1 = none
+	// the stretches an opening point started: how many, the shortest, the
+	// longest, their sum, and how many an interrupt went into
+	int spanN;
+	unsigned spanMin;
+	unsigned spanMax;
+	long long spanSum;
+	int spanInt;
 } xBrkPoint;
 
+xBrkPoint brkCreate(int type, int flag, int adr, int mask, int act = BRK_ACT_DBG);
+int brk_new_id();
 void brkSet(int, int, int, int);
 void brkXor(int, int, int, int, int);
 void brkAdd(xBrkPoint, int = 0);
@@ -266,9 +289,22 @@ xBrkPoint* brk_find(int, int);
 void brk_set_cond(xBrkPoint*, const char*);
 int brk_cond_true(xBrkPoint*, Computer*);
 int brk_check_cond(Computer*);
+int brk_hit(xBrkPoint*, Computer*);
 void brk_log_hit(xBrkPoint*, Computer*);
+void brk_set_logx(xBrkPoint*, const char*);
+void brk_reset_stats(xBrkPoint*);
+QString brk_label(int type, int adr);	// the label at it, empty when none
+QStringList brk_span_report();
+// the breakpoint log, a file of its own: "-" is stdout, empty is beside the event log
+void brk_trace_to(const QString&);
+QString brk_trace_file();
+void brk_trace_put(Computer*, const QString&);
+void brk_trace_flush();
+void brk_trace_done(bool out = false);	// out: the spans' totals to stdout too
 extern int brk_cond_n;		// conditions not bound to an address, asked per instruction
-int brk_load_list(const char*);
+int brk_load_list(const char*, int* bad = NULL, bool add = false);
+// a label, #/$/0x hex or plain hex; bank is a label's ram page, else -1
+bool brk_list_adr(QString, int* adr, int* bank);
 int brk_save_list(const char*);
 
 // hold the emulation thread while the machine is rebuilt (defined in ethread.cpp)
@@ -325,7 +361,7 @@ void setWatchPorts(Computer*, QStringList);
 
 #define	PAL_DEFAULT_NAME	"Xpeccy+"	// the built-in palette, as the lists name it
 
-void conf_init(char*, char* confdir = NULL);
+void conf_init(char* confdir = NULL);
 QList<QColor> loadColors(std::string);
 int saveColors(std::string, QList<QColor>);
 void loadPalette();

@@ -112,9 +112,10 @@ static void sink_line(const char* line) {
 		// crash it was opened for is worth nothing
 		fflush(xlog_file);
 	}
+	// stderr, so that what a run prints as its result has stdout to itself
 	if (xlog_console) {
-		fputs(line, stdout);
-		fflush(stdout);
+		fputs(line, stderr);
+		fflush(stderr);
 	}
 	if (prebuf_open && !xlog_file) {
 		if (prebuf_cnt < PREBUF_MAX) {

@@ -11,7 +11,7 @@ builds that print the same hashes ran the machine identically.
   regress.py quick [bench...] [-k PATTERN]  the headless libxpeccy benches, no app needed
 
 The images and the references are not in this repository: --corpus/XPECCY_CORPUS and
---golden/XPECCY_GOLDEN point at them. Needs a build without XRELEASE (no --bench there).
+--golden/XPECCY_GOLDEN point at them.
 """
 
 import argparse

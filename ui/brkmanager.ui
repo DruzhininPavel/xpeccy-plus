@@ -9,103 +9,107 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>364</height>
+    <width>440</width>
+    <height>330</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Breakpoint Editor</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="5" column="0">
-    <widget class="QLabel" name="labMask">
+   <item row="0" column="0">
+    <widget class="QLabel" name="labType">
      <property name="text">
-      <string>IO Mask</string>
+      <string>Type</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="labStartAbs">
+   <item row="0" column="1">
+    <widget class="QComboBox" name="brkType">
+     <property name="toolTip">
+      <string>What the breakpoint watches</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="labBank">
      <property name="text">
-      <string>start.abs</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="xHexSpin" name="leStartOffset"/>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="labEndAbs">
-     <property name="text">
-      <string>end.abs</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="xHexSpin" name="leValue"/>
-     </item>
-     <item>
-      <widget class="QLabel" name="labValMask">
-       <property name="text">
-        <string>Mask</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="xHexSpin" name="leValMask"/>
-     </item>
-    </layout>
-   </item>
-   <item row="9" column="0">
-    <widget class="QLabel" name="labValue">
-     <property name="text">
-      <string>Value</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="xHexSpin" name="leEndOffset"/>
-   </item>
-   <item row="14" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="labStartOff">
-     <property name="text">
-      <string>start.off</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="xHexSpin" name="brkAdrHex">
-     <property name="inputMask">
-      <string>HHHH</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QSpinBox" name="brkBank">
-     <property name="maximum">
-      <number>255</number>
+      <string>Page</string>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="layPage">
+     <item>
+      <widget class="QSpinBox" name="brkBank">
+       <property name="toolTip">
+        <string>The 16K page the cell is in</string>
+       </property>
+       <property name="maximum">
+        <number>255</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spPage">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="labStart">
+     <property name="text">
+      <string>Address</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <layout class="QHBoxLayout" name="layAdr">
+     <item>
+      <widget class="QLineEdit" name="leStart"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="labTo">
+       <property name="text">
+        <string>to</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="leEnd"/>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="labAdrHint">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="labFlags">
+     <property name="text">
+      <string>Access</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <layout class="QHBoxLayout" name="layFlags">
      <item>
       <widget class="QCheckBox" name="brkFetch">
+       <property name="toolTip">
+        <string>Fires when an instruction is fetched from here</string>
+       </property>
        <property name="text">
         <string>Fetch</string>
        </property>
@@ -126,41 +130,179 @@
       </widget>
      </item>
      <item>
+      <spacer name="spFlags">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="labSpan">
+     <property name="text">
+      <string>Span</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <layout class="QHBoxLayout" name="laySpan">
+     <item>
+      <widget class="QComboBox" name="brkSpan">
+       <property name="toolTip">
+        <string>T from an opening point to the next closing one</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labSpanStat">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spSpan">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="labCond">
+     <property name="text">
+      <string>Condition</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <layout class="QHBoxLayout" name="layCond">
+     <item>
+      <widget class="QLineEdit" name="leCond">
+       <property name="toolTip">
+        <string>Fires only while this is not 0. Empty: always</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="brkOnChange">
        <property name="toolTip">
-        <string>Stop when the expression becomes true, instead of every instruction while it is true</string>
+        <string>Fire when it becomes true, not on every instruction while it is</string>
        </property>
        <property name="text">
         <string>On change</string>
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QToolButton" name="tbCondHelp">
+       <property name="toolTip">
+        <string>Expression syntax</string>
+       </property>
+       <property name="text">
+        <string>?</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
+   <item row="7" column="1">
+    <widget class="QLabel" name="labCondErr">
      <property name="text">
-      <string>Type</string>
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="labAction">
+     <property name="text">
+      <string>Action</string>
      </property>
     </widget>
    </item>
    <item row="8" column="1">
-    <widget class="xHexSpin" name="brkAdrEnd"/>
+    <layout class="QHBoxLayout" name="layAction">
+     <item>
+      <widget class="QComboBox" name="brkAction">
+       <property name="toolTip">
+        <string>What a hit does</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spAction">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="brkType"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="labFlags">
+   <item row="9" column="0">
+    <widget class="QLabel" name="labLogExp">
      <property name="text">
-      <string>Flags</string>
+      <string>Log</string>
      </property>
     </widget>
    </item>
-   <item row="15" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <item row="9" column="1">
+    <layout class="QHBoxLayout" name="layLog">
      <item>
-      <spacer name="horizontalSpacer">
+      <widget class="QCheckBox" name="brkLog">
+       <property name="toolTip">
+        <string>A line in the breakpoint log on every hit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="leLogExp">
+       <property name="toolTip">
+        <string>What a logged hit writes, comma-separated. Empty: every register</string>
+       </property>
+       <property name="placeholderText">
+        <string>every register, or: A, HL, M(SP)</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="10" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="11" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="layButtons">
+     <item>
+      <spacer name="spButtons">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -181,116 +323,42 @@
         <iconset resource="../xpeccy.qrc">
          <normaloff>:/images/ok-apply.png</normaloff>:/images/ok-apply.png</iconset>
        </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="labEndOff">
-     <property name="text">
-      <string>end.off</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="xHexSpin" name="brkMaskHex">
-     <property name="inputMask">
-      <string>HHHH</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="labBank">
-     <property name="text">
-      <string>bank</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Action</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
-      <widget class="QComboBox" name="brkAction"/>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="brkLog">
-       <property name="toolTip">
-        <string>A line in the event log on every hit. Needs the log on</string>
-       </property>
+      <widget class="QPushButton" name="pbCancel">
        <property name="text">
-        <string>Log</string>
+        <string>Cancel</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../xpeccy.qrc">
+         <normaloff>:/images/cancel.png</normaloff>:/images/cancel.png</iconset>
        </property>
       </widget>
      </item>
     </layout>
-   </item>
-   <item row="11" column="0">
-    <widget class="QLabel" name="labCond">
-     <property name="text">
-      <string>Cond</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <widget class="QLineEdit" name="leCond">
-       <property name="toolTip">
-        <string>Break only when this expression is not 0. Empty = always</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="tbCondHelp">
-       <property name="toolTip">
-        <string>Expression syntax</string>
-       </property>
-       <property name="text">
-        <string>?</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="12" column="1">
-    <widget class="QLabel" name="labCondErr">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>xHexSpin</class>
-   <extends>QLineEdit</extends>
-   <header location="global">stdlib.h</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>brkType</tabstop>
+  <tabstop>brkBank</tabstop>
+  <tabstop>leStart</tabstop>
+  <tabstop>leEnd</tabstop>
   <tabstop>brkFetch</tabstop>
   <tabstop>brkRead</tabstop>
   <tabstop>brkWrite</tabstop>
-  <tabstop>brkBank</tabstop>
-  <tabstop>leStartOffset</tabstop>
-  <tabstop>brkAdrHex</tabstop>
-  <tabstop>brkMaskHex</tabstop>
-  <tabstop>leEndOffset</tabstop>
-  <tabstop>brkAdrEnd</tabstop>
-  <tabstop>leValue</tabstop>
-  <tabstop>leValMask</tabstop>
+  <tabstop>brkSpan</tabstop>
+  <tabstop>leCond</tabstop>
+  <tabstop>brkOnChange</tabstop>
   <tabstop>brkAction</tabstop>
   <tabstop>brkLog</tabstop>
-  <tabstop>leCond</tabstop>
+  <tabstop>leLogExp</tabstop>
   <tabstop>pbOK</tabstop>
+  <tabstop>pbCancel</tabstop>
  </tabstops>
  <resources>
   <include location="../xpeccy.qrc"/>

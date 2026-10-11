@@ -56,6 +56,8 @@ class xBreakTable : public QTableView {
 		void resizeEvent(QResizeEvent*);
 };
 
+QString brk_span_text(const xBrkPoint*);
+
 class xBrkManager : public QDialog {
 	Q_OBJECT
 	public:
@@ -67,16 +69,17 @@ class xBrkManager : public QDialog {
 		QDialog* helpWin;
 		void setElements(int);
 		void setLimits(int);
+		int curType();
+		bool readAdr(QString, int*, int*);
+		bool readRange(xBrkPoint*, QString*, QLineEdit**);
+		void adrError(QLineEdit*, QString);
 	private slots:
 		void confirm();
 		void chaType(int);
 		void chaCond(QString);
+		void chaStart(QString);
+		void chaAdr();
 		void condHelp();
-		void bnkChanged(int);
-		void startOffChanged(int);
-		void startAbsChanged(int);
-		void endOffChanged(int);
-		void endAbsChanged(int);
 	signals:
 		void completed(xBrkPoint, xBrkPoint);
 };
@@ -95,6 +98,7 @@ class xBreakWidget : public xDockWidget {
 	private:
 		Ui::BrkWidget ui;
 		xBrkManager* brkManager;
+		QAction* actLog;
 	private slots:
 		void addBrk();
 		void editBrk();
@@ -103,4 +107,5 @@ class xBreakWidget : public xDockWidget {
 		void openBrk();
 		void saveBrk();
 		void resetBrk();
+		void openLog();
 };

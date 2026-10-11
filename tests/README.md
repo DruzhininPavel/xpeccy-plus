@@ -12,8 +12,7 @@ python tests/regress.py bless timing        # take the current results as the re
 python tests/regress.py list
 ```
 
-- **The build** is the newest dev folder in `build/dist`, or `--app <folder>`. A build made
-  with `XRELEASE=1` has no `--bench` and cannot be tested.
+- **The build** is the newest dev folder in `build/dist`, or `--app <folder>`.
 - **The images and the references** are not in this repository - most of the images are not
   ours to publish. `XPECCY_CORPUS` (or `--corpus`) is the folder the suite paths are relative
   to, `XPECCY_GOLDEN` (or `--golden`) holds one `<suite>.json` per suite.

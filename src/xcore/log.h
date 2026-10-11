@@ -37,6 +37,8 @@ bool log_load(const std::string& key, const char* val, bool flag);
 
 QString log_dir();			// where the log file goes
 QString log_file();			// the open one, empty when there is none
+// a file of another kind where the log would go, named after the log with suffix
+FILE* log_open_beside(const char* suffix, QString* path);
 
 // "video:debug,net:off": every group named here is set apart from the base
 // level, everything else follows it

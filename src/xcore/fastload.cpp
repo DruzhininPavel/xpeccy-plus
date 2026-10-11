@@ -271,7 +271,6 @@ static int fl_quiet(Computer* comp) {
 	return 1;
 }
 
-#ifdef XBENCH
 // --bench-loops 3: every skip is run for real first, then rolled back and
 // skipped, and the two compared - what shows the skip exact. The tape and the
 // beeper are not in the snapshot, so they are carried by hand.
@@ -325,7 +324,6 @@ static void fl_compare(Computer* comp, flProbe* real) {
 	if (!(checks % 1000))
 		xlog(XLG_TAPE, XLL_INFO, "loop skip checked %i times, %i different", checks, bad);
 }
-#endif
 
 // Does the loop go round again on what its IN just read? Only if the byte has
 // the tape bit the loop waits past, the tape has not moved on to another pulse
@@ -479,10 +477,8 @@ int fastload_step(Computer* comp) {
 		return 0;
 	}
 	int t = per * k;
-#ifdef XBENCH
 	flProbe real;
 	if (fl_bench == 3) fl_run_real(comp, t, &real);
-#endif
 	// what k turns leave: B and R on, and the flags and MEMPTR of a turn
 	cpu->regB += kind * k;
 	cpu->regR += fl_loop.rstep * k;
@@ -499,9 +495,7 @@ int fastload_step(Computer* comp) {
 		cpu->flgACK = 0;		// every opcode skipped ended outside the pulse
 	}
 	tap_detect_skipped(tap, comp->tickCount, cpu->regB);
-#ifdef XBENCH
 	if (fl_bench == 3) fl_compare(comp, &real);
-#endif
 	fl_loop_take(comp);
 	return ns;
 }

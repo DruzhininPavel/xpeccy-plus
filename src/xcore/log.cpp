@@ -17,6 +17,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include <functional>
 #include <stdlib.h>
 #include <string.h>
 
@@ -280,30 +281,57 @@ QString log_file() {
 // install (AppImage, a macOS bundle, Program Files) falls back to the config
 // directory, which is always ours to write in. Opening the file is the only
 // test of that - a probe would just create and delete the same file twice.
-static bool open_file(const QString& want_dir) {
-	const QDateTime now = QDateTime::currentDateTime();
-	const QString name = QString("%1-%2.log").arg(XPKGNAME).arg(now.toString("yyyyMMdd-HHmmss"));
+static QStringList log_bases(const QString& want_dir) {
 	QStringList bases;
 	if (!want_dir.isEmpty()) bases << want_dir;
 	bases << QCoreApplication::applicationDirPath();
 	bases << QString::fromStdString(conf.path.confDir);
+	return bases;
+}
+
+static QString log_want_dir() {
+	return args.dir.isEmpty() ? QString::fromStdString(conf.log.dir) : args.dir;
+}
+
+// the first logs/<date> that can be made and the file opened in, named after
+// the time with the suffix; empty when there is none
+static QString log_place(const QString& want_dir, const QString& suffix, const std::function<bool(const QString&)>& open) {
+	const QDateTime now = QDateTime::currentDateTime();
+	const QString name = QString("%1-%2%3.log").arg(XPKGNAME).arg(now.toString("yyyyMMdd-HHmmss")).arg(suffix);
+	const QStringList bases = log_bases(want_dir);
 	for (int i = 0; i < bases.size(); i++) {
 		if (bases.at(i).isEmpty()) continue;
 		const QString dir = QDir(bases.at(i)).filePath("logs/" + now.toString("yyyy-MM-dd"));
 		if (!QDir().mkpath(dir)) continue;
-		if (xlog_open(QDir(dir).filePath(name).toLocal8Bit().constData()))
-			return true;
+		const QString full = QDir(dir).filePath(name);
+		if (open(full)) return full;
 	}
+	return QString();
+}
+
+static bool open_file(const QString& want_dir) {
+	if (!log_place(want_dir, QString(), [](const QString& p) { return xlog_open(p.toLocal8Bit().constData()) != 0; }).isEmpty())
+		return true;
 	xlog(XLG_APP, XLL_ERROR, "log: no writable place for it, tried %s",
-		bases.join(", ").toUtf8().constData());
+		log_bases(want_dir).join(", ").toUtf8().constData());
 	return false;
 }
 
-// Writing to a stdout nobody is reading still costs the whole line. On Windows
+FILE* log_open_beside(const char* suffix, QString* path) {
+	FILE* file = NULL;
+	QString full = log_place(log_want_dir(), QString("-%1").arg(suffix), [&file](const QString& p) {
+		file = fopen(p.toLocal8Bit().constData(), "wb");
+		return file != NULL;
+	});
+	if (path && file) *path = full;
+	return file;
+}
+
+// Writing to a stderr nobody is reading still costs the whole line. On Windows
 // the app is a GUI subsystem binary, so without -c there is no handle at all.
 static bool console_alive() {
 #ifdef _WIN32
-	return GetStdHandle(STD_OUTPUT_HANDLE) != NULL;
+	return GetStdHandle(STD_ERROR_HANDLE) != NULL;
 #else
 	return true;
 #endif
@@ -326,7 +354,7 @@ void log_apply() {
 	const bool enabled = (args.enabled >= 0) ? args.enabled : conf.log.enabled;
 	const bool console = ((args.console >= 0) ? args.console : conf.log.console) && console_alive();
 	const int base = (args.level >= 0) ? args.level : conf.log.level;
-	const QString dir = args.dir.isEmpty() ? QString::fromStdString(conf.log.dir) : args.dir;
+	const QString dir = log_want_dir();
 
 	xlog_set_console(console ? 1 : 0);
 
@@ -354,9 +382,6 @@ void log_apply() {
 	if (xlog_is_open() || console)
 		write_header();
 	xlog_flush_early();
-	// a breakpoint that logs makes the core keep a record of every mem/io
-	// event, and it is only worth keeping while there is a log to write it to
-	if (conf.zx) brkInstallAll();
 }
 
 void log_done() {

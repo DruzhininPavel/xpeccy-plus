@@ -69,7 +69,7 @@ static int autorun_of(const std::string& val) {
 }
 xConfig conf;
 
-void conf_init(char* wpath, char* confdir) {
+void conf_init(char* confdir) {
 	conf.scrShot.dir = QDir::toNativeSeparators(QDir::homePath()).toStdString();	// with its drive
 	conf.port = 30000;
 #if defined(__linux) || defined(__APPLE__) || defined(__BSD)
@@ -102,11 +102,8 @@ void conf_init(char* wpath, char* confdir) {
 	conf.path.boot = conf.path.confDir + "/boot.$B";
 #elif defined(__WIN32)
 	if (confdir == NULL) {
-		conf.path.confDir = std::string(wpath);
-		size_t pos = conf.path.confDir.find_last_of(SLSH);
-		if (pos != std::string::npos) {
-			conf.path.confDir = conf.path.confDir.substr(0, pos);
-		}
+		// beside the exe, not argv[0]: that is what was typed, a bare name from a console
+		conf.path.confDir = QDir::toNativeSeparators(QCoreApplication::applicationDirPath()).toLocal8Bit().constData();
 		conf.path.confDir += "\\config";
 	} else {
 		conf.path.confDir = std::string(confdir);

@@ -184,6 +184,8 @@ typedef struct Computer {
 
 	int frmCount;		// frames since reset (for breakpoint conditions)
 	int tickCount;		// accumulate T
+	long long tickTotal;	// T since the machine was made: tickCount wraps in minutes
+	int intTaken;		// maskable interrupts the cpu has taken, for the debugger's spans
 	int frmtCount;		// accumulate T, but reset each INT
 	int hCount;		// T before HALT = frmtCount @ HALT
 	int waitDebt;		// T a board with its own arbiter still owes the next bus cycle
