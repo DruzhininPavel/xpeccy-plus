@@ -31,6 +31,9 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **720K disks on the +3** load again: the second side of a double-sided disk read as an
+  error, and the +3 fell back to the tape loader.
+
 - **Starting from a folder of thousands of files** no longer freezes the window for seconds,
   and the places list in the file dialog shows its names whole.
 
