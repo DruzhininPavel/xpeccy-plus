@@ -33,6 +33,7 @@ static int sigLens[] = {PILOTLEN,SYNC1LEN,SYNC2LEN,SIGN0LEN,SIGN1LEN,0,-1};	// 0
 // sync and data: pulses from #12/#13 after a pause carry the level they meant.
 static void tzxAddBlock(Tape* tape) {
 	TapeBlock* blk = &tape->tmpBlock;
+	if (!blk->hasBytes) blk->dataPos = -1;	// a pending #14's mark
 	if ((tape->blkCount > 0) && (blk->sigCount > 0)) {
 		TapeBlock* prv = &tape->blkData[tape->blkCount - 1];
 		if (prv->sigCount > 0) {
@@ -153,14 +154,21 @@ void tzxBlock14(FILE* file, Tape* tape) {
 	int pausems = fgetw(file);
 	int pause = pausems * 1e6 / TAPTICKNS;	// ms -> ticks
 	int len = fgett(file);
+	TapeBlock* blk = &tape->tmpBlock;
+	int pre = blk->sigCount;
+	int lone = (blk->dataPos < 0);		// no #14 bytes pending before these
+	int flag = -1;
 	while (len > 1) {
 		data = fgetc(file);
+		if (flag < 0) flag = data & 0xff;
 		blkAddByte(&tape->tmpBlock, data & 0xff, bit0, bit1);
 		len--;
 	}
 	// last byte
 	data = fgetc(file);
+	if (flag < 0) flag = data & 0xff;
 	if (bits > 8) bits = 8;
+	int whole = (bits == 8);
 	while (bits > 0) {
 		blkAddWave(&tape->tmpBlock, (data & 0x80) ? bit1 : bit0);
 		bits--;
@@ -169,7 +177,20 @@ void tzxBlock14(FILE* file, Tape* tape) {
 	// the pause is on the tape whatever its length; only a long one also
 	// parts the blocks in the list
 	blkAddPause(&tape->tmpBlock, pause);
+	blk->dataPos = pre;
 	if (pausems > 100) {		// .1 sec will be block separator
+		// whole bytes are a data block, as a #11 is: the pending #12/#13 are
+		// its pilot and sync. pdur 0 keeps tzxAddBlock's level flip off them.
+		if (whole && lone) {
+			blk->hasBytes = 1;
+			blk->len0 = bit0;
+			blk->len1 = bit1;
+			blk->pdur = 0;
+			blk->plen = (pre > 2) ? blk->data[0].size : 0;
+			blk->s1len = (pre > 1) ? blk->data[pre - 2].size : 0;
+			blk->s2len = (pre > 0) ? blk->data[pre - 1].size : 0;
+			blk->isHeader = (flag == 0);	// as tapDataToBlock has it
+		}
 		tzxAddBlock(tape);
 		blkClear(&tape->tmpBlock);
 	}

@@ -69,7 +69,8 @@ def main():
         # turbo: pilot, sync1, sync2, zero, one, pilot count, used bits, pause, length
         tzx_block(0x11, struct.pack("<HHHHHHBH", 2000, 600, 700, 500, 1000, 1500, 8, 500)
                   + struct.pack("<I", len(turbo))[:3] + turbo),
-        # a pilot and syncs of its own for the pure data after them: one block, no bytes
+        # a pilot and syncs of its own for the pure data after them: one block whose
+        # bytes are the #14's
         tzx_block(0x12, struct.pack("<HH", 1500, 200)),
         tzx_block(0x13, bytes([3]) + struct.pack("<HHH", 800, 900, 1000)),
         tzx_block(0x14, struct.pack("<HHBH", 600, 1200, 8, 1000) + struct.pack("<I", 16)[:3] + pattern(16, 11)),
@@ -86,7 +87,7 @@ def main():
         for b in blocks:
             f.write(b)
 
-    for name, datas in (("test.tap", tap), ("test.tzx", [std_hdr, std_data, turbo, looped, looped, last])):
+    for name, datas in (("test.tap", tap), ("test.tzx", [std_hdr, std_data, turbo, pattern(16, 11), looped, looped, last])):
         lines = [f"{len(d)} {fnv(d):08X}" for d in datas]
         (out / (name + ".bytes")).write_text("\n".join(lines) + "\n", encoding="ascii")
     return 0

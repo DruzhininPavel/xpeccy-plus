@@ -211,6 +211,9 @@ void xThread::tap_catch_load(Computer* comp, int atStart, int base, int dir) {
 	// the rom is left to read that part by ear.
 	if (atStart)
 		earBlock = (tap->blkData[blk].hasBytes && (tapGetBlockInfo(tap, blk).size > comp->cpu->regDE)) ? blk : -1;
+	// A block with no bytes (#15, #18, #19) cannot be handed over: under flash
+	// loading it is played for the rom to read, not waited on.
+	int flashSignal = atStart && tape_flash() && !tap->blkData[blk].hasBytes;
 	if (tape_flash() && tap->blkData[blk].hasBytes && (blk != earBlock)
 			&& (atStart || tap_rom_caller(comp, base))) {
 		// A playing tape and a flash load get out of step: the rom reads the
@@ -227,7 +230,7 @@ void xThread::tap_catch_load(Computer* comp, int atStart, int base, int dir) {
 			return;
 		}
 		tap_hand_over(comp, blk, base, dir);
-	} else if ((conf.tape.autostart || (blk == earBlock)) && !tap->on) {
+	} else if ((conf.tape.autostart || (blk == earBlock) || flashSignal) && !tap->on) {
 		// 05E7 is LD-EDGE-1, which the rom calls for every edge, so this is
 		// reached thousands of times per block - hence the guard. The window
 		// is not told: it refreshes itself, and a signal per edge once left
