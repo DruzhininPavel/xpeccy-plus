@@ -14,16 +14,36 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QIcon>
 #include <QLabel>
 #include <QListWidget>
+#include <QMessageBox>
 #include <QPushButton>
+#include <QScrollBar>
+#include <QSplitter>
 #include <QTreeView>
 #include <QVBoxLayout>
 
-static QFileDialog* filer;
+static QFileDialog* fileDlg = nullptr;
+static QWidget* fileDlgParent = nullptr;
 
-#include <QIcon>
-#include <QMessageBox>
+// Built on first use, in the folder it is about to show: a Qt dialog built
+// without one lists and watches the cwd on the GUI thread, and started from a
+// 37k-file folder the window froze for seconds
+static QFileDialog* file_dialog() {
+	if (fileDlg) return fileDlg;
+	QString dir = QString::fromLocal8Bit(conf.lastDir.c_str());
+	if (dir.isEmpty() || !QFileInfo(dir).isDir())
+		dir = QString::fromLocal8Bit(conf.path.confDir.c_str());
+	fileDlg = new QFileDialog(fileDlgParent, QString(), dir);
+	fileDlg->setWindowIcon(QIcon(":/images/logo.png"));
+	fileDlg->setWindowModality(Qt::ApplicationModal);
+	fileDlg->setOption(QFileDialog::HideNameFilterDetails, false);
+	fileDlg->setOption(QFileDialog::DontConfirmOverwrite, false);
+	fileDlg->setOption(QFileDialog::DontUseNativeDialog, true);
+	fileDlg->resize(700, 480);
+	return fileDlg;
+}
 
 // new
 
@@ -542,6 +562,7 @@ void disk_boot(Computer* comp, int drv, int id) {
 // mode is set before the filter, which in save mode puts its own suffix on that
 // name - an RZX just recorded came back offered as an .szx.
 static void file_dialog_open_mode() {
+	QFileDialog* filer = file_dialog();
 	filer->setAcceptMode(QFileDialog::AcceptOpen);
 	filer->selectFile(QString());
 }
@@ -563,6 +584,7 @@ QString file_ask_open(Computer* comp, int* id, int* drv) {
 			flt = file_get_type_filter(fid, 0);
 	}
 	if (flt.isEmpty()) return path;
+	QFileDialog* filer = file_dialog();
 	filer->setWindowTitle("Open File");
 	file_dialog_open_mode();
 	filer->setNameFilter(flt);
@@ -784,6 +806,7 @@ int save_file(Computer* comp, const char* name, int id, int drv, int live) {
 				flt = file_get_type_filter(id, 1);
 		}
 		if (!flt.isEmpty()) {
+			QFileDialog* filer = file_dialog();
 			filer->setWindowTitle("Save File");
 			filer->setNameFilter(flt);
 			filer->setAcceptMode(QFileDialog::AcceptSave);
@@ -935,6 +958,7 @@ int quick_undo(Computer* comp) {
 // the tables above know. Same dialog as every other open and save in the app.
 // own: a file that is written over without asking - the one a recording goes on in
 QString file_ask_save(const char* title, const char* filter, const char* ext, const QString& suggest, const QString& own) {
+	QFileDialog* filer = file_dialog();
 	filer->setWindowTitle(title);
 	filer->setNameFilter(filter);
 	filer->setAcceptMode(QFileDialog::AcceptSave);
@@ -963,6 +987,7 @@ QString file_ask_save(const char* title, const char* filter, const char* ext, co
 
 // one file of one kind, to open
 QString file_ask_load(const char* title, const char* filter) {
+	QFileDialog* filer = file_dialog();
 	filer->setWindowTitle(title);
 	file_dialog_open_mode();
 	filer->setNameFilter(filter);
@@ -977,13 +1002,7 @@ QString file_ask_load(const char* title, const char* filter) {
 // old
 
 void initFileDialog(QWidget* par) {
-	filer = new QFileDialog(par);
-	filer->setWindowIcon(QIcon(":/images/logo.png"));
-	filer->setWindowModality(Qt::ApplicationModal);
-	filer->setOption(QFileDialog::HideNameFilterDetails, false);
-	filer->setOption(QFileDialog::DontConfirmOverwrite, false);
-	filer->setOption(QFileDialog::DontUseNativeDialog, true);
-	filer->resize(700, 480);
+	fileDlgParent = par;
 }
 
 // Every Qt file dialog restores the column widths any Qt program last left in
@@ -998,6 +1017,14 @@ void fitFileDialog(QWidget* w) {
 	hdr->setSectionResizeMode(QHeaderView::ResizeToContents);
 	hdr->setSectionResizeMode(0, QHeaderView::Stretch);
 	hdr->setStretchLastSection(false);
+	// the places list on the left: same shared settings, stored narrower than its names
+	QSplitter* split = dlg->findChild<QSplitter*>("splitter");
+	QListView* side = dlg->findChild<QListView*>("sidebar");
+	if (!split || !side || (split->indexOf(side) != 0) || (split->count() != 2)) return;
+	int need = side->sizeHintForColumn(0) + 2 * side->frameWidth() + side->verticalScrollBar()->sizeHint().width();
+	QList<int> sz = split->sizes();
+	if (sz[0] >= need) return;
+	split->setSizes({need, qMax(sz[0] + sz[1] - need, 0)});
 }
 
 int saveChangedDisk(Computer* comp,int id) {
