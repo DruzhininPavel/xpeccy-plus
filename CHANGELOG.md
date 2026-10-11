@@ -9,6 +9,14 @@ before that point is upstream's history and is not repeated here.
 
 ## Unreleased
 
+### Fixed
+
+- **Starting from a folder of thousands of files** no longer freezes the window for seconds,
+  and the places list in the file dialog shows its names whole.
+
+- **Turbo tapes whose header is raw pulses**, such as Chromatrons Attack, load with fast
+  loading on and auto play off; so do tapes that start with a direct recording.
+
 ## 2026.7 - 2026-10-10
 
 ### Added
