@@ -139,6 +139,17 @@ void MainWin::diskOp(int op, int drv) {
 	}
 }
 
+// the question about a changed tape can still keep it in
+void MainWin::tapeEject() {
+	pause(true, PR_FILE);
+	int safe = saveChangedTape(conf.zx);
+	pause(false, PR_FILE);
+	if (safe != ERR_OK) return;
+	tapEject(conf.zx->tape);
+	emit s_tape_upd(conf.zx->tape);
+	emit s_tape_blk(conf.zx->tape);
+}
+
 // a change under the running machine
 void MainWin::driveOp(std::function<void()> fn) {
 	pause(true, PR_FILE);
@@ -152,7 +163,7 @@ void MainWin::driveOp(std::function<void()> fn) {
 void MainWin::diskNew(int drv) {
 	Computer* comp = conf.zx;
 	pause(true, PR_FILE);
-	if (saveChangedDisk(comp, drv) != ERR_CANCEL) {
+	if (saveChangedDisk(comp, drv) == ERR_OK) {
 		bool fmt = (comp->dif->type == DIF_BDI) && areSure("Format for TR-DOS?");
 		emu_lock();
 		Floppy* flp = comp->dif->flp[drv];
@@ -171,7 +182,10 @@ void MainWin::diskSave(int drv, bool ask) {
 	Floppy* flp = comp->dif->flp[drv];
 	if (!flp->insert) return;
 	pause(true, PR_FILE);
-	save_file(comp, (ask || !flp->path) ? "" : flp->path, FG_DISK_A + drv, drv);
+	if (ask)
+		save_file(comp, "", FG_DISK_A + drv, drv);
+	else
+		save_back(comp, flp->path, FG_DISK_A + drv, drv);
 	pause(false, PR_FILE);
 	if (diskWin->isVisible()) diskWin->refresh();
 }
@@ -180,7 +194,7 @@ void MainWin::diskSave(int drv, bool ask) {
 void MainWin::diskEject(int drv) {
 	Computer* comp = conf.zx;
 	pause(true, PR_FILE);
-	if (saveChangedDisk(comp, drv) != ERR_CANCEL) {
+	if (saveChangedDisk(comp, drv) == ERR_OK) {
 		emu_lock();
 		flp_eject(comp->dif->flp[drv]);
 		emu_unlock();

@@ -97,6 +97,8 @@ void media_autorun(Computer*, int run);
 void media_autorun_forget();
 // live: the machine was running, so a snapshot may run it on to a better moment
 int save_file(Computer* comp, const char* name, int id, int drv, int live = 0);
+// write back to path, or ask where when its format cannot be written
+int save_back(Computer*, const char* path, int id, int drv);
 // One slot per machine: kept in memory, and as an .szx too, so it outlives the
 // session. Save: 0 failed, 1 memory only, 2 memory and file. Load: 0 nothing to
 // load, 1 done.
@@ -104,7 +106,9 @@ int quick_save(Computer*);
 int quick_load(Computer*);
 int quick_undo(Computer*);
 
+// a changed disk or tape asked about: ERR_OK when it is safe to lose
 int saveChangedDisk(Computer*,int);
+int saveChangedTape(Computer*);
 // the Drives menu and the Disk manager name what is in a drive alike
 QString drive_media(const char* path, bool in);
 int drive_count(Computer*);

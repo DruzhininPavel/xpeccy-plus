@@ -142,24 +142,11 @@ void MainWin::updateWindow() {
 	emit s_keywin_snap();		// a docked keyboard follows the new size
 }
 
-bool MainWin::saveChanged() {
-	bool yep = true;
-	QString str;
-	Floppy* flp;
-	for (int i = 0; (i < 4) && yep; i++) {
-		flp = conf.zx->dif->flp[i];
-		if (!flp->changed) continue;
-		str = QString("Disk %0 was changed<br>Save it?").arg(QChar('A' + i));
-		switch (askYNC(str.toLocal8Bit().data())) {
-			case QMessageBox::Yes:
-				yep &= save_file(conf.zx, flp->path, FG_DISK, i);
-				break;
-			case QMessageBox::Cancel:
-				yep = false;
-				break;
-		}
-	}
-	return yep;
+// false when one of them is to stay: cancelled, or its save failed
+bool MainWin::saveChanged(bool tape) {
+	for (int i = 0; i < 4; i++)
+		if (saveChangedDisk(conf.zx, i) != ERR_OK) return false;
+	return !tape || (saveChangedTape(conf.zx) == ERR_OK);
 }
 
 void MainWin::pause(bool p, int msk) {
@@ -1639,7 +1626,11 @@ void MainWin::closeEvent(QCloseEvent* ev) {
 		}
 	}
 //	std::string fname;
-	if (saveChanged()) {
+	if (saveChanged(true)) {
+		emu_lock();
+		int rzxErr = rzxr_stop(comp);		// the autosave is up to 30 s behind
+		emu_unlock();
+		if (rzxErr != ERR_OK) shitHappens("The RZX recording could not be written");
 		snd_wav_close();
 		vrec_wait();
 		frm_tmr.stop();

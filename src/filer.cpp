@@ -114,7 +114,7 @@ static xFileTypeInfo ft_tab[] = {
 	{FL_SPG, 0, ".spg", "*.spg", loadSPG, NULL, "SPG snapshot"},
 	{FL_TAP, 0, ".tap", "*.tap", loadTAP, saveTAP, "TAP tape image"},
 	{FL_TZX, 0, ".tzx", "*.tzx", loadTZX, NULL, "TZX tape image"},
-	{FL_WAV, 0, ".wav", "*.wav", loadWAV, save_wav, "WAV tape image"},
+	{FL_WAV, 0, ".wav", "*.wav", loadWAV, save_wav, "WAV recording"},
 	{FL_SCL, 1, ".scl", "*.scl", loadSCL, saveSCL, "SCL disk image"},
 	{FL_TRD, 1, ".trd", "*.trd", loadTRD, saveTRD, "TRD disk image"},
 	{FL_TD0, 1, ".td0", "*.td0", loadTD0, NULL, "TD0 disk image"},
@@ -153,6 +153,11 @@ static xFileGroupInfo fg_tab[] = {
 };
 
 static xFileGroupInfo fg_dum = {0, "", -1, NULL, NULL, {0}};
+
+// a wav is a recording of the tape, not its image: saved only as an export
+static bool ft_export(xFileTypeInfo* inf) {
+	return inf && (inf->id == FL_WAV);
+}
 
 static xFileHWInfo fh_tab[] = {
 	{FH_SPECTRUM, {FG_SNAPSHOT, FG_TAPE, FG_DISK_A, FG_DISK_B, FG_DISK_C, FG_DISK_D, FG_RAW, FG_RZX, FG_IF2_ROM, 0}},
@@ -287,7 +292,8 @@ QString file_get_type_filter(int id, int sv) {
 }
 
 QString file_get_group_filter(Computer* comp, int id, int sv) {
-	QString flt;
+	QStringList flt;
+	QStringList exf;
 	QString ftf;
 	QString ofl;
 	int i;
@@ -297,16 +303,20 @@ QString file_get_group_filter(Computer* comp, int id, int sv) {
 			i = 0;
 			while(inf->child[i] > 0) {
 				ofl = file_get_type_filter(inf->child[i], sv);
-				if (!ofl.isEmpty())
+				xFileTypeInfo* tin = file_find_type(inf->child[i]);
+				if (!ofl.isEmpty() && sv && ft_export(tin))
+					exf.append(QString("%0, export (%1)").arg(tin->name, ofl));
+				else if (!ofl.isEmpty())
 					ftf.append(ofl).append(" ");
 				i++;
 			}
 			ftf = ftf.trimmed();
 			if (!ftf.isEmpty())
-				flt = QString("%0 (%1)").arg(inf->name, ftf);
+				flt.append(QString("%0 (%1)").arg(inf->name, ftf));
+			flt.append(exf);
 		}
 	}
-	return flt;
+	return flt.join(";;");
 }
 
 QString file_get_hw_filter(Computer* comp, int id, int sv) {
@@ -365,18 +375,24 @@ static xFilerError err_tab[] = {
 	{ERR_SZX_SIGN, "Wrong SZX signature"},
 	{ERR_SZX_HW, "SZX snapshot: a machine this emulator does not have"},
 	{ERR_SZX_DATA, "SZX snapshot: no cpu or memory in it"},
+	{ERR_TAP_DATA, "This tape has blocks TAP cannot hold: export it to WAV"},
+	{ERR_TAP_EMPTY, "The tape is empty"},
+	{ERR_NOTRD, "Not a TR-DOS disk"},
+	{ERR_CANT_SAVE, "Can't save in this format"},
+	{ERR_FILE_TYPE, "Unknown file type"},
 	{ERR_OK, ""}
 };
 
+// a cancel was the user's own answer, so it is not reported
 void file_errors(int err) {
 	int i = 0;
-	char buf[1024];
+	if ((err == ERR_OK) || (err == ERR_CANCEL)) return;
 	while ((err_tab[i].err != ERR_OK) && (err_tab[i].err != err))
 		i++;
 	if (err_tab[i].err != ERR_OK) {
 		shitHappens(err_tab[i].text);
-	} else if (err != ERR_OK) {
-		sprintf(buf, "Error #%i", err);
+	} else {
+		shitHappens(QString("Error #%0").arg(err).toLocal8Bit().constData());
 	}
 }
 
@@ -481,6 +497,13 @@ static int as_kind_of(int ftype) {
 			return AS_DISK3;
 	}
 	return AS_NONE;
+}
+
+// ERR_OK once the disk or tape the file would replace is safe to lose
+static int replace_ok(Computer* comp, xFileTypeInfo* inf, int drv) {
+	if (inf->ch) return saveChangedDisk(comp, drv);
+	if (as_kind_of(inf->id) == AS_TAPE) return saveChangedTape(comp);
+	return ERR_OK;
 }
 
 // Ask: the machines that can take the file, Auto's pick first. false is
@@ -639,6 +662,7 @@ static void szx_mount(Computer* comp, const QString& snap) {
 		if (m->kind == SZX_MED_TAPE) {
 			const char* now = comp->tape->path;
 			if (!now || (QFileInfo(QString::fromLocal8Bit(now)).canonicalFilePath() != path)) {
+				if (replace_ok(comp, inf, 0) != ERR_OK) continue;
 				if (inf->load(comp, path.toLocal8Bit().data(), 0) != ERR_OK) continue;
 			}
 			if (m->block < comp->tape->blkCount)
@@ -648,7 +672,7 @@ static void szx_mount(Computer* comp, const QString& snap) {
 			Floppy* flp = comp->dif->flp[drv];
 			if (!flp->fitted) continue;
 			if (!flp->insert || !flp->path || (QFileInfo(QString::fromLocal8Bit(flp->path)).canonicalFilePath() != path)) {
-				if (saveChangedDisk(comp, drv) != ERR_OK) continue;
+				if (replace_ok(comp, inf, drv) != ERR_OK) continue;
 				if (inf->load(comp, path.toLocal8Bit().data(), drv) != ERR_OK) continue;
 				disk_boot(comp, drv, inf->id);		// as opening it does
 			}
@@ -697,13 +721,14 @@ int load_file(Computer* comp, const char* name, int id, int drv) {
 	QString path = QFileInfo(QString::fromLocal8Bit(name)).canonicalFilePath();
 	if (path.isEmpty()) return ERR_CANT_OPEN;
 	xFileTypeInfo* inf = file_type_of(comp, id, path);
-	int err = ERR_OK;
+	int err = inf ? ERR_OK : ERR_FILE_TYPE;
 	if (drv < 0) drv = 0;
-	// a disk goes in only once the one it replaces is safe to lose
 	if (inf && inf->ch && !comp->dif->flp[drv & 3]->fitted) {
 		err = ERR_NO_DRIVE;
 	} else if (inf && inf->load) {
-		if (!inf->ch || (saveChangedDisk(comp, drv) == ERR_OK)) {
+		if (replace_ok(comp, inf, drv) != ERR_OK) {		// a failed save has been shown
+			err = ERR_CANCEL;
+		} else {
 			if (inf->id == FL_RZX)
 				rzxr_stop(comp);		// playing one ends the one being made
 			else if (comp->rzx.play)
@@ -837,14 +862,21 @@ int save_file(Computer* comp, const char* name, int id, int drv, int live) {
 				} else {
 					tin = file_detect_type(flt);
 					if (tin->id != FL_NONE) {
-						path.append(tin->ext);
+						if (tin->ext && !path.endsWith(tin->ext, Qt::CaseInsensitive))
+							path.append(tin->ext);
+						inf = tin;
 					}
 				}
 				conf.lastDir = std::string(QFileInfo(path).dir().absolutePath().toLocal8Bit().data());
 			}
 		}
 	}
-	if (path.isEmpty()) return err;
+	if (path.isEmpty()) {
+		// no dialog: nothing of this kind can be written
+		err = flt.isEmpty() ? ERR_CANT_SAVE : ERR_CANCEL;
+		file_errors(err);
+		return err;
+	}
 	if (drv < 0)
 		drv = 0;
 	if (!inf)
@@ -862,13 +894,25 @@ int save_file(Computer* comp, const char* name, int id, int drv, int live) {
 			}
 			err = inf->save(comp, path.toLocal8Bit().data(), drv);
 		} else {
-			shitHappens("Can't save that");
+			err = ERR_CANT_SAVE;
 		}
 	} else {
-		shitHappens("Don't know such extension");
+		err = ERR_FILE_TYPE;
 	}
+	if (err != ERR_OK)
+		xlog(XLG_FILE, XLL_WARN, "save %s failed, error %i", path.toLocal8Bit().constData(), err);
 	file_errors(err);
 	return err;
+}
+
+static bool file_can_save(Computer* comp, const char* path) {
+	if (!path || !*path) return false;
+	xFileTypeInfo* inf = file_find_hw_ext(comp->hw->id, QString::fromLocal8Bit(path));
+	return inf && inf->save && !ft_export(inf);
+}
+
+int save_back(Computer* comp, const char* path, int id, int drv) {
+	return save_file(comp, file_can_save(comp, path) ? path : "", id, drv);
 }
 
 
@@ -1026,23 +1070,33 @@ void fitFileDialog(QWidget* w) {
 	split->setSizes({need, qMax(sz[0] + sz[1] - need, 0)});
 }
 
+// ERR_OK once the changed medium is safe to lose: saved, or the user said No
+static int ask_save_changed(Computer* comp, QString what, const char* path, int id, int drv) {
+	if (path && *path)
+		what += ": " + QFileInfo(QString::fromLocal8Bit(path)).fileName();
+	QMessageBox mbox;
+	mbox.setText(QString("<b>%0 has been changed</b>").arg(what.toHtmlEscaped()));
+	mbox.setInformativeText("Do you want to save it?");
+	mbox.setStandardButtons(QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+	mbox.setIcon(QMessageBox::Warning);
+	switch (mbox.exec()) {
+		case QMessageBox::Yes: return save_back(comp, path, id, drv);
+		case QMessageBox::No: return ERR_OK;
+	}
+	return ERR_CANCEL;
+}
+
 int saveChangedDisk(Computer* comp,int id) {
-	int res = ERR_OK;
 	id &= 3;
 	Floppy* flp = comp->dif->flp[id];
-	if (flp->changed) {
-		QMessageBox mbox;
-		mbox.setText(QString("<b>Disk %0: has been changed</b>").arg(QChar('A'+id)));
-		mbox.setInformativeText("Do you want to save it?");
-		mbox.setStandardButtons(QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
-		mbox.setIcon(QMessageBox::Warning);
-		switch (mbox.exec()) {
-			case QMessageBox::Yes: res = save_file(comp, flp->path, FG_DISK, id); break;	// save
-			case QMessageBox::No: res = ERR_OK; break;						// don't save
-			case QMessageBox::Cancel: res = ERR_CANCEL; break;					// cancel
-		}
-	}
-	return res;
+	if (!flp->changed) return ERR_OK;
+	return ask_save_changed(comp, QString("Disk %0").arg(QChar('A' + id)), flp->path, FG_DISK, id);
+}
+
+int saveChangedTape(Computer* comp) {
+	Tape* tape = comp->tape;
+	if (!tape->changed || (tape->blkCount < 1)) return ERR_OK;
+	return ask_save_changed(comp, "Tape", tape->path, FG_TAPE, -1);
 }
 
 int testSlotOn(Computer* comp) {

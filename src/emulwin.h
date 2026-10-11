@@ -137,6 +137,7 @@ typedef struct {
 		void diskNew(int);
 		void diskSave(int, bool);
 		void diskEject(int);
+		void tapeEject();
 		void hddOpen(int, bool);
 		void hddProps(int);
 		void sdcOpen(bool);
@@ -272,7 +273,7 @@ typedef struct {
 		QString msg;
 		void setMessage(QString, double = 2.0);
 
-		bool saveChanged();
+		bool saveChanged(bool tape);
 		void updateHead();
 		void screenShot();
 		void videoRec();

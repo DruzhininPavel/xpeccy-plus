@@ -129,10 +129,7 @@ void TapeWin::doRewind() {
 }
 
 void TapeWin::doEject() {
-	Tape* tap = conf.zx->tape;
-	tapEject(tap);
-	upd(tap);
-	updList(tap);
+	emit wannaEject();
 }
 
 void TapeWin::doLoad() {
@@ -145,7 +142,7 @@ void TapeWin::doSave() {
 	Tape* tap = conf.zx->tape;
 	if (tap->blkCount < 1) return;
 	conf.emu.pause |= PR_FILE;
-	save_file(conf.zx, tap->path, FG_TAPE, -1);
+	save_back(conf.zx, tap->path, FG_TAPE, -1);
 	upd(tap);
 	conf.emu.pause &= ~PR_FILE;
 }

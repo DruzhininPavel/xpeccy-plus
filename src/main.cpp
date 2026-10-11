@@ -409,6 +409,7 @@ int main(int ac,char** av) {
 	app.connect(&mwin, SIGNAL(s_tape_progress(Tape*)), &tapw, SLOT(updProgress(Tape*)));
 	app.connect(&mwin, SIGNAL(s_tape_show()), &tapw, SLOT(show()));
 	QObject::connect(&tapw, &TapeWin::wannaOpen, &mwin, [&mwin]() {mwin.openMedia(QString(), FG_TAPE, -1, 0, true);});
+	QObject::connect(&tapw, &TapeWin::wannaEject, &mwin, &MainWin::tapeEject);
 
 	app.connect(&rzxw, SIGNAL(stateChanged(int)), &mwin, SLOT(rzxStateChanged(int)));
 	app.connect(&rzxw, SIGNAL(seekTo(int)), &mwin, SLOT(rzxSeek(int)));
