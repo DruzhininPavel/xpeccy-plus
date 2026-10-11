@@ -97,8 +97,8 @@ void media_autorun(Computer*, int run);
 void media_autorun_forget();
 // live: the machine was running, so a snapshot may run it on to a better moment
 int save_file(Computer* comp, const char* name, int id, int drv, int live = 0);
-// Save can write that file back: its format has a writer and is not an export
-bool file_can_save(Computer*, const char* path);
+// write back to path, or ask where when its format cannot be written
+int save_back(Computer*, const char* path, int id, int drv);
 // One slot per machine: kept in memory, and as an .szx too, so it outlives the
 // session. Save: 0 failed, 1 memory only, 2 memory and file. Load: 0 nothing to
 // load, 1 done.

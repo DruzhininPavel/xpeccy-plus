@@ -139,6 +139,17 @@ void MainWin::diskOp(int op, int drv) {
 	}
 }
 
+// the question about a changed tape can still keep it in
+void MainWin::tapeEject() {
+	pause(true, PR_FILE);
+	int safe = saveChangedTape(conf.zx);
+	pause(false, PR_FILE);
+	if (safe != ERR_OK) return;
+	tapEject(conf.zx->tape);
+	emit s_tape_upd(conf.zx->tape);
+	emit s_tape_blk(conf.zx->tape);
+}
+
 // a change under the running machine
 void MainWin::driveOp(std::function<void()> fn) {
 	pause(true, PR_FILE);
@@ -165,14 +176,16 @@ void MainWin::diskNew(int drv) {
 	if (diskWin->isVisible()) diskWin->refresh();
 }
 
-// Save writes back to the file the disk came from, Save as asks where - and so
-// does Save when that file's format cannot be written
+// Save writes back to the file the disk came from, Save as asks where
 void MainWin::diskSave(int drv, bool ask) {
 	Computer* comp = conf.zx;
 	Floppy* flp = comp->dif->flp[drv];
 	if (!flp->insert) return;
 	pause(true, PR_FILE);
-	save_file(comp, (ask || !file_can_save(comp, flp->path)) ? "" : flp->path, FG_DISK_A + drv, drv);
+	if (ask)
+		save_file(comp, "", FG_DISK_A + drv, drv);
+	else
+		save_back(comp, flp->path, FG_DISK_A + drv, drv);
 	pause(false, PR_FILE);
 	if (diskWin->isVisible()) diskWin->refresh();
 }

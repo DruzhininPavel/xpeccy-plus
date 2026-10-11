@@ -129,14 +129,7 @@ void TapeWin::doRewind() {
 }
 
 void TapeWin::doEject() {
-	Tape* tap = conf.zx->tape;
-	conf.emu.pause |= PR_FILE;
-	int safe = saveChangedTape(conf.zx);
-	conf.emu.pause &= ~PR_FILE;
-	if (safe != ERR_OK) return;
-	tapEject(tap);
-	upd(tap);
-	updList(tap);
+	emit wannaEject();
 }
 
 void TapeWin::doLoad() {
@@ -149,8 +142,7 @@ void TapeWin::doSave() {
 	Tape* tap = conf.zx->tape;
 	if (tap->blkCount < 1) return;
 	conf.emu.pause |= PR_FILE;
-	// a format with no writer (TZX) asks where, in one that has
-	save_file(conf.zx, file_can_save(conf.zx, tap->path) ? tap->path : "", FG_TAPE, -1);
+	save_back(conf.zx, tap->path, FG_TAPE, -1);
 	upd(tap);
 	conf.emu.pause &= ~PR_FILE;
 }

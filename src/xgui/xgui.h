@@ -29,7 +29,6 @@
 
 void shitHappens(const char*);
 bool areSure(const char*);
-int askYNC(const char*);
 void showInfo(const char*);
 
 int getRFIData(QComboBox*);
@@ -279,6 +278,7 @@ class TapeWin : public QDialog {
 		void show();
 	signals:
 		void wannaOpen();
+		void wannaEject();
 	private:
 		Ui::TapeWin ui;
 		int state;

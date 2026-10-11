@@ -154,8 +154,7 @@ static xFileGroupInfo fg_tab[] = {
 
 static xFileGroupInfo fg_dum = {0, "", -1, NULL, NULL, {0}};
 
-// A wav is a recording of the tape, not an image of it: written only when asked
-// where, under a filter of its own, and the tape stays changed
+// a wav is a recording of the tape, not its image: saved only as an export
 static bool ft_export(xFileTypeInfo* inf) {
 	return inf && (inf->id == FL_WAV);
 }
@@ -293,10 +292,10 @@ QString file_get_type_filter(int id, int sv) {
 }
 
 QString file_get_group_filter(Computer* comp, int id, int sv) {
-	QString flt;
+	QStringList flt;
+	QStringList exf;
 	QString ftf;
 	QString ofl;
-	QString exf;
 	int i;
 	xFileGroupInfo* inf = file_find_group(id);
 	if (inf->id > 0) {
@@ -306,19 +305,18 @@ QString file_get_group_filter(Computer* comp, int id, int sv) {
 				ofl = file_get_type_filter(inf->child[i], sv);
 				xFileTypeInfo* tin = file_find_type(inf->child[i]);
 				if (!ofl.isEmpty() && sv && ft_export(tin))
-					exf.append(QString(";;%0, export (%1)").arg(tin->name, ofl));
+					exf.append(QString("%0, export (%1)").arg(tin->name, ofl));
 				else if (!ofl.isEmpty())
 					ftf.append(ofl).append(" ");
 				i++;
 			}
 			ftf = ftf.trimmed();
 			if (!ftf.isEmpty())
-				flt = QString("%0 (%1)").arg(inf->name, ftf);
+				flt.append(QString("%0 (%1)").arg(inf->name, ftf));
 			flt.append(exf);
-			if (flt.startsWith(";;")) flt.remove(0, 2);
 		}
 	}
-	return flt;
+	return flt.join(";;");
 }
 
 QString file_get_hw_filter(Computer* comp, int id, int sv) {
@@ -501,6 +499,13 @@ static int as_kind_of(int ftype) {
 	return AS_NONE;
 }
 
+// ERR_OK once the disk or tape the file would replace is safe to lose
+static int replace_ok(Computer* comp, xFileTypeInfo* inf, int drv) {
+	if (inf->ch) return saveChangedDisk(comp, drv);
+	if (as_kind_of(inf->id) == AS_TAPE) return saveChangedTape(comp);
+	return ERR_OK;
+}
+
 // Ask: the machines that can take the file, Auto's pick first. false is
 // Cancel - the file is not opened at all
 static bool media_ask_machine(const QString& path, const std::vector<std::string>& ids, std::string* mac) {
@@ -657,7 +662,7 @@ static void szx_mount(Computer* comp, const QString& snap) {
 		if (m->kind == SZX_MED_TAPE) {
 			const char* now = comp->tape->path;
 			if (!now || (QFileInfo(QString::fromLocal8Bit(now)).canonicalFilePath() != path)) {
-				if (saveChangedTape(comp) != ERR_OK) continue;
+				if (replace_ok(comp, inf, 0) != ERR_OK) continue;
 				if (inf->load(comp, path.toLocal8Bit().data(), 0) != ERR_OK) continue;
 			}
 			if (m->block < comp->tape->blkCount)
@@ -667,7 +672,7 @@ static void szx_mount(Computer* comp, const QString& snap) {
 			Floppy* flp = comp->dif->flp[drv];
 			if (!flp->fitted) continue;
 			if (!flp->insert || !flp->path || (QFileInfo(QString::fromLocal8Bit(flp->path)).canonicalFilePath() != path)) {
-				if (saveChangedDisk(comp, drv) != ERR_OK) continue;
+				if (replace_ok(comp, inf, drv) != ERR_OK) continue;
 				if (inf->load(comp, path.toLocal8Bit().data(), drv) != ERR_OK) continue;
 				disk_boot(comp, drv, inf->id);		// as opening it does
 			}
@@ -721,14 +726,7 @@ int load_file(Computer* comp, const char* name, int id, int drv) {
 	if (inf && inf->ch && !comp->dif->flp[drv & 3]->fitted) {
 		err = ERR_NO_DRIVE;
 	} else if (inf && inf->load) {
-		// a disk or a tape goes in only once the one it replaces is safe to
-		// lose; a failed save has been reported already
-		int safe = ERR_OK;
-		if (inf->ch)
-			safe = saveChangedDisk(comp, drv);
-		else if (as_kind_of(inf->id) == AS_TAPE)
-			safe = saveChangedTape(comp);
-		if (safe != ERR_OK) {
+		if (replace_ok(comp, inf, drv) != ERR_OK) {		// a failed save has been shown
 			err = ERR_CANCEL;
 		} else {
 			if (inf->id == FL_RZX)
@@ -907,10 +905,14 @@ int save_file(Computer* comp, const char* name, int id, int drv, int live) {
 	return err;
 }
 
-bool file_can_save(Computer* comp, const char* path) {
+static bool file_can_save(Computer* comp, const char* path) {
 	if (!path || !*path) return false;
 	xFileTypeInfo* inf = file_find_hw_ext(comp->hw->id, QString::fromLocal8Bit(path));
 	return inf && inf->save && !ft_export(inf);
+}
+
+int save_back(Computer* comp, const char* path, int id, int drv) {
+	return save_file(comp, file_can_save(comp, path) ? path : "", id, drv);
 }
 
 
@@ -1068,10 +1070,7 @@ void fitFileDialog(QWidget* w) {
 	split->setSizes({need, qMax(sz[0] + sz[1] - need, 0)});
 }
 
-// The one question about a changed medium. ERR_OK once it is safe to lose:
-// saved, or the user said No. Otherwise ERR_CANCEL, or the save's own error,
-// which has been shown. Yes writes back to the medium's own file when its
-// format can be written, and asks where otherwise.
+// ERR_OK once the changed medium is safe to lose: saved, or the user said No
 static int ask_save_changed(Computer* comp, QString what, const char* path, int id, int drv) {
 	if (path && *path)
 		what += ": " + QFileInfo(QString::fromLocal8Bit(path)).fileName();
@@ -1081,7 +1080,7 @@ static int ask_save_changed(Computer* comp, QString what, const char* path, int 
 	mbox.setStandardButtons(QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
 	mbox.setIcon(QMessageBox::Warning);
 	switch (mbox.exec()) {
-		case QMessageBox::Yes: return save_file(comp, file_can_save(comp, path) ? path : "", id, drv);
+		case QMessageBox::Yes: return save_back(comp, path, id, drv);
 		case QMessageBox::No: return ERR_OK;
 	}
 	return ERR_CANCEL;

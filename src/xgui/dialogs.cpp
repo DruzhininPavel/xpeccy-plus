@@ -18,8 +18,3 @@ void showInfo(const char* msg) {
 	QMessageBox mbx(QMessageBox::Information,"Message",msg,QMessageBox::Ok);
 	mbx.exec();
 }
-
-int askYNC(const char* msg) {
-	QMessageBox mbx(QMessageBox::Question,"That is the question",msg, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-	return mbx.exec();
-}

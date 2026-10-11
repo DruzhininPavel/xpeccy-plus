@@ -137,6 +137,7 @@ typedef struct {
 		void diskNew(int);
 		void diskSave(int, bool);
 		void diskEject(int);
+		void tapeEject();
 		void hddOpen(int, bool);
 		void hddProps(int);
 		void sdcOpen(bool);
