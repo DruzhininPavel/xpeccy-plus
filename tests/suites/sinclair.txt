@@ -9,7 +9,7 @@ zexdoc          zx48      auto  3000  300     "tape/Z80 Documented Instruction S
 knighttyme      zx128     auto  20000 300     tape/KnightTyme_ZX0_DeciLoad16k8.tzx
 rodland_fast    zx128     auto  2000  300     "tape/Rod-Land - Re-Imagined (2012)(Miazga, Rafal)(128K)(PL)(en)[h Miazga, Rafal, 2012-08][Colour mod].tap" cfg:TAPE.fast=yes
 chromatron_fast zx128     auto  2500  300     "tape/Chromatrons Attack (2013)(R-Tape)(128K).tzx" cfg:TAPE.fast=yes cfg:TAPE.autoplay=no
-influence_full  zx128    auto  1500  300     tape/INFLUENC.TAP                     cfg:TAPE.fast=yes --bench-full
+influence_full  zx128     auto  1500  300     tape/INFLUENC.TAP                     cfg:TAPE.fast=yes --bench-full
 robocop         zx128     open  50    300     snap/robocop.z80
 aytest_full     zx128     auto  3600  300     tape/AYtest_v0.2.tap                  keys:3000:E,3200:E,3400:1 --bench-full
 ula128_p2       zxplus2   auto  2500  200     ULA/ula128.tap

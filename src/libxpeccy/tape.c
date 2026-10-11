@@ -106,6 +106,7 @@ void blkClear(TapeBlock *blk) {
 	blk->stop48 = 0;
 	blk->isHeader = 0;
 	blk->hasBytes = 0;
+	blk->pend14 = 0;
 	blk->sigCount = 0;
 	blk->dataPos = -1;
 	blk->text[0] = 0;

@@ -95,6 +95,7 @@ typedef struct {
 	unsigned hasBytes:1;
 	unsigned isHeader:1;
 	unsigned vol:1;
+	unsigned pend14:1;		// TZX reader: a #14 is among the pending pulses
 
 	int plen;
 	int s1len;

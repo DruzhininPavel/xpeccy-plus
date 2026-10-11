@@ -561,10 +561,11 @@ void disk_boot(Computer* comp, int drv, int id) {
 // The dialog is shared with the saves: the name a save left in it goes, and the
 // mode is set before the filter, which in save mode puts its own suffix on that
 // name - an RZX just recorded came back offered as an .szx.
-static void file_dialog_open_mode() {
+static QFileDialog* file_dialog_open_mode() {
 	QFileDialog* filer = file_dialog();
 	filer->setAcceptMode(QFileDialog::AcceptOpen);
 	filer->selectFile(QString());
+	return filer;
 }
 
 // The open dialog, for the kind of file id asks for. What was picked in it
@@ -584,9 +585,8 @@ QString file_ask_open(Computer* comp, int* id, int* drv) {
 			flt = file_get_type_filter(fid, 0);
 	}
 	if (flt.isEmpty()) return path;
-	QFileDialog* filer = file_dialog();
+	QFileDialog* filer = file_dialog_open_mode();
 	filer->setWindowTitle("Open File");
-	file_dialog_open_mode();
 	filer->setNameFilter(flt);
 	filer->setDirectory(conf.lastDir.c_str());
 	filer->setHistory(QStringList());
@@ -987,9 +987,8 @@ QString file_ask_save(const char* title, const char* filter, const char* ext, co
 
 // one file of one kind, to open
 QString file_ask_load(const char* title, const char* filter) {
-	QFileDialog* filer = file_dialog();
+	QFileDialog* filer = file_dialog_open_mode();
 	filer->setWindowTitle(title);
-	file_dialog_open_mode();
 	filer->setNameFilter(filter);
 	filer->setDirectory(conf.lastDir.c_str());
 	filer->setHistory(QStringList());
