@@ -224,6 +224,7 @@ xRegBunch cpuGetRegs(CPU*);
 xRegister cpuGetReg(CPU*, int);
 void cpuSetRegs(CPU*, xRegBunch);
 xRegDsc* find_reg_type(CPU*, int);
+xRegDsc* find_reg_name(CPU*, const char*);
 int cpu_get_regtype(CPU*, int);
 int cpu_get_reg(CPU*, const char*, bool*);
 int cpu_get_pc(CPU*);

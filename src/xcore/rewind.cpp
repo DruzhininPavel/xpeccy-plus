@@ -291,14 +291,10 @@ static void rw_let_go(Computer* comp, long long* phase) {
 	rw_play_stop();
 }
 
-#ifdef XBENCH
 static int rw_held = 0;
 void rewind_hold(int on) {
 	rw_held = on;
 }
-#else
-#define rw_held 0
-#endif
 
 void rewind_frame(Computer* comp, long long* phase) {
 	rw_clock++;
@@ -439,7 +435,6 @@ int rewind_restore(Computer* comp, int back, long long* phase) {
 	return 1;
 }
 
-#ifdef XBENCH
 int rewind_matches(Computer* comp, int back) {
 	rwEntry* e = rw_at(back);
 	if (!e || !rw_st || !xstate_save(rw_st, comp)) return 0;
@@ -460,4 +455,3 @@ int rewind_matches(Computer* comp, int back) {
 		e->frame, (unsigned)diff, chunk, (unsigned)inner, then[first]);
 	return 0;
 }
-#endif

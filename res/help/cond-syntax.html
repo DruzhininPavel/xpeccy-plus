@@ -50,6 +50,7 @@
 <tr><td><tt>&nbsp;FRAME&nbsp;</tt></td><td><b>frames</b> drawn since the last reset - a reset puts it back to 0</td></tr>
 <tr><td><tt>&nbsp;RAYX RAYY&nbsp;</tt></td><td>where the <b>beam</b> stands between instructions - the two numbers of the <b>RAY</b> panel. <tt>RAYY</tt> is the <b>line</b>, <tt>RAYX</tt> the <b>dot</b> in it, both counted from the first visible one, both including the borders. The line is longer than the picture: the retrace sits at its end, and on a ZX a dot is half a T-state, so a 48K frame is 448 x 312. Use them for a <b>region</b>; for one exact dot use <tt>RAY(x, y)</tt></td></tr>
 <tr><td><tt>&nbsp;HITS&nbsp;</tt></td><td>on a breakpoint <b>with an address</b>: how many times that address has been hit, the current hit included and whatever the condition says - so <tt>HITS &gt; 30</tt> lets the first 30 hits pass and stops on the 31st. On a <b>global</b> condition there is no address to count, so it counts its own firings: <tt>HITS &lt; 3</tt> stops on the first three</td></tr>
+<tr><td><tt>&nbsp;DT&nbsp;</tt></td><td>on a breakpoint that <b>closes a span</b>: the <b>T</b> since the span it closes was opened - so <tt>DT &gt; 12000</tt> stops on a pass that took too long. On any other breakpoint with an address: the T since its own hit before. 0 when there is nothing to measure from</td></tr>
 </table>
 
 <h3>Good to know</h3>

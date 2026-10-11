@@ -46,10 +46,8 @@ int rewind_load(Computer*, int back, long long* phase);
 int rewind_frame_of(int back);
 int rewind_clock();
 
-#ifdef XBENCH
 // For the check (--bench-rewind): whether the machine as it stands now is that
 // snapshot, byte for byte. A difference is reported to the log.
 int rewind_matches(Computer*, int back);
 // no snapshots are taken while this is on
 void rewind_hold(int);
-#endif

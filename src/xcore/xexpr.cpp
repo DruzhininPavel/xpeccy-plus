@@ -31,7 +31,7 @@ static int xe_prio(int op) {
 
 static const char* xe_var_tab[] = {
 	"RD", "WR", "MDT", "IN", "OUT", "VAL", "DOS",
-	"SLOT0", "SLOT1", "SLOT2", "SLOT3", "FRAME", "RAYX", "RAYY", "HITS", NULL
+	"SLOT0", "SLOT1", "SLOT2", "SLOT3", "FRAME", "RAYX", "RAYY", "HITS", "DT", NULL
 };
 
 static const char* xe_var_name(int id) {
@@ -510,7 +510,7 @@ std::string xexpr_text(const xExpr& exp) {
 
 // evaluation
 
-static unsigned xe_var_value(Computer* comp, unsigned id, int hits) {
+static unsigned xe_var_value(Computer* comp, unsigned id, int hits, unsigned dt) {
 	switch (id) {
 		case XV_RD: return (unsigned)comp->brkev.rd;
 		case XV_WR: return (unsigned)comp->brkev.wr;
@@ -528,13 +528,14 @@ static unsigned xe_var_value(Computer* comp, unsigned id, int hits) {
 		case XV_RAYX: return comp->vid->ray.x;
 		case XV_RAYY: return comp->vid->ray.y;
 		case XV_HITS: return hits;
+		case XV_DT: return dt;
 	}
 	return 0;
 }
 
 #define XE_STACK 64
 
-unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits) {
+unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits, unsigned dt) {
 	unsigned stk[XE_STACK];
 	int sp = 0;
 	bool err = false;
@@ -567,7 +568,7 @@ unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits) {
 					stk[sp] = xadr.adr;
 					break;
 				case XE_VAR:
-					stk[sp] = xe_var_value(comp, it->val, hits);
+					stk[sp] = xe_var_value(comp, it->val, hits, dt);
 					break;
 			}
 			sp++;

@@ -610,6 +610,7 @@ void xThread::emuCycle(Computer* comp) {
 			rzxr_frame(comp);
 			rewind_frame(comp, &sndNsFixed);
 			rewinding = rewind_active();
+			brk_trace_flush();
 			// before run-ahead: the debugger's screen view wants the machine as
 			// it really stands, not the frame it is about to guess at
 			vid_scr_snap(comp->vid);
@@ -645,12 +646,10 @@ void xThread::emuCycle(Computer* comp) {
 				if (!ptr) {			// breakpoint didn't found, but bit is set (?)
 					comp->flgBRK = 0;
 				} else {
-					ptr->hits++;		// counted before the condition, HITS uses it
-					if (!brk_cond_true(ptr, comp)) {	// condition is false: go on
+					if (!brk_hit(ptr, comp)) {	// condition is false: go on
 						comp->flgBRK = 0;
 						if (comp->flgBRKPRE) brkskip = 1;
 					} else {
-						ptr->count++;
 						brkAction(comp, ptr, &brkskip);
 					}
 				}
@@ -720,8 +719,6 @@ void xThread::run() {
 	raState = NULL;
 	exit(0);
 }
-
-#ifdef XBENCH
 
 // Headless benchmark (--bench): runs the machine on this thread with no window,
 // the way run() does, and reports emulated frames per second of host time.
@@ -1084,6 +1081,8 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 		delete bp;
 	}
 #endif
+	if (conf.emu.pause & PR_DEBUG)
+		xlog(XLG_BRK, XLL_INFO, "bench stopped by a breakpoint, PC=%04X", comp->cpu->regPC & 0xffff);
 	int done = conf.vid.fcount - f0;
 	double sec = (t1 - t0) / 1e9;
 	double fps = (sec > 0) ? done / sec : 0;
@@ -1175,5 +1174,3 @@ void xThread::rewindCheck(Computer* comp, int full) {
 	fprintf(stdout, "rewind: %i snapshots, %u KB, %i checked, %i differ, %i not loaded\n",
 		n, (unsigned)(bytes >> 10), done, bad, lost);
 }
-
-#endif

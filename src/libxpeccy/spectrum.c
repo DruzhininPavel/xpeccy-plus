@@ -972,6 +972,7 @@ static int comp_step_end(Computer* comp, int unsynced, int t) {
 	vid_settle(comp->vid);		// all of it walked, but the way to the next event is kept
 	nsTime = comp->vid->time;
 	comp->tickCount += t;
+	comp->tickTotal += t;
 	comp->frmtCount += t;
 	if (comp->hw->sync)
 		comp->hw->sync(comp, nsTime);
@@ -1029,7 +1030,8 @@ int compExec(Computer* comp) {
 		if (comp->cpu->flgNMIOK)	// no frame of the format holds an NMI: a join after it
 			rzx_rec_touch();
 	}
-	comp->cpu->flgINTOK = 0;		// asked by the recorder alone: no trace of it in a snapshot
+	if (comp->cpu->flgINTOK) comp->intTaken++;
+	comp->cpu->flgINTOK = 0;		// asked by the recorder and the count above: no trace of it in a snapshot
 	comp->cpu->flgNMIOK = 0;
 	return comp_step_end(comp, res2 - res4, res2);
 }

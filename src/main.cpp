@@ -42,6 +42,13 @@
 #include <conio.h>
 #endif
 
+// what a run with no window exits with, so a script can tell why it ended
+enum {
+	XEXIT_OK = 0,		// every frame asked for was run
+	XEXIT_ARGS = 1,		// the command line was not understood, nothing was run
+	XEXIT_BRK = 2		// a breakpoint stopped it
+};
+
 void help() {
 	printf("Xpeccy+ command line arguments:\n");
 	printf("-h | --help\t\tshow this help\n");
@@ -60,7 +67,9 @@ void help() {
 	printf("--sp ADR\t\tset SP\n");
 	printf("--bp ADR\t\tset fetch breakpoint to address ADR\n");
 	printf("--bp NAME\t\tset fetch breakpoint to label NAME (see -l key)\n");
-	printf("--brk FILE\t\tload breakpoints list (*.xbrk)\n");
+	printf("--brk FILE\t\tload breakpoints list (*.xbrk), addresses may be labels (see -l key)\n");
+	printf("--brk-log FILE\t\twhere the hits of logging breakpoints go, - for stdout;\n");
+	printf("\t\t\tby default a file beside the log, in logs/<date>/\n");
 	printf("--disk X\t\tselect drive to loading file (0..3 | a..d | A..D)\n");
 	printf("--sdcard PATH\t\tset SD card image, or a folder served as one\n");
 	printf("--wav-out FILE\t\trecord the sound to a WAV file from the start\n");
@@ -76,11 +85,43 @@ void help() {
 	printf("--no-autostart\t\tjust mount the media given here, don't start it\n");
 	printf("--log\t\t\twrite a log file to logs/<date>/ beside the binary\n");
 	printf("--no-log\t\tno log file, whatever the options say\n");
-	printf("--log-console\t\talso write the log to stdout\n");
+	printf("--log-console\t\talso write the log to stderr\n");
 	printf("--log-level LEVEL\terror | warn | info | debug | trace (default info)\n");
 	printf("--log-groups SPEC\tper-group levels: \"video:trace,net:off\", \"all:debug\"\n");
 	printf("--log-dir DIR\t\tput logs/ somewhere else\n");
 	printf("ADR and NUM: #8000, $8000 and 0x8000 are hex, anything else is decimal\n");
+	printf("\nRunning with no window, in fast mode and with no sound. What it prints goes to\n");
+	printf("stdout, which on Windows needs -c or a redirect:\n");
+	printf("--bench N\t\trun N frames and exit: %i ran them all, %i command line not\n", XEXIT_OK, XEXIT_ARGS);
+	printf("\t\t\tunderstood (nothing is run), %i stopped by a breakpoint. The spans\n", XEXIT_BRK);
+	printf("\t\t\tthe breakpoints measured are summed up at the end, a SPAN line each\n");
+	printf("--bench-skip N\t\trun N frames first, left out of the timing and the hashes\n");
+	printf("--bench-steps N\t\tthen N instructions more, to stop mid-frame\n");
+	printf("--bench-full\t\tmix the sound, as real play does\n");
+	printf("--bench-keys SPEC\t\"F:KEYS[/N],...\": press at frame F, hold N frames (4). KEYS are\n");
+	printf("\t\t\tdigits and small letters, E Enter, C Caps, S Symbol, _ Space;\n");
+	printf("\t\t\tjoy:up+fire or joyb:... a joystick, nmi the NMI button\n");
+	printf("--bench-hash\t\tprint hashes of the frames, sound, RAM and registers, PC and T\n");
+	printf("--bench-shot FILE\tthe last frame, whole raster, as a PPM picture\n");
+	printf("--bench-save FILE\ta snapshot at the end, in the format its extension names\n");
+	printf("--bench-state FILE\tthe raw machine state at the end, sizes of its parts in FILE.idx\n");
+	printf("--bench-nodraw\t\tdraw no picture\n");
+	printf("--bench-heat\t\tcollect the memory heat map, hashed with --bench-hash\n");
+	printf("--bench-prof FILE\tWindows only: a sampled profile of the emulation\n");
+	printf("Checks of the emulator itself:\n");
+	printf("--bench-split\t\thash so that a run cut by a snapshot compares with a whole one\n");
+	printf("--bench-rewind N\t1: report the rewind history, 2: check every snapshot in it\n");
+	printf("--bench-loops N\t\tskip loader loops: 1 exact, 2 edge detection, 3 exact, each skip checked\n");
+	printf("--bench-rzx N\t\tplay the RZX opened to its frame N\n");
+	printf("--bench-rzx-seek M\tthere, seek to frame M and play to N again\n");
+	printf("--bench-rzx-rec FILE N\trecord N frames to FILE, and at frame K:\n");
+	printf("  --bench-rzx-rec-back K\tgo back to frame K/2\n");
+	printf("  --bench-rzx-rec-join K\treset, and poke the screen at K+500\n");
+	printf("  --bench-rzx-rec-mark K\tset a bookmark\n");
+	printf("  --bench-rzx-rec-roll K\troll back to the bookmark\n");
+	printf("  --bench-rzx-rec-nmi K\tNMI\n");
+	printf("--bench-rzx-rec-final\talso write it finalized, to FILE.fin.rzx\n");
+	printf("--bench-rzx-take F\tplay the RZX opened to frame F and record on from there\n");
 }
 
 void xApp::d_frame() {
@@ -179,6 +220,20 @@ static void open_cli_file(MainWin& mwin, const char* path, int drv, int run, boo
 // window is up, to its message line.
 static QStringList cliWarns;
 
+#ifdef __WIN32
+static bool ownConsole = false;		// -c opened a console window of its own
+#endif
+
+// a console window of its own closes with the emulator: hold it until it is read.
+// Straight to the console, as stdout may be in a file
+static void console_hold() {
+#ifdef __WIN32
+	if (!ownConsole) return;
+	_cputs("\nPress any key to close...");
+	_getch();
+#endif
+}
+
 static void cli_warn(const QString& msg) {
 	xlog(XLG_APP, XLL_WARN, "%s", msg.toLocal8Bit().data());
 	cliWarns << msg;
@@ -225,7 +280,6 @@ bool xApp::event(QEvent* ev) {
 	return QApplication::event(ev);
 }
 
-#ifdef XBENCH
 // The raw machine state, as the rewind keeps it: the bytes, and beside them in
 // FILE.idx the size of each part, so two runs can be diffed part by part.
 static void bench_state(Computer* comp, const char* name) {
@@ -243,7 +297,6 @@ static void bench_state(Computer* comp, const char* name) {
 	}
 	xstate_destroy(st);
 }
-#endif
 
 int main(int ac,char** av) {
 	log_init();			// before anything that could have something to say
@@ -333,10 +386,8 @@ int main(int ac,char** av) {
 			cli_astart = 1;
 		} else if (!strcmp(earg, "--no-autostart")) {
 			cli_astart = 0;
-#ifdef XBENCH
 		} else if (!strncmp(earg, "--bench", 7)) {
 			xhost_time_fixed = 1790000000;	// the machines are built below: freeze their clock first
-#endif
 		} else if (!strcmp(earg, "-m") || !strcmp(earg, "--machine")
 				|| !strcmp(earg, "-p") || !strcmp(earg, "--profile")) {
 			if (n < ac) {			// the last one wins
@@ -348,14 +399,19 @@ int main(int ac,char** av) {
 		}
 	}
 #ifdef __WIN32
-	// before log_apply, or the header goes to a stdout that does not exist yet
+	// before log_apply, or the header goes to a console that does not exist yet
 	for (int n = 1; n < ac; n++) {
 		if (strcmp(av[n], "-c") && strcmp(av[n], "--console")) continue;
+		// a stream sent to a file or a pipe stays there
+		DWORD tout = GetFileType(GetStdHandle(STD_OUTPUT_HANDLE));
+		DWORD terr = GetFileType(GetStdHandle(STD_ERROR_HANDLE));
 		// the console it was started from, a new one only when there is none
-		if (!AttachConsole(ATTACH_PARENT_PROCESS))
+		if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
 			AllocConsole();
-		freopen("CONOUT$", "w", stdout);
-		freopen("CONOUT$", "w", stderr);
+			ownConsole = true;
+		}
+		if ((tout != FILE_TYPE_DISK) && (tout != FILE_TYPE_PIPE)) freopen("CONOUT$", "w", stdout);
+		if ((terr != FILE_TYPE_DISK) && (terr != FILE_TYPE_PIPE)) freopen("CONOUT$", "w", stderr);
 		break;
 	}
 #endif
@@ -364,7 +420,7 @@ int main(int ac,char** av) {
 	// so the family has to be known by then
 	QFontDatabase::addApplicationFont(":/DejaVuSansMono.ttf");
 
-	conf_init(av[0], confdir);
+	conf_init(confdir);
 	shortcut_init();
 	loadConfig();
 	log_apply();
@@ -486,8 +542,10 @@ int main(int ac,char** av) {
 	int lab = 1;
 	// naming a file on the command line is the answer to Ask: --no-autostart is the other one
 	int astart = (cli_astart >= 0) ? cli_astart : (conf.autorun != AR_MOUNT);
-	xAdr xadr;
 	int tmpi;
+	// --bp and --brk, in their order: set once the labels are known, as a
+	// label may come after them or from an image's own .labels
+	QList<QPair<QString, QString>> brkArgs;
 	int bnFrames = 0;
 	int bnSkip = 0;
 	int bnFull = 0;
@@ -617,23 +675,14 @@ int main(int ac,char** av) {
 				if (cli_num(parg, av[i], &tmpi)) adr = tmpi & 0xffff;
 				i++;
 			} else if (!strcmp(parg,"-f") || !strcmp(parg,"--file")) {
-				loadDUMP(conf.zx, av[i], adr);
+				if (loadDUMP(conf.zx, av[i], adr) != ERR_OK)
+					cli_warn(QString("%0: can't read %1").arg(parg, QString::fromLocal8Bit(av[i])));
 				i++;
-			} else if (!strcmp(parg,"--bp")) {
-				xadr = find_label(av[i]);
-				if (xadr.type >= 0) {
-					brkSet(BRK_CPUADR, MEM_BRK_FETCH, xadr.adr & 0xffff, -1);
-				} else if (cli_num(parg, av[i], &tmpi)) {
-					brkSet(BRK_CPUADR, MEM_BRK_FETCH, tmpi & 0xffff, -1);
-				}
+			} else if (!strcmp(parg,"--bp") || !strcmp(parg,"--brk")) {
+				brkArgs.append(qMakePair(QString(parg), QString::fromLocal8Bit(av[i])));
 				i++;
-			} else if (!strcmp(parg,"--brk")) {
-				if (i >= ac) {
-					xlog(XLG_APP, XLL_WARN, "--brk needs a file name");
-				} else if (!brk_load_list(av[i])) {
-					xlog(XLG_APP, XLL_WARN, "can't read breakpoints from %s", av[i]);
-				}
-				i++;
+			} else if (!strcmp(parg,"--brk-log")) {
+				brk_trace_to(QString::fromLocal8Bit(av[i++]));
 			} else if (!strcmp(parg,"-l") || !strcmp(parg,"--labels")) {
 				lab = loadLabels(av[i]);
 				i++;
@@ -700,6 +749,25 @@ int main(int ac,char** av) {
 	// labels named on the command line win over an image's own
 	if (!conf.labpath.isEmpty())
 		setLabelSet(QFileInfo(conf.labpath).fileName());
+	for (const QPair<QString, QString>& arg : brkArgs) {
+		if (arg.first == "--bp") {
+			bool ok = true;
+			xAdr xadr = find_label(arg.second);
+			tmpi = (xadr.type >= 0) ? xadr.adr : str_num(arg.second, &ok);
+			if (ok) {
+				brkSet(BRK_CPUADR, MEM_BRK_FETCH, tmpi & 0xffff, -1);
+			} else {
+				cli_warn(QString("--bp: no such label or address: %0").arg(arg.second));
+			}
+		} else {
+			int bad;
+			if (!brk_load_list(arg.second.toLocal8Bit().constData(), &bad, true)) {
+				cli_warn(QString("--brk: can't read %0").arg(arg.second));
+			} else if (bad > 0) {
+				cli_warn(QString("--brk: %0 lines of %1 not understood, see the log").arg(bad).arg(arg.second));
+			}
+		}
+	}
 
 	// a document macOS handed over before there was a window to open it through
 	if (!app.pendingFile.isEmpty()) given = true;
@@ -713,21 +781,23 @@ int main(int ac,char** av) {
 	}
 #endif
 	if ((bnFrames > 0) || bnSave || bnState || (ethread.benchRzx > 0) || ethread.benchRec) {
-#ifdef XBENCH
-		if ((bnFrames > 0) || (bnSkip > 0) || (bnSteps > 0) || (ethread.benchRzx > 0) || ethread.benchRec)
-			ethread.bench(bnFrames, bnSkip, bnFull, bnHash, bnProf, bnShot, bnNodraw, bnHeat, bnRewind, bnSteps, bnSplit);
-		if (bnSave)
-			save_file(conf.zx, bnSave, FG_ALL, 0);
-		if (bnState)
-			bench_state(conf.zx, bnState);
-#else
-		(void)bnSkip; (void)bnFull; (void)bnHash; (void)bnProf; (void)bnShot; (void)bnNodraw; (void)bnHeat; (void)bnRewind; (void)bnSave; (void)bnSteps; (void)bnState; (void)bnSplit;
-		xlog(XLG_APP, XLL_ERROR, "--bench is not in a release build");
-#endif
+		int ret = XEXIT_ARGS;
+		// a script cannot see the warnings: run nothing on a command line not understood
+		if (cliWarns.isEmpty()) {
+			if ((bnFrames > 0) || (bnSkip > 0) || (bnSteps > 0) || (ethread.benchRzx > 0) || ethread.benchRec)
+				ethread.bench(bnFrames, bnSkip, bnFull, bnHash, bnProf, bnShot, bnNodraw, bnHeat, bnRewind, bnSteps, bnSplit);
+			ret = (conf.emu.pause & PR_DEBUG) ? XEXIT_BRK : XEXIT_OK;
+			if (bnSave)
+				save_file(conf.zx, bnSave, FG_ALL, 0);
+			if (bnState)
+				bench_state(conf.zx, bnState);
+		}
 		pacingClose();
 		sndClose();
+		brk_trace_done(true);
 		log_done();
-		return 0;
+		console_hold();
+		return ret;
 	}
 	if (!hlp) {
 		// a machine or a file on the command line has decided it already
@@ -768,6 +838,7 @@ int main(int ac,char** av) {
 	conf.running = 0;
 	pacingClose();
 	sndClose();
+	brk_trace_done();
 	log_done();
 	// The smoke tests grep stdout for this to tell "main() returned" from
 	// "a destructor crashed on the way out" - it is a contract with
@@ -776,7 +847,7 @@ int main(int ac,char** av) {
 	printf("exit\n");
 #if defined(__WIN32)
 	timeEndPeriod(1);
-	getch();
+	console_hold();
 	FreeConsole();
 #endif
 	return 0;

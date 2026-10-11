@@ -1,11 +1,21 @@
 #include <QApplication>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QStyleOptionButton>
+#include <QUrl>
 
 #include "xcore/xcore.h"
 #include "dbg_brkpoints.h"
 
 // Model
+
+// what an opening point has measured, in T
+QString brk_span_text(const xBrkPoint* brk) {
+	if (brk->spanN < 1) return QString("No span closed yet");
+	return QString("%0 spans: min %1, avg %2, max %3 T, %4 with an interrupt")
+		.arg(brk->spanN).arg(brk->spanMin).arg((double)brk->spanSum / brk->spanN, 0, 'f', 1)
+		.arg(brk->spanMax).arg(brk->spanInt);
+}
 
 xBreakListModel::xBreakListModel(QObject* par):xTableModel(par) {
 	lastRows = 0;
@@ -68,8 +78,11 @@ QVariant xBreakListModel::data(const QModelIndex& idx, int role) const {
 	int col = idx.column();
 	if ((col < 0) || (col >= columnCount())) return res;
 	if ((row < 0) || (row >= rowCount())) return res;
-	xBrkPoint brk = conf.brk.list[row];
+	const xBrkPoint& brk = conf.brk.list[row];
 	switch (role) {
+		case Qt::ToolTipRole:
+			if ((brk.span == BRK_SPAN_OPEN) && (col >= 4)) res = brk_span_text(&brk);
+			break;
 		case Qt::CheckStateRole:
 			switch(col) {
 				case 0: res = brk.off ? Qt::Unchecked : Qt::Checked; break;
@@ -288,175 +301,266 @@ xBrkManager::xBrkManager(QWidget* p):QDialog(p) {
 	helpWin = nullptr;
 	ui.labCondErr->setWordWrap(true);
 
-	ui.brkType->addItem("ADR bus (MEM)", BRK_CPUADR);
-	ui.brkType->addItem("ADR bus (IO)", BRK_IOPORT);
+	ui.brkType->addItem("CPU address", BRK_CPUADR);
+	ui.brkType->addItem("I/O port", BRK_IOPORT);
 	ui.brkType->addItem("RAM cell", BRK_MEMRAM);
 	ui.brkType->addItem("ROM cell", BRK_MEMROM);
-	ui.brkType->addItem("SLT cell", BRK_MEMSLT);
-	ui.brkType->addItem("IRQ", BRK_IRQ);
+	ui.brkType->addItem("Slot cell", BRK_MEMSLT);
+	ui.brkType->addItem("Interrupt", BRK_IRQ);
 	ui.brkType->addItem("Condition (global)", BRK_COND);
-
-	ui.brkAdrEnd->setMin(0x0000);
-	ui.brkAdrEnd->setMax(0xffffff);
-	ui.brkAdrHex->setMin(0x0000);
-	ui.brkAdrHex->setMax(0xffffff);
-
-	ui.leStartOffset->setMin(0);
-	ui.leStartOffset->setMax(0x3fff);
-	ui.leEndOffset->setMin(0);
-	ui.leEndOffset->setMax(0x3fff);
-	ui.leValue->setMin(0);
-	ui.leValue->setMax(0xff);
-	ui.leValMask->setMin(0);
-	ui.leValMask->setMax(0xff);
-	ui.leValMask->setValue(0xff);
 
 	ui.brkAction->addItem("Debugger", BRK_ACT_DBG);
 	ui.brkAction->addItem("Counter", BRK_ACT_COUNT);
-	ui.brkAction->addItem("Screen dump (ZX only)", BRK_ACT_SCR);
+	ui.brkAction->addItem("Screen dump", BRK_ACT_SCR);
 
-	connect(ui.brkBank, SIGNAL(valueChanged(int)), this, SLOT(bnkChanged(int)));
-	connect(ui.leStartOffset,SIGNAL(valueChanged(int)),this,SLOT(startOffChanged(int)));
-	connect(ui.brkAdrHex,SIGNAL(valueChanged(int)),this,SLOT(startAbsChanged(int)));
-	connect(ui.leEndOffset,SIGNAL(valueChanged(int)),this,SLOT(endOffChanged(int)));
-	connect(ui.brkAdrEnd,SIGNAL(valueChanged(int)),this,SLOT(endAbsChanged(int)));
+	ui.brkSpan->addItem("None", BRK_SPAN_NONE);
+	ui.brkSpan->addItem("Opens a span", BRK_SPAN_OPEN);
+	ui.brkSpan->addItem("Closes a span", BRK_SPAN_CLOSE);
 
+	label_complete(ui.leStart);
+	label_complete(ui.leEnd);
+	label_complete(ui.leCond);
+	label_complete(ui.leLogExp);
+	connect(ui.leStart, &QLineEdit::textEdited, this, &xBrkManager::chaStart);
+	connect(ui.leStart, &QLineEdit::textChanged, this, &xBrkManager::chaAdr);
+	connect(ui.leEnd, &QLineEdit::textChanged, this, &xBrkManager::chaAdr);
+	connect(ui.brkBank, SIGNAL(valueChanged(int)), this, SLOT(chaAdr()));
 	connect(ui.brkType, SIGNAL(currentIndexChanged(int)), this, SLOT(chaType(int)));
 	connect(ui.leCond, SIGNAL(textChanged(QString)), this, SLOT(chaCond(QString)));
-	label_complete(ui.leCond);
 	connect(ui.tbCondHelp, SIGNAL(clicked()), this, SLOT(condHelp()));
-//	connect(ui.brkAdrHex, SIGNAL(valueChanged(int)), ui.brkAdrEnd, SLOT(setMin(int)));
+	connect(ui.brkLog, &QCheckBox::toggled, ui.leLogExp, &QWidget::setEnabled);
 	connect(ui.pbOK, SIGNAL(clicked()), this, SLOT(confirm()));
+	connect(ui.pbCancel, SIGNAL(clicked()), this, SLOT(hide()));
 }
 
-void xBrkManager::bnkChanged(int v) {
-//	ui.brkAdrHex->blockSignals(true);
-//	ui.brkAdrEnd->blockSignals(true);
-	ui.brkAdrHex->setValue((v << 14) | (ui.leStartOffset->getValue() & 0x3fff));
-	ui.brkAdrEnd->setMin((v << 14) | (ui.leStartOffset->getValue() & 0x3fff));
-	ui.brkAdrEnd->setValue((v << 14) | (ui.leEndOffset->getValue() & 0x3fff));
-//	ui.brkAdrHex->blockSignals(false);
-//	ui.brkAdrEnd->blockSignals(false);
+static bool brk_is_cell(int type) {
+	return (type == BRK_MEMRAM) || (type == BRK_MEMROM) || (type == BRK_MEMSLT);
 }
 
-void xBrkManager::startOffChanged(int v) {
-//	ui.brkAdrHex->blockSignals(true);
-	ui.leEndOffset->setMin(v);
-	v = (ui.brkBank->value() << 14) | (v & 0x3fff);
-	ui.brkAdrHex->setValue(v);
-	ui.brkAdrEnd->setMin(v);
-//	ui.brkAdrEnd->setValue(v);
-//	ui.brkAdrHex->blockSignals(false);
+// the memory a cell type watches
+static int brk_mem_type(int type) {
+	switch (type) {
+		case BRK_MEMRAM: return MEM_RAM;
+		case BRK_MEMROM: return MEM_ROM;
+		default: return MEM_SLOT;
+	}
 }
 
-void xBrkManager::startAbsChanged(int v) {
-//	ui.brkBank->blockSignals(true);
-//	ui.leStartOffset->blockSignals(true);
-	ui.brkBank->setValue(v >> 14);
-	ui.leStartOffset->setValue(v & 0x3fff);
-//	ui.brkBank->blockSignals(false);
-//	ui.leStartOffset->blockSignals(false);
-	ui.brkAdrEnd->setMin(v);
-	ui.leEndOffset->setMin(v & 0x3fff);
-//	ui.brkAdrEnd->setValue(v);
+static const char* brk_cell_name(int type) {
+	switch (type) {
+		case BRK_MEMRAM: return "RAM";
+		case BRK_MEMROM: return "ROM";
+		default: return "SLT";
+	}
 }
 
-void xBrkManager::endOffChanged(int v) {
-//	ui.brkAdrEnd->blockSignals(true);
-	ui.brkAdrEnd->setValue((ui.brkBank->value() << 14) | (v & 0x3fff));
-//	ui.brkAdrEnd->blockSignals(false);
+int xBrkManager::curType() {
+	return ui.brkType->itemData(ui.brkType->currentIndex()).toInt();
 }
 
-void xBrkManager::endAbsChanged(int v) {
-//	ui.leEndOffset->blockSignals(true);
-	ui.leEndOffset->setValue(v & 0x3fff);
-//	ui.leEndOffset->blockSignals(true);
+// One address field as the type reads it. A cpu address or a port is a number
+// or a label. A cell is an offset in its page, page:offset, a label, or a cpu
+// address - which brings the page mapped there now, when it is the kind of
+// memory the type watches. *page is the page found, -1 when the field gave an
+// offset alone
+bool xBrkManager::readAdr(QString txt, int* adr, int* page) {
+	int type = curType();
+	int val;
+	int lbank;
+	*page = -1;
+	txt = txt.trimmed();
+	if (txt.isEmpty()) return false;
+	int colon = txt.indexOf(':');
+	if (colon > 0) {
+		bool okp;
+		bool oko;
+		int pg = txt.left(colon).toInt(&okp, 16);
+		int off = txt.mid(colon + 1).toInt(&oko, 16);
+		if (!brk_is_cell(type) || !okp || !oko || (off > 0x3fff)) return false;
+		*page = pg;
+		*adr = off;
+		return true;
+	}
+	if (!brk_list_adr(txt, &val, &lbank) || (val < 0) || (val > 0xffff)) return false;
+	*adr = val;
+	if (!brk_is_cell(type)) return true;
+	if ((lbank >= 0) && (type == BRK_MEMRAM)) {		// a label carries its page
+		*page = lbank;
+		*adr = val & 0x3fff;
+		return true;
+	}
+	if (val < 0x4000) return true;
+	xAdr xa = mem_get_xadr(conf.zx->mem, val);
+	if (xa.type == brk_mem_type(type)) *page = xa.abs >> 14;
+	*adr = val & 0x3fff;
+	return true;
 }
 
-#define EL_CHG 2048
-#define EL_CND 1024
-#define EL_VAL 512
-#define EL_FE 256
-#define EL_RD 128
-#define EL_WR 64
-#define EL_BNK 32
-#define EL_SOF 16
-#define EL_SAD 8
-#define EL_EOF 4
-#define EL_EAD 2
-#define EL_MSK 1
+// The address fields into the point, for OK and for the line under them alike.
+// false: *err says why, *fld is the field to blame
+bool xBrkManager::readRange(xBrkPoint* brk, QString* err, QLineEdit** fld) {
+	int adr;
+	int eadr;
+	int page;
+	int epage;
+	bool haveEnd = !ui.leEnd->text().trimmed().isEmpty();
+	*fld = ui.leStart;
+	if (!readAdr(ui.leStart->text(), &adr, &page)) {
+		*err = ui.leStart->text().trimmed().isEmpty() ? "an address is needed" : "not an address or a label";
+		return false;
+	}
+	*fld = ui.leEnd;
+	if (brk->type == BRK_IOPORT) {
+		brk->adr = adr;
+		brk->eadr = adr;
+		brk->mask = 0xffff;
+		if (!haveEnd) return true;
+		if (!readAdr(ui.leEnd->text(), &eadr, &epage)) {
+			*err = "the mask is not a number";
+			return false;
+		}
+		brk->mask = eadr;
+		return true;
+	}
+	eadr = adr;
+	epage = page;
+	if (haveEnd && !readAdr(ui.leEnd->text(), &eadr, &epage)) {
+		*err = "not an address or a label";
+		return false;
+	}
+	if (eadr < adr) {
+		*err = "the range ends before it starts";
+		return false;
+	}
+	if (brk->type == BRK_CPUADR) {
+		brk->adr = adr;
+		brk->eadr = eadr;
+		return true;
+	}
+	int pg = (page >= 0) ? page : ui.brkBank->value();
+	if ((epage >= 0) && (epage != pg)) {
+		*err = "the end is in another page";
+		return false;
+	}
+	if (pg > ui.brkBank->maximum()) {
+		*fld = ui.leStart;
+		*err = "the machine has no such page";
+		return false;
+	}
+	brk->adr = (pg << 14) | adr;
+	brk->eadr = (pg << 14) | (eadr & 0x3fff);
+	return true;
+}
+
+// a cpu address typed into a cell's field moves the page to the one there
+void xBrkManager::chaStart(QString txt) {
+	int adr;
+	int page;
+	if (!brk_is_cell(curType())) return;
+	if (readAdr(txt, &adr, &page) && (page >= 0) && (page <= ui.brkBank->maximum()))
+		ui.brkBank->setValue(page);
+}
+
+// the address as it was understood, the way the condition check does it
+void xBrkManager::chaAdr() {
+	xBrkPoint brk;
+	QString err;
+	QString res;
+	QLineEdit* fld;
+	brk.type = curType();
+	if ((brk.type != BRK_CPUADR) && !brk_is_cell(brk.type)) {
+		ui.labAdrHint->setText(QString());
+		return;
+	}
+	if (ui.leStart->text().trimmed().isEmpty()) {
+		res.clear();
+	} else if (!readRange(&brk, &err, &fld)) {
+		res = err;
+	} else {
+		if (brk.type == BRK_CPUADR) {
+			res = gethexword(brk.adr);
+			if (brk.eadr > brk.adr) res.append("-").append(gethexword(brk.eadr));
+		} else {
+			res = QString("%0 %1:%2").arg(brk_cell_name(brk.type)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff));
+			if (brk.eadr > brk.adr) res.append("-").append(gethexword(brk.eadr & 0x3fff));
+			int cpu = memFindAdr(conf.zx->mem, brk_mem_type(brk.type), brk.adr);
+			res.append((cpu < 0) ? QString(", not mapped now") : QString(", at %0 now").arg(gethexword(cpu)));
+		}
+		QString lab = brk_label(brk.type, brk.adr);
+		if (!lab.isEmpty()) res.append(QString(", %0").arg(lab));
+	}
+	ui.labAdrHint->setStyleSheet(err.isEmpty() ? "" : "color:#ef2929");
+	ui.labAdrHint->setText(res);
+}
+
+#define EL_SPAN 64
+#define EL_CHG 32
+#define EL_FE 16
+#define EL_RD 8
+#define EL_WR 4
+#define EL_BNK 2
+#define EL_ADR 1
 
 void xBrkManager::setElements(int mask) {
 	ui.brkFetch->setVisible(mask & EL_FE);
 	ui.brkRead->setVisible(mask & EL_RD);
 	ui.brkWrite->setVisible(mask & EL_WR);
+	ui.labFlags->setVisible(mask & (EL_FE | EL_RD | EL_WR));
 	ui.brkOnChange->setVisible(mask & EL_CHG);
-	ui.labFlags->setVisible(mask & (EL_FE | EL_RD | EL_WR | EL_CHG));
 	ui.brkBank->setVisible(mask & EL_BNK);
 	ui.labBank->setVisible(mask & EL_BNK);
-	ui.leStartOffset->setVisible(mask & EL_SOF);
-	ui.labStartOff->setVisible(mask & EL_SOF);
-	ui.brkAdrHex->setVisible(mask & EL_SAD);
-	ui.labStartAbs->setVisible(mask & EL_SAD);
-	ui.leEndOffset->setVisible(mask & EL_EOF);
-	ui.labEndOff->setVisible(mask & EL_EOF);
-	ui.brkAdrEnd->setVisible(mask & EL_EAD);
-	ui.labEndAbs->setVisible(mask & EL_EAD);
-	ui.brkMaskHex->setVisible(mask & EL_MSK);
-	ui.labMask->setVisible(mask & EL_MSK);
-
-	ui.labValue->setVisible(mask & EL_VAL);
-	ui.labValMask->setVisible(mask & EL_VAL);
-	ui.leValue->setVisible(mask & EL_VAL);
-	ui.leValMask->setVisible(mask & EL_VAL);
-
-	ui.labCond->setVisible(mask & EL_CND);
-	ui.leCond->setVisible(mask & EL_CND);
-	ui.tbCondHelp->setVisible(mask & EL_CND);
-	ui.labCondErr->setVisible(mask & EL_CND);
+	ui.labStart->setVisible(mask & EL_ADR);
+	ui.leStart->setVisible(mask & EL_ADR);
+	ui.labTo->setVisible(mask & EL_ADR);
+	ui.leEnd->setVisible(mask & EL_ADR);
+	ui.labAdrHint->setVisible(mask & EL_ADR);
+	ui.labSpan->setVisible(mask & EL_SPAN);
+	ui.brkSpan->setVisible(mask & EL_SPAN);
+	ui.labSpanStat->setVisible(mask & EL_SPAN);
 }
 
-// max address depends on what the address means: a cpu/io one is limited by the
-// bus, a memory cell one by the size of ram/rom/slot
-
+// the pages there are of what the type watches
 void xBrkManager::setLimits(int t) {
 	Computer* comp = conf.zx;
 	int max;
 	switch (t) {
-		case BRK_CPUADR:
-		case BRK_IOPORT: max = comp->mem->busmask; break;
 		case BRK_MEMRAM: max = comp->mem->ramMask; break;
 		case BRK_MEMROM: max = comp->mem->romMask; break;
 		case BRK_MEMSLT: max = comp->slot->memMask; break;
-		default: max = 0xffffff; break;
+		default: max = 0x3fff; break;
 	}
-	if (max < 0xffff) max = 0xffff;
-	ui.brkAdrHex->setMax(max);
-	ui.brkAdrEnd->setMax(max);
-	ui.brkBank->setMaximum(max >> 14);
+	ui.brkBank->setMaximum((max > 0x3fff) ? (max >> 14) : 0);
 }
 
 void xBrkManager::chaType(int i) {
 	int t = ui.brkType->itemData(i).toInt();
 	setLimits(t);
 	chaCond(ui.leCond->text());		// the note about HITS depends on the type
+	bool port = (t == BRK_IOPORT);
+	ui.labStart->setText(port ? "Port" : "Address");
+	ui.labTo->setText(port ? "mask" : "to");
+	ui.leStart->setToolTip(port ? "The port number" : brk_is_cell(t) ? "Offset, CPU address, page:offset or label" : "An address or a label");
+	ui.leEnd->setToolTip(port ? "The bits of the port that must match" : "The last address of a range. Empty: one address");
+	ui.brkRead->setToolTip(port ? "Fires on IN" : "Fires on a read");
+	ui.brkWrite->setToolTip(port ? "Fires on OUT" : "Fires on a write");
 	switch (t) {
 		case BRK_IRQ:
-			setElements(EL_CND);
+			setElements(EL_SPAN);
 			break;
 		case BRK_COND:				// the condition and how it fires
-			setElements(EL_CND | EL_CHG);
+			setElements(EL_CHG);
 			break;
 		case BRK_IOPORT:
-			setElements(EL_CND | EL_RD | EL_WR | EL_SAD | EL_MSK);
+			setElements(EL_RD | EL_WR | EL_ADR | EL_SPAN);
 			break;
 		case BRK_CPUADR:
-			setElements(EL_CND | EL_FE | EL_RD | EL_WR | EL_SAD | EL_EAD);
+			setElements(EL_FE | EL_RD | EL_WR | EL_ADR | EL_SPAN);
 			break;
 		default:
-			setElements(EL_CND | EL_FE | EL_RD | EL_WR | EL_BNK | EL_SOF | EL_SAD | EL_EOF | EL_EAD);
+			setElements(EL_FE | EL_RD | EL_WR | EL_BNK | EL_ADR | EL_SPAN);
 			break;
 	}
+	chaAdr();
 }
 
 // check the expression as it is typed
@@ -492,70 +596,84 @@ void xBrkManager::condHelp() {
 	help_window(this, &helpWin, ":/res/help/cond-syntax.html", "Expression Syntax");
 }
 
+// an address the way a person wrote it: its label when it has one
+static QString brk_adr_text(int type, int abs) {
+	QString lab = brk_label(type, abs);
+	if (!lab.isEmpty()) return lab;
+	return gethexword((type == BRK_CPUADR) ? (abs & 0xffff) : (abs & 0x3fff));
+}
+
 void xBrkManager::edit(xBrkPoint* sbrk) {
 	if (sbrk) {
 		obrk = *sbrk;
 		obrk.off = 0;
 	} else {
-		obrk.type = BRK_MEMRAM;
-		obrk.adr = 0;
-		obrk.mask = 0;
-		obrk.eadr = 0;
-		obrk.off = 0;
-		obrk.fetch = 1;
-		obrk.read = 0;
-		obrk.write = 0;
-		obrk.off = 0;
-		obrk.temp = 0;
-		obrk.last = 0;
-		obrk.fired = 0;
-		obrk.onchg = 0;
-		obrk.log = 0;
-		obrk.hits = 0;
-		obrk.count = 0;
-		obrk.action = BRK_ACT_DBG;
-		obrk.cond.clear();
+		obrk = brkCreate(BRK_CPUADR, MEM_BRK_FETCH, 0, -1);
+		obrk.mask = 0xffff;
+		brk_set_cond(&obrk, "");
+		brk_set_logx(&obrk, "");
 	}
-	ui.leCond->setText(QString(obrk.cond.c_str()));
-	chaCond(ui.leCond->text());
-	ui.brkAction->setCurrentIndex(ui.brkAction->findData(obrk.action));
+	ui.brkType->blockSignals(true);
 	ui.brkType->setCurrentIndex(ui.brkType->findData(obrk.type));
+	ui.brkType->blockSignals(false);
+	setLimits(obrk.type);
+	ui.leCond->setText(QString(obrk.cond.c_str()));
+	ui.leLogExp->setText(QString::fromLocal8Bit(obrk.logx.c_str()));
+	ui.leLogExp->setEnabled(obrk.log);
+	ui.brkSpan->setCurrentIndex(ui.brkSpan->findData(obrk.span));
+	ui.labSpanStat->setText((sbrk && (obrk.span == BRK_SPAN_OPEN)) ? brk_span_text(&obrk) : QString());
+	ui.brkAction->setCurrentIndex(ui.brkAction->findData(obrk.action));
 	ui.brkFetch->setChecked(obrk.fetch);
 	ui.brkOnChange->setChecked(obrk.onchg);
 	ui.brkLog->setChecked(obrk.log);
 	ui.brkRead->setChecked(obrk.read);
 	ui.brkWrite->setChecked(obrk.write);
-	setLimits(obrk.type);
-	switch(obrk.type) {
-		case BRK_IOPORT:
-			ui.brkBank->setValue(0);
-			ui.brkAdrHex->setValue(obrk.adr);
-			ui.brkMaskHex->setValue(obrk.mask);
-			break;
-		case BRK_CPUADR:
-			ui.brkBank->setValue(0);
-			ui.brkAdrHex->setValue(obrk.adr);
-			ui.brkAdrEnd->setValue(obrk.eadr);
-			ui.brkMaskHex->setText("FFFF");
-			break;
-		default:
-			ui.brkBank->setValue(obrk.adr >> 14);
-			ui.brkAdrHex->setValue(obrk.adr);	// &0x3fff ?
-			ui.brkAdrEnd->setValue(obrk.eadr);
-			ui.brkMaskHex->setText("FFFF");
-			break;
+	ui.brkBank->setValue(brk_is_cell(obrk.type) ? (obrk.adr >> 14) : 0);
+	if (!sbrk) {
+		ui.leStart->clear();
+		ui.leEnd->clear();
+	} else if (obrk.type == BRK_IOPORT) {
+		ui.leStart->setText(gethexword(obrk.adr & 0xffff));
+		ui.leEnd->setText(gethexword(obrk.mask & 0xffff));
+	} else {
+		ui.leStart->setText(brk_adr_text(obrk.type, obrk.adr));
+		ui.leEnd->setText((obrk.eadr > obrk.adr) ? brk_adr_text(obrk.type, obrk.eadr) : QString());
 	}
 	chaType(ui.brkType->currentIndex());
 	show();
+	ui.leStart->setFocus();
+}
+
+// a field that is not understood keeps the dialog open, with the reason under it
+void xBrkManager::adrError(QLineEdit* fld, QString msg) {
+	ui.labAdrHint->setStyleSheet("color:#ef2929");
+	ui.labAdrHint->setText(msg);
+	fld->setFocus();
 }
 
 void xBrkManager::confirm() {
-	xBrkPoint brk;
+	xBrkPoint brk = obrk;		// what it has counted and measured stays
+	QString err;
+	QLineEdit* fld;
+	brk.type = curType();
+	if ((brk.type != BRK_IRQ) && (brk.type != BRK_COND) && !readRange(&brk, &err, &fld)) {
+		adrError(fld, err);
+		return;
+	}
 	QString cond = ui.leCond->text().trimmed();
 	if (!cond.isEmpty() && !xexpr_ok(xexpr_compile(cond.toLocal8Bit().data()))) {
 		ui.leCond->setFocus();
 		return;			// don't accept a broken condition
 	}
+	brk_set_logx(&brk, ui.leLogExp->text().trimmed().toLocal8Bit().data());
+	for (auto it = brk.logexp.begin(); it != brk.logexp.end(); it++) {
+		if (xexpr_ok(*it)) continue;
+		ui.labCondErr->setStyleSheet("color:#ef2929");
+		ui.labCondErr->setText(QString("Log: %0: %1").arg(it->src.c_str()).arg(it->err.c_str()));
+		ui.leLogExp->setFocus();
+		return;
+	}
+	brk.span = ui.brkSpan->itemData(ui.brkSpan->currentIndex()).toInt();
 	brk.off = 0;
 	brk.temp = 0;
 	brk.last = 0;
@@ -563,36 +681,27 @@ void xBrkManager::confirm() {
 	brk.onchg = ui.brkOnChange->isChecked() ? 1 : 0;
 	brk.log = ui.brkLog->isChecked() ? 1 : 0;
 	brk_set_cond(&brk, cond.toLocal8Bit().data());
-	brk.type = ui.brkType->itemData(ui.brkType->currentIndex()).toInt();
 	brk.fetch = ui.brkFetch->isChecked() ? 1 : 0;
 	brk.read = ui.brkRead->isChecked() ? 1 : 0;
 	brk.write = ui.brkWrite->isChecked() ? 1 : 0;
 	brk.action = ui.brkAction->itemData(ui.brkAction->currentIndex()).toInt();
-	brk.hits = obrk.hits;
-	brk.count = obrk.count;
-	int bnk = ui.brkBank->value();
 	switch (brk.type) {
-		case BRK_COND:			// no address, no flags
+		case BRK_COND:			// no address, no flags, no span
 			brk.fetch = 0;
 			brk.read = 0;
 			brk.write = 0;
 			brk.adr = 0;
 			brk.eadr = 0;
+			brk.span = BRK_SPAN_NONE;
 			break;
-		case BRK_CPUADR:
-			brk.adr = ui.brkAdrHex->getValue();
-			brk.eadr = ui.brkAdrEnd->getValue();
+		case BRK_IRQ:
+			brk.adr = 0;
+			brk.eadr = 0;
 			break;
 		case BRK_IOPORT:
-			brk.adr = ui.brkAdrHex->getValue();
-			brk.eadr = brk.adr;
-			break;
-		default:
-			brk.adr = ui.brkAdrHex->getValue() | (bnk << 14);
-			brk.eadr = ui.brkAdrEnd->getValue() | (bnk << 14);
+			brk.fetch = 0;
 			break;
 	}
-	brk.mask = ui.brkMaskHex->getValue();
 	emit completed(obrk, brk);
 	hide();
 }
@@ -607,6 +716,9 @@ xBreakWidget::xBreakWidget(QString i, QString t, QWidget* p):xDockWidget(i,t,p) 
 
 	ui.bpList->setContextMenuPolicy(Qt::ActionsContextMenu);
 	ui.bpList->addAction(ui.brkActReset);
+	actLog = new QAction("Open breakpoint log", this);
+	ui.bpList->addAction(actLog);
+	connect(actLog, &QAction::triggered, this, &xBreakWidget::openLog);
 
 	brkManager = new xBrkManager(this);
 	connect(brkManager, &xBrkManager::completed, this, &xBreakWidget::confirmBrk);
@@ -622,7 +734,15 @@ xBreakWidget::xBreakWidget(QString i, QString t, QWidget* p):xDockWidget(i,t,p) 
 }
 
 void xBreakWidget::draw() {
+	actLog->setEnabled(!brk_trace_file().isEmpty());
 	ui.bpList->update();
+}
+
+void xBreakWidget::openLog() {
+	QString path = brk_trace_file();
+	if (path.isEmpty()) return;
+	brk_trace_flush();
+	QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
 void xBreakWidget::addBrk() {
@@ -665,8 +785,7 @@ void xBreakWidget::resetBrk() {
 	QModelIndexList idxl = ui.bpList->selectionModel()->selectedRows();
 	QModelIndex idx;
 	foreach(idx, idxl) {
-		conf.brk.list[idx.row()].hits = 0;
-		conf.brk.list[idx.row()].count = 0;
+		brk_reset_stats(&conf.brk.list[idx.row()]);
 	}
 	ui.bpList->update();
 	emit updated();		// fill disasm/dump
