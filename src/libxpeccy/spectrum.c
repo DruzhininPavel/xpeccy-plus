@@ -8,6 +8,7 @@
 #include "filetypes/filetypes.h"
 #include "cpu/Z80/z80.h"
 #include "input/inview.h"
+#include "xreplay.h"
 
 static int nsTime;
 static int res2;
@@ -409,9 +410,10 @@ int iord(int port, void* ptr) {
 		comp->brkev.in = port;
 		comp->brkev.val = res & 0xff;
 	}
+	if (xreplay_mode) res = xreplay_in(res);
 	if (comp->pwbus) pwatch_hit(comp, port, res);
 	if (comp->rzx.rec.on) rzx_rec_in(comp, res);
-	if (inview.on) iview_in(&inview, comp, port, res);
+	if (inview.on && (xreplay_mode != 2)) iview_in(&inview, comp, port, res);
 	return res;
 }
 
@@ -979,6 +981,7 @@ static int comp_step_end(Computer* comp, int unsynced, int t) {
 	if (comp->vid->newFrame) {
 		comp->vid->newFrame = 0;
 		comp->flgFRM = 1;
+		if (xreplay_on) xreplay_frame(comp);
 	}
 	return nsTime;
 }

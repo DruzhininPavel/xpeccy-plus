@@ -19,6 +19,59 @@
 
 #include "../bench.h"
 #include "filetypes/filetypes.h"
+#include "xreplay.h"
+
+static unsigned fnv(const unsigned char* p, size_t n) {
+	unsigned h = 2166136261u;
+	while (n--) h = (h ^ *p++) * 16777619u;
+	return h;
+}
+
+static void state_line(Computer* comp, const char* tag) {
+	printf("%s: ram %08X pc %04X sp %04X af %04X t %lld\n", tag, fnv(comp->mem->ramData, MEM_4M),
+		comp->cpu->regPC, comp->cpu->regSP, comp->cpu->regAF, comp->tickTotal);
+}
+
+// REDRAW="frames,t,mask,dbg,ref[,steps,poke]": run whole frames, then on to T t
+// of the next one, and stop there as the debugger (dbg=1) or a pause (dbg=0) does;
+// in the debugger, step on steps instructions. Then hide the mask and redraw
+// (xreplay), or with ref=1 print what a run that had the mask hidden from the
+// start shows. The pictures and the state of the two must match. poke=1 changes a
+// byte of RAM before the redraw, which has to make it refuse.
+static void redraw_test(Computer* comp, const char* spec) {
+	int frames = 2, t = 0, mask = 0, dbg = 0, ref = 0, steps = 0, poke = 0;
+	sscanf(spec, "%d,%d,%i,%d,%d,%d,%d", &frames, &t, &mask, &dbg, &ref, &steps, &poke);
+	xreplay_on = !ref;
+	if (ref) comp->vid->tsconf.hide = mask;
+	int fstart = comp->vid->fcnt;
+	while (comp->vid->fcnt - fstart < frames)
+		compExec(comp);
+	while (comp->frmtCount < t)
+		compExec(comp);
+	if (dbg) {		// as DebugWin::start()
+		vid_dark_tail(comp->vid);
+		comp->vid->debug = 1;
+		comp->flgDBG = 1;
+		while (steps-- > 0)
+			compExec(comp);
+	}
+	if (poke) comp->mem->ramData[0x3fff] ^= 0xff;
+	if (!ref) {
+		state_line(comp, "BEFORE");
+		comp->vid->tsconf.hide = mask;
+		int done = xreplay_redraw(comp);
+		printf("REDRAW: %s\n", done ? "done" : "refused");
+		if (!done) printf("WHY  : %s\n", xreplay_why());
+	}
+	state_line(comp, "STATE");
+	size_t drawn = comp->vid->ray.ptr - scrimg;
+	// what is on screen: the debugger shows scrimg, a pause the last whole frame
+	printf("PIC  : ray %d,%d scr-drawn %08X", comp->vid->ray.x, comp->vid->ray.y, fnv(scrimg, drawn));
+	if (dbg) printf(" scr %08X\n", fnv(scrimg, bufSize));
+	else printf(" buf %08X\n", fnv(bufimg, bufSize));
+	const char* dump = getenv("DUMP");
+	if (dump) dump_ppm(comp, dump);
+}
 
 int main(int argc, char** argv) {
 	if (argc < 2) {
@@ -37,6 +90,7 @@ int main(int argc, char** argv) {
 	vLayout lay = {{448, 320}, {52, 48}, {88, 32}, {256, 192}, {0, 0}, 64};
 	comp_set_layout(comp, &lay);
 	bytesPerLine = comp->vid->full.x * 8;	// as emulwin.cpp sets it: a whole raster row per image row
+	bufSize = bytesPerLine * comp->vid->full.y;
 	memSetSize(comp->mem, MEM_4M, MEM_512K);
 	if (!load_rom(comp, root ? root : ".", "tsconf.rom"))
 		return 1;
@@ -72,6 +126,12 @@ int main(int argc, char** argv) {
 
 	const char* hide = getenv("HIDE");
 	if (hide) comp->vid->tsconf.hide = (unsigned char)strtol(hide, NULL, 0);
+	const char* redraw = getenv("REDRAW");
+	if (redraw) {
+		redraw_test(comp, redraw);
+		compDestroy(comp);
+		return 0;
+	}
 	int fstart = comp->vid->fcnt;
 	while ((mbox_rd(comp, MBOX) != 0xaa) && (comp->vid->fcnt - fstart < frames))
 		compExec(comp);
@@ -82,12 +142,7 @@ int main(int argc, char** argv) {
 	probe(comp, "PIX", "PIX  ", 8);
 	probe(comp, "PIXH", "PIXH ", 4);
 	printf("BRD  : %02X\n", comp->vid->brdcol);
-	if (getenv("STATE")) {
-		unsigned h = 2166136261u;
-		for (int j = 0; j < MEM_4M; j++) h = (h ^ comp->mem->ramData[j]) * 16777619u;
-		printf("STATE: ram %08X pc %04X sp %04X af %04X t %lld\n", h, comp->cpu->regPC,
-			comp->cpu->regSP, comp->cpu->regAF, comp->tickTotal);
-	}
+	if (getenv("STATE")) state_line(comp, "STATE");
 	const char* dump = getenv("DUMP");
 	if (dump) {
 		dump_ppm(comp, dump);

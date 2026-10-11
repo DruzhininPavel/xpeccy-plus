@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 // tsconf sprites & tiles
 
@@ -15,10 +16,38 @@ static int tile;
 static int sadr;	// adr in sprites dsc
 static int xadr;	// = pos with XFlip
 static unsigned char* tsl;	// the line buffer the tiles and sprites go to
-static unsigned char tslVoid[0x200];	// where a hidden layer goes: drawn, never shown
 
-static unsigned char* ts_layer_buf(Video* vid, int bit) {
-	return (vid->tsconf.hide & bit) ? tslVoid : vid->tsconf.tsNext;
+// The layers in use over each other in their order, S0 at the bottom. A layer's
+// dot is 0 where it is transparent. Eight dots at a time: a byte of the mask is
+// FF where the layer's dot is not 0.
+static void ts_compose(unsigned char* dst, unsigned char lay[5][0x200], int use) {
+	int i = 0;
+	while ((i < 5) && !(use & (1 << i))) i++;
+	if (i == 5) {
+		memset(dst, 0x00, 0x200);
+		return;
+	}
+	memcpy(dst, lay[i], 0x200);
+	for (i++; i < 5; i++) {
+		if (!(use & (1 << i))) continue;
+		const unsigned char* src = lay[i];
+		for (int x = 0; x < 0x200; x += 8) {
+			uint64_t s, d;
+			memcpy(&s, src + x, 8);
+			if (!s) continue;
+			memcpy(&d, dst + x, 8);
+			uint64_t m = (((s & 0x7f7f7f7f7f7f7f7fULL) + 0x7f7f7f7f7f7f7f7fULL) | s) & 0x8080808080808080ULL;
+			m = (m >> 7) * 0xff;
+			d = (d & ~m) | (s & m);
+			memcpy(dst + x, &d, 8);
+		}
+	}
+}
+
+void tsl_recompose(Video* vid) {
+	int n = vid->tsconf.layNext;
+	ts_compose(vid->line, vid->tsconf.lay[n ^ 1], vid->tsconf.layUsed[n ^ 1] & ~vid->tsconf.hide);
+	ts_compose(vid->tsconf.tsNext, vid->tsconf.lay[n], vid->tsconf.layUsed[n] & ~vid->tsconf.hide);
 }
 
 // The tile map is read 16 lines ahead of the line it is for, 8 entries a line for each layer,
@@ -231,6 +260,7 @@ int vidTSRender(Video* vid) {
 	int res = 0;
 // this line's tiles and sprites were drawn during the line before
 	memcpy(vid->line, vid->tsconf.tsNext, 0x200);
+	vid->tsconf.layNext ^= 1;			// and so were its layers
 // the bitmap has a window of its own
 	int gfx = (vid->ray.y >= vid->tsconf.yPos) && (vid->ray.y < vid->tsconf.yPos + vid->scrsize.y);
 	memset(vid->linb,0x00,0x200);
@@ -253,24 +283,36 @@ int vidTSRender(Video* vid) {
 	int ln = (vid->ray.y + 1 - vid->tsconf.tsYPos + vid->full.y) % vid->full.y;
 	if (ln >= vid->full.y - 16) ln -= vid->full.y;
 	res += vidTSLReadMap(vid, ln);
-	memset(vid->tsconf.tsNext, 0x00, 0x200);
-	if ((ln < 0) || (ln >= vid->tsconf.tsSize.y)) return res;
+	// the set the next line goes to: only what was drawn into it has to be cleared
+	int n = vid->tsconf.layNext;
+	unsigned char (*lay)[0x200] = vid->tsconf.lay[n];
+	for (int i = 0; i < 5; i++)
+		if (vid->tsconf.layUsed[n] & (1 << i)) memset(lay[i], 0x00, 0x200);
+	vid->tsconf.layUsed[n] = 0;
+	if ((ln < 0) || (ln >= vid->tsconf.tsSize.y)) {
+		memset(vid->tsconf.tsNext, 0x00, 0x200);
+		return res;
+	}
 	sadr = 0x000;					// adr inside SFILE
+	int used = 0;					// a sprite layer with no sprite on the line stays clear
+	int r;
 // S0
-	tsl = ts_layer_buf(vid, TSL_HIDE_S0);
-	if (vid->tsconf.tconfig & 0x80) res += vidTSLRenderSprites(vid, ln);
+	tsl = lay[0];
+	if (vid->tsconf.tconfig & 0x80) {r = vidTSLRenderSprites(vid, ln); res += r; if (r) used |= TSL_HIDE_S0;}
 // T0
-	tsl = ts_layer_buf(vid, TSL_HIDE_T0);
-	if (vid->tsconf.tconfig & 0x20) res += vidTSLRenderTiles(vid,ln,0,vid->tsconf.T0YOffset,vid->tsconf.T0XOffset,vid->tsconf.T0GPage,vid->tsconf.T0Pal76);
+	tsl = lay[1];
+	if (vid->tsconf.tconfig & 0x20) {res += vidTSLRenderTiles(vid,ln,0,vid->tsconf.T0YOffset,vid->tsconf.T0XOffset,vid->tsconf.T0GPage,vid->tsconf.T0Pal76); used |= TSL_HIDE_T0;}
 // S1
-	tsl = ts_layer_buf(vid, TSL_HIDE_S1);
-	if (vid->tsconf.tconfig & 0x80) res += vidTSLRenderSprites(vid, ln);
+	tsl = lay[2];
+	if (vid->tsconf.tconfig & 0x80) {r = vidTSLRenderSprites(vid, ln); res += r; if (r) used |= TSL_HIDE_S1;}
 // T1
-	tsl = ts_layer_buf(vid, TSL_HIDE_T1);
-	if (vid->tsconf.tconfig & 0x40) res += vidTSLRenderTiles(vid,ln,1,vid->tsconf.T1YOffset,vid->tsconf.T1XOffset,vid->tsconf.T1GPage,vid->tsconf.T1Pal76);
+	tsl = lay[3];
+	if (vid->tsconf.tconfig & 0x40) {res += vidTSLRenderTiles(vid,ln,1,vid->tsconf.T1YOffset,vid->tsconf.T1XOffset,vid->tsconf.T1GPage,vid->tsconf.T1Pal76); used |= TSL_HIDE_T1;}
 // S2
-	tsl = ts_layer_buf(vid, TSL_HIDE_S2);
-	if (vid->tsconf.tconfig & 0x80) res += vidTSLRenderSprites(vid, ln);
+	tsl = lay[4];
+	if (vid->tsconf.tconfig & 0x80) {r = vidTSLRenderSprites(vid, ln); res += r; if (r) used |= TSL_HIDE_S2;}
+	vid->tsconf.layUsed[n] = used;
+	ts_compose(vid->tsconf.tsNext, lay, used & ~vid->tsconf.hide);
 	return res;
 }
 

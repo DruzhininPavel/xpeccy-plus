@@ -66,3 +66,17 @@ run t15_tiles_y4     t15_tiles_y4.bin     12  "PIX=26,13 26,20 42,1"
 run t16_sprreuse     t16_sprreuse.bin     4   "PIX=104,7 104,8 104,9 204,7 204,8 204,9"
 run t17_text_m0      t17_text_m0.bin      4   "PIX=40,40" "PIXH=104,48 105,48 106,48 107,48 108,48 136,48 137,48"
 run t17_text_m1      t17_text_m1.bin      4   "PIX=40,40" "PIXH=104,48 105,48 106,48 107,48 108,48 136,48 137,48"
+
+# The debugger's layer switches. Hidden layers change the picture only (STATE equal to
+# the run with nothing hidden); a redraw while stopped gives the picture and the state
+# of a run that had the layer hidden from the start (each *_ref beside its case).
+run h01_shown        t02_lineint14.bin    300 STATE=1
+run h01_hidden       t02_lineint14.bin    300 STATE=1 HIDE=0x3f
+run h02_shown        t10_layers_m0.bin    4   STATE=1 "PIX=54,60 58,60 62,60 66,60"
+run h02_hidden_s0    t10_layers_m0.bin    4   STATE=1 HIDE=0x01 "PIX=54,60 58,60 62,60 66,60"
+run h02_hidden_gfx   t10_layers_m0.bin    4   STATE=1 HIDE=0x20 "PIX=54,60 58,60 62,60 66,60"
+run r01_pause        t16_sprreuse.bin     0   REDRAW=3,70000,0x01,0,0
+run r01_pause_ref    t16_sprreuse.bin     0   REDRAW=3,70000,0x01,0,1
+run r02_debugger     t15_tiles_y4.bin     0   REDRAW=3,70000,0x3f,1,0,20000,0
+run r02_debugger_ref t15_tiles_y4.bin     0   REDRAW=3,70000,0x3f,1,1,20000,0
+run r03_poke         t10_layers_m0.bin    0   REDRAW=3,30000,0x01,1,0,0,1

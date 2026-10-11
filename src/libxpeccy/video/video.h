@@ -62,6 +62,15 @@ extern int noflicAhead;		// the adaptive antiflicker looks at frames run ahead
 
 extern unsigned char* scrimg;
 extern unsigned char* bufimg;
+// which buffer is which, for a caller that has to undo the swaps of a run (xreplay)
+typedef struct {
+	unsigned char* scr;
+	unsigned char* buf;
+	int cur;
+	int swaps;
+} vBufState;
+void vid_buf_get(vBufState*);
+void vid_buf_set(const vBufState*);
 extern unsigned char pscr[];
 
 void vid_dot_full(Video*, unsigned char);
@@ -216,6 +225,12 @@ struct Video {
 			unsigned short mask;	// TSL_LAT_* of the fields waiting
 		} lat;
 		unsigned char hide;		// TSL_HIDE_*: layers the debugger keeps out of the picture
+		// tsNext and line layer by layer, S0 T0 S1 T1 S2: the two are put together
+		// from these, so a layer hidden after they were drawn can still be left out.
+		// Two sets that change places every line; lay[layNext] is the next line's
+		unsigned char lay[2][5][0x200];
+		unsigned char layUsed[2];	// TSL_HIDE_* bits of the layers drawn into each set
+		unsigned char layNext;
 		unsigned char cram[0x200];	// pal = colram?
 		unsigned char sfile[0x200];	// sprites = ram?
 //		int dmabytes;
@@ -336,6 +351,8 @@ void vid_fnt_load(Video*, const char*);
 void vid_fnt_del(Video*);
 
 void tslUpdatePorts(Video*);
+// put this line's and the next one's tiles and sprites together again, after hide changed
+void tsl_recompose(Video*);
 
 // TSConf registers the controller takes at the start of a line, not at once
 enum {
