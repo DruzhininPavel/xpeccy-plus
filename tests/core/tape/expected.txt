@@ -22,7 +22,7 @@ blocks: 7
     head: 2168x3223 667x1 735x1 1710x16 855x28 1710x4 855x10 1710x4 ...
  2: sig=2559 pilot=2000 s1=600 s2=700 l0=500 l1=1000 data@1502 time=1 hdr=0 bytes=1 stop=0 stop48=0 size=64 text='xpeccy-plus tape test' pulses=7BC59935
     head: 2000x1500 600x1 700x1 1000x16 500x26 1000x2 500x2 1000x2 ...
- 3: sig=460 pilot=2000 s1=600 s2=700 l0=500 l1=1000 data@-1 time=1 hdr=0 bytes=0 stop=0 stop48=0 size=0 text='xpeccy-plus tape test' pulses=4D527025
+ 3: sig=460 pilot=1500 s1=900 s2=1000 l0=600 l1=1200 data@203 time=1 hdr=1 bytes=1 stop=0 stop48=0 size=14 text='xpeccy-plus tape test' pulses=4D527025
     head: 1500x200 800x1 900x1 1000x1 600x24 1200x2 600x2 1200x4 ...
  4: sig=3642 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=2 hdr=0 bytes=1 stop=0 stop48=0 size=24 text='loop' pulses=277E39CF
     head: 2168x3223 667x1 735x1 1710x16 855x24 1710x2 855x4 1710x2 ...
@@ -34,6 +34,7 @@ blocks: 7
  0: 19 bytes 0F4398DF as written
  1: 66 bytes B0BA3983 as written
  2: 66 bytes DB238A93 as written
+ 3: 16 bytes 70C13C45 as written
  4: 26 bytes 393463EB as written
  5: 26 bytes 393463EB as written
  6: 34 bytes 6562600B as written
