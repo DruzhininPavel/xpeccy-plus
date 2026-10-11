@@ -14,7 +14,8 @@
 //
 // Environment: PIX="x,y ..." prints the palette index of dots of the last whole
 // frame, PIXH the same in half dots, DUMP=f.ppm writes the frame, TSU=1 prints
-// the TSU state.
+// the TSU state, HIDE=mask hides layers (TSL_HIDE_*), STATE=1 prints a hash of
+// the RAM, the CPU registers and the T count.
 
 #include "../bench.h"
 #include "filetypes/filetypes.h"
@@ -69,6 +70,8 @@ int main(int argc, char** argv) {
 		cpu_start(comp);
 	}
 
+	const char* hide = getenv("HIDE");
+	if (hide) comp->vid->tsconf.hide = (unsigned char)strtol(hide, NULL, 0);
 	int fstart = comp->vid->fcnt;
 	while ((mbox_rd(comp, MBOX) != 0xaa) && (comp->vid->fcnt - fstart < frames))
 		compExec(comp);
@@ -79,6 +82,12 @@ int main(int argc, char** argv) {
 	probe(comp, "PIX", "PIX  ", 8);
 	probe(comp, "PIXH", "PIXH ", 4);
 	printf("BRD  : %02X\n", comp->vid->brdcol);
+	if (getenv("STATE")) {
+		unsigned h = 2166136261u;
+		for (int j = 0; j < MEM_4M; j++) h = (h ^ comp->mem->ramData[j]) * 16777619u;
+		printf("STATE: ram %08X pc %04X sp %04X af %04X t %lld\n", h, comp->cpu->regPC,
+			comp->cpu->regSP, comp->cpu->regAF, comp->tickTotal);
+	}
 	const char* dump = getenv("DUMP");
 	if (dump) {
 		dump_ppm(comp, dump);

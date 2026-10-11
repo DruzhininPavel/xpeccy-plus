@@ -239,8 +239,9 @@ int xstate_load(xState* st, Computer* comp) {
 		return 0;
 	}
 	// nodraw is set from outside the machine (fast loading holds it), so
-	// whoever holds the machine keeps it
+	// whoever holds the machine keeps it; the layers the debugger hides too
 	int nodraw = comp->vid->nodraw;
+	unsigned char hide = comp->vid->tsconf.hide;
 	// A snapshot from under another playback, or none: its recording's file
 	// is closed, so the playback is the live one's - which the load ends.
 	size_t rzxLen = offsetof(Computer, rzx.frm.data) - offsetof(Computer, rzx);
@@ -254,6 +255,7 @@ int xstate_load(xState* st, Computer* comp) {
 		src += st->m.chunk[i].size;
 	}
 	comp->vid->nodraw = nodraw;
+	comp->vid->tsconf.hide = hide;
 	if (comp->ts) ts_state_restore(comp->ts);
 	// The image buffers are outside the snapshot and may have been swapped
 	// since, so the ray goes back by its offset into whichever buffer is

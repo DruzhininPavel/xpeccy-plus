@@ -15,6 +15,11 @@ static int tile;
 static int sadr;	// adr in sprites dsc
 static int xadr;	// = pos with XFlip
 static unsigned char* tsl;	// the line buffer the tiles and sprites go to
+static unsigned char tslVoid[0x200];	// where a hidden layer goes: drawn, never shown
+
+static unsigned char* ts_layer_buf(Video* vid, int bit) {
+	return (vid->tsconf.hide & bit) ? tslVoid : vid->tsconf.tsNext;
+}
 
 // The tile map is read 16 lines ahead of the line it is for, 8 entries a line for each layer,
 // into 4 row buffers: the coarse Y offset and TMPage count when a row is read, the fine
@@ -248,19 +253,23 @@ int vidTSRender(Video* vid) {
 	int ln = (vid->ray.y + 1 - vid->tsconf.tsYPos + vid->full.y) % vid->full.y;
 	if (ln >= vid->full.y - 16) ln -= vid->full.y;
 	res += vidTSLReadMap(vid, ln);
-	tsl = vid->tsconf.tsNext;
-	memset(tsl, 0x00, 0x200);
+	memset(vid->tsconf.tsNext, 0x00, 0x200);
 	if ((ln < 0) || (ln >= vid->tsconf.tsSize.y)) return res;
 	sadr = 0x000;					// adr inside SFILE
 // S0
+	tsl = ts_layer_buf(vid, TSL_HIDE_S0);
 	if (vid->tsconf.tconfig & 0x80) res += vidTSLRenderSprites(vid, ln);
 // T0
+	tsl = ts_layer_buf(vid, TSL_HIDE_T0);
 	if (vid->tsconf.tconfig & 0x20) res += vidTSLRenderTiles(vid,ln,0,vid->tsconf.T0YOffset,vid->tsconf.T0XOffset,vid->tsconf.T0GPage,vid->tsconf.T0Pal76);
 // S1
+	tsl = ts_layer_buf(vid, TSL_HIDE_S1);
 	if (vid->tsconf.tconfig & 0x80) res += vidTSLRenderSprites(vid, ln);
 // T1
+	tsl = ts_layer_buf(vid, TSL_HIDE_T1);
 	if (vid->tsconf.tconfig & 0x40) res += vidTSLRenderTiles(vid,ln,1,vid->tsconf.T1YOffset,vid->tsconf.T1XOffset,vid->tsconf.T1GPage,vid->tsconf.T1Pal76);
 // S2
+	tsl = ts_layer_buf(vid, TSL_HIDE_S2);
 	if (vid->tsconf.tconfig & 0x80) res += vidTSLRenderSprites(vid, ln);
 	return res;
 }
@@ -337,6 +346,7 @@ void vts_frame(Video* vid) {
 // vis says it is not a hole, which is what GFXOVR (VConfig b3) puts it over the tiles on.
 // Only the tile/sprite layer is transparent without it: bitmap colour 0 is a colour.
 static int ts_mix(Video* vid, int gfx, int vis) {
+	if (vid->tsconf.hide & TSL_HIDE_GFX) gfx = -1;		// as outside its window
 	int tx = vid->ray.x - vid->tsconf.tsXPos;
 	int ty = vid->ray.y - vid->tsconf.tsYPos;
 	int ts = -1;

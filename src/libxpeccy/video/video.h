@@ -215,6 +215,7 @@ struct Video {
 			unsigned char vconf, vpage, gxl, gxh, palsel, t0xl, t0xh, t1xl, t1xh, t0g, t1g, gyl, gyh;
 			unsigned short mask;	// TSL_LAT_* of the fields waiting
 		} lat;
+		unsigned char hide;		// TSL_HIDE_*: layers the debugger keeps out of the picture
 		unsigned char cram[0x200];	// pal = colram?
 		unsigned char sfile[0x200];	// sprites = ram?
 //		int dmabytes;
@@ -351,6 +352,17 @@ enum {
 	TSL_LAT_T1G = 1 << 10,
 	TSL_LAT_GYL = 1 << 11,		// GYOffs itself is at once, but the row counter reloads
 	TSL_LAT_GYH = 1 << 12		// from it only at the next line start
+};
+
+// Layers kept out of the picture (debugger). Only the pixels go: a hidden layer is
+// still fetched, so the DRAM load and everything timed by it stay as they were
+enum {
+	TSL_HIDE_S0 = 1 << 0,
+	TSL_HIDE_T0 = 1 << 1,
+	TSL_HIDE_S1 = 1 << 2,
+	TSL_HIDE_T1 = 1 << 3,
+	TSL_HIDE_S2 = 1 << 4,
+	TSL_HIDE_GFX = 1 << 5
 };
 
 #ifdef __cplusplus
