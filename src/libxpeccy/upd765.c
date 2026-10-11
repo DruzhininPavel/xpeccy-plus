@@ -65,6 +65,8 @@ void uInt(FDC* fdc) {
 }
 
 void uResp(FDC* fdc, int len, int ie) {
+	// EXM drops with the result posted, or a loop polling the MSR reads ST0 as data
+	fdc->irq = 0;
 	fdc->resPos = 0;
 	fdc->resCnt = len;
 	fdc->dir = 1;
