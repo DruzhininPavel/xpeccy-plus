@@ -6,6 +6,7 @@
 #include <QString>
 #include <QDir>
 #include <QFile>
+#include <QMutex>
 
 #include "xcore.h"
 #include "sound.h"
@@ -145,6 +146,36 @@ void setFlagBit(bool cond, int* val, int mask) {
 	} else {
 		*val &= ~mask;
 	}
+}
+
+// The folder is kept as UTF-8. One that is gone - or a driveless one an older
+// build wrote, run from another drive - is not a reason to lose the shot.
+QString shot_dir() {
+	QString dir = QString::fromStdString(conf.scrShot.dir);
+	if (!dir.isEmpty() && QDir(dir).exists()) return dir;
+	// once per folder: a screenshot breakpoint may hit every frame, and it
+	// comes from the emulation thread
+	static QMutex mx;
+	static bool told = false;
+	static std::string toldDir;
+	QMutexLocker lock(&mx);
+	if (!told || (toldDir != conf.scrShot.dir)) {
+		told = true;
+		toldDir = conf.scrShot.dir;
+		xlog(XLG_APP, XLL_WARN, "no screenshot folder '%s', saving to home", conf.scrShot.dir.c_str());
+	}
+	return QDir::homePath();
+}
+
+// a number typed by the user: #, $ and 0x are hex, everything else decimal -
+// a leading zero is not octal
+int str_num(QString str, bool* ok) {
+	str = str.trimmed();
+	if (str.startsWith("#") || str.startsWith("$"))
+		return str.mid(1).toInt(ok, 16);
+	if (str.startsWith("0x", Qt::CaseInsensitive))
+		return str.mid(2).toInt(ok, 16);
+	return str.toInt(ok, 10);
 }
 
 bool str2bool(std::string v) {

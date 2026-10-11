@@ -238,7 +238,7 @@ static void load_key_file() {
 	}
 	std::string line;
 	std::vector<std::string> vec;
-	char keys[8];
+	char keys[KEYSEQ_MAXLEN];
 	int rlen;
 	unsigned int i;
 	while (!file.atEnd()) {
@@ -247,7 +247,7 @@ static void load_key_file() {
 			ba.chop(1);
 		line = std::string(ba.data());
 		vec = splitstr(line,"\t");
-		memset(keys, 0, 8);
+		memset(keys, 0, sizeof(keys));
 		rlen = 0;
 		if (vec.size() > 0) {
 			for(i = 1; (rlen < KEYSEQ_MAXLEN) && (i < vec.size()); i++) {
@@ -469,7 +469,7 @@ static xShortcut short_tab[] = {
 	{SCG_MAIN, XCUT_SIZEX5, "key.size.x5", "Size x5", {}},
 	{SCG_MAIN, XCUT_SIZEX6, "key.size.x6", "Size x6", {}},
 	{SCG_MAIN, XCUT_FULLSCR, "key.fullscreen", "Fullscreen", {}},
-	{SCG_MAIN, XCUT_RATIO, "key.ratio", "Keep Aspect Ratio", {}},
+	{SCG_MAIN, XCUT_RATIO, "key.ratio", "Keep Aspect Ratio in Fullscreen", {}},
 	{SCG_MAIN, XCUT_NOFLICK, "key.noflick", "Anti-flicker", {}},
 	{SCG_MAIN, XCUT_NMI, "key.nmi", "NMI", {}},
 	{SCG_MAIN | SCG_DEBUGA, XCUT_RESET, "key.reset", "Reset", {}},
@@ -896,6 +896,12 @@ xShortcut* find_shortcut_id(int id) {
 	while ((short_tab[i].id != id) && (short_tab[i].id >= 0))
 		i++;
 	return (short_tab[i].id < 0) ? NULL : &short_tab[i];
+}
+
+// the key a hotkey is on, as the menus write it; empty when it has none
+QString shortcut_key(int id) {
+	xShortcut* sc = find_shortcut_id(id);
+	return (sc && !sc->seq[0].isEmpty()) ? sc->seq[0].toString(QKeySequence::NativeText) : QString();
 }
 
 xShortcut* find_shortcut_name(const char* name) {

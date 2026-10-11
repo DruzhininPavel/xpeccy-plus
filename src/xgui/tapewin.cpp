@@ -81,7 +81,7 @@ void TapeWin::upd(Tape* tape) {
 	ui.cbFast->setChecked(conf.tape.fast);
 	ui.cbRewind->setChecked(conf.tape.rewind);
 	ui.playBut->setEnabled(got && !tape->on);
-	ui.recBut->setEnabled(got && !tape->on);
+	ui.recBut->setEnabled(!tape->on);		// an empty deck takes a recording too
 	ui.stopBut->setEnabled(tape_running(tape));
 	ui.tbRewind->setEnabled(got && !tape->on);
 	ui.tbEject->setEnabled(got && !tape->on);

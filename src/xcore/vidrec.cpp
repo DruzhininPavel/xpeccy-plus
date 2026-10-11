@@ -589,7 +589,7 @@ bool vrec_auto_parse(const QString& str, int* op, int* adr) {
 		}
 	}
 	bool ok;
-	int a = unreal_num(txt, &ok);
+	int a = str_num(txt, &ok);
 	if (!ok || (a < 0) || (a > 0xffff)) return false;
 	*op = o;
 	*adr = a;

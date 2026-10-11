@@ -1683,10 +1683,10 @@ void MainWin::screenShot() {
 		case SCR_SCR: fext = "scr"; break;
 		case SCR_HOB: fext = "$C"; break;
 	}
-	QString fnams = QString(conf.scrShot.dir.c_str()).append(SLASH);
+	QString fnams = shot_dir().append(SLASH);
 	fnams.append(QString("xpeccy_%0.%1").arg(QTime::currentTime().toString("HHmmss_zzz")).arg(fext.c_str()));
-	std::string fnam(fnams.toUtf8().data());
-	std::ofstream file;
+	QFile file(fnams);
+	bool saved = false;
 	Video* vid = comp->vid;
 	// the shown frame, taken out of the whole raster. The screen sits in the
 	// middle of it, so there is no lopsided border left to trim.
@@ -1696,14 +1696,13 @@ void MainWin::screenShot() {
 	char* sptr = (char*)(comp->mem->ramData + (comp->vid->vidPage << 14));
 	switch (frm) {
 		case SCR_HOB:
-			file.open(fnam.c_str(),std::ios::binary);
-			file.write((char*)hobHead,17);
-			file.write(sptr, 0x1b00);
+			if (!file.open(QFile::WriteOnly)) break;
+			saved = (file.write((char*)hobHead, 17) == 17) && (file.write(sptr, 0x1b00) == 0x1b00);
 			file.close();
 			break;
 		case SCR_SCR:
-			file.open(fnam.c_str(),std::ios::binary);
-			file.write(sptr, 0x1b00);
+			if (!file.open(QFile::WriteOnly)) break;
+			saved = (file.write(sptr, 0x1b00) == 0x1b00);
 			file.close();
 			break;
 		case SCR_BMP:
@@ -1715,10 +1714,11 @@ void MainWin::screenShot() {
 					vid->scrn.x * 2, vid->scrn.y);
 			img = img.scaled(img.width() / 2 * conf.vid.scale * comp->hw->xscale,
 					img.height() * conf.vid.scale);
-			img.save(QString(fnam.c_str()),fext.c_str());
+			saved = img.save(fnams, fext.c_str());
 			break;
 	}
-	setMessage(" screenshot saved ");
+	if (!saved) xlog(XLG_APP, XLL_WARN, "can't save screenshot %s", fnams.toLocal8Bit().data());
+	setMessage(saved ? " screenshot saved " : " can't save screenshot ");
 }
 
 // video drawing
@@ -1773,7 +1773,7 @@ void MainWin::updateSatellites() {
 	emit s_tape_progress(comp->tape);
 	// unconditional: the window hides itself when it is not up, and it is what
 	// keeps the buttons and the block mark agreeing with the tape however the
-	// tape was moved - a rewind from the Tape map page included
+	// tape was moved
 	emit s_tape_upd(comp->tape);
 	if (comp->tape->blkChange || comp->tape->newBlock) {
 		emit s_tape_blk(comp->tape);
@@ -1976,7 +1976,7 @@ QAction* MainWin::cutAction(QMenu* menu, const QString& name, int id, const QStr
 // once, when an old config had its keys moved to the presets
 void MainWin::hotkeysNote() {
 	if (!hotkeys_migrated()) return;
-	QString key = cutKey(XCUT_HOTKEYS);
+	QString key = shortcut_key(XCUT_HOTKEYS);
 	setMessage(key.isEmpty() ? QString(" new hotkeys: see Options ") : QString(" new hotkeys: %0 lists them ").arg(key), 8.0);
 }
 
@@ -1991,15 +1991,9 @@ void MainWin::contextMenuEvent(QContextMenuEvent* ev) {
 }
 
 // the keys as they are now, after Options too
-// the key a hotkey is on, as the menus write it; empty when it has none
-QString MainWin::cutKey(int id) {
-	xShortcut* sc = find_shortcut_id(id);
-	return (sc && !sc->seq[0].isEmpty()) ? sc->seq[0].toString(QKeySequence::NativeText) : QString();
-}
-
 void MainWin::cutTexts() {
 	foreach(const xCutAct& cut, cutActs) {
-		QString key = cutKey(cut.id);
+		QString key = shortcut_key(cut.id);
 		QString text = cut.name;
 		QString tip = cut.name;
 		tip.remove("...");
@@ -2082,7 +2076,7 @@ void MainWin::initMenuBar() {
 		fullIcon.addFile(QString(":/images/fullscreen_icon_%0.png").arg(px));
 	fullAct->setIcon(fullIcon);
 	fullAct->setCheckable(true);
-	ratioAct = cutAction(viewMenu, "Keep Aspect Ratio", XCUT_RATIO, "display");
+	ratioAct = cutAction(viewMenu, "Keep Aspect Ratio in Fullscreen", XCUT_RATIO, "display");
 	ratioAct->setCheckable(true);
 	ratioAct->setIconVisibleInMenu(false);	// a setting: its tick, which an icon would take the place of
 	viewMenu->addSeparator();
@@ -2557,8 +2551,8 @@ void MainWin::fillUserMenu() {
 	act->setData("");
 	act->setCheckable(true);
 	if (conf.palette.empty()) act->setChecked(true);
-	foreach(QString nam, xres_list("palettes", QStringList() << "*.txt")) {
-		act = palMenu->addAction(nam);
+	foreach(QString nam, xres_list("palettes", QStringList() << "*.txt" << "*.pal")) {
+		act = palMenu->addAction(palette_title(nam));
 		act->setData(nam);
 		act->setCheckable(true);
 		act->setChecked(nam == conf.palette.c_str());
@@ -2919,7 +2913,7 @@ void MainWin::resetTo(int res) {
 		return;
 	}
 	const char* nam = (res == RES_48) ? "48K" : (res == RES_128) ? "128K" : (res == RES_DOS) ? "DOS" : "Service";
-	setMessage(QString(" no %0 start here ").arg(nam));
+	setMessage(QString(" no reset to %0 here ").arg(nam));
 }
 
 // A reset from the running machine's window: one landing mid-opcode lets the opcode

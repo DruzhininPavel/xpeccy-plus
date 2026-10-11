@@ -348,7 +348,7 @@ static xFilerError err_tab[] = {
 	{ERR_CANT_OPEN, "Can't open file"},
 	{ERR_NO_DRIVE, "The machine has no such drive"},
 	{ERR_RZX_SIGN, "Wrong RZX signature"},
-	{ERR_RZX_CRYPT, "Xpeccy cannot into crypted RZX"},
+	{ERR_RZX_CRYPT, "Encrypted RZX is not supported"},
 	{ERR_RZX_UNPACK, "RZX unpack error"},
 	{ERR_RZX_REC, "This machine cannot be recorded"},
 	{ERR_TZX_SIGN, "Wrong TZX signature"},

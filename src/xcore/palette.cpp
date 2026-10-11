@@ -1,6 +1,7 @@
 #include "xcore.h"
 
 #include <QFile>
+#include <QFileInfo>
 
 // The palette shown when no preset is picked: even 0x00 / 0xbb / 0xff levels
 // for all three channels, a wider gap between normal and bright than the
@@ -18,6 +19,16 @@ static const uint32_t defColors[16] = {
 
 std::string palette_name(const std::string& nam) {
 	return (nam == "xpeccy.txt") ? std::string() : nam;
+}
+
+// The palettes are built in, so the lists go by name: the extension is a file's
+// business
+QString palette_title(const QString& file) {
+	return QFileInfo(file).completeBaseName();
+}
+
+QString palette_own_file(const QString& file) {
+	return xres_dir("palettes") + SLASH + file;
 }
 
 // load preset colors for zx palette

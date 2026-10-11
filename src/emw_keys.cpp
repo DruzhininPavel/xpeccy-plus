@@ -300,7 +300,7 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 			case XCUT_RATIO:
 				vid_set_ratio(!conf.vid.keepRatio);
 				updateWindow();
-				setMessage(conf.vid.keepRatio ? " keep aspect " : " free aspect ");
+				setMessage(conf.vid.keepRatio ? " fullscreen: keep aspect " : " fullscreen: stretch ");
 				saveConfig();
 				break;
 			case XCUT_MOUSE:
@@ -322,9 +322,6 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 				pause(true, PR_DEBUG);
 				// setUpdatesEnabled(true);
 				emit s_debug();
-				break;
-			case XCUT_MENU:
-				popupUserMenu(mapToGlobal(QPoint(20,20)));
 				break;
 			case XCUT_OPTIONS:
 				pause(true, PR_OPTS);
@@ -493,6 +490,10 @@ void MainWin::keyReleaseEvent(QKeyEvent *ev) {
 void MainWin::fast_key(bool down) {
 	static xHoldKey key;
 	if (!xhold_switches(&key, conf.emu.fastHold, conf.emu.fast, down)) return;
+	fast_toggle();
+}
+
+void MainWin::fast_toggle() {
 	conf.emu.fast ^= 1;
 	updateHead();
 }

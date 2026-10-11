@@ -70,7 +70,7 @@ static int autorun_of(const std::string& val) {
 xConfig conf;
 
 void conf_init(char* wpath, char* confdir) {
-	conf.scrShot.dir = std::string(getenv(ENVHOME));
+	conf.scrShot.dir = QDir::toNativeSeparators(QDir::homePath()).toStdString();	// with its drive
 	conf.port = 30000;
 #if defined(__linux) || defined(__APPLE__) || defined(__BSD)
 	if (confdir == NULL) {
@@ -228,7 +228,6 @@ void saveConfig() {
 	fprintf(cfile, "scrFormat = %s\n", conf.scrShot.format.c_str());
 	fprintf(cfile, "scrCount = %i\n", conf.scrShot.count);
 	fprintf(cfile, "scrInterval = %i\n", conf.scrShot.interval);
-	fprintf(cfile, "scrNoLeds = %s\n", YESNO(conf.scrShot.noLeds));
 	fprintf(cfile, "scrNoBord = %s\n", YESNO(conf.scrShot.noBorder));
 	fprintf(cfile, "input.osd = %s\n", YESNO(conf.iosd.on));
 	fprintf(cfile, "input.osd.keys = %s\n", YESNO(conf.iosd.keys));
@@ -599,7 +598,7 @@ bool xconf_export(const QString& path) {
 		return false;
 	}
 	QString head = QString("# " XPRODUCT " configuration, version " XVERSION "\n"
-		"# Import it in Options - Xpeccy+ - General.\n");
+		"# Import it in Options - Application.\n");
 	out.write(head.toLocal8Bit());
 	QString base = xconf_dir();
 	foreach(QString nam, xconf_files()) {
@@ -1029,7 +1028,6 @@ void loadConfig() {
 					if (pnam=="scrFormat") conf.scrShot.format = pval;
 					if (pnam=="scrCount") conf.scrShot.count = arg.i;
 					if (pnam=="scrInterval") conf.scrShot.interval = arg.i;
-					if (pnam=="scrNoLeds") conf.scrShot.noLeds = arg.b;
 					if (pnam=="scrNoBord") conf.scrShot.noBorder = arg.b;
 					if (pnam=="input.osd") conf.iosd.on = arg.b;
 					if (pnam=="input.osd.keys") conf.iosd.keys = arg.b;

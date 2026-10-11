@@ -58,8 +58,8 @@ void help() {
 	printf("--fullscreen {0|1}\tfullscreen mode\n");
 	printf("--pc ADR\t\tset PC\n");
 	printf("--sp ADR\t\tset SP\n");
-	printf("--bp ADR\t\tset fetch brakepoint to address ADR\n");
-	printf("--bp NAME\t\tset fetch brakepoint to label NAME (see -l key)\n");
+	printf("--bp ADR\t\tset fetch breakpoint to address ADR\n");
+	printf("--bp NAME\t\tset fetch breakpoint to label NAME (see -l key)\n");
 	printf("--brk FILE\t\tload breakpoints list (*.xbrk)\n");
 	printf("--disk X\t\tselect drive to loading file (0..3 | a..d | A..D)\n");
 	printf("--sdcard PATH\t\tset SD card image, or a folder served as one\n");
@@ -80,6 +80,7 @@ void help() {
 	printf("--log-level LEVEL\terror | warn | info | debug | trace (default info)\n");
 	printf("--log-groups SPEC\tper-group levels: \"video:trace,net:off\", \"all:debug\"\n");
 	printf("--log-dir DIR\t\tput logs/ somewhere else\n");
+	printf("ADR and NUM: #8000, $8000 and 0x8000 are hex, anything else is decimal\n");
 }
 
 void xApp::d_frame() {
@@ -172,6 +173,29 @@ static void open_cli_file(MainWin& mwin, const char* path, int drv, int run, boo
 	if (load_file(conf.zx, path, FG_ALL, drv) != ERR_OK) return;
 	if (drv < 1) mwin.padGame(QString::fromLocal8Bit(path));
 	media_opened(QString::fromLocal8Bit(path), FG_ALL, drv, run, pinned);
+}
+
+// What the command line got wrong goes to the log at once and, once the
+// window is up, to its message line.
+static QStringList cliWarns;
+
+static void cli_warn(const QString& msg) {
+	xlog(XLG_APP, XLL_WARN, "%s", msg.toLocal8Bit().data());
+	cliWarns << msg;
+}
+
+// a typo, or an option given last without its value
+static void cli_bad_arg(const char* arg) {
+	if (!strncmp(arg, "-psn_", 5)) return;		// an old macOS Finder's process number
+	cli_warn(QString("unknown option or missing value: %0").arg(QString::fromLocal8Bit(arg)));
+}
+
+// an address or a page number: false, and said so, when it is not a number
+static bool cli_num(const char* opt, const char* val, int* res) {
+	bool ok;
+	*res = str_num(QString::fromLocal8Bit(val), &ok);
+	if (!ok) cli_warn(QString("%0: not a number: %1").arg(opt, QString::fromLocal8Bit(val)));
+	return ok;
 }
 
 // for apple users
@@ -299,6 +323,7 @@ int main(int ac,char** av) {
 	char* confdir = NULL;
 	int cli_astart = -1;		// --autostart / --no-autostart, -1: the option decides
 	bool pinned = false;		// the command line names the machine: files do not pick one
+	const char* cliMac = NULL;	// that machine, chosen before anything else is acted on
 	bool given = false;		// it hands over something to open: no start question either
 	for (int n = 1; n < ac; ) {
 		const char* earg = av[n++];
@@ -314,7 +339,10 @@ int main(int ac,char** av) {
 #endif
 		} else if (!strcmp(earg, "-m") || !strcmp(earg, "--machine")
 				|| !strcmp(earg, "-p") || !strcmp(earg, "--profile")) {
-			pinned = true;
+			if (n < ac) {			// the last one wins
+				cliMac = av[n++];
+				pinned = true;
+			}
 		} else {
 			log_arg(earg, n, ac, av);
 		}
@@ -323,11 +351,11 @@ int main(int ac,char** av) {
 	// before log_apply, or the header goes to a stdout that does not exist yet
 	for (int n = 1; n < ac; n++) {
 		if (strcmp(av[n], "-c") && strcmp(av[n], "--console")) continue;
-		AllocConsole();
-		if (AttachConsole(ATTACH_PARENT_PROCESS) == 0) {
-			freopen("CONOUT$", "w", stdout);
-			freopen("CONOUT$", "w", stderr);
-		}
+		// the console it was started from, a new one only when there is none
+		if (!AttachConsole(ATTACH_PARENT_PROCESS))
+			AllocConsole();
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONOUT$", "w", stderr);
 		break;
 	}
 #endif
@@ -476,6 +504,18 @@ int main(int ac,char** av) {
 #ifdef __APPLE__
 	int style = 0;
 #endif
+	// The machine before anything else: choosing it resets it, which would
+	// take away a snapshot or a register named before -m.
+	// -p is what the profiles answered to, so the name a profile went by still
+	// names its machine
+	if (cliMac) {
+		std::string mid = xm_id_for_name(cliMac);
+		if (mid.empty()) {
+			cli_warn(QString("no such machine: %0").arg(QString::fromLocal8Bit(cliMac)));
+		} else {
+			mwin.chooseMachine(mid);
+		}
+	}
 	while (i < ac) {
 		parg = av[i++];
 		if (!strcmp(parg,"-d") || !strcmp(parg,"--debug")) {
@@ -493,17 +533,21 @@ int main(int ac,char** av) {
 			bnNodraw = 1;
 		} else if (!strcmp(parg,"--bench-heat")) {
 			bnHeat = 1;
+		} else if (!strcmp(parg,"--bench-split")) {
+			bnSplit = 1;
+		} else if (!strcmp(parg,"--bench-rzx-rec-final")) {
+			ethread.benchRecFinal = 1;
 		} else if (!strcmp(parg,"--video-auto")) {
 			vrec_auto_cli(1);
 		} else if (!strcmp(parg,"--no-video-auto")) {
 			vrec_auto_cli(0);
 		} else if (!strcmp(parg,"--video-autostart")) {
 			if ((i >= ac) || !vrec_auto_cli_start(QString::fromLocal8Bit(av[i])))
-				xlog(XLG_APP, XLL_WARN, "--video-autostart needs ram or an address, as >=#6000");
+				cli_warn("--video-autostart needs ram or an address, as >=#6000");
 			i++;
 		} else if (!strcmp(parg,"--video-autostop")) {
 			if ((i >= ac) || !vrec_auto_cli_stop(QString::fromLocal8Bit(av[i])))
-				xlog(XLG_APP, XLL_WARN, "--video-autostop needs reset or an address, as ==#0000");
+				cli_warn("--video-autostop needs reset or an address, as ==#0000");
 			i++;
 		} else if (!strcmp(parg,"--panic")) {
 			compflags |= CFLG_PANIC;
@@ -520,15 +564,7 @@ int main(int ac,char** av) {
 		} else if (i < ac) {
 			if (!strcmp(parg,"-m") || !strcmp(parg,"--machine")
 				|| !strcmp(parg,"-p") || !strcmp(parg,"--profile")) {
-				// -p is what the profiles answered to, so the name a profile
-				// went by still names its machine
-				std::string mid = xm_id_for_name(av[i]);
-				if (mid.empty()) {
-					xlog(XLG_APP, XLL_ERROR, "no such machine: %s", av[i]);
-				} else {
-					mwin.chooseMachine(mid);
-				}
-				i++;
+				i++;		// chosen above
 			} else if (!strcmp(parg,"--bench")) {
 				bnFrames = atoi(av[i++]);
 			} else if (!strcmp(parg,"--bench-rewind")) {
@@ -543,8 +579,6 @@ int main(int ac,char** av) {
 				bnSave = av[i++];
 			} else if (!strcmp(parg,"--bench-steps")) {
 				bnSteps = atoi(av[i++]);
-			} else if (!strcmp(parg,"--bench-split")) {
-				bnSplit = 1;
 			} else if (!strcmp(parg,"--bench-rzx")) {
 				ethread.benchRzx = atoi(av[i++]);
 			} else if (!strcmp(parg,"--bench-rzx-seek")) {
@@ -564,8 +598,6 @@ int main(int ac,char** av) {
 				ethread.benchRecTake = atoi(av[i++]);
 			} else if (!strcmp(parg,"--bench-rzx-rec-nmi")) {
 				ethread.benchRecNmi = atoi(av[i++]);
-			} else if (!strcmp(parg,"--bench-rzx-rec-final")) {
-				ethread.benchRecFinal = 1;
 			} else if (!strcmp(parg,"--bench-state")) {
 				bnState = av[i++];
 			} else if (!strcmp(parg,"--bench-keys")) {
@@ -573,16 +605,16 @@ int main(int ac,char** av) {
 			} else if (!strcmp(parg,"--bench-loops")) {
 				fastload_bench(atoi(av[i++]));
 			} else if (!strcmp(parg,"--pc")) {
-				conf.zx->cpu->regPC = strtol(av[i],NULL,0) & 0xffff;
+				if (cli_num(parg, av[i], &tmpi)) conf.zx->cpu->regPC = tmpi & 0xffff;
 				i++;
 			} else if (!strcmp(parg,"--sp")) {
-				conf.zx->cpu->regSP = strtol(av[i],NULL,0) & 0xffff;
+				if (cli_num(parg, av[i], &tmpi)) conf.zx->cpu->regSP = tmpi & 0xffff;
 				i++;
 			} else if (!strcmp(parg,"-b") || !strcmp(parg,"--bank")) {
-				memSetBank(conf.zx->mem, 0xc0, MEM_RAM, strtol(av[i],NULL,0), MEM_16K, NULL, NULL, NULL);
+				if (cli_num(parg, av[i], &tmpi)) memSetBank(conf.zx->mem, 0xc0, MEM_RAM, tmpi, MEM_16K, NULL, NULL, NULL);
 				i++;
 			} else if (!strcmp(parg,"-a") || !strcmp(parg,"--adr")) {
-				adr = strtol(av[i],NULL,0) & 0xffff;
+				if (cli_num(parg, av[i], &tmpi)) adr = tmpi & 0xffff;
 				i++;
 			} else if (!strcmp(parg,"-f") || !strcmp(parg,"--file")) {
 				loadDUMP(conf.zx, av[i], adr);
@@ -591,8 +623,8 @@ int main(int ac,char** av) {
 				xadr = find_label(av[i]);
 				if (xadr.type >= 0) {
 					brkSet(BRK_CPUADR, MEM_BRK_FETCH, xadr.adr & 0xffff, -1);
-				} else {
-					brkSet(BRK_CPUADR, MEM_BRK_FETCH, strtol(av[i],NULL,0) & 0xffff, -1);
+				} else if (cli_num(parg, av[i], &tmpi)) {
+					brkSet(BRK_CPUADR, MEM_BRK_FETCH, tmpi & 0xffff, -1);
 				}
 				i++;
 			} else if (!strcmp(parg,"--brk")) {
@@ -648,10 +680,14 @@ int main(int ac,char** av) {
 				i++;
 			} else if (!strcmp(parg, "--confdir")) {
 				i++;		// handled before conf_init above
+			} else if (parg[0] == '-') {
+				cli_bad_arg(parg);
 			} else if (strlen(parg) > 0) {
 				open_cli_file(mwin, parg, drv, astart, pinned);
 				given = true;
 			}
+		} else if (parg[0] == '-') {		// an option with its value missing, or a typo
+			cli_bad_arg(parg);
 		} else if (strlen(parg) > 0) {
 			open_cli_file(mwin, parg, drv, astart, pinned);
 			given = true;
@@ -716,6 +752,10 @@ int main(int ac,char** av) {
 			mframe.activateWindow();
 			if (dbg) mwin.doDebug();
 			mwin.hotkeysNote();
+			if (!cliWarns.isEmpty()) {		// over the note: it is about what was just typed
+				QString more = (cliWarns.size() > 1) ? QString(" (+%0 in the log)").arg(cliWarns.size() - 1) : QString();
+				mwin.setMessage(QString(" %0%1 ").arg(cliWarns.first(), more), 6.0);
+			}
 			if (!lab) shitHappens("Can't open labels file");
 		});
 		QTimer::singleShot(5000, &optw, &SetupWin::prewarmFfmpeg);

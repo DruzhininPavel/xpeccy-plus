@@ -105,6 +105,7 @@ void copyFile(const char*, const char*);
 // a file that ships inside the binary, replaceable by one of the user's own
 QString xres_dir(const char*);
 QString xres_root(const char*);
+QString shot_dir();		// where screenshots go: the folder set, or home if it is not there
 QString xres_path(const char*, const QString&);
 QStringList xres_list(const char*, const QStringList&);
 
@@ -153,7 +154,8 @@ QString gethexbyte(int);
 QString gethexword(int);
 extern std::atomic<int> xUserResets;
 void x_user_reset(Computer*, int);
-int unreal_num(QString, bool*);		// #/$/0x hex, else decimal
+int unreal_num(QString, bool*);		// #/$/0x hex, 0 octal, else decimal
+int str_num(QString, bool*);		// #/$/0x hex, else decimal (no octal)
 QString getPortString(int, int);
 bool parsePort(const QString&, int*, int*);
 QString gethex6(int);
@@ -328,6 +330,8 @@ QList<QColor> loadColors(std::string);
 int saveColors(std::string, QList<QColor>);
 void loadPalette();
 std::string palette_name(const std::string&);	// what a config's palette name means now
+QString palette_title(const QString&);		// as the lists show it, no extension
+QString palette_own_file(const QString&);	// the user's copy, shadowing a shipped one
 void dbgPaletteDefaults();			// debugger colours: back to the built-in ones
 const char* dbgPaletteDefault(const char*);
 void loadStylePalette(const std::string&);	// debugger colours shipped with a style sheet
@@ -382,7 +386,6 @@ enum {
 	XCUT_GRABKBD,
 	XCUT_PAUSE,
 	XCUT_DEBUG,
-	XCUT_MENU,
 	XCUT_OPTIONS,
 	XCUT_SAVE,
 	XCUT_LOAD,
@@ -495,6 +498,7 @@ struct xHotkeySet {
 
 void shortcut_init();
 xShortcut* find_shortcut_id(int);
+QString shortcut_key(int);		// as the menus write it; empty when it has none
 xShortcut* find_shortcut_name(const char*);
 xShortcut* shortcut_tab();
 int shortcut_find(int, int, Qt::KeyboardModifiers);
@@ -833,7 +837,6 @@ struct xConfig {
 //	} joy;
 	xGamepadController* gpctrl;
 	struct {
-		unsigned noLeds:1;
 		unsigned noBorder:1;
 		int count;
 		int interval;

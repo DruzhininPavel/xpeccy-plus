@@ -354,8 +354,15 @@ void MainWin::initBars() {
 	pauseAct = cut("Pause", XCUT_PAUSE, "time-pause");
 	pauseAct->setCheckable(true);
 	add("key.pause", "Time", pauseAct, TB_PLAIN);
+	// a click switches it whatever the key's hold mode: a press and release of
+	// a key that has to be held would undo itself
 	fastAct = cut("Fast Mode", XCUT_FAST, "time-fast");
 	fastAct->setCheckable(true);
+	fastAct->disconnect(SIGNAL(triggered(bool)));		// the key's press and release
+	connect(fastAct, &QAction::triggered, this, [this]() {
+		if (!conf.emu.pause) fast_toggle();		// as the key: not while paused
+		syncActions();
+	});
 	add("key.fast", "Time", fastAct, TB_PLAIN);
 	ffAct = speed("Fast Forward", XCUT_FFWD, XTM_FFWD, "time-ffwd");
 	add("key.ffwd", "Time", ffAct, TB_PLAIN);
@@ -686,7 +693,7 @@ void MainWin::syncActions() {
 	muteAct->setChecked(conf.snd.mute);
 	// the button is the volume too: what a click does, then where the volume stands
 	QString tip = conf.snd.mute ? "Unmute" : "Mute";
-	QString key = cutKey(XCUT_MUTE);
+	QString key = shortcut_key(XCUT_MUTE);
 	if (!key.isEmpty()) tip += QString(" (%0)").arg(key);
 	tip += QString(" - volume %0%").arg(conf.snd.vol.master);
 	if (muteAct->toolTip() != tip) muteAct->setToolTip(tip);	// a change repaints the button

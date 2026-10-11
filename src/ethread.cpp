@@ -384,15 +384,15 @@ void xThread::brkAction(Computer* comp, xBrkPoint* ptr, int* brkskip) {
 		case BRK_ACT_COUNT:			// counted by the caller, just go on
 			break;
 		case BRK_ACT_SCR:
-			fnams = QString(conf.scrShot.dir.c_str()).append(SLASH);
+			fnams = shot_dir().append(SLASH);
 			fnams.append(QString("xpeccy_%0").arg(QTime::currentTime().toString("HHmmss_zzz")));	// TODO: counter-based name (1ms is not enough)
 			idx = 0;
 			do {
 				file.setFileName(QString("%0_%1.scr").arg(fnams).arg(idx));
 				idx++;
 			} while (file.exists());
-			file.open(QFile::WriteOnly);
-			file.write((char*)(comp->mem->ramData + (5 << 14)), 0x1b00);
+			if (!file.open(QFile::WriteOnly) || (file.write((char*)(comp->mem->ramData + (5 << 14)), 0x1b00) != 0x1b00))
+				xlog(XLG_APP, XLL_WARN, "can't save screenshot %s", file.fileName().toLocal8Bit().data());
 			file.close();
 			break;
 		default:					// BRK_ACT_DBG
