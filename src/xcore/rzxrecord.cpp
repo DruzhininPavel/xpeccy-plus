@@ -118,9 +118,11 @@ int rzxr_start(Computer* comp, const QString& path) {
 	return ERR_OK;
 }
 
-void rzxr_stop(Computer* comp, bool finalize) {
-	if (!rzxr_on()) return;
+// joins the autosave even when not recording: a joinable thread left to the
+// static destructors ends the app in std::terminate()
+int rzxr_stop(Computer* comp, bool finalize) {
 	rr_join_writer();
+	if (!rzxr_on()) return ERR_OK;
 	rzxRecImage* img = rzx_rec_take(comp);
 	int frames = rzx_rec_image_frames(img);
 	rzx_rec_stop(comp);
@@ -128,6 +130,7 @@ void rzxr_stop(Computer* comp, bool finalize) {
 	xlog(XLG_FILE, (err == ERR_OK) ? XLL_INFO : XLL_WARN, "rzx recording stopped: %i frames, %i rollbacks, %s",
 		frames, rr_rollbacks, (err == ERR_OK) ? "written" : "not written");
 	rr_say((err == ERR_OK) ? QString(" RZX saved: %0 ").arg(QFileInfo(rr_path).fileName()) : QString(" RZX not saved "));
+	return err;
 }
 
 // made where the frame under way ends, so a paused machine makes it later

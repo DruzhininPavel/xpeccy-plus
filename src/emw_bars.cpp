@@ -707,6 +707,10 @@ void MainWin::tapeMenu(const QPoint& pos) {
 	menu.addSeparator();
 	menu.addAction(QIcon(":/images/fileopen.png"), "Open Tape...", this, [this]() {openMedia(QString(), FG_TAPE, -1, 0);});
 	QAction* act = menu.addAction(QIcon(":/images/tape-eject.png"), "Eject", this, [this]() {
+		pause(true, PR_FILE);
+		int safe = saveChangedTape(conf.zx);
+		pause(false, PR_FILE);
+		if (safe != ERR_OK) return;
 		tapEject(conf.zx->tape);
 		emit s_tape_upd(conf.zx->tape);
 		emit s_tape_blk(conf.zx->tape);

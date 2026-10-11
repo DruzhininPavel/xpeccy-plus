@@ -1326,7 +1326,7 @@ void SetupWin::apply() {
 	if (getRFIData(diskTypeBox) == DIF_P3DOS) fit = qMin(fit, 2);
 	for (int i = 3; i >= fit; i--) {
 		Floppy* dflp = comp->dif->flp[i];
-		if (dflp->fitted && dflp->insert && dflp->changed && (saveChangedDisk(comp, i) == ERR_CANCEL))
+		if (dflp->fitted && dflp->insert && dflp->changed && (saveChangedDisk(comp, i) != ERR_OK))
 			fit = i + 1;
 	}
 	difSetDrives(comp->dif, fit);

@@ -365,18 +365,24 @@ static xFilerError err_tab[] = {
 	{ERR_SZX_SIGN, "Wrong SZX signature"},
 	{ERR_SZX_HW, "SZX snapshot: a machine this emulator does not have"},
 	{ERR_SZX_DATA, "SZX snapshot: no cpu or memory in it"},
+	{ERR_TAP_DATA, "This tape has blocks TAP cannot hold: save it as WAV"},
+	{ERR_TAP_EMPTY, "The tape is empty"},
+	{ERR_NOTRD, "Not a TR-DOS disk"},
+	{ERR_CANT_SAVE, "Can't save in this format"},
+	{ERR_FILE_TYPE, "Unknown file type"},
 	{ERR_OK, ""}
 };
 
+// a cancel was the user's own answer, so it is not reported
 void file_errors(int err) {
 	int i = 0;
-	char buf[1024];
+	if ((err == ERR_OK) || (err == ERR_CANCEL)) return;
 	while ((err_tab[i].err != ERR_OK) && (err_tab[i].err != err))
 		i++;
 	if (err_tab[i].err != ERR_OK) {
 		shitHappens(err_tab[i].text);
-	} else if (err != ERR_OK) {
-		sprintf(buf, "Error #%i", err);
+	} else {
+		shitHappens(QString("Error #%0").arg(err).toLocal8Bit().constData());
 	}
 }
 
@@ -639,6 +645,7 @@ static void szx_mount(Computer* comp, const QString& snap) {
 		if (m->kind == SZX_MED_TAPE) {
 			const char* now = comp->tape->path;
 			if (!now || (QFileInfo(QString::fromLocal8Bit(now)).canonicalFilePath() != path)) {
+				if (saveChangedTape(comp) != ERR_OK) continue;
 				if (inf->load(comp, path.toLocal8Bit().data(), 0) != ERR_OK) continue;
 			}
 			if (m->block < comp->tape->blkCount)
@@ -697,13 +704,21 @@ int load_file(Computer* comp, const char* name, int id, int drv) {
 	QString path = QFileInfo(QString::fromLocal8Bit(name)).canonicalFilePath();
 	if (path.isEmpty()) return ERR_CANT_OPEN;
 	xFileTypeInfo* inf = file_type_of(comp, id, path);
-	int err = ERR_OK;
+	int err = inf ? ERR_OK : ERR_FILE_TYPE;
 	if (drv < 0) drv = 0;
-	// a disk goes in only once the one it replaces is safe to lose
 	if (inf && inf->ch && !comp->dif->flp[drv & 3]->fitted) {
 		err = ERR_NO_DRIVE;
 	} else if (inf && inf->load) {
-		if (!inf->ch || (saveChangedDisk(comp, drv) == ERR_OK)) {
+		// a disk or a tape goes in only once the one it replaces is safe to
+		// lose; a failed save has been reported already
+		int safe = ERR_OK;
+		if (inf->ch)
+			safe = saveChangedDisk(comp, drv);
+		else if (as_kind_of(inf->id) == AS_TAPE)
+			safe = saveChangedTape(comp);
+		if (safe != ERR_OK) {
+			err = ERR_CANCEL;
+		} else {
 			if (inf->id == FL_RZX)
 				rzxr_stop(comp);		// playing one ends the one being made
 			else if (comp->rzx.play)
@@ -844,7 +859,12 @@ int save_file(Computer* comp, const char* name, int id, int drv, int live) {
 			}
 		}
 	}
-	if (path.isEmpty()) return err;
+	if (path.isEmpty()) {
+		// no dialog: nothing of this kind can be written
+		err = flt.isEmpty() ? ERR_CANT_SAVE : ERR_CANCEL;
+		file_errors(err);
+		return err;
+	}
 	if (drv < 0)
 		drv = 0;
 	if (!inf)
@@ -862,13 +882,21 @@ int save_file(Computer* comp, const char* name, int id, int drv, int live) {
 			}
 			err = inf->save(comp, path.toLocal8Bit().data(), drv);
 		} else {
-			shitHappens("Can't save that");
+			err = ERR_CANT_SAVE;
 		}
 	} else {
-		shitHappens("Don't know such extension");
+		err = ERR_FILE_TYPE;
 	}
+	if (err != ERR_OK)
+		xlog(XLG_FILE, XLL_WARN, "save %s failed, error %i", path.toLocal8Bit().constData(), err);
 	file_errors(err);
 	return err;
+}
+
+bool file_can_save(Computer* comp, const char* path) {
+	if (!path || !*path) return false;
+	xFileTypeInfo* inf = file_find_hw_ext(comp->hw->id, QString::fromLocal8Bit(path));
+	return inf && inf->save;
 }
 
 
@@ -1026,23 +1054,36 @@ void fitFileDialog(QWidget* w) {
 	split->setSizes({need, qMax(sz[0] + sz[1] - need, 0)});
 }
 
+// The one question about a changed medium. ERR_OK once it is safe to lose:
+// saved, or the user said No. Otherwise ERR_CANCEL, or the save's own error,
+// which has been shown. Yes writes back to the medium's own file when its
+// format can be written, and asks where otherwise.
+static int ask_save_changed(Computer* comp, QString what, const char* path, int id, int drv) {
+	if (path && *path)
+		what += ": " + QFileInfo(QString::fromLocal8Bit(path)).fileName();
+	QMessageBox mbox;
+	mbox.setText(QString("<b>%0 has been changed</b>").arg(what.toHtmlEscaped()));
+	mbox.setInformativeText("Do you want to save it?");
+	mbox.setStandardButtons(QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+	mbox.setIcon(QMessageBox::Warning);
+	switch (mbox.exec()) {
+		case QMessageBox::Yes: return save_file(comp, file_can_save(comp, path) ? path : "", id, drv);
+		case QMessageBox::No: return ERR_OK;
+	}
+	return ERR_CANCEL;
+}
+
 int saveChangedDisk(Computer* comp,int id) {
-	int res = ERR_OK;
 	id &= 3;
 	Floppy* flp = comp->dif->flp[id];
-	if (flp->changed) {
-		QMessageBox mbox;
-		mbox.setText(QString("<b>Disk %0: has been changed</b>").arg(QChar('A'+id)));
-		mbox.setInformativeText("Do you want to save it?");
-		mbox.setStandardButtons(QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
-		mbox.setIcon(QMessageBox::Warning);
-		switch (mbox.exec()) {
-			case QMessageBox::Yes: res = save_file(comp, flp->path, FG_DISK, id); break;	// save
-			case QMessageBox::No: res = ERR_OK; break;						// don't save
-			case QMessageBox::Cancel: res = ERR_CANCEL; break;					// cancel
-		}
-	}
-	return res;
+	if (!flp->changed) return ERR_OK;
+	return ask_save_changed(comp, QString("Disk %0").arg(QChar('A' + id)), flp->path, FG_DISK, id);
+}
+
+int saveChangedTape(Computer* comp) {
+	Tape* tape = comp->tape;
+	if (!tape->changed || (tape->blkCount < 1)) return ERR_OK;
+	return ask_save_changed(comp, "Tape", tape->path, FG_TAPE, -1);
 }
 
 int testSlotOn(Computer* comp) {

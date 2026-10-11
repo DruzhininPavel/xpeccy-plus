@@ -152,7 +152,7 @@ void MainWin::driveOp(std::function<void()> fn) {
 void MainWin::diskNew(int drv) {
 	Computer* comp = conf.zx;
 	pause(true, PR_FILE);
-	if (saveChangedDisk(comp, drv) != ERR_CANCEL) {
+	if (saveChangedDisk(comp, drv) == ERR_OK) {
 		bool fmt = (comp->dif->type == DIF_BDI) && areSure("Format for TR-DOS?");
 		emu_lock();
 		Floppy* flp = comp->dif->flp[drv];
@@ -165,13 +165,14 @@ void MainWin::diskNew(int drv) {
 	if (diskWin->isVisible()) diskWin->refresh();
 }
 
-// Save writes back to the file the disk came from, Save as asks where
+// Save writes back to the file the disk came from, Save as asks where - and so
+// does Save when that file's format cannot be written
 void MainWin::diskSave(int drv, bool ask) {
 	Computer* comp = conf.zx;
 	Floppy* flp = comp->dif->flp[drv];
 	if (!flp->insert) return;
 	pause(true, PR_FILE);
-	save_file(comp, (ask || !flp->path) ? "" : flp->path, FG_DISK_A + drv, drv);
+	save_file(comp, (ask || !file_can_save(comp, flp->path)) ? "" : flp->path, FG_DISK_A + drv, drv);
 	pause(false, PR_FILE);
 	if (diskWin->isVisible()) diskWin->refresh();
 }
@@ -180,7 +181,7 @@ void MainWin::diskSave(int drv, bool ask) {
 void MainWin::diskEject(int drv) {
 	Computer* comp = conf.zx;
 	pause(true, PR_FILE);
-	if (saveChangedDisk(comp, drv) != ERR_CANCEL) {
+	if (saveChangedDisk(comp, drv) == ERR_OK) {
 		emu_lock();
 		flp_eject(comp->dif->flp[drv]);
 		emu_unlock();

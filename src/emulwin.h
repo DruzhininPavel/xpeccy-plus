@@ -272,7 +272,7 @@ typedef struct {
 		QString msg;
 		void setMessage(QString, double = 2.0);
 
-		bool saveChanged();
+		bool saveChanged(bool tape);
 		void updateHead();
 		void screenShot();
 		void videoRec();

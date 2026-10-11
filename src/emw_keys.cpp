@@ -394,7 +394,7 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 				break;
 			case XCUT_FASTSAVE:
 				pause(true,PR_FILE);
-				saveChanged();
+				saveChanged(false);		// as its name says, the disks only
 				pause(false,PR_FILE);
 				break;
 			case XCUT_NMI:

@@ -68,7 +68,10 @@ enum {
 
 	ERR_SZX_SIGN,		// not a zx-state file
 	ERR_SZX_HW,		// a machine this emulator does not have
-	ERR_SZX_DATA		// no cpu or no memory in it
+	ERR_SZX_DATA,		// no cpu or no memory in it
+
+	ERR_CANT_SAVE,		// the format has no writer
+	ERR_FILE_TYPE		// the extension is none the machine knows
 };
 
 // spg
