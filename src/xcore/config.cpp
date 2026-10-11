@@ -598,7 +598,7 @@ bool xconf_export(const QString& path) {
 		return false;
 	}
 	QString head = QString("# " XPRODUCT " configuration, version " XVERSION "\n"
-		"# Import it in Options - Xpeccy+ - General.\n");
+		"# Import it in Options - Application.\n");
 	out.write(head.toLocal8Bit());
 	QString base = xconf_dir();
 	foreach(QString nam, xconf_files()) {

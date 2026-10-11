@@ -497,7 +497,7 @@ Past 14 MHz no real machine ran: timing is not guaranteed</string>
                     <normaloff>:/images/save_all.png</normaloff>:/images/save_all.png</iconset>
                   </property>
                   <property name="toolTip">
-                   <string>Keep this configuration as a machine of your own. Saving it under its own name updates it</string>
+                   <string>Keep this configuration as a machine of your own</string>
                   </property>
                   <property name="text">
                    <string>Save machine...</string>
@@ -511,7 +511,7 @@ Past 14 MHz no real machine ran: timing is not guaranteed</string>
                     <normaloff>:/images/cancel.png</normaloff>:/images/cancel.png</iconset>
                   </property>
                   <property name="toolTip">
-                   <string>Drop a machine of your own. One that shadows a machine that ships puts it back</string>
+                   <string>Drop a machine of your own</string>
                   </property>
                   <property name="text">
                    <string>Delete this machine</string>
@@ -1090,7 +1090,7 @@ none - nothing comes back (+2A, +3)</string>
                   </font>
                  </property>
                  <property name="text">
-                  <string>The border colour changes every 4 T-states, not every dot</string>
+                  <string>The border color changes every 4 T-states, not every dot</string>
                  </property>
                 </widget>
                </item>
@@ -1194,7 +1194,7 @@ none - nothing comes back (+2A, +3)</string>
                   </font>
                  </property>
                  <property name="text">
-                  <string>64 colours, when the program asks for them</string>
+                  <string>64 colors, when the program asks for them</string>
                  </property>
                 </widget>
                </item>
@@ -1497,7 +1497,7 @@ none - nothing comes back (+2A, +3)</string>
                   </size>
                  </property>
                  <property name="toolTip">
-                  <string>Post-processing shader, from config/shaders</string>
+                  <string>Post-processing shader</string>
                  </property>
                 </widget>
                </item>
@@ -1555,7 +1555,7 @@ Integer scaling, so every pixel is the same size</string>
                     <item>
                      <widget class="QCheckBox" name="cbFullscreen">
                       <property name="toolTip">
-                       <string>Fill the screen with the picture. Alt+Enter does the same</string>
+                       <string>Fill the screen with the picture</string>
                       </property>
                       <property name="text">
                        <string>Fullscreen</string>
@@ -1565,8 +1565,7 @@ Integer scaling, so every pixel is the same size</string>
                     <item>
                      <widget class="QCheckBox" name="cbKeepRatio">
                       <property name="toolTip">
-                       <string>Fullscreen: keep the picture's shape and show more
-border, instead of stretching it</string>
+                       <string>Fullscreen: keep the shape, do not stretch</string>
                       </property>
                       <property name="text">
                        <string>Keep ratio</string>
@@ -2112,6 +2111,9 @@ thin, lower it again after a long clean spell</string>
            </item>
            <item>
             <widget class="QGroupBox" name="sndOptGBox">
+             <property name="title">
+              <string>Sound</string>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_22">
               <item>
                <widget class="QCheckBox" name="senbox">
@@ -2126,7 +2128,7 @@ thin, lower it again after a long clean spell</string>
               <item>
                <widget class="QCheckBox" name="dcbox">
                 <property name="toolTip">
-                 <string>Cuts the very lowest frequencies.&#10;The chips sit above zero rather than&#10;around it. That offset is not sound,&#10;and it wastes loudness the rest of&#10;the mix could use.</string>
+                 <string>Removes the offset the chips sit on</string>
                 </property>
                 <property name="text">
                  <string>Low cut (DC)</string>
@@ -2136,7 +2138,7 @@ thin, lower it again after a long clean spell</string>
               <item>
                <widget class="QCheckBox" name="chkSndFilter">
                 <property name="toolTip">
-                 <string>Cuts the very highest frequencies.&#10;The sound is worked out 32 times more&#10;often than the sound card plays it,&#10;and anything too high for the card to&#10;carry folds back down and is heard as&#10;notes that were never played.&#10;512 tap filter; costs a little CPU.</string>
+                 <string>Removes aliasing; costs a little CPU</string>
                 </property>
                 <property name="text">
                  <string>High cut (anti-alias)</string>
@@ -2408,7 +2410,7 @@ thin, lower it again after a long clean spell</string>
               <item row="1" column="0">
                <widget class="QLabel" name="label_39">
                 <property name="text">
-                 <string>KeyMap</string>
+                 <string>Keymap</string>
                 </property>
                </widget>
               </item>
@@ -2472,8 +2474,7 @@ the way a snapshot starts itself</string>
             <item row="1" column="0">
              <widget class="QCheckBox" name="mempaths">
               <property name="toolTip">
-               <string>Keep the tape and disk paths in the profile,
-so the same media is back on the next start</string>
+               <string>Mount the same media again on the next start</string>
               </property>
               <property name="text">
                <string>Remember mounted media</string>
@@ -2502,10 +2503,7 @@ so the same media is back on the next start</string>
                 <item row="0" column="0">
                  <widget class="QCheckBox" name="cbLowLat">
                   <property name="toolTip">
-                   <string>Show each frame as soon as it is made.
-In a window the desktop still holds it a frame;
-fullscreen skips that, but menus flash opening.
-Off: frames are buffered, for smoother motion</string>
+                   <string>Each frame shown at once; off is smoother</string>
                   </property>
                   <property name="text">
                    <string/>
@@ -2525,10 +2523,7 @@ Off: frames are buffered, for smoother motion</string>
                 <item row="0" column="1">
                  <widget class="QLabel" name="labLowLat">
                   <property name="toolTip">
-                   <string>Show each frame as soon as it is made.
-In a window the desktop still holds it a frame;
-fullscreen skips that, but menus flash opening.
-Off: frames are buffered, for smoother motion</string>
+                   <string>Each frame shown at once; off is smoother</string>
                   </property>
                   <property name="text">
                    <string>Low latency</string>
@@ -2553,18 +2548,14 @@ Off: frames are buffered, for smoother motion</string>
                 <item row="1" column="0">
                  <widget class="QComboBox" name="cbRunAhead">
                   <property name="toolTip">
-                   <string>Emulates each frame twice over to show
-one the machine has not reached yet, so a key press
-lands sooner. The sound stays a frame behind</string>
+                   <string>Shows a frame ahead, so keys answer sooner</string>
                   </property>
                  </widget>
                 </item>
                 <item row="1" column="1">
                  <widget class="QLabel" name="labRunAhead">
                   <property name="toolTip">
-                   <string>Emulates each frame twice over to show
-one the machine has not reached yet, so a key press
-lands sooner. The sound stays a frame behind</string>
+                   <string>Shows a frame ahead, so keys answer sooner</string>
                   </property>
                   <property name="text">
                    <string>Run ahead</string>
@@ -2604,9 +2595,7 @@ lands sooner. The sound stays a frame behind</string>
                 <item row="0" column="0">
                  <widget class="QCheckBox" name="cbRewind">
                   <property name="toolTip">
-                   <string>EXPERIMENTAL. Hold the rewind key to go back in time.
-The history is kept in memory, 20-45 MB with the
-default step, and costs a little emulation speed</string>
+                   <string>Hold the rewind key to go back in time</string>
                   </property>
                   <property name="text">
                    <string/>
@@ -2626,9 +2615,7 @@ default step, and costs a little emulation speed</string>
                 <item row="0" column="1">
                  <widget class="QLabel" name="labRewind">
                   <property name="toolTip">
-                   <string>EXPERIMENTAL. Hold the rewind key to go back in time.
-The history is kept in memory, 20-45 MB with the
-default step, and costs a little emulation speed</string>
+                   <string>Hold the rewind key to go back in time</string>
                   </property>
                   <property name="text">
                    <string>Rewind</string>
@@ -2814,7 +2801,7 @@ Tap or hold: a tap switches it, a longer press holds it</string>
                    <string>Not Fast forward, which keeps its speed and sound</string>
                   </property>
                   <property name="text">
-                   <string>Fast mode, no limit</string>
+                   <string>Fast Mode, no limit</string>
                   </property>
                   <property name="buddy">
                    <cstring>cbFastKey</cstring>

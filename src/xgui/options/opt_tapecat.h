@@ -10,7 +10,7 @@
 #include "libxpeccy/tape.h"
 #include "../classes.h"
 
-// columns of the tape catalog, shared by the tape player and the Tape map page
+// columns of the tape player's catalog
 enum {
 	TCC_BRK = 0,		// stop the tape here
 	TCC_DUR,		// how long the block plays
@@ -72,7 +72,6 @@ class xTapeCatTable : public QTableView {
 		xTapeCatModel* model;
 };
 
-// A tape block as a TR-DOS file, shared by the tape player and the Tape map
-// page of Options.
+// A tape block as a TR-DOS file, for the tape player.
 int tape_disk_ready(Computer*, int drive);
 int tape_blk_to_disk(Tape*, int blk, Floppy*, QString* msg);

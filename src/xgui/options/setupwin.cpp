@@ -105,7 +105,7 @@ void fill_layout_list(QComboBox* box, QString txt = QString()) {
 void fill_shader_list(QComboBox* box) {
 	QStringList lst = xres_list("shaders", QStringList() << "*.txt");
 	box->clear();
-	box->addItem("none", 0);
+	box->addItem("None", 0);
 #if defined(USEOPENGL)
 	if (conf.vid.shd_support) {
 		foreach(QString nam, lst) {
@@ -899,6 +899,14 @@ void SetupWin::startHotkeys() {
 	ui.tvHotkeys->focusFilter();
 }
 
+// the key read from the hotkeys as they are, so another preset reads right
+static void fullscreenTip(QCheckBox* box) {
+	xShortcut* sc = find_shortcut_id(XCUT_FULLSCR);
+	QString key = (sc && !sc->seq[0].isEmpty()) ? sc->seq[0].toString(QKeySequence::NativeText) : QString();
+	box->setToolTip(key.isEmpty() ? QString("Fill the screen with the picture")
+		: QString("Fill the screen with the picture. %0 does the same").arg(key));
+}
+
 void SetupWin::start() {
 	Computer* comp = conf.zx;
 	fillLogPage();
@@ -977,6 +985,7 @@ void SetupWin::start() {
 	ui.cbStyleSheet->setFixedWidth(ui.gridLayout_look->columnMinimumWidth(1));	// as wide as the names under it
 // video
 	ui.cbFullscreen->setChecked(conf.vid.fullScreen);
+	fullscreenTip(ui.cbFullscreen);
 	ui.cbKeepRatio->setChecked(conf.vid.keepRatio);
 	setRFIndex(ui.cbScale, conf.vid.scale, 1);	// x2 if the file says something odd
 	ui.sldNoflic->setValue(noflic); chaflc();
@@ -1319,7 +1328,7 @@ void SetupWin::apply() {
 	comp->mouse->swapButtons = cbSwapButtons->isChecked() ? 1 : 0;
 	comp->mouse->sensitivity = sldSensitivity->value() * 0.001f;
 	std::string kmname = getRFText(ui.keyMapBox);
-	if (kmname == "none") kmname = "default";
+	if (kmname == "Default") kmname = "default";	// the built-in one, as the menu names it
 	conf.kmapName = kmname;
 	loadKeys();
 	conf.gpctrl->gameOn = cbPadFiles->isChecked();
@@ -1446,6 +1455,7 @@ void SetupWin::apply() {
 		if (cmac && (midx >= 0)) ui.machbox->setItemText(midx, xm_list_name(*cmac));
 	}
 
+	fullscreenTip(ui.cbFullscreen);		// the Hotkeys page may have moved it
 	emit s_apply();
 
 	layouts_save();
@@ -2364,7 +2374,7 @@ void SetupWin::setRom(xRomFile f) {
 // lists
 
 void SetupWin::buildkeylist() {
-	fillComboBox(ui.keyMapBox, "keymaps", QStringList() << "*.map", "none",
+	fillComboBox(ui.keyMapBox, "keymaps", QStringList() << "*.map", "Default",
 		QString::fromLocal8Bit(conf.kmapName.c_str()));
 }
 

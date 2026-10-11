@@ -1,7 +1,7 @@
 # Keyboard layouts
 
 Every `*.map` file here is one keyboard layout. The emulator lists them by file
-name (Options / Input, and the Keyboard layout menu); `Default` means "no file",
+name (Options / Input, and the Keymap menu); `Default` means "no file",
 i.e. the built-in table in `src/xcore/keymap.cpp`.
 
 A layout only overrides the host keys it mentions; everything else keeps its
@@ -39,5 +39,5 @@ extra buttons. Append `*` (`JF*`) to bind the second joystick.
 `LS`/`RS` and `LC`/`RC` are only told apart on Windows and Linux. On macOS both
 Shifts collapse to `LS` and both Ctrl and Cmd collapse to `LC`, so a layout that
 puts Symbol Shift only on the right-hand keys leaves Symbol Shift unreachable
-there. This is why the shipped profiles ship with `Default`, which keeps Symbol
+there. This is why `Default` is what the emulator starts with: it keeps Symbol
 Shift on `LC`.

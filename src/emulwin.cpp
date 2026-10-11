@@ -1773,7 +1773,7 @@ void MainWin::updateSatellites() {
 	emit s_tape_progress(comp->tape);
 	// unconditional: the window hides itself when it is not up, and it is what
 	// keeps the buttons and the block mark agreeing with the tape however the
-	// tape was moved - a rewind from the Tape map page included
+	// tape was moved
 	emit s_tape_upd(comp->tape);
 	if (comp->tape->blkChange || comp->tape->newBlock) {
 		emit s_tape_blk(comp->tape);
@@ -2082,7 +2082,7 @@ void MainWin::initMenuBar() {
 		fullIcon.addFile(QString(":/images/fullscreen_icon_%0.png").arg(px));
 	fullAct->setIcon(fullIcon);
 	fullAct->setCheckable(true);
-	ratioAct = cutAction(viewMenu, "Keep Aspect Ratio", XCUT_RATIO, "display");
+	ratioAct = cutAction(viewMenu, "Keep Aspect Ratio in Fullscreen", XCUT_RATIO, "display");
 	ratioAct->setCheckable(true);
 	ratioAct->setIconVisibleInMenu(false);	// a setting: its tick, which an icon would take the place of
 	viewMenu->addSeparator();
@@ -2919,7 +2919,7 @@ void MainWin::resetTo(int res) {
 		return;
 	}
 	const char* nam = (res == RES_48) ? "48K" : (res == RES_128) ? "128K" : (res == RES_DOS) ? "DOS" : "Service";
-	setMessage(QString(" no %0 start here ").arg(nam));
+	setMessage(QString(" no reset to %0 here ").arg(nam));
 }
 
 // A reset from the running machine's window: one landing mid-opcode lets the opcode

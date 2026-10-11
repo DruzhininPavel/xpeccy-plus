@@ -300,7 +300,7 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 			case XCUT_RATIO:
 				vid_set_ratio(!conf.vid.keepRatio);
 				updateWindow();
-				setMessage(conf.vid.keepRatio ? " keep aspect " : " free aspect ");
+				setMessage(conf.vid.keepRatio ? " fullscreen: keep aspect " : " fullscreen: stretch ");
 				saveConfig();
 				break;
 			case XCUT_MOUSE:

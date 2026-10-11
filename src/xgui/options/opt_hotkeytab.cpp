@@ -229,7 +229,7 @@ QWidget* xHotkeyTable::controls() {
 	QWidget* wid = new QWidget;
 	QHBoxLayout* lay = new QHBoxLayout(wid);
 	lay->setContentsMargins(0, 0, 0, 0);
-	lay->addWidget(new QLabel("Layout"));
+	lay->addWidget(new QLabel("Preset"));
 	lay->addWidget(preset);
 	lay->addWidget(reset);
 	lay->addSpacing(12);

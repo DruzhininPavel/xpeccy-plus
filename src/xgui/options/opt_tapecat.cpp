@@ -345,7 +345,7 @@ int tape_blk_to_disk(Tape* tape, int blk, Floppy* flp, QString* msg) {
 	}
 	if (tape->blkData[blk].isHeader) {
 		if ((int)tape->blkCount == blk + 1) {
-			*msg = "Header without data? Hmm...";
+			*msg = "No data block after this header";
 			return 0;
 		}
 		if (!tape->blkData[blk+1].hasBytes) {
@@ -365,7 +365,7 @@ int tape_blk_to_disk(Tape* tape, int blk, Floppy* flp, QString* msg) {
 	} else {
 		dsc = tape_head_info(tape, headBlock);
 		if (dsc.ext == 0x00) {
-			*msg = "Yes, it happens";
+			*msg = "Only program and code blocks can be copied";
 			return 0;
 		}
 	}
@@ -380,11 +380,11 @@ int tape_blk_to_disk(Tape* tape, int blk, Floppy* flp, QString* msg) {
 	free(dt);
 	free(sec);
 	switch (err) {
-		case ERR_OK: *msg = "File(s) was copied"; return 1;
+		case ERR_OK: *msg = "File copied"; return 1;
 		case ERR_SIZE: *msg = "Too much data for a TR-DOS file"; break;
 		case ERR_MANYFILES: *msg = "Too many files on the disk"; break;
 		case ERR_NOSPACE: *msg = "Not enough space on the disk"; break;
-		default: *msg = "Yes, it happens"; break;
+		default: *msg = "Could not write the file"; break;
 	}
 	return 0;
 }
