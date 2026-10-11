@@ -17,6 +17,17 @@ before that point is upstream's history and is not repeated here.
 - **Turbo tapes whose header is raw pulses**, such as Chromatrons Attack, load with fast
   loading on and auto play off; so do tapes that start with a direct recording.
 
+- **Quitting while an RZX records** writes the whole recording; it used to keep only the last
+  autosave and could end in a crash.
+
+- **Changed disks and tapes are asked about** on exit, on eject and when another image
+  replaces them, each by its file name; saving one disk no longer cancels the exit. Save on
+  a format that cannot be written (TZX, TD0, FDI, IMA) asks where instead of losing the
+  changes.
+
+- **A save that fails says so**, such as a tape TAP cannot hold or a disk that is not
+  TR-DOS, and a file of an unknown type is reported and kept out of the recent list.
+
 ## 2026.7 - 2026-10-10
 
 ### Added
