@@ -28,6 +28,7 @@ static unsigned fnv(const unsigned char* p, size_t n) {
 }
 
 static void state_line(Computer* comp, const char* tag) {
+	cpuGetRegs(comp->cpu);		// F is made from the flags when asked for
 	printf("%s: ram %08X pc %04X sp %04X af %04X t %lld\n", tag, fnv(comp->mem->ramData, MEM_4M),
 		comp->cpu->regPC, comp->cpu->regSP, comp->cpu->regAF, comp->tickTotal);
 }

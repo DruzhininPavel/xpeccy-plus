@@ -26,6 +26,7 @@
 #include "dbg_stack.h"
 #include "dbg_zxscr.h"
 #include "dbg_sndchip.h"
+#include "dbg_evo.h"
 
 #include "ui_dumpdial.h"
 #include "ui_openDump.h"
@@ -67,6 +68,8 @@ class DebugWin : public QMainWindow {
 		void s_scr_upd();
 		void wannaSndWin(bool);
 		void s_snd_upd();
+		void wannaEvoWin(bool);
+		void s_evo_upd();
 		void wannaOptions();
 		void wannaOpen();
 		void wannaReload();
@@ -78,6 +81,8 @@ class DebugWin : public QMainWindow {
 		void scrSetDetached(bool);
 		void scrToggle();
 		void sndSetDetached(bool);
+		void evoSetDetached(bool);
+		void evoPicture();
 		void sndToggle();
 		void updateStyle();
 	private:
@@ -127,6 +132,7 @@ class DebugWin : public QMainWindow {
 		xFDDWidget* wid_fdd;
 		xBreakWidget* wid_brk;
 		xPalWidget* wid_pal;
+		xEvoWidget* wid_evo;
 		xHeatWidget* wid_heat;
 		QList<xDockWidget*> dockWidgets;
 
@@ -205,6 +211,7 @@ class DebugWin : public QMainWindow {
 		void setRegLayout(QAction*);
 		void resetLayout();
 		void setDefaultLayout();
+		bool restoreLayout(const QByteArray&);
 		void updateCpuDockWidth();
 		void styleTabBars();
 		void fitMMapBoxes();

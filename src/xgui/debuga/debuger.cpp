@@ -22,6 +22,7 @@
 #include "../xgui.h"
 #include "../portwatch.h"
 #include "../../libxpeccy/filetypes/filetypes.h"
+#include "../../libxpeccy/xreplay.h"
 
 // debuga.layout format: bump whenever the set of docks changes, so an older
 // file is refused instead of scattering panels it knows nothing about.
@@ -368,6 +369,9 @@ void DebugWin::machinePanels() {
 	bool disk = (conf.zx->dif->type != DIF_NONE);
 	wid_disk_dump->setVisible(disk);
 	wid_fdd->setVisible(disk);
+	wid_evo->setVisible(hw == HW_TSLAB);
+	// the redraw a layer switch asks for runs from the last two frames
+	xreplay_on = (hw == HW_TSLAB);
 }
 
 void DebugWin::onPrfChange() {
@@ -464,10 +468,13 @@ DebugWin::DebugWin(QWidget* par):QMainWindow(par) {
 	wid_brk = new xBreakWidget(":/images/stop.png","Breakpoints");
 	wid_heat = new xHeatWidget(":/images/memory.png","Heat map");
 	wid_pal = new xPalWidget(":/images/palette.png", "Palette");
+	wid_evo = new xEvoWidget("", "ZX Evo");
+	connect(wid_evo, &xEvoWidget::s_detach, this, &DebugWin::evoSetDetached);
+	connect(wid_evo, &xEvoWidget::s_picture, this, &DebugWin::evoPicture);
 
 	dockWidgets << wid_dump << wid_rdump << wid_disk_dump << wid_cmos_dump;
 	dockWidgets << wid_brk << wid_zxscr << wid_ay << wid_tape;
-	dockWidgets << wid_fdd << wid_heat << wid_pal;
+	dockWidgets << wid_fdd << wid_heat << wid_pal << wid_evo;
 
 	// misc used to be one monolithic MISCTOOLBAR pinned to the window edge.
 	// two docks instead, so they can be dragged and split like the rest
@@ -879,7 +886,7 @@ DebugWin::DebugWin(QWidget* par):QMainWindow(par) {
 		file.close();
 		// resetLayout, not setDefaultLayout: a refused restore can leave the
 		// window stretched, and only the former puts the size back too
-		if (restoreState(state, DBG_LAYOUT_VERSION)) {
+		if (restoreLayout(state)) {
 			dockLayout = state;		// see hideEvent
 		} else {
 			resetLayout();
@@ -1220,6 +1227,7 @@ void DebugWin::fillNotCPU() {
 	// those: while the debugger has the machine, it feeds them itself
 	emit s_scr_upd();
 	emit s_snd_upd();
+	emit s_evo_upd();
 
 	setSignal(ui_misc.labDOS, comp->flgDOS);
 	setSignal(ui_misc.labROM, comp->flgROM);
@@ -1267,6 +1275,17 @@ void DebugWin::sndSetDetached(bool on) {
 
 void DebugWin::sndToggle() {
 	sndSetDetached(!conf.dbg.snddetach);
+}
+
+void DebugWin::evoSetDetached(bool on) {
+	conf.dbg.evodetach = on ? 1 : 0;
+	wid_evo->setDetached(on);
+	emit wannaEvoWin(on);
+}
+
+// a layer switch drew the picture again: the screen views follow it
+void DebugWin::evoPicture() {
+	if (isVisible()) fillNotCPU();
 }
 
 void DebugWin::showScrDot(int x, int y, int adr, int atr) {
@@ -1706,6 +1725,25 @@ static QDockWidget* make_edge_anchor(const char* name) {
 	return dock;
 }
 
+// A layout saved before a panel existed has no place for it, and restoreState
+// leaves such a dock wherever it happens to be: it joins the bottom group instead.
+// The state names each dock by its objectName, as a QString in UTF-16.
+bool DebugWin::restoreLayout(const QByteArray& state) {
+	if (!restoreState(state, DBG_LAYOUT_VERSION)) return false;
+	foreach (xDockWidget* dw, dockWidgets) {
+		QString name = dw->objectName();
+		if (name.isEmpty() || (dw == wid_brk)) continue;
+		QByteArray utf16;
+		foreach (QChar c, name) {
+			utf16.append((char)(c.unicode() >> 8));
+			utf16.append((char)(c.unicode() & 0xff));
+		}
+		if (!state.contains(utf16))
+			tabifyDockWidget(wid_brk, dw);
+	}
+	return true;
+}
+
 // The shipped arrangement: cpu on the left, [ dump / brk ] [ misc / stack ] on
 // the right. Also the way back when the docks have been dragged into a corner
 // an empty area gives no drop zone to return to.
@@ -1735,6 +1773,7 @@ void DebugWin::setDefaultLayout() {
 	tabifyDockWidget(wid_brk, wid_fdd);
 	tabifyDockWidget(wid_brk, wid_heat);
 	tabifyDockWidget(wid_brk, wid_pal);
+	tabifyDockWidget(wid_brk, wid_evo);
 	// A panel has no close button, so the only way one can be hidden is a
 	// debuga.layout that was written while it was - which a build with more
 	// machines in it could do. Reset is the way back. Here, not in the loop
@@ -1824,7 +1863,7 @@ void DebugWin::showEvent(QShowEvent* ev) {
 	// state also carries which panels were up, and the machine may have changed
 	// while the window was away: the list for this one wins.
 	if (!dockLayout.isEmpty()) {
-		restoreState(dockLayout, DBG_LAYOUT_VERSION);
+		restoreLayout(dockLayout);
 		machinePanels();
 		styleTabBars();
 	}

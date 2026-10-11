@@ -322,6 +322,10 @@ unsigned char* xstate_put_begin(xState* st, const void* meta) {
 }
 
 size_t xstate_diff(const xState* st, Computer* comp, const unsigned char* other, size_t* first) {
+	return xstate_diff_skip(st, comp, other, first, NULL, 0);
+}
+
+size_t xstate_diff_skip(const xState* st, Computer* comp, const unsigned char* other, size_t* first, void* const* skipped, int nskip) {
 	if (!st || (st->m.count < 1)) return 0;
 	// the ray points into whichever image buffer is current, and those swap
 	// every frame: the pointers are not state, their offsets (in the meta) are
@@ -332,6 +336,11 @@ size_t xstate_diff(const xState* st, Computer* comp, const unsigned char* other,
 	for (i = 0; i < st->m.count; i++) {
 		const char* base = (const char*)st->m.chunk[i].ptr;
 		size_t n;
+		for (k = 0; (k < nskip) && (skipped[k] != st->m.chunk[i].ptr); k++);
+		if (k < nskip) {
+			off += st->m.chunk[i].size;
+			continue;
+		}
 		for (n = 0; n < st->m.chunk[i].size; n++) {
 			if (st->data[off + n] == other[off + n]) continue;
 			for (k = 0; k < 2; k++)

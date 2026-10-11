@@ -852,6 +852,64 @@ int tslIn(Computer* comp, int port) {
 	return  res;
 }
 
+// for the debugger
+
+void ts_get_regs(Computer* comp, tsRegs* r) {
+	Video* vid = comp->vid;
+	r->vconf = vid->tsconf.p00af;
+	r->vpage = vid->vidPage;
+	r->gxoffs = vid->tsconf.xOffset & 0x1ff;
+	r->gyoffs = vid->tsconf.yOffset & 0x1ff;
+	r->palsel = vid->tsconf.p07af;
+	r->border = vid->nextbrd;
+	r->tsconf = vid->tsconf.tconfig;
+	r->tmpage = vid->tsconf.TMPage;
+	r->t0gpage = vid->tsconf.T0GPage;
+	r->t1gpage = vid->tsconf.T1GPage;
+	r->sgpage = vid->tsconf.SGPage;
+	r->t0xoffs = vid->tsconf.T0XOffset & 0x1ff;
+	r->t0yoffs = vid->tsconf.T0YOffset & 0x1ff;
+	r->t1xoffs = vid->tsconf.T1XOffset & 0x1ff;
+	r->t1yoffs = vid->tsconf.T1YOffset & 0x1ff;
+	r->page[0] = comp->tsconf.Page0;
+	for (int i = 1; i < 4; i++)
+		r->page[i] = comp->mem->map[i << 6].num >> 6;
+	r->memconf = comp->tsconf.p21af;
+	r->fmaddr = comp->regMADR;
+	r->fmen = comp->flgMEN;
+	r->cacheconf = comp->tsconf.cacheConf;
+	r->fddvirt = comp->fddOpen ? 0x80 : 0x00;
+	for (int i = 0; i < 4; i++)
+		if (comp->dif->fdc->flop[i]->virt) r->fddvirt |= 1 << i;
+	r->clock = (comp->hwMul >= 4) ? 2 : (comp->hwMul >= 2) ? 1 : 0;
+	r->intmask = vid->inten;
+	r->hsint = vid->tsconf.hsint >> 1;
+	r->vsint = vid->tsconf.intLine;
+	r->vsinc = vid->tsconf.intInc;
+	r->dmasrc = (comp->dmaSrc.ih << 14) | (comp->dmaSrc.w & 0x3ffe);
+	r->dmadst = (comp->dmaDst.ih << 14) | (comp->dmaDst.w & 0x3ffe);
+	r->dmalen = comp->dmaLen;
+	r->dmanum = comp->dmaCnt;
+	unsigned n = comp->tsconf.dmalog.count;
+	r->dmactrl = n ? comp->tsconf.dmalog.rec[(n - 1) % TS_DMALOG].ctrl : -1;
+	r->dmaact = comp->tsconf.dma.act;
+	unsigned short m = vid->tsconf.lat.mask;
+	r->lat = m;
+	r->latVconf = vid->tsconf.lat.vconf;
+	r->latVpage = vid->tsconf.lat.vpage;
+	r->latGx = (((m & TSL_LAT_GXH) ? vid->tsconf.lat.gxh : vid->tsconf.soxh) & 1) << 8
+		| ((m & TSL_LAT_GXL) ? vid->tsconf.lat.gxl : vid->tsconf.soxl);
+	r->latGy = (((m & TSL_LAT_GYH) ? vid->tsconf.lat.gyh : vid->tsconf.soyh) & 1) << 8
+		| ((m & TSL_LAT_GYL) ? vid->tsconf.lat.gyl : vid->tsconf.soyl);
+	r->latPal = vid->tsconf.lat.palsel;
+	r->latT0x = (((m & TSL_LAT_T0XH) ? vid->tsconf.lat.t0xh : vid->tsconf.t0xh) & 1) << 8
+		| ((m & TSL_LAT_T0XL) ? vid->tsconf.lat.t0xl : vid->tsconf.t0xl);
+	r->latT1x = (((m & TSL_LAT_T1XH) ? vid->tsconf.lat.t1xh : vid->tsconf.t1xh) & 1) << 8
+		| ((m & TSL_LAT_T1XL) ? vid->tsconf.lat.t1xl : vid->tsconf.t1xl);
+	r->latT0g = vid->tsconf.lat.t0g;
+	r->latT1g = vid->tsconf.lat.t1g;
+}
+
 // irq
 
 void ts_irq(Computer* comp, int t) {

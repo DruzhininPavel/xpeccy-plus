@@ -243,6 +243,8 @@ set(MOCFILES
 	./src/xgui/debuga/dbg_zxscr.h
 	./src/xgui/sndwin.h
 	./src/xgui/debuga/dbg_sndchip.h
+	./src/xgui/evowin.h
+	./src/xgui/debuga/dbg_evo.h
 	./src/xgui/options/setupwin.h
 	./src/xgui/options/opt_romset.h
 	./src/xgui/options/opt_diskcat.h

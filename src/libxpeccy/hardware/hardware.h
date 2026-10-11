@@ -192,6 +192,25 @@ void zx_set_pal(Computer*);	// todo: called from zx_reset only
 // tsconf SYSCONF: the cpu speed (the .spg loader sets it too)
 void tsOut20AF(Computer*, int, int);
 
+// TSConf registers where the machine keeps them, for the debugger. The ones it
+// keeps no byte of are given as what they set (clock, dmactrl from the last start).
+typedef struct {
+	int vconf, vpage, gxoffs, gyoffs, palsel, border;
+	int tsconf, tmpage, t0gpage, t1gpage, sgpage, t0xoffs, t0yoffs, t1xoffs, t1yoffs;
+	int page[4];		// Page0 as written, Page1..3 as mapped
+	int memconf, fmaddr, fmen, cacheconf, fddvirt;
+	int clock;		// ZCLK the cpu runs at: 0 3.5, 1 7, 2 14 MHz
+	int intmask, hsint, vsint, vsinc;
+	int dmasrc, dmadst;	// byte addresses, 22 bits
+	int dmalen, dmanum;	// as written, one less than the count
+	int dmactrl;		// the last DMACtrl that started one, -1 none yet
+	int dmaact;
+	// written, waiting for the next line start (TSL_LAT_*), and what they will be
+	unsigned short lat;
+	int latVconf, latVpage, latGx, latGy, latPal, latT0x, latT1x, latT0g, latT1g;
+} tsRegs;
+void ts_get_regs(Computer*, tsRegs*);
+
 #ifdef __cplusplus
 }
 #endif

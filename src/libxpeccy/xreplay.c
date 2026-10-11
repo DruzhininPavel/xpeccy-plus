@@ -111,6 +111,37 @@ static void owner_set(Computer* comp, const xrpOwner* o) {
 	comp->vid->tail = o->tail;
 }
 
+// The sound devices are run by the sound mixer, outside the machine's own steps,
+// so a run does not move them: they are left out of the comparison. What the cpu
+// read from them came from the log anyway.
+static int sound_parts(Computer* comp, void** list) {
+	int n = 0;
+	list[n++] = comp->beep;
+	if (comp->ts) {
+		list[n++] = comp->ts;
+		list[n++] = comp->ts->chipA;
+		list[n++] = comp->ts->chipB;
+		list[n++] = comp->ts->chipC;
+		list[n++] = comp->ts->chipD;
+		for (int i = 0; i < 4; i++) {
+			void* p = NULL;
+			if (ts_state_range(comp->ts, i, &p) > 0) list[n++] = p;
+		}
+	}
+	if (comp->gs) {
+		list[n++] = comp->gs;
+		list[n++] = comp->gs->cpu;
+		if (comp->gs->mem) {
+			list[n++] = comp->gs->mem->map;
+			list[n++] = comp->gs->mem->ramData;
+			list[n++] = (char*)comp->gs->mem + offsetof(Memory, ramSize);
+		}
+	}
+	list[n++] = comp->sdrv;
+	list[n++] = comp->saa;
+	return n;
+}
+
 static xState* stNow = NULL;
 static xState* stEnd = NULL;
 static unsigned char* picSave = NULL;	// both image buffers, to put back if the run fails
@@ -142,6 +173,10 @@ int xreplay_redraw(Computer* comp) {
 		picSave = p;
 		picCap = 2 * bufSize;
 	}
+	// A register that is only a copy of others (the Z80's F is made from its flags
+	// when it is asked for) is as fresh as the last reader left it: both sides of
+	// the comparison get it filled in the same way
+	cpuGetRegs(comp->cpu);
 	if (!stNow || !stEnd || !xstate_save(stNow, comp)) REFUSE("no memory");
 	xrpOwner own;
 	owner_get(&own, comp);
@@ -171,6 +206,7 @@ int xreplay_redraw(Computer* comp) {
 	int ok = (comp->tickTotal == target) && !feedFail && (feedPos == frm[0].len + frm[1].len);
 	if (ok) {
 		owner_set(comp, &own);
+		cpuGetRegs(comp->cpu);
 		ok = xstate_save(stEnd, comp);
 	} else {
 		snprintf(why, sizeof(why), "the run ends at T %lld of %lld, %i INs of %i%s",
@@ -180,7 +216,9 @@ int xreplay_redraw(Computer* comp) {
 		const unsigned char* data = NULL;
 		size_t first = 0;
 		xstate_bytes(stEnd, &data, NULL);
-		size_t diff = xstate_diff(stNow, comp, data, &first);
+		void* sound[24];
+		int ns = sound_parts(comp, sound);
+		size_t diff = xstate_diff_skip(stNow, comp, data, &first, sound, ns);
 		if (diff) {
 			size_t inner = 0;
 			int part = xstate_chunk_at(stNow, first, &inner);
