@@ -80,3 +80,8 @@ run r01_pause_ref    t16_sprreuse.bin     0   REDRAW=3,70000,0x01,0,1
 run r02_debugger     t15_tiles_y4.bin     0   REDRAW=3,70000,0x3f,1,0,20000,0
 run r02_debugger_ref t15_tiles_y4.bin     0   REDRAW=3,70000,0x3f,1,1,20000,0
 run r03_poke         t10_layers_m0.bin    0   REDRAW=3,30000,0x01,1,0,0,1
+
+# The debugger's DMA log: every transfer with its device pair, addresses, size and time
+run d01_dmalog       t04_dma.bin          5   DMALOG=1
+run d02_dmalog_time  t13_dmatime_c6.bin   10  DMALOG=1
+run d03_dmalog_reg   t14_dmareg.bin       5   DMALOG=1

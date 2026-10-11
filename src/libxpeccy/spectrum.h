@@ -69,6 +69,20 @@ typedef struct {
 	int mask;	// block size - 1, 0 without align
 } tsDmaAdr;
 
+// a TSConf DMA transfer as the debugger lists it
+typedef struct {
+	int fcnt;		// vid->fcnt of the frame it was started in
+	int line, dot;		// where the beam was then
+	unsigned char ctrl;	// DMACtrl as written
+	int src, dst;		// byte addresses, 22 bits
+	int len, num;		// words a burst, bursts
+	long long start;	// tickTotal then
+	int dur;		// T it took, -1 while it runs
+	int cut;		// a new start cut it short
+} tsDmaRec;
+
+#define TS_DMALOG	64
+
 typedef struct {
 	int t;
 	int a;
@@ -283,6 +297,10 @@ typedef struct Computer {
 			int time;		// dots banked, for the device side of SPI and IDE
 			long long frac;		// ns (16.16) not yet a whole dot
 		} dma;
+		struct {			// the transfers started lately, for the debugger
+			tsDmaRec rec[TS_DMALOG];
+			unsigned count;		// started so far: rec[count % TS_DMALOG] is the next
+		} dmalog;
 	} tsconf;
 } Computer;
 

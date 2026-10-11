@@ -274,3 +274,38 @@ REDRAW: refused
 WHY  : the run ends 1 bytes away, the first in part 5 at 16383
 STATE: ram 51EAA926 pc 8088 sp BF00 af 80FF t 237824
 PIC  : ray 320,101 scr-drawn 9A7D92C5 scr 5CA18AC5
+== d01_dmalog
+t04_dma.bin: 466 bytes, done after 0 frames, pc=81C9
+BF01: 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10
+BF11: 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F 20
+BF31: A5 5A A5 5A A5 5A A5 5A 00 00 00 00 00 00 00 00
+BF41: C1 C2 C3 C4 C5 C6 C7 C8 D1 D2 D3 D4 D5 D6 D7 D8
+BRD  : 00
+DMA  : 5 started
+DMA  : #0 frame 0 at 10:366 ctrl 84 040100 -> 000000 1 x 2, 4 T
+DMA  : #1 frame 0 at 11:42 ctrl 84 040104 -> 000004 1 x 2, 4 T
+DMA  : #2 frame 0 at 12:182 ctrl 11 040000 -> 0440F0 16 x 1, 14 T
+DMA  : #3 frame 0 at 17:122 ctrl 14 040200 -> 048000 2 x 2, 4 T
+DMA  : #4 frame 0 at 22:96 ctrl 01 3FFFF8 -> 04C000 8 x 1, 4 T
+CRAM : 11 22 33 44 55 66 77 88 00 00 00 00 00 00 00 00
+LINB : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+SFILE: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+== d02_dmalog_time
+t13_dmatime_c6.bin: 906 bytes, done after 0 frames, pc=8084
+BF01: E3 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00
+BRD  : 00
+DMA  : 1 started
+DMA  : #0 frame 0 at 7:270 ctrl 01 040000 -> 080000 256 x 16, 16386 T
+CRAM : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+LINB : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+SFILE: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+== d03_dmalog_reg
+t14_dmareg.bin: 214 bytes, done after 4 frames, pc=80D5
+BF01: 01 00 77 00 00 00 00 00 00 00 00 00 00 00 00 00
+BRD  : 00
+DMA  : 2 started
+DMA  : #0 frame 4 at 257:260 ctrl 01 040000 -> 080000 256 x 16, 4577 T
+DMA  : #1 frame 4 at 279:112 ctrl 01 044000 -> 0C0000 1 x 1, 4 T
+CRAM : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+LINB : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+SFILE: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

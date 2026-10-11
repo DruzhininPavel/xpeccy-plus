@@ -612,7 +612,40 @@ static void ts_dma_word(Computer* comp) {
 	}
 }
 
+// the transfer running now in the debugger's list, NULL when none is
+static tsDmaRec* ts_dma_rec_running(Computer* comp) {
+	if (!comp->tsconf.dmalog.count) return NULL;
+	tsDmaRec* r = &comp->tsconf.dmalog.rec[(comp->tsconf.dmalog.count - 1) % TS_DMALOG];
+	return (r->dur < 0) ? r : NULL;
+}
+
+static void ts_dma_rec_end(Computer* comp, long long now, int cut) {
+	tsDmaRec* r = ts_dma_rec_running(comp);
+	if (!r) return;
+	r->dur = (int)(now - r->start);
+	r->cut = cut;
+}
+
+static void ts_dma_rec_start(Computer* comp, int val) {
+	long long now = comp->tickTotal + comp->cpu->t;
+	ts_dma_rec_end(comp, now, 1);
+	tsDmaRec* r = &comp->tsconf.dmalog.rec[comp->tsconf.dmalog.count % TS_DMALOG];
+	comp->tsconf.dmalog.count++;
+	r->fcnt = comp->vid->fcnt;
+	r->line = comp->vid->ray.y;
+	r->dot = comp->vid->ray.x;
+	r->ctrl = val & 0xff;
+	r->src = (comp->dmaSrc.ih << 14) | (comp->dmaSrc.w & 0x3ffe);
+	r->dst = (comp->dmaDst.ih << 14) | (comp->dmaDst.w & 0x3ffe);
+	r->len = comp->dmaLen + 1;
+	r->num = comp->dmaCnt + 1;
+	r->start = now;
+	r->dur = -1;
+	r->cut = 0;
+}
+
 static void ts_dma_end(Computer* comp) {
+	ts_dma_rec_end(comp, comp->tickTotal, 0);	// synced after the instruction: T of its end
 	comp->tsconf.dma.act = 0;
 	ts_dma_adr_store(&comp->tsconf.dma.s, &comp->dmaSrc);
 	ts_dma_adr_store(&comp->tsconf.dma.d, &comp->dmaDst);
@@ -660,6 +693,7 @@ void tsOut27AF(Computer* comp, int port, int val) {
 		xlog(XLG_HW, XLL_DEBUG, "0x27AF: unsupported src-dst: %.2X", val & 0x87);
 		return;
 	}
+	ts_dma_rec_start(comp, val);
 	comp->tsconf.dma.dev = dev;
 	comp->tsconf.dma.asz = asz;
 	comp->tsconf.dma.sat = (val & 0x40) ? 1 : 0;

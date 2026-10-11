@@ -143,6 +143,15 @@ int main(int argc, char** argv) {
 	probe(comp, "PIXH", "PIXH ", 4);
 	printf("BRD  : %02X\n", comp->vid->brdcol);
 	if (getenv("STATE")) state_line(comp, "STATE");
+	if (getenv("DMALOG")) {
+		unsigned cnt = comp->tsconf.dmalog.count;
+		printf("DMA  : %u started\n", cnt);
+		for (unsigned k = (cnt > TS_DMALOG) ? cnt - TS_DMALOG : 0; k < cnt; k++) {
+			tsDmaRec* r = &comp->tsconf.dmalog.rec[k % TS_DMALOG];
+			printf("DMA  : #%u frame %d at %d:%d ctrl %02X %06X -> %06X %d x %d, %d T%s\n", k, r->fcnt,
+				r->line, r->dot, r->ctrl, r->src, r->dst, r->len, r->num, r->dur, r->cut ? " cut" : "");
+		}
+	}
 	const char* dump = getenv("DUMP");
 	if (dump) {
 		dump_ppm(comp, dump);
