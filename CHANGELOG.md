@@ -28,6 +28,22 @@ before that point is upstream's history and is not repeated here.
 - **A save that fails says so**, such as a tape TAP cannot hold or a disk that is not
   TR-DOS, and a file of an unknown type is reported and kept out of the recent list.
 
+- **Apply with another model** in Options keeps what was changed on the other pages.
+
+- **The command line** warns about an unknown option or a missing value instead of opening
+  it as a file, keeps a snapshot named before `-m`, reads `#`, `$` and `0x` as hex and
+  anything else as decimal, and `-c` uses the console it was started from.
+
+- **Screenshots** go to the home folder whatever drive the emulator runs from, and one that
+  cannot be written says so.
+
+- **The palette editor** works only on a palette file and holds its changes until Apply;
+  Restore brings back a shipped palette, and palettes are listed without the extension.
+
+- **Smaller things**: Record in the tape player works on an empty deck, the Fast Mode button
+  switches it when the key is set to Hold, a keymap line with many keys no longer overruns,
+  and a number of messages, tooltips and labels are corrected.
+
 ## 2026.7 - 2026-10-10
 
 ### Added
