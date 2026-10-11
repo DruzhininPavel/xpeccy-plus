@@ -1,5 +1,6 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QTreeWidgetItemIterator>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -17,9 +18,45 @@ xEvoList::xEvoList(QStringList head, QWidget* p):QTreeWidget(p) {
 	setUniformRowHeights(true);
 	setSelectionMode(QAbstractItemView::NoSelection);
 	setFocusPolicy(Qt::NoFocus);
+	setAlternatingRowColors(true);		// as the dumps and the listing have them
 	header()->setStretchLastSection(true);
 	header()->setSectionsMovable(false);
 	header()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+}
+
+// A column as wide as the widest of its samples, and never narrower than it has
+// been: a value that grows for a step and shrinks back must not move the table.
+// A font change (the debugger hands its own out after the panel is made) starts
+// the widths over.
+static void evo_fit_column(QTreeWidget* view, int col, QStringList samples) {
+	QString fkey = QString("fitFont%0").arg(col);
+	if (view->property(fkey.toUtf8().constData()).toString() != view->font().toString()) {
+		view->setProperty(fkey.toUtf8().constData(), view->font().toString());
+		view->setColumnWidth(col, 0);
+	}
+	samples << view->headerItem()->text(col);
+	QTreeWidgetItemIterator it(view);
+	for (; *it; ++it)
+		if (!(*it)->isFirstColumnSpanned()) samples << (*it)->text(col);
+	QFontMetrics fm(view->font());
+	int w = 0;
+	foreach (QString smp, samples)
+		w = qMax(w, fm.horizontalAdvance(smp) + fm.averageCharWidth());
+	if (w > view->columnWidth(col))
+		view->setColumnWidth(col, w);
+}
+
+// group rows are coloured as the debugger's panel headers are
+static void evo_header_colors(QTreeWidgetItem* it, const QFont& base) {
+	QFont fnt = base;
+	fnt.setBold(true);
+	it->setFont(0, fnt);
+	QColor bg = conf.pal.value("dbg.header.bg");
+	QColor fg = conf.pal.value("dbg.header.txt");
+	for (int i = 0; i < it->columnCount(); i++) {
+		if (bg.isValid()) it->setBackground(i, bg);
+		if (fg.isValid()) it->setForeground(i, fg);
+	}
 }
 
 QTreeWidgetItem* xEvoList::group(const QString& name) {
@@ -27,9 +64,7 @@ QTreeWidgetItem* xEvoList::group(const QString& name) {
 	if (it) return it;
 	it = new QTreeWidgetItem(this, QStringList(name));
 	it->setFirstColumnSpanned(true);
-	QFont fnt = font();
-	fnt.setBold(true);
-	it->setFont(0, fnt);
+	evo_header_colors(it, font());
 	it->setExpanded(true);
 	groups[name] = it;
 	return it;
@@ -75,12 +110,10 @@ void xEvoList::finish() {
 }
 
 void xEvoList::restyle() {
-	QFont fnt = font();
-	fnt.setBold(true);
 	foreach (QTreeWidgetItem* it, groups)
-		it->setFont(0, fnt);
+		evo_header_colors(it, font());
 	for (int i = 0; i < columnCount() - 1; i++)
-		resizeColumnToContents(i);
+		evo_fit_column(this, i, (i == 2) ? QStringList("000 > 000") : QStringList());
 }
 
 // exactly as tall as its rows, for a list that shares the page with another
@@ -139,13 +172,13 @@ static QString ts_adr(int a) {
 static const char* ts_dev_name(int ctrl) {
 	switch (((ctrl & 0x80) >> 4) | (ctrl & 7)) {
 		case 0x1: return "RAM > RAM";
-		case 0x9: return "blit RAM > RAM";
-		case 0x6: return "add-blit RAM > RAM";
+		case 0x9: return "blit > RAM";
+		case 0x6: return "add-blit > RAM";
 		case 0x2: return "SPI > RAM";
 		case 0xa: return "RAM > SPI";
 		case 0x3: return "IDE > RAM";
 		case 0xb: return "RAM > IDE";
-		case 0x4: return "fill RAM";
+		case 0x4: return "fill > RAM";
 		case 0xc: return "RAM > CRAM";
 		case 0xd: return "RAM > SFILE";
 	}
@@ -340,6 +373,7 @@ xTsDmaPage::xTsDmaPage(QWidget* p):QWidget(p) {
 	log = new QTreeWidget;
 	log->setRootIsDecorated(false);
 	log->setUniformRowHeights(true);
+	log->setAlternatingRowColors(true);
 	log->setSelectionMode(QAbstractItemView::NoSelection);
 	log->setFocusPolicy(Qt::NoFocus);
 	log->setHeaderLabels({"Frame", "Line:dot", "Transfer", "From", "To", "Size", "Took"});
@@ -376,8 +410,10 @@ void xTsDmaPage::draw() {
 			ts_dev_name(d->ctrl), ts_adr(d->src), ts_adr(d->dst), QString("%0 x %1").arg(d->len).arg(d->num), took});
 		it->setTextAlignment(1, Qt::AlignRight | Qt::AlignVCenter);
 	}
-	for (int i = 0; i < log->columnCount() - 1; i++)
-		log->resizeColumnToContents(i);
+	static const QStringList widest[6] = {{"Frame", "last"}, {"Line:dot", "319:447"}, {"add-blit > RAM"},
+		{"FF:3FFE"}, {"FF:3FFE"}, {"256 x 256"}};
+	for (int i = 0; i < 6; i++)
+		evo_fit_column(log, i, widest[i]);
 	log->scrollToBottom();
 }
 
