@@ -114,7 +114,7 @@ static xFileTypeInfo ft_tab[] = {
 	{FL_SPG, 0, ".spg", "*.spg", loadSPG, NULL, "SPG snapshot"},
 	{FL_TAP, 0, ".tap", "*.tap", loadTAP, saveTAP, "TAP tape image"},
 	{FL_TZX, 0, ".tzx", "*.tzx", loadTZX, NULL, "TZX tape image"},
-	{FL_WAV, 0, ".wav", "*.wav", loadWAV, save_wav, "WAV tape image"},
+	{FL_WAV, 0, ".wav", "*.wav", loadWAV, save_wav, "WAV recording"},
 	{FL_SCL, 1, ".scl", "*.scl", loadSCL, saveSCL, "SCL disk image"},
 	{FL_TRD, 1, ".trd", "*.trd", loadTRD, saveTRD, "TRD disk image"},
 	{FL_TD0, 1, ".td0", "*.td0", loadTD0, NULL, "TD0 disk image"},
@@ -153,6 +153,12 @@ static xFileGroupInfo fg_tab[] = {
 };
 
 static xFileGroupInfo fg_dum = {0, "", -1, NULL, NULL, {0}};
+
+// A wav is a recording of the tape, not an image of it: written only when asked
+// where, under a filter of its own, and the tape stays changed
+static bool ft_export(xFileTypeInfo* inf) {
+	return inf && (inf->id == FL_WAV);
+}
 
 static xFileHWInfo fh_tab[] = {
 	{FH_SPECTRUM, {FG_SNAPSHOT, FG_TAPE, FG_DISK_A, FG_DISK_B, FG_DISK_C, FG_DISK_D, FG_RAW, FG_RZX, FG_IF2_ROM, 0}},
@@ -290,6 +296,7 @@ QString file_get_group_filter(Computer* comp, int id, int sv) {
 	QString flt;
 	QString ftf;
 	QString ofl;
+	QString exf;
 	int i;
 	xFileGroupInfo* inf = file_find_group(id);
 	if (inf->id > 0) {
@@ -297,13 +304,18 @@ QString file_get_group_filter(Computer* comp, int id, int sv) {
 			i = 0;
 			while(inf->child[i] > 0) {
 				ofl = file_get_type_filter(inf->child[i], sv);
-				if (!ofl.isEmpty())
+				xFileTypeInfo* tin = file_find_type(inf->child[i]);
+				if (!ofl.isEmpty() && sv && ft_export(tin))
+					exf.append(QString(";;%0, export (%1)").arg(tin->name, ofl));
+				else if (!ofl.isEmpty())
 					ftf.append(ofl).append(" ");
 				i++;
 			}
 			ftf = ftf.trimmed();
 			if (!ftf.isEmpty())
 				flt = QString("%0 (%1)").arg(inf->name, ftf);
+			flt.append(exf);
+			if (flt.startsWith(";;")) flt.remove(0, 2);
 		}
 	}
 	return flt;
@@ -365,7 +377,7 @@ static xFilerError err_tab[] = {
 	{ERR_SZX_SIGN, "Wrong SZX signature"},
 	{ERR_SZX_HW, "SZX snapshot: a machine this emulator does not have"},
 	{ERR_SZX_DATA, "SZX snapshot: no cpu or memory in it"},
-	{ERR_TAP_DATA, "This tape has blocks TAP cannot hold: save it as WAV"},
+	{ERR_TAP_DATA, "This tape has blocks TAP cannot hold: export it to WAV"},
 	{ERR_TAP_EMPTY, "The tape is empty"},
 	{ERR_NOTRD, "Not a TR-DOS disk"},
 	{ERR_CANT_SAVE, "Can't save in this format"},
@@ -852,7 +864,9 @@ int save_file(Computer* comp, const char* name, int id, int drv, int live) {
 				} else {
 					tin = file_detect_type(flt);
 					if (tin->id != FL_NONE) {
-						path.append(tin->ext);
+						if (tin->ext && !path.endsWith(tin->ext, Qt::CaseInsensitive))
+							path.append(tin->ext);
+						inf = tin;
 					}
 				}
 				conf.lastDir = std::string(QFileInfo(path).dir().absolutePath().toLocal8Bit().data());
@@ -896,7 +910,7 @@ int save_file(Computer* comp, const char* name, int id, int drv, int live) {
 bool file_can_save(Computer* comp, const char* path) {
 	if (!path || !*path) return false;
 	xFileTypeInfo* inf = file_find_hw_ext(comp->hw->id, QString::fromLocal8Bit(path));
-	return inf && inf->save;
+	return inf && inf->save && !ft_export(inf);
 }
 
 
