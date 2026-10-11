@@ -9,6 +9,26 @@ before that point is upstream's history and is not repeated here.
 
 ## Unreleased
 
+### Added
+
+- **Debugging from a script**: `--bench N` runs a program with no window in every build, not
+  only in nightly ones. It ends on a breakpoint that stops, and the exit code says whether it
+  ran to the end, stopped or could not start. Results go to stdout, the log to stderr.
+  Breakpoint lists take labels, and `-l`, `--brk` and `--bp` work in any order.
+
+- **Measuring code between two points**: a breakpoint can open or close a span. Each span
+  keeps its shortest, average and longest time in T and how many of them an interrupt went
+  into, `DT` in a condition stops on one that ran too long, and a run with no window prints
+  them at the end. *(thanks to Aleksey Pichugin and reddie)*
+
+- **The breakpoint log** is a file of its own, written from the first hit of a breakpoint
+  with Log on, with no switch to find. It has no wall-clock time in it, so two runs compare
+  line by line, and a breakpoint can name what to write instead of every register.
+  `--brk-log` sends it elsewhere. *(thanks to Volutar)*
+
+- **The breakpoint editor** takes a label, page:offset or a CPU address for a memory cell,
+  shows how it read the address, and has Cancel and tooltips.
+
 ### Fixed
 
 - **Starting from a folder of thousands of files** no longer freezes the window for seconds,
@@ -32,7 +52,9 @@ before that point is upstream's history and is not repeated here.
 
 - **The command line** warns about an unknown option or a missing value instead of opening
   it as a file, keeps a snapshot named before `-m`, reads `#`, `$` and `0x` as hex and
-  anything else as decimal, and `-c` uses the console it was started from.
+  anything else as decimal, and `-c` uses the console it was started from and leaves an
+  output sent to a file where it is. Started from a console by name alone, the emulator no
+  longer quits at once.
 
 - **Screenshots** go to the home folder whatever drive the emulator runs from, and one that
   cannot be written says so.
