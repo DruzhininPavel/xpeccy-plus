@@ -153,7 +153,8 @@ QString gethexbyte(int);
 QString gethexword(int);
 extern std::atomic<int> xUserResets;
 void x_user_reset(Computer*, int);
-int unreal_num(QString, bool*);		// #/$/0x hex, else decimal
+int unreal_num(QString, bool*);		// #/$/0x hex, 0 octal, else decimal
+int str_num(QString, bool*);		// #/$/0x hex, else decimal (no octal)
 QString getPortString(int, int);
 bool parsePort(const QString&, int*, int*);
 QString gethex6(int);

@@ -552,8 +552,8 @@ static bool parseRange(QString str, xBrkPoint* p) {
 }
 
 
-// a number the way unreal writes it: 0x forces hex, # and $ too, everything
-// else is decimal (that is what unreal's own sscanf("%i") does)
+// a number the way unreal reads it, sscanf("%i"): 0x is hex, a leading 0
+// octal, the rest decimal; # and $ are taken as hex too
 
 int unreal_num(QString str, bool* ok) {
 	str = str.trimmed();

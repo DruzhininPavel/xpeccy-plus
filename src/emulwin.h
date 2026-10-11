@@ -122,6 +122,7 @@ typedef struct {
 		void addSatellite(QWidget*, bool allKeys = false);
 		int hotkeyOf(QKeyEvent*);
 		void hotkeysNote();
+		void setMessage(QString, double = 2.0);
 		void fillUserMenu();
 		void openMedia(const QString& path, int id, int drv, int run, bool pinned = false);
 		void padGame(const QString&);		// an image opened: player 1 takes its .pad, or its own table back
@@ -271,7 +272,6 @@ typedef struct {
 
 		int msgTimer;
 		QString msg;
-		void setMessage(QString, double = 2.0);
 
 		bool saveChanged(bool tape);
 		void updateHead();

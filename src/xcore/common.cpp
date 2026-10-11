@@ -147,6 +147,17 @@ void setFlagBit(bool cond, int* val, int mask) {
 	}
 }
 
+// a number typed by the user: #, $ and 0x are hex, everything else decimal -
+// a leading zero is not octal
+int str_num(QString str, bool* ok) {
+	str = str.trimmed();
+	if (str.startsWith("#") || str.startsWith("$"))
+		return str.mid(1).toInt(ok, 16);
+	if (str.startsWith("0x", Qt::CaseInsensitive))
+		return str.mid(2).toInt(ok, 16);
+	return str.toInt(ok, 10);
+}
+
 bool str2bool(std::string v) {
 	return !(v=="n" || v=="N" || v=="0" || v=="no" || v=="NO" || v=="false" || v=="FALSE" || v=="off" || v=="OFF");
 }
