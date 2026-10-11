@@ -1935,19 +1935,6 @@ border, instead of stretching it</string>
                  <item>
                   <layout class="QVBoxLayout" name="ssColumn">
                    <item>
-                    <widget class="QCheckBox" name="ssNoLeds">
-                     <property name="toolTip">
-                      <string>Leave the indicators out of the screenshot</string>
-                     </property>
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="text">
-                      <string>No LEDs</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
                     <widget class="QCheckBox" name="ssNoBord">
                      <property name="toolTip">
                       <string>Screen only, without the border</string>
@@ -2384,16 +2371,6 @@ thin, lower it again after a long clean spell</string>
                  </size>
                 </property>
                </spacer>
-              </item>
-              <item row="6" column="0">
-               <widget class="QCheckBox" name="cbSAA">
-                <property name="toolTip">
-                 <string>SAA1099 sound chip</string>
-                </property>
-                <property name="text">
-                 <string>SAA</string>
-                </property>
-               </widget>
               </item>
              </layout>
             </widget>

@@ -1005,7 +1005,6 @@ void SetupWin::start() {
 	ui.ssfbox->setCurrentIndex(ui.ssfbox->findData(QString::fromStdString(conf.scrShot.format)));
 	ui.scntbox->setValue(conf.scrShot.count);
 	ui.sintbox->setValue(conf.scrShot.interval);
-	ui.ssNoLeds->setChecked(conf.scrShot.noLeds);
 	ui.ssNoBord->setChecked(conf.scrShot.noBorder);
 	fillRecording();
 	ui.geombox->clear();
@@ -1207,7 +1206,6 @@ void SetupWin::apply() {
 	conf.scrShot.format = getRFSData(ui.ssfbox).toStdString();
 	conf.scrShot.count = ui.scntbox->value();
 	conf.scrShot.interval = ui.sintbox->value();
-	conf.scrShot.noLeds = ui.ssNoLeds->isChecked() ? 1 : 0;
 	conf.scrShot.noBorder = ui.ssNoBord->isChecked() ? 1 : 0;
 	applyRecording();
 	vid_set_border_mode(ui.bszsld->value());
@@ -2092,8 +2090,8 @@ void SetupWin::delMachine() {
 		shitHappens("Could not delete the machine file");
 		return;
 	}
-	// gone for good, or back as it ships: either way the list is rebuilt
-	if (!xm_find(id)) id = back;
+	// a machine of the user's is gone for good: on to the one it was made from
+	id = back;
 	if (!xm_find(id)) id = xm_list().isEmpty() ? std::string() : xm_list().first().id;
 	conf.macId.clear();		// nothing to save into a machine that is gone
 	if (!id.empty()) xm_set(id);

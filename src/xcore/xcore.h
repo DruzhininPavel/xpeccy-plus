@@ -384,7 +384,6 @@ enum {
 	XCUT_GRABKBD,
 	XCUT_PAUSE,
 	XCUT_DEBUG,
-	XCUT_MENU,
 	XCUT_OPTIONS,
 	XCUT_SAVE,
 	XCUT_LOAD,
@@ -835,7 +834,6 @@ struct xConfig {
 //	} joy;
 	xGamepadController* gpctrl;
 	struct {
-		unsigned noLeds:1;
 		unsigned noBorder:1;
 		int count;
 		int interval;

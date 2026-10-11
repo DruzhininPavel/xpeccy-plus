@@ -323,9 +323,6 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 				// setUpdatesEnabled(true);
 				emit s_debug();
 				break;
-			case XCUT_MENU:
-				popupUserMenu(mapToGlobal(QPoint(20,20)));
-				break;
 			case XCUT_OPTIONS:
 				pause(true, PR_OPTS);
 				emit s_options();
