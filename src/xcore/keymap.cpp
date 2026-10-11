@@ -898,6 +898,12 @@ xShortcut* find_shortcut_id(int id) {
 	return (short_tab[i].id < 0) ? NULL : &short_tab[i];
 }
 
+// the key a hotkey is on, as the menus write it; empty when it has none
+QString shortcut_key(int id) {
+	xShortcut* sc = find_shortcut_id(id);
+	return (sc && !sc->seq[0].isEmpty()) ? sc->seq[0].toString(QKeySequence::NativeText) : QString();
+}
+
 xShortcut* find_shortcut_name(const char* name) {
 	int i = 0;
 	while ((short_tab[i].id >= 0) && (strcmp(name, short_tab[i].name)))

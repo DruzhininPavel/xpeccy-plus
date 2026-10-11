@@ -219,6 +219,7 @@ typedef struct {
 		unsigned rzxSeen = 0;			// the recording the player was last told of
 		void releaseChord(QKeyEvent*, bool);
 		void fast_key(bool);
+		void fast_toggle();
 		QPoint warpAt;		// where the last recentering aimed
 		unsigned char warpTtl;	// events it stays a candidate for
 		unsigned char warpFail;	// recenterings the host undid in a row
@@ -401,7 +402,6 @@ typedef struct {
 		void volumeChanged();
 		void updateStatus();
 		void cutTexts();
-		QString cutKey(int);
 		void initMenuBar();
 		// the menu over the picture in fullscreen, while the pointer is at the top
 		QMenuBar* fsBar;

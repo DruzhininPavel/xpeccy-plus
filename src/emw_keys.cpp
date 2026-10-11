@@ -490,6 +490,10 @@ void MainWin::keyReleaseEvent(QKeyEvent *ev) {
 void MainWin::fast_key(bool down) {
 	static xHoldKey key;
 	if (!xhold_switches(&key, conf.emu.fastHold, conf.emu.fast, down)) return;
+	fast_toggle();
+}
+
+void MainWin::fast_toggle() {
 	conf.emu.fast ^= 1;
 	updateHead();
 }

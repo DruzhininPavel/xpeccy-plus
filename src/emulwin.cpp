@@ -1976,7 +1976,7 @@ QAction* MainWin::cutAction(QMenu* menu, const QString& name, int id, const QStr
 // once, when an old config had its keys moved to the presets
 void MainWin::hotkeysNote() {
 	if (!hotkeys_migrated()) return;
-	QString key = cutKey(XCUT_HOTKEYS);
+	QString key = shortcut_key(XCUT_HOTKEYS);
 	setMessage(key.isEmpty() ? QString(" new hotkeys: see Options ") : QString(" new hotkeys: %0 lists them ").arg(key), 8.0);
 }
 
@@ -1991,15 +1991,9 @@ void MainWin::contextMenuEvent(QContextMenuEvent* ev) {
 }
 
 // the keys as they are now, after Options too
-// the key a hotkey is on, as the menus write it; empty when it has none
-QString MainWin::cutKey(int id) {
-	xShortcut* sc = find_shortcut_id(id);
-	return (sc && !sc->seq[0].isEmpty()) ? sc->seq[0].toString(QKeySequence::NativeText) : QString();
-}
-
 void MainWin::cutTexts() {
 	foreach(const xCutAct& cut, cutActs) {
-		QString key = cutKey(cut.id);
+		QString key = shortcut_key(cut.id);
 		QString text = cut.name;
 		QString tip = cut.name;
 		tip.remove("...");
@@ -2558,7 +2552,7 @@ void MainWin::fillUserMenu() {
 	act->setCheckable(true);
 	if (conf.palette.empty()) act->setChecked(true);
 	foreach(QString nam, xres_list("palettes", QStringList() << "*.txt" << "*.pal")) {
-		act = palMenu->addAction(QFileInfo(nam).completeBaseName());	// by name, as Options lists them
+		act = palMenu->addAction(palette_title(nam));
 		act->setData(nam);
 		act->setCheckable(true);
 		act->setChecked(nam == conf.palette.c_str());

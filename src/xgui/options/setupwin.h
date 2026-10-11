@@ -61,6 +61,8 @@ class SetupWin : public QDialog {
 		void fillDbgPalette();
 		void fillLogPage();
 		void applyLogPage();
+		void applyMachine();
+		void applyGlobal();
 		// video recording
 		void buildRecording();
 		void fillRecording();
@@ -143,7 +145,6 @@ class SetupWin : public QDialog {
 		QCheckBox* cbPadFiles;
 
 		QList<QColor> editpal;
-		QString editPalName;			// the file editpal is of
 		QMap<QString, QList<QColor> > palPending;	// edited, written on Apply
 		void fillPalettes();
 

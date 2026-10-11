@@ -184,27 +184,10 @@ static void cli_warn(const QString& msg) {
 	cliWarns << msg;
 }
 
-// the options that take a value, for telling one given last from a typo
-static const char* cliValueOpts[] = {
-	"-m", "--machine", "-p", "--profile", "--video-autostart", "--video-autostop",
-	"--pc", "--sp", "-b", "--bank", "-a", "--adr", "-f", "--file", "--bp", "--brk",
-	"-l", "--labels", "-s", "--size", "-n", "--noflick", "-r", "--ratio", "--fullscreen",
-	"--sdcard", "--disk", "--video-out", "--wav-out", "--xmap", "--confdir",
-	"--bench", "--bench-rewind", "--bench-skip", "--bench-prof", "--bench-shot", "--bench-save",
-	"--bench-steps", "--bench-rzx", "--bench-rzx-seek", "--bench-rzx-rec", "--bench-rzx-rec-back",
-	"--bench-rzx-rec-join", "--bench-rzx-rec-mark", "--bench-rzx-rec-roll", "--bench-rzx-take",
-	"--bench-rzx-rec-nmi", "--bench-state", "--bench-keys", "--bench-loops", NULL
-};
-
+// a typo, or an option given last without its value
 static void cli_bad_arg(const char* arg) {
 	if (!strncmp(arg, "-psn_", 5)) return;		// an old macOS Finder's process number
-	for (int i = 0; cliValueOpts[i]; i++) {
-		if (!strcmp(arg, cliValueOpts[i])) {
-			cli_warn(QString("%0 needs a value").arg(arg));
-			return;
-		}
-	}
-	cli_warn(QString("unknown option: %0").arg(QString::fromLocal8Bit(arg)));
+	cli_warn(QString("unknown option or missing value: %0").arg(QString::fromLocal8Bit(arg)));
 }
 
 // an address or a page number: false, and said so, when it is not a number

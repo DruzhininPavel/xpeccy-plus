@@ -1554,9 +1554,6 @@ Integer scaling, so every pixel is the same size</string>
                     </item>
                     <item>
                      <widget class="QCheckBox" name="cbFullscreen">
-                      <property name="toolTip">
-                       <string>Fill the screen with the picture</string>
-                      </property>
                       <property name="text">
                        <string>Fullscreen</string>
                       </property>

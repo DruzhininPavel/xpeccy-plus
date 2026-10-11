@@ -330,6 +330,8 @@ QList<QColor> loadColors(std::string);
 int saveColors(std::string, QList<QColor>);
 void loadPalette();
 std::string palette_name(const std::string&);	// what a config's palette name means now
+QString palette_title(const QString&);		// as the lists show it, no extension
+QString palette_own_file(const QString&);	// the user's copy, shadowing a shipped one
 void dbgPaletteDefaults();			// debugger colours: back to the built-in ones
 const char* dbgPaletteDefault(const char*);
 void loadStylePalette(const std::string&);	// debugger colours shipped with a style sheet
@@ -496,6 +498,7 @@ struct xHotkeySet {
 
 void shortcut_init();
 xShortcut* find_shortcut_id(int);
+QString shortcut_key(int);		// as the menus write it; empty when it has none
 xShortcut* find_shortcut_name(const char*);
 xShortcut* shortcut_tab();
 int shortcut_find(int, int, Qt::KeyboardModifiers);

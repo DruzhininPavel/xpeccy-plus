@@ -901,8 +901,7 @@ void SetupWin::startHotkeys() {
 
 // the key read from the hotkeys as they are, so another preset reads right
 static void fullscreenTip(QCheckBox* box) {
-	xShortcut* sc = find_shortcut_id(XCUT_FULLSCR);
-	QString key = (sc && !sc->seq[0].isEmpty()) ? sc->seq[0].toString(QKeySequence::NativeText) : QString();
+	QString key = shortcut_key(XCUT_FULLSCR);
 	box->setToolTip(key.isEmpty() ? QString("Fill the screen with the picture")
 		: QString("Fill the screen with the picture. %0 does the same").arg(key));
 }
@@ -1158,14 +1157,12 @@ void SetupWin::start() {
 }
 
 void SetupWin::apply() {
-	Computer* comp = conf.zx;
 	ui.tvHotkeys->commit();
 	// the rewind history holds the machine as it was: it goes only if the
 	// machine or the history's own settings change
 	std::string macWas = xm_signature();
 	int rwStep = conf.emu.rewind.step;
 	int rwSecs = conf.emu.rewind.secs;
-// machine
 	// unset shows as Last, and stays unset - the first start still asks - until changed
 	int ms = qMin(cbStart->currentIndex(), (int)MS_THIS);
 	if ((conf.macStart != MS_UNSET) || (ms != MS_LAST)) conf.macStart = ms;
@@ -1178,18 +1175,125 @@ void SetupWin::apply() {
 	if (another) {
 		xm_choose(mid);
 	} else {
-		emu_lock();		// roms and memory size are rebuilt below
-		xm_set_roms(roms);
-		comp->resbank = resTarget;
-		memSetSize(comp->mem, getRFIData(ui.mszbox), -1);
-		compSetBaseFrq(comp, xcpu_frq_parse(ui.cbCpuFrq->currentText(), comp->cpuFrq));
-		xm_turbo_set(comp, getRFSData(cbCpuTurbo).toStdString());
-		if (ui.sldSpeed->value() != xspeed_get())
-			xspeed_set(ui.sldSpeed->value());
-		comp->flgEM1 = ui.scrpwait->isChecked();
-		if (comp->hw->id == HW_ZX48) comp->mem->ramMask = MEM_128K - 1;		// TODO: find a better way
-		emu_unlock();
+		applyMachine();
 	}
+	applyGlobal();
+	if (another) {
+		start();		// the new machine's own values on the pages
+		emit s_prf_changed();
+	} else {
+		// the machine carries what the page put in it: into its own file, so it is
+		// still there after a switch away and back
+		xm_save_over();
+		if ((xm_signature() != macWas) || (conf.emu.rewind.step != rwStep) || (conf.emu.rewind.secs != rwSecs))
+			rewind_clear();
+		// The machine changed under a recording: it ends with the frames before
+		// the change, which is all the log holds of them
+		if (xm_signature() != macWas) {
+			emu_lock();
+			rzxr_stop(conf.zx);
+			emu_unlock();
+		}
+		updateMachineButtons();
+		// the mark on the machine may have just appeared or gone
+		int midx = ui.machbox->findData(QString::fromLocal8Bit(conf.macId.c_str()));
+		const xMachine* cmac = xm_find(conf.macId);
+		if (cmac && (midx >= 0)) ui.machbox->setItemText(midx, xm_list_name(*cmac));
+	}
+
+	fullscreenTip(ui.cbFullscreen);		// the Hotkeys page may have moved it
+	emit s_apply();
+
+	layouts_save();
+	saveConfig();
+}
+
+// What the pages hold for the machine itself. Another machine has its own, so
+// none of this goes onto it.
+void SetupWin::applyMachine() {
+	Computer* comp = conf.zx;
+// machine
+	emu_lock();		// roms and memory size are rebuilt below
+	xm_set_roms(roms);
+	comp->resbank = resTarget;
+	memSetSize(comp->mem, getRFIData(ui.mszbox), -1);
+	compSetBaseFrq(comp, xcpu_frq_parse(ui.cbCpuFrq->currentText(), comp->cpuFrq));
+	xm_turbo_set(comp, getRFSData(cbCpuTurbo).toStdString());
+	if (ui.sldSpeed->value() != xspeed_get())
+		xspeed_set(ui.sldSpeed->value());
+	comp->flgEM1 = ui.scrpwait->isChecked();
+	if (comp->hw->id == HW_ZX48) comp->mem->ramMask = MEM_128K - 1;		// TODO: find a better way
+	emu_unlock();
+// video
+	comp->vid->brdstep = ui.border4T->isChecked() ? 7 : 1;
+	comp_set_cont(comp, ui.contMem->isChecked());
+	comp->flgCNTI = ui.contIO->isChecked() ? 1 : 0;
+	comp->vid->ula->conttype = getRFIData(ui.cbContPattern);
+	comp->earback = getRFIData(ui.cbEarBack);
+	comp->fbus = getRFIData(ui.cbFloatBus);
+	comp->vid->ula->early = ui.cbEarlyTiming->isChecked();
+	comp_set_snow(comp, ui.cbSnow->isChecked() ? 1 : 0);
+	comp->flgSNOWX = ui.cbSnowCrash->isChecked() ? 1 : 0;
+	comp->beep->mic = ui.cbBeepMic->isChecked() ? 1 : 0;
+	bc_out(comp->beep, comp->beep->lev, comp->tape->levRec);
+	// The ula type also picks the screen drawer. The reset above ran before this
+	// line and saw the old type, so it has to be redone here - but only while a
+	// plain zx screen is up: a machine sitting in one of its own modes keeps it
+	// and gets the drawer at its next reset.
+	if ((comp->vid->vmode == VID_NORMAL) || (comp->vid->vmode == VID_ULA_SCR))
+		zx_set_vmode(comp);
+	comp->vid->ula->enabled = ui.ulaPlus->isChecked() ? 1 : 0;
+	comp->flgDDP = ui.cbDDp->isChecked() ? 1 : 0;
+	xm_set_layout(getRFText(ui.geombox));	// the border size goes on top of it in applyGlobal()
+// sound
+	int psg = getRFIData(cbPsgCount);
+	int chips = (psg == PSG_NEXT) ? 3 : ((psg == PSG_TS) || (psg == PSG_TSFM)) ? 2 : (psg == PSG_ONE) ? 1 : 0;
+	int chtype = (psg == PSG_TSFM) ? SND_YM2203 : getRFIData(cbPsgType);
+	if ((psg != PSG_TSFM) && (chtype == SND_YM2203)) chtype = SND_YM;
+	int chstereo = getRFIData(cbPsgStereo);
+	aymChip* chip[3] = {comp->ts->chipA, comp->ts->chipB, comp->ts->chipC};
+	for (int i = 0; i < 3; i++) {			// one setting for all the chips
+		chip_set_type(chip[i], (i < chips) ? chtype : SND_NONE);
+		chip[i]->stereo = chstereo;
+	}
+	ts_set_frq(comp->ts, opt_get_psg_frq(cbPsgFrq) / psgFrqMul, comp->cpuFrq);	// 0: Auto
+	comp->ts->type = (chips > 2) ? TS_ZXNEXT : (chips > 1) ? TS_NEDOPC : TS_NONE;
+	comp->gs->enable = gsBox->currentIndex();
+	comp->sdrv->type = getRFIData(sdrvBox);
+	comp->saa->enabled = saaBox->currentIndex() ? 1 : 0;
+// input
+	comp->keyb->pcmode = getRFIData(cbScanTab);
+	comp->mouse->enable = mouseBox->currentIndex();
+	comp->mouse->hasWheel = ratWheel->isChecked() ? 1 : 0;
+	comp->joy->type = joyBox->currentIndex() ? XJ_KEMPSTON : XJ_NONE;
+	comp->joy->extbuttons = (joyBox->currentIndex() == 2) ? 1 : 0;
+// flp
+	difSetHW(comp->dif, getRFIData(diskTypeBox));
+	// a drive taken off the cable takes its disk with it: a changed one is
+	// saved first, or the drive stays
+	int fit = getRFIData(drvCountBox);
+	if (getRFIData(diskTypeBox) == DIF_P3DOS) fit = qMin(fit, 2);
+	for (int i = 3; i >= fit; i--) {
+		Floppy* dflp = comp->dif->flp[i];
+		if (dflp->fitted && dflp->insert && dflp->changed && (saveChangedDisk(comp, i) != ERR_OK))
+			fit = i + 1;
+	}
+	difSetDrives(comp->dif, fit);
+// hdd
+	ide_set_type(comp->ide, getRFIData(hiface));
+	// what is mounted is the Drives menu's; a folder is read again on Apply
+	// (a new machine does it itself)
+	ide_remount(comp->ide);
+	sdc_remount(comp->sdc);
+// debuga
+	setWatchPorts(comp, portwid->getPorts());
+}
+
+// The emulator's own settings, and the user's that live on the machine (mouse,
+// PSG separation, GS reset, drives' 80/DS, HDD types, tape speed): these go
+// onto whichever machine is in now.
+void SetupWin::applyGlobal() {
+	Computer* comp = conf.zx;
 // emulation
 	conf.vid.lowLatency = ui.cbLowLat->isChecked() ? 1 : 0;
 	conf.emu.runahead = getRFIData(ui.cbRunAhead);
@@ -1218,48 +1322,21 @@ void SetupWin::apply() {
 	conf.scrShot.noBorder = ui.ssNoBord->isChecked() ? 1 : 0;
 	applyRecording();
 	vid_set_border_mode(ui.bszsld->value());
-	if (!another) {
-		comp->vid->brdstep = ui.border4T->isChecked() ? 7 : 1;
-		comp_set_cont(comp, ui.contMem->isChecked());
-		comp->flgCNTI = ui.contIO->isChecked() ? 1 : 0;
-		comp->vid->ula->conttype = getRFIData(ui.cbContPattern);
-		comp->earback = getRFIData(ui.cbEarBack);
-		comp->fbus = getRFIData(ui.cbFloatBus);
-		comp->vid->ula->early = ui.cbEarlyTiming->isChecked();
-		comp_set_snow(comp, ui.cbSnow->isChecked() ? 1 : 0);
-		comp->flgSNOWX = ui.cbSnowCrash->isChecked() ? 1 : 0;
-		comp->beep->mic = ui.cbBeepMic->isChecked() ? 1 : 0;
-		bc_out(comp->beep, comp->beep->lev, comp->tape->levRec);
-		// The ula type also picks the screen drawer. The reset above ran before this
-		// line and saw the old type, so it has to be redone here - but only while a
-		// plain zx screen is up: a machine sitting in one of its own modes keeps it
-		// and gets the drawer at its next reset.
-		if ((comp->vid->vmode == VID_NORMAL) || (comp->vid->vmode == VID_ULA_SCR))
-			zx_set_vmode(comp);
-		comp->vid->ula->enabled = ui.ulaPlus->isChecked() ? 1 : 0;
-		comp->flgDDP = ui.cbDDp->isChecked() ? 1 : 0;
-		xm_set_layout(getRFText(ui.geombox));
-	}
 	if (getRFIData(ui.cbShader) == 0) {
 		conf.vid.shader.clear();
 	} else {
 		conf.vid.shader = std::string(ui.cbShader->currentText().toLocal8Bit().data());
 	}
-	QString str = getRFSData(ui.cbPalPreset);
-	if (str.isEmpty()) {
-		//conf.vid.palette.clear();
-		conf.palette.clear();
-	} else {
-		//conf.vid.palette = std::string(ui.cbPalPreset->currentText().toLocal8Bit().data());
-		conf.palette = str.toStdString();
-	}
+	std::string pal = getRFSData(ui.cbPalPreset).toStdString();		// empty: the built-in one
+	bool palNew = (pal != conf.palette) || !palPending.isEmpty();
+	conf.palette = pal;
 	// the edited palettes go into the user's folder now, over a shipped one of the same name
 	for (auto it = palPending.cbegin(); it != palPending.cend(); ++it) {
 		if (saveColors(it.key().toStdString(), it.value()) != ERR_OK)
 			shitHappens("Could not write the palette file");
 	}
 	palPending.clear();
-	loadPalette();
+	if (palNew) loadPalette();
 	palButtons();
 // sound
 	conf.snd.enabled = ui.senbox->isChecked() ? 1 : 0;
@@ -1297,34 +1374,10 @@ void SetupWin::apply() {
 
 	int chsep = sldPsgSep->value();
 	aymChip* chip[3] = {comp->ts->chipA, comp->ts->chipB, comp->ts->chipC};
-	if (!another) {
-		int psg = getRFIData(cbPsgCount);
-		int chips = (psg == PSG_NEXT) ? 3 : ((psg == PSG_TS) || (psg == PSG_TSFM)) ? 2 : (psg == PSG_ONE) ? 1 : 0;
-		int chtype = (psg == PSG_TSFM) ? SND_YM2203 : getRFIData(cbPsgType);
-		if ((psg != PSG_TSFM) && (chtype == SND_YM2203)) chtype = SND_YM;
-		int chstereo = getRFIData(cbPsgStereo);
-		for (int i = 0; i < 3; i++) {			// one setting for all the chips
-			chip_set_type(chip[i], (i < chips) ? chtype : SND_NONE);
-			chip[i]->stereo = chstereo;
-		}
-		ts_set_frq(comp->ts, opt_get_psg_frq(cbPsgFrq) / psgFrqMul, comp->cpuFrq);	// 0: Auto
-		comp->ts->type = (chips > 2) ? TS_ZXNEXT : (chips > 1) ? TS_NEDOPC : TS_NONE;
-		comp->gs->enable = gsBox->currentIndex();
-		comp->sdrv->type = getRFIData(sdrvBox);
-		comp->saa->enabled = saaBox->currentIndex() ? 1 : 0;
-	}
-	// the separation and the GS reset are the user's, kept across machines
 	for (int i = 0; i < 3; i++)
 		chip[i]->sep = chsep;
 	comp->gs->reset = gsrbox->isChecked() ? 1 : 0;
 // input
-	if (!another) {
-		comp->keyb->pcmode = getRFIData(cbScanTab);
-		comp->mouse->enable = mouseBox->currentIndex();
-		comp->mouse->hasWheel = ratWheel->isChecked() ? 1 : 0;
-		comp->joy->type = joyBox->currentIndex() ? XJ_KEMPSTON : XJ_NONE;
-		comp->joy->extbuttons = (joyBox->currentIndex() == 2) ? 1 : 0;
-	}
 	comp->mouse->swapButtons = cbSwapButtons->isChecked() ? 1 : 0;
 	comp->mouse->sensitivity = sldSensitivity->value() * 0.001f;
 	std::string kmname = getRFText(ui.keyMapBox);
@@ -1334,25 +1387,12 @@ void SetupWin::apply() {
 	conf.gpctrl->gameOn = cbPadFiles->isChecked();
 	if (!conf.gpctrl->gameOn) conf.gpctrl->gameRevert();	// own bindings back now
 // flp
-	if (!another) difSetHW(comp->dif, getRFIData(diskTypeBox));
 	setFlagBit(bdtbox->isChecked(),&fdcFlag,FDC_FAST);
 	conf.boot = cbAddBoot->isChecked() ? 1 : 0;
 	conf.storePaths = ui.mempaths->isChecked() ? 1 : 0;
 	conf.autorun = getRFIData(ui.cbAutorun);
 	ftbox->apply();
 	flp_set_interleave(getRFIData(cbFlpInterleave));
-	// a drive taken off the cable takes its disk with it: a changed one is
-	// saved first, or the drive stays
-	if (!another) {
-		int fit = getRFIData(drvCountBox);
-		if (getRFIData(diskTypeBox) == DIF_P3DOS) fit = qMin(fit, 2);
-		for (int i = 3; i >= fit; i--) {
-			Floppy* dflp = comp->dif->flp[i];
-			if (dflp->fitted && dflp->insert && dflp->changed && (saveChangedDisk(comp, i) != ERR_OK))
-				fit = i + 1;
-		}
-		difSetDrives(comp->dif, fit);
-	}
 
 	Floppy* flp = comp->dif->flp[0];
 	flp->trk80 = a80box->isChecked() ? 1 : 0;
@@ -1371,15 +1411,8 @@ void SetupWin::apply() {
 	flp->doubleSide = ddsbox->isChecked() ? 1 : 0;
 
 // hdd
-	if (!another) ide_set_type(comp->ide, getRFIData(hiface));
 	comp->ide->master->type = getRFIData(hm_type);
 	comp->ide->slave->type = getRFIData(hs_type);
-	// what is mounted is the Drives menu's; a folder is read again on Apply
-	// (a new machine has just done it)
-	if (!another) {
-		ide_remount(comp->ide);
-		sdc_remount(comp->sdc);
-	}
 // tape
 	conf.tape.autostart = cbTapeAuto->isChecked() ? 1 : 0;
 	conf.tape.fast = cbTapeFast->isChecked() ? 1 : 0;
@@ -1416,7 +1449,6 @@ void SetupWin::apply() {
 	conf.dbg.showray = ui.cbDbgRay->isChecked() ? 1 : 0;
 	conf.dbg.imglabels = ui.cbImgLabels->isChecked() ? 1 : 0;
 	if (!conf.dbg.imglabels) labels_image(QString());	// the set from before is back now
-	if (!another) setWatchPorts(conf.zx, portwid->getPorts());	// the old machine's list
 	QString name = getRFSData(ui.cbStyleSheet);
 	std::string style = name.isEmpty() ? std::string() : name.toStdString();
 	if (style != conf.style) {
@@ -1432,34 +1464,6 @@ void SetupWin::apply() {
 		ui.leDbgFont->setFont(dbgfnt);		// the new style sheet resets it
 	}
 	applyLogPage();
-	if (another) {
-		start();		// the new machine's own values on the pages
-		emit s_prf_changed();
-	} else {
-		// the machine carries what the page put in it: into its own file, so it is
-		// still there after a switch away and back
-		xm_save_over();
-		if ((xm_signature() != macWas) || (conf.emu.rewind.step != rwStep) || (conf.emu.rewind.secs != rwSecs))
-			rewind_clear();
-		// The machine changed under a recording: it ends with the frames before
-		// the change, which is all the log holds of them
-		if (xm_signature() != macWas) {
-			emu_lock();
-			rzxr_stop(comp);
-			emu_unlock();
-		}
-		updateMachineButtons();
-		// the mark on the machine may have just appeared or gone
-		int midx = ui.machbox->findData(QString::fromLocal8Bit(conf.macId.c_str()));
-		const xMachine* cmac = xm_find(conf.macId);
-		if (cmac && (midx >= 0)) ui.machbox->setItemText(midx, xm_list_name(*cmac));
-	}
-
-	fullscreenTip(ui.cbFullscreen);		// the Hotkeys page may have moved it
-	emit s_apply();
-
-	layouts_save();
-	saveConfig();
 }
 
 // LOG
@@ -2504,12 +2508,13 @@ void SetupWin::selsspath() {
 	if (fpath!="") ui.pathle->setText(fpath);
 }
 
-// The palettes in the lists go by name: they are built in, the extension is a
-// file's business. The item data keeps the file name.
+// the item data keeps the file name
 void SetupWin::fillPalettes() {
+	ui.cbPalPreset->blockSignals(true);
 	fillComboBox(ui.cbPalPreset, "palettes", QStringList() << "*.txt" << "*.pal", PAL_DEFAULT_NAME, conf.palette.c_str());
 	for (int i = 1; i < ui.cbPalPreset->count(); i++)
-		ui.cbPalPreset->setItemText(i, QFileInfo(ui.cbPalPreset->itemText(i)).completeBaseName());
+		ui.cbPalPreset->setItemText(i, palette_title(ui.cbPalPreset->itemText(i)));
+	ui.cbPalPreset->blockSignals(false);
 	palButtons();
 }
 
@@ -2518,7 +2523,7 @@ void SetupWin::fillPalettes() {
 void SetupWin::palButtons() {
 	QString nam = getRFSData(ui.cbPalPreset);
 	bool ships = !nam.isEmpty() && QFile::exists(xres_root("palettes") + "/" + nam);
-	bool own = palPending.contains(nam) || QFile::exists(xres_dir("palettes") + SLASH + nam);
+	bool own = palPending.contains(nam) || QFile::exists(palette_own_file(nam));
 	ui.tbPalEdit->setEnabled(!nam.isEmpty());
 	ui.tbPalRestore->setVisible(ships && own);
 }
@@ -2526,7 +2531,6 @@ void SetupWin::palButtons() {
 void SetupWin::paledit() {
 	QString str = getRFSData(ui.cbPalPreset);
 	if (str.isEmpty()) return;			// the built-in one is no file
-	editPalName = str;
 	editpal = palPending.contains(str) ? palPending.value(str) : loadColors(str.toStdString());
 	while (editpal.size() < 16) editpal.append(Qt::black);
 	paleditor->edit(&editpal);
@@ -2537,7 +2541,7 @@ void SetupWin::palchoosecol(QPoint p) {
 
 // held until Apply, so Cancel drops it
 void SetupWin::palstore() {
-	palPending[editPalName] = editpal.mid(0, 16);
+	palPending[getRFSData(ui.cbPalPreset)] = editpal.mid(0, 16);	// the editor is modal: still the one picked
 	palButtons();
 }
 
@@ -2545,7 +2549,7 @@ void SetupWin::palRestore() {
 	QString nam = getRFSData(ui.cbPalPreset);
 	if (nam.isEmpty() || !areSure("Drop your changes to this palette and take it as it ships?")) return;
 	palPending.remove(nam);
-	QFile::remove(xres_dir("palettes") + SLASH + nam);
+	QFile::remove(palette_own_file(nam));
 	if (nam == QString::fromStdString(conf.palette)) loadPalette();
 	palButtons();
 }

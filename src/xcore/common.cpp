@@ -6,6 +6,7 @@
 #include <QString>
 #include <QDir>
 #include <QFile>
+#include <QMutex>
 
 #include "xcore.h"
 #include "sound.h"
@@ -152,7 +153,17 @@ void setFlagBit(bool cond, int* val, int mask) {
 QString shot_dir() {
 	QString dir = QString::fromStdString(conf.scrShot.dir);
 	if (!dir.isEmpty() && QDir(dir).exists()) return dir;
-	xlog(XLG_APP, XLL_WARN, "no screenshot folder '%s', saving to home", conf.scrShot.dir.c_str());
+	// once per folder: a screenshot breakpoint may hit every frame, and it
+	// comes from the emulation thread
+	static QMutex mx;
+	static bool told = false;
+	static std::string toldDir;
+	QMutexLocker lock(&mx);
+	if (!told || (toldDir != conf.scrShot.dir)) {
+		told = true;
+		toldDir = conf.scrShot.dir;
+		xlog(XLG_APP, XLL_WARN, "no screenshot folder '%s', saving to home", conf.scrShot.dir.c_str());
+	}
 	return QDir::homePath();
 }
 
