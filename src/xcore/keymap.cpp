@@ -238,7 +238,7 @@ static void load_key_file() {
 	}
 	std::string line;
 	std::vector<std::string> vec;
-	char keys[8];
+	char keys[KEYSEQ_MAXLEN];
 	int rlen;
 	unsigned int i;
 	while (!file.atEnd()) {
@@ -247,7 +247,7 @@ static void load_key_file() {
 			ba.chop(1);
 		line = std::string(ba.data());
 		vec = splitstr(line,"\t");
-		memset(keys, 0, 8);
+		memset(keys, 0, sizeof(keys));
 		rlen = 0;
 		if (vec.size() > 0) {
 			for(i = 1; (rlen < KEYSEQ_MAXLEN) && (i < vec.size()); i++) {
