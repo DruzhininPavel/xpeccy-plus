@@ -1435,6 +1435,20 @@ none - nothing comes back (+2A, +3)</string>
                   </widget>
                  </item>
                  <item>
+                  <widget class="QToolButton" name="tbPalRestore">
+                   <property name="toolTip">
+                    <string>Drop your changes and take the palette as it ships</string>
+                   </property>
+                   <property name="text">
+                    <string>...</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../xpeccy.qrc">
+                     <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <spacer name="spacerPalBtn">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>

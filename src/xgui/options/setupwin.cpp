@@ -500,8 +500,7 @@ SetupWin::SetupWin(QWidget* par):QDialog(par) {
 	ui.labShader->setVisible(false);
 	ui.cbShader->setVisible(false);
 #endif
-	//fill_palette_list(ui.cbPalPreset);
-	fillComboBox(ui.cbPalPreset, "palettes", QStringList() << "*.txt" << "*.pal", PAL_DEFAULT_NAME, conf.palette.c_str());
+	fillPalettes();
 	paleditor = new xPalEditor(this);
 	paleditor->setModal(true);
 	ui.cbNoflicMode->addItem("2-frames (fullscreen)", AF_2C_FULL);
@@ -701,6 +700,8 @@ SetupWin::SetupWin(QWidget* par):QDialog(par) {
 	connect(ui.layDel,SIGNAL(released()),this,SLOT(delLayout()));
 
 	connect(ui.tbPalEdit,SIGNAL(released()),this,SLOT(paledit()));
+	connect(ui.tbPalRestore,SIGNAL(released()),this,SLOT(palRestore()));
+	connect(ui.cbPalPreset,SIGNAL(currentIndexChanged(int)),this,SLOT(palButtons()));
 
 	for (int i = 0; i < XLL_COUNT; i++)
 		ui.cbxLogLevel->addItem(QString(xlog_level_name(i)).toLower(), i);
@@ -1015,8 +1016,8 @@ void SetupWin::start() {
 	ui.ulaPlus->setChecked(comp->vid->ula->enabled);
 	ui.cbDDp->setChecked(comp->flgDDP);
 	fill_shader_list(ui.cbShader);
-	//fill_palette_list(ui.cbPalPreset);
-	fillComboBox(ui.cbPalPreset, "palettes", QStringList() << "*.txt" << "*.pal", PAL_DEFAULT_NAME, conf.palette.c_str());
+	palPending.clear();		// what a Cancel left behind
+	fillPalettes();
 // sound
 	gsBox->setCurrentIndex(comp->gs->enable ? 1 : 0);
 	gsrbox->setChecked(comp->gs->reset);
@@ -1245,6 +1246,14 @@ void SetupWin::apply() {
 		//conf.vid.palette = std::string(ui.cbPalPreset->currentText().toLocal8Bit().data());
 		conf.palette = str.toStdString();
 	}
+	// the edited palettes go into the user's folder now, over a shipped one of the same name
+	for (auto it = palPending.cbegin(); it != palPending.cend(); ++it) {
+		if (saveColors(it.key().toStdString(), it.value()) != ERR_OK)
+			shitHappens("Could not write the palette file");
+	}
+	palPending.clear();
+	loadPalette();
+	palButtons();
 // sound
 	conf.snd.enabled = ui.senbox->isChecked() ? 1 : 0;
 	conf.snd.vol.dc = ui.dcbox->isChecked() ? 1 : 0;
@@ -2487,10 +2496,30 @@ void SetupWin::selsspath() {
 	if (fpath!="") ui.pathle->setText(fpath);
 }
 
+// The palettes in the lists go by name: they are built in, the extension is a
+// file's business. The item data keeps the file name.
+void SetupWin::fillPalettes() {
+	fillComboBox(ui.cbPalPreset, "palettes", QStringList() << "*.txt" << "*.pal", PAL_DEFAULT_NAME, conf.palette.c_str());
+	for (int i = 1; i < ui.cbPalPreset->count(); i++)
+		ui.cbPalPreset->setItemText(i, QFileInfo(ui.cbPalPreset->itemText(i)).completeBaseName());
+	palButtons();
+}
+
+// Edit is for a palette in a file; Restore for the user's own copy of one that
+// ships, saved or still waiting for Apply
+void SetupWin::palButtons() {
+	QString nam = getRFSData(ui.cbPalPreset);
+	bool ships = !nam.isEmpty() && QFile::exists(xres_root("palettes") + "/" + nam);
+	bool own = palPending.contains(nam) || QFile::exists(xres_dir("palettes") + SLASH + nam);
+	ui.tbPalEdit->setEnabled(!nam.isEmpty());
+	ui.tbPalRestore->setVisible(ships && own);
+}
+
 void SetupWin::paledit() {
 	QString str = getRFSData(ui.cbPalPreset);
-	if (str.isEmpty()) return;			// is default
-	editpal = loadColors(str.toStdString());	// load colors from file
+	if (str.isEmpty()) return;			// the built-in one is no file
+	editPalName = str;
+	editpal = palPending.contains(str) ? palPending.value(str) : loadColors(str.toStdString());
 	while (editpal.size() < 16) editpal.append(Qt::black);
 	paleditor->edit(&editpal);
 }
@@ -2498,20 +2527,19 @@ void SetupWin::paledit() {
 void SetupWin::palchoosecol(QPoint p) {
 }
 
+// held until Apply, so Cancel drops it
 void SetupWin::palstore() {
-	int i;
-	xColor xcol;
-	bool upd = !!vid_zx_palette(conf.zx->vid);
-	for (i = 0; (i < editpal.size()) && (i < 16); i++) {
-		qDebug() << editpal[i];
-		xcol.r = editpal[i].red();
-		xcol.g = editpal[i].green();
-		xcol.b = editpal[i].blue();
-		vid_set_bcol(conf.zx->vid, i, xcol);
-		if (upd) vid_set_col(conf.zx->vid, i, xcol);
-	}
-	// save palette to file, cuz Settings OK will reload palette from file
-	saveColors(getRFSData(ui.cbPalPreset).toStdString(), editpal);
+	palPending[editPalName] = editpal.mid(0, 16);
+	palButtons();
+}
+
+void SetupWin::palRestore() {
+	QString nam = getRFSData(ui.cbPalPreset);
+	if (nam.isEmpty() || !areSure("Drop your changes to this palette and take it as it ships?")) return;
+	palPending.remove(nam);
+	QFile::remove(xres_dir("palettes") + SLASH + nam);
+	if (nam == QString::fromStdString(conf.palette)) loadPalette();
+	palButtons();
 }
 
 // what each player's pad is and what it stands for, as the window has it

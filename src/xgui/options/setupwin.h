@@ -143,6 +143,9 @@ class SetupWin : public QDialog {
 		QCheckBox* cbPadFiles;
 
 		QList<QColor> editpal;
+		QString editPalName;			// the file editpal is of
+		QMap<QString, QList<QColor> > palPending;	// edited, written on Apply
+		void fillPalettes();
 
 		int eidx;
 
@@ -175,6 +178,8 @@ class SetupWin : public QDialog {
 		void paledit();
 		void palchoosecol(QPoint);
 		void palstore();
+		void palButtons();
+		void palRestore();
 
 		void selLogDir();
 		void openLogDir();

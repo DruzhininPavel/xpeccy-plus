@@ -2557,8 +2557,8 @@ void MainWin::fillUserMenu() {
 	act->setData("");
 	act->setCheckable(true);
 	if (conf.palette.empty()) act->setChecked(true);
-	foreach(QString nam, xres_list("palettes", QStringList() << "*.txt")) {
-		act = palMenu->addAction(nam);
+	foreach(QString nam, xres_list("palettes", QStringList() << "*.txt" << "*.pal")) {
+		act = palMenu->addAction(QFileInfo(nam).completeBaseName());	// by name, as Options lists them
 		act->setData(nam);
 		act->setCheckable(true);
 		act->setChecked(nam == conf.palette.c_str());
