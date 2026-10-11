@@ -70,7 +70,7 @@ static int autorun_of(const std::string& val) {
 xConfig conf;
 
 void conf_init(char* wpath, char* confdir) {
-	conf.scrShot.dir = std::string(getenv(ENVHOME));
+	conf.scrShot.dir = QDir::toNativeSeparators(QDir::homePath()).toStdString();	// with its drive
 	conf.port = 30000;
 #if defined(__linux) || defined(__APPLE__) || defined(__BSD)
 	if (confdir == NULL) {

@@ -147,6 +147,15 @@ void setFlagBit(bool cond, int* val, int mask) {
 	}
 }
 
+// The folder is kept as UTF-8. One that is gone - or a driveless one an older
+// build wrote, run from another drive - is not a reason to lose the shot.
+QString shot_dir() {
+	QString dir = QString::fromStdString(conf.scrShot.dir);
+	if (!dir.isEmpty() && QDir(dir).exists()) return dir;
+	xlog(XLG_APP, XLL_WARN, "no screenshot folder '%s', saving to home", conf.scrShot.dir.c_str());
+	return QDir::homePath();
+}
+
 // a number typed by the user: #, $ and 0x are hex, everything else decimal -
 // a leading zero is not octal
 int str_num(QString str, bool* ok) {

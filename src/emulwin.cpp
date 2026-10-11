@@ -1683,10 +1683,10 @@ void MainWin::screenShot() {
 		case SCR_SCR: fext = "scr"; break;
 		case SCR_HOB: fext = "$C"; break;
 	}
-	QString fnams = QString(conf.scrShot.dir.c_str()).append(SLASH);
+	QString fnams = shot_dir().append(SLASH);
 	fnams.append(QString("xpeccy_%0.%1").arg(QTime::currentTime().toString("HHmmss_zzz")).arg(fext.c_str()));
-	std::string fnam(fnams.toUtf8().data());
-	std::ofstream file;
+	QFile file(fnams);
+	bool saved = false;
 	Video* vid = comp->vid;
 	// the shown frame, taken out of the whole raster. The screen sits in the
 	// middle of it, so there is no lopsided border left to trim.
@@ -1696,14 +1696,13 @@ void MainWin::screenShot() {
 	char* sptr = (char*)(comp->mem->ramData + (comp->vid->vidPage << 14));
 	switch (frm) {
 		case SCR_HOB:
-			file.open(fnam.c_str(),std::ios::binary);
-			file.write((char*)hobHead,17);
-			file.write(sptr, 0x1b00);
+			if (!file.open(QFile::WriteOnly)) break;
+			saved = (file.write((char*)hobHead, 17) == 17) && (file.write(sptr, 0x1b00) == 0x1b00);
 			file.close();
 			break;
 		case SCR_SCR:
-			file.open(fnam.c_str(),std::ios::binary);
-			file.write(sptr, 0x1b00);
+			if (!file.open(QFile::WriteOnly)) break;
+			saved = (file.write(sptr, 0x1b00) == 0x1b00);
 			file.close();
 			break;
 		case SCR_BMP:
@@ -1715,10 +1714,11 @@ void MainWin::screenShot() {
 					vid->scrn.x * 2, vid->scrn.y);
 			img = img.scaled(img.width() / 2 * conf.vid.scale * comp->hw->xscale,
 					img.height() * conf.vid.scale);
-			img.save(QString(fnam.c_str()),fext.c_str());
+			saved = img.save(fnams, fext.c_str());
 			break;
 	}
-	setMessage(" screenshot saved ");
+	if (!saved) xlog(XLG_APP, XLL_WARN, "can't save screenshot %s", fnams.toLocal8Bit().data());
+	setMessage(saved ? " screenshot saved " : " can't save screenshot ");
 }
 
 // video drawing

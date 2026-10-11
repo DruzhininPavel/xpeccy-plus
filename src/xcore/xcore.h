@@ -105,6 +105,7 @@ void copyFile(const char*, const char*);
 // a file that ships inside the binary, replaceable by one of the user's own
 QString xres_dir(const char*);
 QString xres_root(const char*);
+QString shot_dir();		// where screenshots go: the folder set, or home if it is not there
 QString xres_path(const char*, const QString&);
 QStringList xres_list(const char*, const QStringList&);
 

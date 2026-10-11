@@ -1000,7 +1000,7 @@ void SetupWin::start() {
 	ui.bszsld->setEnabled(comp->vid->brdmin < VID_BRD_OVERSCAN);
 	ui.bszsld->setToolTip(ui.bszsld->isEnabled() ? QString() : tr("This machine always shows its whole frame"));
 	chabsz();
-	ui.pathle->setText(QString::fromLocal8Bit(conf.scrShot.dir.c_str()));
+	ui.pathle->setText(QString::fromStdString(conf.scrShot.dir));
 	ui.ssfbox->setCurrentIndex(ui.ssfbox->findData(QString::fromStdString(conf.scrShot.format)));
 	ui.scntbox->setValue(conf.scrShot.count);
 	ui.sintbox->setValue(conf.scrShot.interval);
@@ -1202,7 +1202,7 @@ void SetupWin::apply() {
 	noflicGamma = ui.sbNoflicGamma->value();
 	vid_set_grey(ui.grayscale->isChecked() ? 1 : 0);
 //	scanlines = ui.cbScanlines->isChecked() ? 1 : 0;
-	conf.scrShot.dir = std::string(ui.pathle->text().toLocal8Bit().data());
+	conf.scrShot.dir = ui.pathle->text().toStdString();		// UTF-8, as shot_dir() reads it
 	conf.scrShot.format = getRFSData(ui.ssfbox).toStdString();
 	conf.scrShot.count = ui.scntbox->value();
 	conf.scrShot.interval = ui.sintbox->value();
@@ -2483,7 +2483,7 @@ void SetupWin::chasndlat() {
 }
 
 void SetupWin::selsspath() {
-	QString fpath = QFileDialog::getExistingDirectory(this,"Screenshots folder",QString::fromLocal8Bit(conf.scrShot.dir.c_str()),QFileDialog::ShowDirsOnly);
+	QString fpath = QFileDialog::getExistingDirectory(this,"Screenshots folder",QString::fromStdString(conf.scrShot.dir),QFileDialog::ShowDirsOnly);
 	if (fpath!="") ui.pathle->setText(fpath);
 }
 
