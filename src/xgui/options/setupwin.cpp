@@ -1162,25 +1162,25 @@ void SetupWin::apply() {
 	if ((conf.macStart != MS_UNSET) || (ms != MS_LAST)) conf.macStart = ms;
 	if (ms == MS_THIS) conf.macStartId = getRFSData(cbStart).toLocal8Bit().data();
 	// another machine is not this page with different values in it: it has its
-	// own, so load it and show them rather than writing these over it
+	// own, so load it and show them rather than writing these over it. What the
+	// pages hold for the emulator itself still goes in, onto the new machine.
 	std::string mid = std::string(getRFSData(ui.machbox).toLocal8Bit().data());
-	if (!mid.empty() && (mid != conf.macId)) {
+	bool another = !mid.empty() && (mid != conf.macId);
+	if (another) {
 		xm_choose(mid);
-		start();
-		emit s_prf_changed();
-		return;
+	} else {
+		emu_lock();		// roms and memory size are rebuilt below
+		xm_set_roms(roms);
+		comp->resbank = resTarget;
+		memSetSize(comp->mem, getRFIData(ui.mszbox), -1);
+		compSetBaseFrq(comp, xcpu_frq_parse(ui.cbCpuFrq->currentText(), comp->cpuFrq));
+		xm_turbo_set(comp, getRFSData(cbCpuTurbo).toStdString());
+		if (ui.sldSpeed->value() != xspeed_get())
+			xspeed_set(ui.sldSpeed->value());
+		comp->flgEM1 = ui.scrpwait->isChecked();
+		if (comp->hw->id == HW_ZX48) comp->mem->ramMask = MEM_128K - 1;		// TODO: find a better way
+		emu_unlock();
 	}
-	emu_lock();		// roms and memory size are rebuilt below
-	xm_set_roms(roms);
-	comp->resbank = resTarget;
-	memSetSize(comp->mem, getRFIData(ui.mszbox), -1);
-	compSetBaseFrq(comp, xcpu_frq_parse(ui.cbCpuFrq->currentText(), comp->cpuFrq));
-	xm_turbo_set(comp, getRFSData(cbCpuTurbo).toStdString());
-	if (ui.sldSpeed->value() != xspeed_get())
-		xspeed_set(ui.sldSpeed->value());
-	comp->flgEM1 = ui.scrpwait->isChecked();
-	if (comp->hw->id == HW_ZX48) comp->mem->ramMask = MEM_128K - 1;		// TODO: find a better way
-	emu_unlock();
 // emulation
 	conf.vid.lowLatency = ui.cbLowLat->isChecked() ? 1 : 0;
 	conf.emu.runahead = getRFIData(ui.cbRunAhead);
@@ -1210,26 +1210,28 @@ void SetupWin::apply() {
 	conf.scrShot.noBorder = ui.ssNoBord->isChecked() ? 1 : 0;
 	applyRecording();
 	vid_set_border_mode(ui.bszsld->value());
-	comp->vid->brdstep = ui.border4T->isChecked() ? 7 : 1;
-	comp_set_cont(comp, ui.contMem->isChecked());
-	comp->flgCNTI = ui.contIO->isChecked() ? 1 : 0;
-	comp->vid->ula->conttype = getRFIData(ui.cbContPattern);
-	comp->earback = getRFIData(ui.cbEarBack);
-	comp->fbus = getRFIData(ui.cbFloatBus);
-	comp->vid->ula->early = ui.cbEarlyTiming->isChecked();
-	comp_set_snow(comp, ui.cbSnow->isChecked() ? 1 : 0);
-	comp->flgSNOWX = ui.cbSnowCrash->isChecked() ? 1 : 0;
-	comp->beep->mic = ui.cbBeepMic->isChecked() ? 1 : 0;
-	bc_out(comp->beep, comp->beep->lev, comp->tape->levRec);
-	// The ula type also picks the screen drawer. The reset above ran before this
-	// line and saw the old type, so it has to be redone here - but only while a
-	// plain zx screen is up: a machine sitting in one of its own modes keeps it
-	// and gets the drawer at its next reset.
-	if ((comp->vid->vmode == VID_NORMAL) || (comp->vid->vmode == VID_ULA_SCR))
-		zx_set_vmode(comp);
-	comp->vid->ula->enabled = ui.ulaPlus->isChecked() ? 1 : 0;
-	comp->flgDDP = ui.cbDDp->isChecked() ? 1 : 0;
-	xm_set_layout(getRFText(ui.geombox));
+	if (!another) {
+		comp->vid->brdstep = ui.border4T->isChecked() ? 7 : 1;
+		comp_set_cont(comp, ui.contMem->isChecked());
+		comp->flgCNTI = ui.contIO->isChecked() ? 1 : 0;
+		comp->vid->ula->conttype = getRFIData(ui.cbContPattern);
+		comp->earback = getRFIData(ui.cbEarBack);
+		comp->fbus = getRFIData(ui.cbFloatBus);
+		comp->vid->ula->early = ui.cbEarlyTiming->isChecked();
+		comp_set_snow(comp, ui.cbSnow->isChecked() ? 1 : 0);
+		comp->flgSNOWX = ui.cbSnowCrash->isChecked() ? 1 : 0;
+		comp->beep->mic = ui.cbBeepMic->isChecked() ? 1 : 0;
+		bc_out(comp->beep, comp->beep->lev, comp->tape->levRec);
+		// The ula type also picks the screen drawer. The reset above ran before this
+		// line and saw the old type, so it has to be redone here - but only while a
+		// plain zx screen is up: a machine sitting in one of its own modes keeps it
+		// and gets the drawer at its next reset.
+		if ((comp->vid->vmode == VID_NORMAL) || (comp->vid->vmode == VID_ULA_SCR))
+			zx_set_vmode(comp);
+		comp->vid->ula->enabled = ui.ulaPlus->isChecked() ? 1 : 0;
+		comp->flgDDP = ui.cbDDp->isChecked() ? 1 : 0;
+		xm_set_layout(getRFText(ui.geombox));
+	}
 	if (getRFIData(ui.cbShader) == 0) {
 		conf.vid.shader.clear();
 	} else {
@@ -1277,35 +1279,38 @@ void SetupWin::apply() {
 		setOutput(nname.c_str());
 	}
 
-	int psg = getRFIData(cbPsgCount);
-	int chips = (psg == PSG_NEXT) ? 3 : ((psg == PSG_TS) || (psg == PSG_TSFM)) ? 2 : (psg == PSG_ONE) ? 1 : 0;
-	int chtype = (psg == PSG_TSFM) ? SND_YM2203 : getRFIData(cbPsgType);
-	if ((psg != PSG_TSFM) && (chtype == SND_YM2203)) chtype = SND_YM;
-	int chstereo = getRFIData(cbPsgStereo);
 	int chsep = sldPsgSep->value();
 	aymChip* chip[3] = {comp->ts->chipA, comp->ts->chipB, comp->ts->chipC};
-	for (int i = 0; i < 3; i++) {			// one setting for all the chips
-		chip_set_type(chip[i], (i < chips) ? chtype : SND_NONE);
-		chip[i]->stereo = chstereo;
-		chip[i]->sep = chsep;
+	if (!another) {
+		int psg = getRFIData(cbPsgCount);
+		int chips = (psg == PSG_NEXT) ? 3 : ((psg == PSG_TS) || (psg == PSG_TSFM)) ? 2 : (psg == PSG_ONE) ? 1 : 0;
+		int chtype = (psg == PSG_TSFM) ? SND_YM2203 : getRFIData(cbPsgType);
+		if ((psg != PSG_TSFM) && (chtype == SND_YM2203)) chtype = SND_YM;
+		int chstereo = getRFIData(cbPsgStereo);
+		for (int i = 0; i < 3; i++) {			// one setting for all the chips
+			chip_set_type(chip[i], (i < chips) ? chtype : SND_NONE);
+			chip[i]->stereo = chstereo;
+		}
+		ts_set_frq(comp->ts, opt_get_psg_frq(cbPsgFrq) / psgFrqMul, comp->cpuFrq);	// 0: Auto
+		comp->ts->type = (chips > 2) ? TS_ZXNEXT : (chips > 1) ? TS_NEDOPC : TS_NONE;
+		comp->gs->enable = gsBox->currentIndex();
+		comp->sdrv->type = getRFIData(sdrvBox);
+		comp->saa->enabled = saaBox->currentIndex() ? 1 : 0;
 	}
-	ts_set_frq(comp->ts, opt_get_psg_frq(cbPsgFrq) / psgFrqMul, comp->cpuFrq);	// 0: Auto
-	comp->ts->type = (chips > 2) ? TS_ZXNEXT : (chips > 1) ? TS_NEDOPC : TS_NONE;
-
-	comp->gs->enable = gsBox->currentIndex();
+	// the separation and the GS reset are the user's, kept across machines
+	for (int i = 0; i < 3; i++)
+		chip[i]->sep = chsep;
 	comp->gs->reset = gsrbox->isChecked() ? 1 : 0;
-
-	comp->sdrv->type = getRFIData(sdrvBox);
-
-	comp->saa->enabled = saaBox->currentIndex() ? 1 : 0;
 // input
-	comp->keyb->pcmode = getRFIData(cbScanTab);
-	comp->mouse->enable = mouseBox->currentIndex();
-	comp->mouse->hasWheel = ratWheel->isChecked() ? 1 : 0;
+	if (!another) {
+		comp->keyb->pcmode = getRFIData(cbScanTab);
+		comp->mouse->enable = mouseBox->currentIndex();
+		comp->mouse->hasWheel = ratWheel->isChecked() ? 1 : 0;
+		comp->joy->type = joyBox->currentIndex() ? XJ_KEMPSTON : XJ_NONE;
+		comp->joy->extbuttons = (joyBox->currentIndex() == 2) ? 1 : 0;
+	}
 	comp->mouse->swapButtons = cbSwapButtons->isChecked() ? 1 : 0;
 	comp->mouse->sensitivity = sldSensitivity->value() * 0.001f;
-	comp->joy->type = joyBox->currentIndex() ? XJ_KEMPSTON : XJ_NONE;
-	comp->joy->extbuttons = (joyBox->currentIndex() == 2) ? 1 : 0;
 	std::string kmname = getRFText(ui.keyMapBox);
 	if (kmname == "none") kmname = "default";
 	conf.kmapName = kmname;
@@ -1313,7 +1318,7 @@ void SetupWin::apply() {
 	conf.gpctrl->gameOn = cbPadFiles->isChecked();
 	if (!conf.gpctrl->gameOn) conf.gpctrl->gameRevert();	// own bindings back now
 // flp
-	difSetHW(comp->dif, getRFIData(diskTypeBox));
+	if (!another) difSetHW(comp->dif, getRFIData(diskTypeBox));
 	setFlagBit(bdtbox->isChecked(),&fdcFlag,FDC_FAST);
 	conf.boot = cbAddBoot->isChecked() ? 1 : 0;
 	conf.storePaths = ui.mempaths->isChecked() ? 1 : 0;
@@ -1322,14 +1327,16 @@ void SetupWin::apply() {
 	flp_set_interleave(getRFIData(cbFlpInterleave));
 	// a drive taken off the cable takes its disk with it: a changed one is
 	// saved first, or the drive stays
-	int fit = getRFIData(drvCountBox);
-	if (getRFIData(diskTypeBox) == DIF_P3DOS) fit = qMin(fit, 2);
-	for (int i = 3; i >= fit; i--) {
-		Floppy* dflp = comp->dif->flp[i];
-		if (dflp->fitted && dflp->insert && dflp->changed && (saveChangedDisk(comp, i) != ERR_OK))
-			fit = i + 1;
+	if (!another) {
+		int fit = getRFIData(drvCountBox);
+		if (getRFIData(diskTypeBox) == DIF_P3DOS) fit = qMin(fit, 2);
+		for (int i = 3; i >= fit; i--) {
+			Floppy* dflp = comp->dif->flp[i];
+			if (dflp->fitted && dflp->insert && dflp->changed && (saveChangedDisk(comp, i) != ERR_OK))
+				fit = i + 1;
+		}
+		difSetDrives(comp->dif, fit);
 	}
-	difSetDrives(comp->dif, fit);
 
 	Floppy* flp = comp->dif->flp[0];
 	flp->trk80 = a80box->isChecked() ? 1 : 0;
@@ -1348,15 +1355,15 @@ void SetupWin::apply() {
 	flp->doubleSide = ddsbox->isChecked() ? 1 : 0;
 
 // hdd
-	//comp->ide->type = getRFIData(hiface);
-	ide_set_type(comp->ide, getRFIData(hiface));
-
+	if (!another) ide_set_type(comp->ide, getRFIData(hiface));
 	comp->ide->master->type = getRFIData(hm_type);
 	comp->ide->slave->type = getRFIData(hs_type);
 	// what is mounted is the Drives menu's; a folder is read again on Apply
-	ide_remount(comp->ide);
-// others
-	sdc_remount(comp->sdc);
+	// (a new machine has just done it)
+	if (!another) {
+		ide_remount(comp->ide);
+		sdc_remount(comp->sdc);
+	}
 // tape
 	conf.tape.autostart = cbTapeAuto->isChecked() ? 1 : 0;
 	conf.tape.fast = cbTapeFast->isChecked() ? 1 : 0;
@@ -1393,7 +1400,7 @@ void SetupWin::apply() {
 	conf.dbg.showray = ui.cbDbgRay->isChecked() ? 1 : 0;
 	conf.dbg.imglabels = ui.cbImgLabels->isChecked() ? 1 : 0;
 	if (!conf.dbg.imglabels) labels_image(QString());	// the set from before is back now
-	setWatchPorts(conf.zx, portwid->getPorts());
+	if (!another) setWatchPorts(conf.zx, portwid->getPorts());	// the old machine's list
 	QString name = getRFSData(ui.cbStyleSheet);
 	std::string style = name.isEmpty() ? std::string() : name.toStdString();
 	if (style != conf.style) {
@@ -1409,23 +1416,28 @@ void SetupWin::apply() {
 		ui.leDbgFont->setFont(dbgfnt);		// the new style sheet resets it
 	}
 	applyLogPage();
-	// the machine carries what the page put in it: into its own file, so it is
-	// still there after a switch away and back
-	xm_save_over();
-	if ((xm_signature() != macWas) || (conf.emu.rewind.step != rwStep) || (conf.emu.rewind.secs != rwSecs))
-		rewind_clear();
-	// The machine changed under a recording: it ends with the frames before
-	// the change, which is all the log holds of them
-	if (xm_signature() != macWas) {
-		emu_lock();
-		rzxr_stop(comp);
-		emu_unlock();
+	if (another) {
+		start();		// the new machine's own values on the pages
+		emit s_prf_changed();
+	} else {
+		// the machine carries what the page put in it: into its own file, so it is
+		// still there after a switch away and back
+		xm_save_over();
+		if ((xm_signature() != macWas) || (conf.emu.rewind.step != rwStep) || (conf.emu.rewind.secs != rwSecs))
+			rewind_clear();
+		// The machine changed under a recording: it ends with the frames before
+		// the change, which is all the log holds of them
+		if (xm_signature() != macWas) {
+			emu_lock();
+			rzxr_stop(comp);
+			emu_unlock();
+		}
+		updateMachineButtons();
+		// the mark on the machine may have just appeared or gone
+		int midx = ui.machbox->findData(QString::fromLocal8Bit(conf.macId.c_str()));
+		const xMachine* cmac = xm_find(conf.macId);
+		if (cmac && (midx >= 0)) ui.machbox->setItemText(midx, xm_list_name(*cmac));
 	}
-	updateMachineButtons();
-	// the mark on the machine may have just appeared or gone
-	int midx = ui.machbox->findData(QString::fromLocal8Bit(conf.macId.c_str()));
-	const xMachine* cmac = xm_find(conf.macId);
-	if (cmac && (midx >= 0)) ui.machbox->setItemText(midx, xm_list_name(*cmac));
 
 	emit s_apply();
 
