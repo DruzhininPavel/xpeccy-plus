@@ -9,7 +9,8 @@
 // internal MEMRQ
 int gsmemrd(int adr, int m1, void* ptr) {
 	GSound* gs = (GSound*)ptr;
-	unsigned char res = memRd(gs->mem, adr & 0xffff) & 0xff;
+	adr &= 0xffff;
+	unsigned char res = mem_page_rd(mem_get_page(gs->mem, adr), adr) & 0xff;
 	switch (adr & 0xe300) {
 		case 0x6000:
 			gs->ch1 = res;
@@ -29,7 +30,8 @@ int gsmemrd(int adr, int m1, void* ptr) {
 
 void gsmemwr(int adr, int val, void* ptr) {
 	GSound* gs = (GSound*)ptr;
-	memWr(gs->mem, adr & 0xffff, val & 0xff);
+	adr &= 0xffff;
+	mem_page_wr(mem_get_page(gs->mem, adr), adr, val & 0xff);
 }
 
 // internal IORQ

@@ -111,11 +111,11 @@ void alf_iwr(Computer* comp, int adr, int data) {
 }
 
 int alf_mrd(Computer* comp, int adr, int m1) {
-	return memRd(comp->mem, adr);
+	return mem_page_rd(mem_get_page(comp->mem, adr), adr);
 }
 
 void alf_mwr(Computer* comp, int adr, int data) {
-	memWr(comp->mem, adr, data);
+	mem_page_wr(mem_get_page(comp->mem, adr), adr, data);
 }
 
 void alf_sync(Computer* comp, int ns) {

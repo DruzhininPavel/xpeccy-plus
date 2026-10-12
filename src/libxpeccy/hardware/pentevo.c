@@ -192,7 +192,7 @@ static void evo_cache_wr(Computer* comp, int adr) {
 int evoMRd(Computer* comp, int adr, int m1) {
 	if (!m1) {
 		evo_cache_rd(comp, adr, 0);
-		return memRd(comp->mem, adr);
+		return mem_page_rd(mem_get_page(comp->mem, adr), adr);
 	}
 	int nmient = 0;
 	if (comp->dif->type == DIF_BDI) {
@@ -236,7 +236,7 @@ int evoMRd(Computer* comp, int adr, int m1) {
 		evo_cache_clear(comp);		// nmi_buf_clr
 	else
 		evo_cache_rd(comp, adr, 1);
-	int res = nmient ? 0x00 : memRd(comp->mem, adr);
+	int res = nmient ? 0x00 : mem_page_rd(mem_get_page(comp->mem, adr), adr);
 	// The second M1 after out (#BE) puts the map back - after this fetch, so
 	// that RETN's own opcode still comes from the handler's page. The count
 	// runs whether or not an NMI is up, the way the fpga does: left armed it
@@ -268,7 +268,7 @@ void evoMWr(Computer* comp, int adr, int val) {
 	if (comp->flgVDWP && (adr < 0x4000)) return;		// trd emulation page just came in
 	if (evo_wprot(comp, adr)) return;
 	evo_cache_wr(comp, adr);
-	memWr(comp->mem,adr,val);
+	mem_page_wr(mem_get_page(comp->mem, adr), adr, val);
 }
 
 // in

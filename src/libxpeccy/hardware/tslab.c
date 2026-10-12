@@ -182,7 +182,7 @@ int tslMRd(Computer* comp, int adr, int m1) {
 		}
 	}
 	ts_cache_rd(comp, adr);
-	return memRd(comp->mem,adr);
+	return mem_page_rd(mem_get_page(comp->mem, adr), adr);
 }
 
 static void tslRegWr(Computer* comp, int reg, int val);
@@ -203,7 +203,7 @@ void tslMWr(Computer* comp, int adr, int val) {
 		}
 	}
 	ts_cache_wr(comp, adr);
-	memWr(comp->mem,adr,val);
+	mem_page_wr(mem_get_page(comp->mem, adr), adr, val);
 }
 
 // VDOS takes the INT line away (zint.v): nothing is acknowledged, what is pending waits,
