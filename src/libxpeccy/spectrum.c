@@ -278,7 +278,7 @@ static void pwatch_recount(Computer* comp) {
 	int i;
 	comp->pwbus = 0;
 	for (i = 0; i < comp->pwcount; i++) {
-		if (comp->pwatch[i].on && !comp->pwatch[i].offset)
+		if (comp->pwatch[i].on && !comp->pwatch[i].hw)
 			comp->pwbus++;
 	}
 }
@@ -286,7 +286,7 @@ static void pwatch_recount(Computer* comp) {
 static void pwatch_hit(Computer* comp, int port, int val) {
 	int i;
 	for (i = 0; i < comp->pwcount; i++) {
-		if (!comp->pwatch[i].on || comp->pwatch[i].offset) continue;
+		if (!comp->pwatch[i].on || comp->pwatch[i].hw) continue;
 		if ((port & comp->pwatch[i].mask) != comp->pwatch[i].port) continue;
 		comp->pwatch[i].val = val & 0xff;
 	}
@@ -306,6 +306,7 @@ void comp_pwatch_add(Computer* comp, int port, int mask, int on) {
 		comp->pwatch[comp->pwcount].mask = mask;
 		comp->pwatch[comp->pwcount].type = 0;
 		comp->pwatch[comp->pwcount].offset = 0;
+		comp->pwatch[comp->pwcount].get = NULL;
 		comp->pwatch[comp->pwcount].on = on ? 1 : 0;
 		comp->pwatch[comp->pwcount].hw = 0;
 		comp->pwatch[comp->pwcount].val = -1;
@@ -325,6 +326,7 @@ void comp_pwatch_sync(Computer* comp) {
 	for (i = 0; i < comp->pwcount; i++) {
 		comp->pwatch[i].type = 0;
 		comp->pwatch[i].offset = 0;
+		comp->pwatch[i].get = NULL;
 	}
 	for (i = comp->pwcount - 1; i >= 0; i--) {
 		if (!comp->pwatch[i].hw) continue;
@@ -346,6 +348,7 @@ void comp_pwatch_sync(Computer* comp) {
 		comp->pwatch[j].hw = 1;
 		comp->pwatch[j].type = tab[i].type;
 		comp->pwatch[j].offset = tab[i].offset;
+		comp->pwatch[j].get = tab[i].get;
 	}
 	pwatch_recount(comp);
 }
@@ -356,6 +359,7 @@ void comp_pwatch_sync(Computer* comp) {
 int comp_pwatch_val(Computer* comp, int idx) {
 	void* ptr;
 	if ((idx < 0) || (idx >= comp->pwcount)) return -1;
+	if (comp->pwatch[idx].get) return comp->pwatch[idx].get(comp);
 	if (!comp->pwatch[idx].offset) return comp->pwatch[idx].val;
 	ptr = ((void*)comp) + comp->pwatch[idx].offset;
 	switch(comp->pwatch[idx].type) {

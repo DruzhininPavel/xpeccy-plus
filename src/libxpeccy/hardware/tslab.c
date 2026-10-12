@@ -10,7 +10,6 @@
 #define flgLINT	flag[2]		// 1 on vid->intLINE, 0 on line int ack
 #define flgDINT	flag[3]		// (same for dma int)
 
-#define p01AF	reg[7]		// move to tsconf.c (what to do with ports tab?)
 #define regMADR	reg[16]		// 15AF[0..3] = MapAddr
 #define dmaLen	reg[17]
 #define dmaCnt	reg[18]
@@ -65,7 +64,6 @@ void tslReset(Computer* comp) {
 	comp->vid->nextbrd = 0x00;
 
 	comp->vid->tsconf.p00af = 0;
-	comp->p01AF = 0x05;
 	comp->vid->tsconf.xOffset = 0;
 	comp->vid->tsconf.yOffset = 0;
 	comp->vid->tsconf.p07af = 0x0f;
@@ -855,6 +853,13 @@ int tslIn(Computer* comp, int port) {
 
 // for the debugger
 
+// VPage as written (vpage_r in video_ports.v): #01AF waits in the latch until the
+// line start, #7FFD sets it at once
+static int ts_vpage_reg(Computer* comp) {
+	Video* vid = comp->vid;
+	return (vid->tsconf.lat.mask & TSL_LAT_VPAGE) ? vid->tsconf.lat.vpage : vid->vidPage;
+}
+
 void ts_get_regs(Computer* comp, tsRegs* r) {
 	Video* vid = comp->vid;
 	r->vconf = vid->tsconf.p00af;
@@ -908,7 +913,7 @@ void ts_get_regs(Computer* comp, tsRegs* r) {
 	unsigned short m = vid->tsconf.lat.mask;
 	r->lat = m;
 	r->latVconf = (m & TSL_LAT_VCONF) ? vid->tsconf.lat.vconf : r->vconf;
-	r->latVpage = (m & TSL_LAT_VPAGE) ? vid->tsconf.lat.vpage : r->vpage;
+	r->latVpage = ts_vpage_reg(comp);
 	r->latGx = (((m & TSL_LAT_GXH) ? vid->tsconf.lat.gxh : vid->tsconf.soxh) & 1) << 8
 		| ((m & TSL_LAT_GXL) ? vid->tsconf.lat.gxl : vid->tsconf.soxl);
 	r->latGy = (((m & TSL_LAT_GYH) ? vid->tsconf.lat.gyh : vid->tsconf.soyh) & 1) << 8
@@ -1007,7 +1012,7 @@ void ts_keyr(Computer* comp, keyEntry* ent) {
 xPortDsc zx_port_tab_ts[] = {
 	{0x7ffd, REG_BYTE, offsetof(Computer, p7FFD)},
 	{0xeff7, REG_BYTE, offsetof(Computer, pEFF7)},
-	{0x01af, REG_BYTE, offsetof(Computer, p01AF)},
+	{0x01af, REG_BYTE, 0, ts_vpage_reg},
 	{0x21af, REG_BYTE, offsetof(Computer, tsconf.p21af)},
 	{-1, 0, 0}
 };

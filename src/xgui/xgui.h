@@ -35,6 +35,7 @@ int getRFIData(QComboBox*);
 QString getRFSData(QComboBox*);
 void setRFIndex(QComboBox*, QVariant, int = 0);
 int comboFitWidth(QComboBox*);
+QColor bg_tint(const QColor&);
 
 // subclasses
 

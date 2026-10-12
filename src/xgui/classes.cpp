@@ -42,6 +42,12 @@ int comboFitWidth(QComboBox* box) {
 	return opt.rect.width() - field + text + 4;	// 4: a pixel of air either side
 }
 
+// a faint tint of a background, the way item views alternate their rows: lighter
+// on a dark one, darker on a light one
+QColor bg_tint(const QColor& bg) {
+	return (bg.lightness() < 128) ? bg.lighter(130) : bg.darker(107);
+}
+
 void setRegExp(QRegExpValidator& v, QString s) {
 #if QT_VERSION < QT_VERSION_CHECK(6,0,0)
 	v.setRegExp(QRegExp(s));

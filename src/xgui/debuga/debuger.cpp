@@ -472,7 +472,7 @@ DebugWin::DebugWin(QWidget* par):QMainWindow(par) {
 	wid_brk = new xBreakWidget(":/images/stop.png","Breakpoints");
 	wid_heat = new xHeatWidget(":/images/memory.png","Heat map");
 	wid_pal = new xPalWidget(":/images/palette.png", "Palette");
-	wid_evo = new xEvoWidget("", "ZX Evo");
+	wid_evo = new xEvoWidget(":/images/nedoos.png", "ZX Evo");
 	connect(wid_evo, &xEvoWidget::s_detach, this, &DebugWin::evoSetDetached);
 	connect(wid_evo, &xEvoWidget::s_picture, this, &DebugWin::evoPicture);
 

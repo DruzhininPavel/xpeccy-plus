@@ -80,13 +80,49 @@ class xTsSprPage : public xEvoPage {
 		void draw_pick();
 };
 
+// A picture asking for the width its page fitted, and taking less on a narrower page.
+class xEvoFitView : public QWidget {
+	public:
+		xEvoFitView(QWidget* = nullptr);
+		void setFitWidth(int);		// no less than the minimum width
+		QSize sizeHint() const;
+	private:
+		int fitW;
+};
+
+// A page with a picture at the left and beside it a column of name/value rows of a fixed
+// width, so neither moves as the values change. The page fits the picture on a resize.
+class xEvoInfoPage : public xEvoPage {
+	Q_OBJECT
+	public:
+		xEvoInfoPage(int hw, int rows, QWidget* p = nullptr);
+	protected:
+		QVBoxLayout* lay;		// the row of the two in it; pages add above and below
+		int shown;			// what setup() was last made for, -1 nothing yet
+		virtual void setup(int what) = 0;
+		virtual int fitWidth(int w, int h) = 0;	// the picture's width in w x h
+		void setPicture(xEvoFitView*);
+		void setNames(const QStringList& names, const QStringList& all, const QStringList& widest);
+		void setValues(const QStringList&);	// "-" for the rows past the list
+		void fit();
+		void resizeEvent(QResizeEvent*);
+		void changeEvent(QEvent*);
+	private:
+		QHBoxLayout* row;
+		xEvoFitView* pic;
+		QWidget* infoBox;
+		QVector<QLabel*> names;
+		QVector<QLabel*> vals;
+};
+
 // 512x512 dots of a tile map or a graphics page, scaled to fit, with rectangles on top
-class xTsMapView : public QWidget {
+class xTsMapView : public xEvoFitView {
 	public:
 		xTsMapView(QWidget* = nullptr);
 		QImage img;
 		QList<QRect> marks;		// in image dots
 		std::function<void(int, int)> onHover;	// image dot under the pointer, -1 when it left
+		int sideFor(int w, int h) const;	// the picture's side in w x h
 	protected:
 		void paintEvent(QPaintEvent*);
 		void mouseMoveEvent(QMouseEvent*);
@@ -95,11 +131,14 @@ class xTsMapView : public QWidget {
 		QRect target() const;
 };
 
-class xTsTilePage : public xEvoPage {
+class xTsTilePage : public xEvoInfoPage {
 	Q_OBJECT
 	public:
 		xTsTilePage(QWidget* = nullptr);
 		void draw(Computer*);
+	protected:
+		void setup(int mode);
+		int fitWidth(int w, int h);
 	private:
 		QComboBox* cbView;
 		QSpinBox* sbPage;
@@ -108,7 +147,6 @@ class xTsTilePage : public xEvoPage {
 		QToolButton* tbT1G;
 		QToolButton* tbSG;
 		xTsMapView* view;
-		QLabel* labInfo;
 		int hx, hy;			// dot under the pointer, -1 none
 		void hover_info();
 };
@@ -116,7 +154,7 @@ class xTsTilePage : public xEvoPage {
 // A grid of square palette cells, sized as a 16x16 one would be so that a machine with
 // fewer gets cells of the same size: names of the rows on the left, and on the right a
 // column for each tag, marked on the rows it is on.
-class xEvoPalView : public QWidget {
+class xEvoPalView : public xEvoFitView {
 	public:
 		xEvoPalView(QWidget* = nullptr);
 		int cols, rows;
@@ -129,11 +167,9 @@ class xEvoPalView : public QWidget {
 		int pick;			// the cell framed as picked, -1 none
 		std::function<void(int)> onHover;	// the cell under the pointer, -1 when it left
 		std::function<void(int)> onPick;
-		std::function<void()> onResize;
 		int widthFor(int w, int h);	// and the cells take the size that fits there
 	protected:
 		void paintEvent(QPaintEvent*);
-		void resizeEvent(QResizeEvent*);
 		void mouseMoveEvent(QMouseEvent*);
 		void mousePressEvent(QMouseEvent*);
 		void leaveEvent(QEvent*);
@@ -145,29 +181,20 @@ class xEvoPalView : public QWidget {
 		int at(QPoint) const;
 };
 
-#define PAL_INFO	9	// name/value rows beside the palette, the most a machine has
-
 // the 256 CRAM colors on TSConf, the 16 cells on BaseConf
-class xEvoPalPage : public xEvoPage {
+class xEvoPalPage : public xEvoInfoPage {
 	Q_OBJECT
 	public:
 		xEvoPalPage(QWidget* = nullptr);
 		void draw(Computer*);
 	protected:
-		void resizeEvent(QResizeEvent*);
-		void changeEvent(QEvent*);
+		void setup(int hw);
+		int fitWidth(int w, int h);
 	private:
-		QHBoxLayout* row;
 		xEvoPalView* view;
-		QWidget* infoBox;
-		QLabel* names[PAL_INFO];
-		QLabel* vals[PAL_INFO];
 		QLabel* labLegend;
 		int hov;			// the cell under the pointer, -1 none
-		int shown;			// the machine the names were set up for, -1 none
-		void setup(int hw);
 		void info();
-		void fit();
 };
 
 // BaseConf

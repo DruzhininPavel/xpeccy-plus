@@ -52,10 +52,13 @@ typedef void(*cbHwKey)(Computer*, keyEntry*);
 // get volume
 typedef sndPair(*cbHwVol)(Computer*, sndVolume*);
 
+// a port the machine keeps by itself: where in Computer, or a function when
+// it is not a field there (offset 0 then)
 typedef struct {
 	int port;
 	int type;
 	size_t offset;
+	int (*get)(Computer*);
 } xPortDsc;
 
 struct HardWare {

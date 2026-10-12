@@ -169,6 +169,7 @@ typedef struct Computer {
 		int mask;
 		int type;		// what the machine keeps it in...
 		size_t offset;		// ...and where, 0 = watch the bus
+		int (*get)(struct Computer*);	// or what works it out, NULL none
 		int on;
 		int hw;			// came from the machine's own table
 		int val;

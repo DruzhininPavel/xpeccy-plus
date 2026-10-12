@@ -1,4 +1,5 @@
 #include "dbg_stack.h"
+#include "../xgui.h"
 
 #include <QPainter>
 #include <QStyle>
@@ -38,13 +39,6 @@ void xStackView::setRows(const QList<xStackRow>& lst) {
 	update();
 }
 
-// a faint tint of the panel background, the way item views alternate their rows.
-// Derived rather than taken from the palette: a plain widget gets no
-// alternate-background-color from the style sheet, that is an item view thing
-static QColor row_tint(const QColor& bg) {
-	return (bg.lightness() < 128) ? bg.lighter(130) : bg.darker(107);
-}
-
 void xStackView::paintEvent(QPaintEvent*) {
 	QStyleOption opt;
 	opt.initFrom(this);
@@ -66,7 +60,9 @@ void xStackView::paintEvent(QPaintEvent*) {
 	int hgt = fm.height();
 	int pitch = rowPitch();
 	int y = STACK_PAD;
-	QColor tint = row_tint(opt.palette.color(QPalette::Window));
+	// derived rather than taken from the palette: a plain widget gets no
+	// alternate-background-color from the style sheet, that is an item view thing
+	QColor tint = bg_tint(opt.palette.color(QPalette::Window));
 	pnt.setPen(opt.palette.color(QPalette::WindowText));
 	foreach (const xStackRow& row, rows) {
 		if (row.anchor)
