@@ -29,7 +29,8 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
 
-file(GLOB_RECURSE XLIB_SOURCES ${XLIB}/*.c ${XLIB}/*.cpp)
+# CONFIGURE_DEPENDS: a build tree made before a core file was added picks it up
+file(GLOB_RECURSE XLIB_SOURCES CONFIGURE_DEPENDS ${XLIB}/*.c ${XLIB}/*.cpp)
 add_library(xpeccycore STATIC ${XLIB_SOURCES})
 target_include_directories(xpeccycore PUBLIC ${XLIB} ${ZLIB_INCLUDE_DIR})
 target_compile_definitions(xpeccycore PUBLIC ${XENDIAN})
@@ -42,7 +43,7 @@ foreach(BENCH ${BENCHES})
 endforeach()
 
 # GPL v2+ (see tools/z80test/LICENSE): the Z80 sources only, never the library
-file(GLOB Z80_SOURCES ${XLIB}/cpu/Z80/*.c)
+file(GLOB Z80_SOURCES CONFIGURE_DEPENDS ${XLIB}/cpu/Z80/*.c)
 add_executable(z80-coretest ${XROOT}/tools/z80test/coretest.c ${Z80_SOURCES})
 
 # no MinGW runtime on PATH needed to run them
