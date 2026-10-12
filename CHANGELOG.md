@@ -82,6 +82,10 @@ before that point is upstream's history and is not repeated here.
 - **The palette editor** works only on a palette file and holds its changes until Apply;
   Restore brings back a shipped palette, and palettes are listed without the extension.
 
+- **Shift or Ctrl held with a hotkey** that has no combination of its own does what the key
+  alone does and stays pressed for the machine: Ctrl+F12 on TSConf resets into the TS-BIOS
+  setup, Shift+F12 into its Caps Shift boot choice.
+
 - **Smaller things**: Record in the tape player works on an empty deck, the Fast Mode button
   switches it when the key is set to Hold, a keymap line with many keys no longer overruns,
   and a number of messages, tooltips and labels are corrected.
