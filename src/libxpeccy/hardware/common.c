@@ -47,7 +47,6 @@ void zx_sync(Computer* comp, int ns) {
 	}
 }
 
-extern int res4;
 
 // Memory contention. The delay for a bus cycle is read from the ULA table at
 // the tick the cycle starts on and added whole, the way fuse does it. The
@@ -62,8 +61,7 @@ void zx_contend(Computer* comp, int mreq) {
 	int wdots = vid_wait_dots(comp->vid, pg->num << comp->mem->pgshift, mreq);
 	if (!wdots) return;
 	comp->cpu->t += ns_fixed_to_ticks_up(comp, (long long)wdots * comp->vid->nsPerDotFixed);
-	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
+	comp_vid_to_t(comp);
 }
 
 // The cpu is at T4 of an opcode fetch, with the refresh address on the bus.
@@ -150,8 +148,7 @@ void zx_irq(Computer* comp, int t) {
 			int ahead = res4 - comp->cpu->t;
 			// lazy: dots still counted cross no event, so they leave intFRAME
 			// zero or not as it is, and a step back (ahead) walks them first
-			vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-			res4 = comp->cpu->t;
+			comp_vid_to_t(comp);
 			int act = comp->vid->intFRAME;
 			if (act && (ahead > 0) && (comp->vid->intlen - act < ahead * comp->nsPerTickFixed / comp->vid->nsPerDotFixed))
 				act = 0;

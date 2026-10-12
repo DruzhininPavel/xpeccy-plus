@@ -549,7 +549,7 @@ void vidDrawTSLNormal(Video* vid) {
 	yscr = vid->ray.y - vid->bord.y;
 	if ((yscr >= 0) && (yscr < vid->scrn.y) && !vid->nogfx) {
 		if ((xscr & 7) == 4) {
-			adr = ((yscr & 0xc0) << 5) | ((yscr & 7) << 8) | ((yscr & 0x38) << 2) | (((xscr + 4) & 0xf8) >> 3);
+			adr = zx_pix_adr_xy(xscr + 4, yscr);
 			nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		}
 		if ((xscr >= 0) && (xscr < vid->scrn.x)) {

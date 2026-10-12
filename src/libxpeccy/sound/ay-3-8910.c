@@ -54,6 +54,13 @@ int ym_rd(aymChip* ay, int adr) {
 	return psg_rd(ay, adr, 0);
 }
 
+// the 12-bit tone period of channel n (reg pair 2n,2n+1), in half-period T
+static int ay_tone_per(aymChip* chip, int n) {
+	int tone = chip->reg[n << 1] | ((chip->reg[(n << 1) + 1] & 0x0f) << 8);
+	if (tone == 0) tone++;
+	return tone << 4;				// min 16T on half-period
+}
+
 void ay_set_reg(aymChip* chip, int val) {
 	int tone, port;
 	if ((chip->curReg != 14) && (chip->curReg != 15))
@@ -61,21 +68,15 @@ void ay_set_reg(aymChip* chip, int val) {
 	switch (chip->curReg) {
 		case 0x00:
 		case 0x01:
-			tone = chip->reg[0] | ((chip->reg[1] & 0x0f) << 8);
-			if (tone == 0) tone++;
-			chip->chanA.per = tone << 4;		// min 16T on half-period
+			chip->chanA.per = ay_tone_per(chip, 0);
 			break;
 		case 0x02:
 		case 0x03:
-			tone = chip->reg[2] | ((chip->reg[3] & 0x0f) << 8);
-			if (tone == 0) tone++;
-			chip->chanB.per = tone << 4;
+			chip->chanB.per = ay_tone_per(chip, 1);
 			break;
 		case 0x04:
 		case 0x05:
-			tone = chip->reg[4] | ((chip->reg[5] & 0x0f) << 8);
-			if (tone == 0) tone++;
-			chip->chanC.per = tone << 4;
+			chip->chanC.per = ay_tone_per(chip, 2);
 			break;
 		case 0x06:					// noise
 			tone = val & 0x1f;

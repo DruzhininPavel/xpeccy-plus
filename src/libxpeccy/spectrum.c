@@ -370,8 +370,7 @@ int iord(int port, void* ptr) {
 	if (comp->flgCNTI) {
 		// fuse reads the port after both halves of the i/o cycle have
 		// been contended (periph.c readport), so do the waiting first
-		vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-		res4 = comp->cpu->t;
+		comp_vid_to_t_full(comp);
 		zx_cont_t1(comp, port);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;		// z80_iord puts the four back
@@ -421,8 +420,7 @@ void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp->flgBDI = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? 1 : 0;
 	// sync video to current T
-	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
+	comp_vid_to_t_full(comp);
 	if (comp->flgCNTI) {
 		zx_cont_t1(comp, port);
 		comp->hw->out(comp, port, val);
@@ -491,17 +489,14 @@ void comp_irq(int t, void* ptr) {
 			}
 			break;
 		case IRQ_CPU_SYNC:
-			vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-			res4 = comp->cpu->t;
+			comp_vid_to_t(comp);
 			return;			// no machine acts on a plain sync
 		case IRQ_CPU_CONT:
 		case IRQ_CPU_CONTNM:
-			vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-			res4 = comp->cpu->t;
+			comp_vid_to_t_full(comp);
 			break;
 		case IRQ_CPU_RFSH:
-			vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-			res4 = comp->cpu->t;
+			comp_vid_to_t(comp);
 			zx_snow(comp);
 			return;			// not a machine's business
 	}
@@ -854,8 +849,7 @@ void comp_set_layout(Computer* comp, vLayout* lay) {
 // of them does with it, and this runs on every memory access.
 static void comp_cont(void* ptr, int mreq) {
 	Computer* comp = (Computer*)ptr;
-	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
+	comp_vid_to_t(comp);
 	zx_contend(comp, mreq);
 }
 
@@ -867,8 +861,7 @@ static void comp_cont_hw(void* ptr, int mreq) {
 	comp->cpu->t += comp->waitDebt;
 	comp->waitPaid += comp->waitDebt;
 	comp->waitDebt = 0;
-	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
+	comp_vid_to_t(comp);
 	comp->hw->cont(comp, mreq);
 }
 
@@ -1030,16 +1023,7 @@ void comp_brk(Computer* comp, int t) {
 static unsigned char dumBrk = 0x00;
 
 unsigned char* getBrkPtr(Computer* comp, int madr) {
-	xAdr xadr = mem_get_xadr(comp->mem, madr);
-	unsigned char* ptr = NULL;
-	switch (xadr.type) {
-		case MEM_RAM: ptr = comp->brkRamMap + (xadr.abs & comp->mem->ramMask); break;
-		case MEM_ROM: ptr = comp->brkRomMap + (xadr.abs & comp->mem->romMask); break;
-		case MEM_SLOT:
-			if (comp->slot->brkMap)
-				ptr = comp->slot->brkMap + (xadr.abs & comp->slot->memMask);
-			break;
-	}
+	unsigned char* ptr = comp_get_memcell_flag_ptr(comp, madr);
 	if (!ptr) {
 		dumBrk = 0;
 		ptr = &dumBrk;

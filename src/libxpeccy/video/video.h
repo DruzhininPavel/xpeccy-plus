@@ -321,6 +321,17 @@ void vid_get_screen(Video*, unsigned char*, int, int, int, const unsigned char*)
 xColor vid_brd_col(Video*);
 int vid_scr_base(int);
 void vid_scr_adr(int, int, int, int*, int*);
+// pixel and attribute address of the character box vid->idx counts (y * 32 + x)
+static inline int zx_box_pix_adr(int idx) {
+	return (idx & 0x181f) | ((idx & 0x700) >> 3) | ((idx & 0xe0) << 3);
+}
+static inline int zx_box_atr_adr(int idx) {
+	return 0x1800 | ((idx & 0x1f00) >> 3) | (idx & 0x1f);
+}
+// the same pixel address from screen coordinates
+static inline int zx_pix_adr_xy(int x, int y) {
+	return ((y & 0xc0) << 5) | ((y & 7) << 8) | ((y & 0x38) << 2) | ((x & 0xf8) >> 3);
+}
 int vid_scr_dot(int, int*, int*);
 int vid_scr_bit(int);
 

@@ -311,6 +311,20 @@ static inline int ns_fixed_to_ticks_up(Computer* comp, long long ns_fixed) {
 	return (int)((ns_fixed + comp->nsPerTickFixed - 1) / comp->nsPerTickFixed);
 }
 
+// Walk the video up to the cpu's t. res4 tracks the t it stands at, so a
+// second call in the same place costs nothing.
+extern int res4;
+
+static inline void comp_vid_to_t(Computer* comp) {		// counting allowed
+	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
+	res4 = comp->cpu->t;
+}
+
+static inline void comp_vid_to_t_full(Computer* comp) {		// dots drawn through
+	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
+	res4 = comp->cpu->t;
+}
+
 // A board that drops its turbo for a while owes the next bus cycle what a step
 // took once more: the step's own ticks, not the debt it paid on the way, or the
 // debt grows with every step. Called after each step, owing or not.
