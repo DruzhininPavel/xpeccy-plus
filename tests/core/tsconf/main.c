@@ -14,10 +14,133 @@
 //
 // Environment: PIX="x,y ..." prints the palette index of dots of the last whole
 // frame, PIXH the same in half dots, DUMP=f.ppm writes the frame, TSU=1 prints
-// the TSU state.
+// the TSU state, HIDE=mask hides layers (TSL_HIDE_*), STATE=1 prints a hash of
+// the RAM, the CPU registers and the T count.
 
 #include "../bench.h"
 #include "filetypes/filetypes.h"
+#include "xreplay.h"
+
+static unsigned fnv(const unsigned char* p, size_t n) {
+	unsigned h = 2166136261u;
+	while (n--) h = (h ^ *p++) * 16777619u;
+	return h;
+}
+
+static void state_line(Computer* comp, const char* tag) {
+	cpuGetRegs(comp->cpu);		// F is made from the flags when asked for
+	printf("%s: ram %08X pc %04X sp %04X af %04X t %lld\n", tag, fnv(comp->mem->ramData, MEM_4M),
+		comp->cpu->regPC, comp->cpu->regSP, comp->cpu->regAF, comp->tickTotal);
+}
+
+// SPRCHK=1: every active sprite as the debugger draws it (tsl_sprite_dots) against
+// the last whole frame, dot for dot: a transparent dot has to show what is under it,
+// which the test programs make the border
+static void spr_check(Computer* comp) {
+	Video* vid = comp->vid;
+	static unsigned char dots[64 * 64];
+	for (int i = 0; i < TSL_SPRITES; i++) {
+		tsSprite s;
+		tsl_get_sprite(vid, i, &s);
+		if (!s.act) continue;
+		tsl_sprite_dots(vid, i, dots);
+		int n = 0, bad = 0;
+		for (int r = 0; r < s.h; r++) {
+			for (int c = 0; c < s.w; c++) {
+				int x = vid->tsconf.tsXPos + ((s.x + c) & 0x1ff);
+				int y = vid->tsconf.tsYPos + ((s.y + r) & 0x1ff);
+				if ((x >= vid->full.x) || (y >= vid->full.y)) continue;
+				int32_t got = *(int32_t*)(bufimg + y * bytesPerLine + x * 8);
+				int idx = dots[r * s.w + c];
+				if (got != (int32_t)vid->pal[idx ? idx : vid->brdcol]) {
+					if (getenv("SPRWHY"))
+						printf("SPR  : %d differs at %d,%d: dot %02X, frame shows %02X\n", i, c, r, idx, pal_index(comp, got) & 0xff);
+					bad++;
+				}
+				n++;
+			}
+		}
+		printf("SPR  : %d at %d,%d %dx%d tile %d pal %d%s%s%s: %d dots, %d differ\n", i, s.x, s.y, s.w, s.h,
+			s.tile, s.pal, s.xf ? " XF" : "", s.yf ? " YF" : "", s.leap ? " LEAP" : "", n, bad);
+	}
+}
+
+// TILECHK=1: the tile/sprite window put together the debugger's way - each enabled
+// tile layer's map cell at the dot plus its offsets (tsl_map_entry, tsl_map_dots), T1
+// over T0, the border where both are holes - against the last whole frame
+static void tile_check(Computer* comp) {
+	Video* vid = comp->vid;
+	unsigned char dots[64];
+	int n = 0, bad = 0, seen[2] = {0, 0};
+	for (int dy = 0; dy < vid->tsconf.tsSize.y; dy++) {
+		for (int dx = 0; dx < vid->tsconf.tsSize.x; dx++) {
+			int want = vid->brdcol;
+			for (int lay = 0; lay < 2; lay++) {
+				if (!(vid->tsconf.tconfig & (lay ? 0x40 : 0x20))) continue;
+				int mx = (dx + (lay ? vid->tsconf.T1XOffset : vid->tsconf.T0XOffset)) & 0x1ff;
+				int my = (dy + (lay ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset)) & 0x1ff;
+				tsl_map_dots(vid, lay, tsl_map_entry(vid, lay, my >> 3, mx >> 3), dots);
+				int d = dots[(my & 7) * 8 + (mx & 7)];
+				if (d) {
+					want = d;
+					seen[lay]++;
+				}
+			}
+			int x = vid->tsconf.tsXPos + dx;
+			int y = vid->tsconf.tsYPos + dy;
+			int32_t got = *(int32_t*)(bufimg + y * bytesPerLine + x * 8);
+			if (got != (int32_t)vid->pal[want]) {
+				if (getenv("TILEWHY") && (bad < 10))
+					printf("TILE : differs at %d,%d: want %02X, frame shows %02X\n", dx, dy, want, pal_index(comp, got) & 0xff);
+				bad++;
+			}
+			n++;
+		}
+	}
+	printf("TILE : %dx%d dots, T0 shows in %d, T1 in %d, %d differ\n", vid->tsconf.tsSize.x, vid->tsconf.tsSize.y,
+		seen[0], seen[1], bad);
+}
+
+// REDRAW="frames,t,mask,dbg,ref[,steps,poke]": run whole frames, then on to T t
+// of the next one, and stop there as the debugger (dbg=1) or a pause (dbg=0) does;
+// in the debugger, step on steps instructions. Then hide the mask and redraw
+// (xreplay), or with ref=1 print what a run that had the mask hidden from the
+// start shows. The pictures and the state of the two must match. poke=1 changes a
+// byte of RAM before the redraw, which has to make it refuse.
+static void redraw_test(Computer* comp, const char* spec) {
+	int frames = 2, t = 0, mask = 0, dbg = 0, ref = 0, steps = 0, poke = 0;
+	sscanf(spec, "%d,%d,%i,%d,%d,%d,%d", &frames, &t, &mask, &dbg, &ref, &steps, &poke);
+	xreplay_arm(!ref);
+	if (ref) comp->vid->tsconf.hide = mask;
+	int fstart = comp->vid->fcnt;
+	while (comp->vid->fcnt - fstart < frames)
+		compExec(comp);
+	while (comp->frmtCount < t)
+		compExec(comp);
+	if (dbg) {		// as DebugWin::start()
+		vid_dark_tail(comp->vid);
+		comp->vid->debug = 1;
+		comp->flgDBG = 1;
+		while (steps-- > 0)
+			compExec(comp);
+	}
+	if (poke) comp->mem->ramData[0x3fff] ^= 0xff;
+	if (!ref) {
+		state_line(comp, "BEFORE");
+		comp->vid->tsconf.hide = mask;
+		int done = xreplay_redraw(comp);
+		printf("REDRAW: %s\n", done ? "done" : "refused");
+		if (!done) printf("WHY  : %s\n", xreplay_why());
+	}
+	state_line(comp, "STATE");
+	size_t drawn = comp->vid->ray.ptr - scrimg;
+	// what is on screen: the debugger shows scrimg, a pause the last whole frame
+	printf("PIC  : ray %d,%d scr-drawn %08X", comp->vid->ray.x, comp->vid->ray.y, fnv(scrimg, drawn));
+	if (dbg) printf(" scr %08X\n", fnv(scrimg, bufSize));
+	else printf(" buf %08X\n", fnv(bufimg, bufSize));
+	const char* dump = getenv("DUMP");
+	if (dump) dump_ppm(comp, dump);
+}
 
 int main(int argc, char** argv) {
 	if (argc < 2) {
@@ -36,6 +159,7 @@ int main(int argc, char** argv) {
 	vLayout lay = {{448, 320}, {52, 48}, {88, 32}, {256, 192}, {0, 0}, 64};
 	comp_set_layout(comp, &lay);
 	bytesPerLine = comp->vid->full.x * 8;	// as emulwin.cpp sets it: a whole raster row per image row
+	bufSize = bytesPerLine * comp->vid->full.y;
 	memSetSize(comp->mem, MEM_4M, MEM_512K);
 	if (!load_rom(comp, root ? root : ".", "tsconf.rom"))
 		return 1;
@@ -69,6 +193,32 @@ int main(int argc, char** argv) {
 		cpu_start(comp);
 	}
 
+	const char* hide = getenv("HIDE");
+	if (hide) comp->vid->tsconf.hide = (unsigned char)strtol(hide, NULL, 0);
+	// DMAAT="frames,t,...": stop at T t of a frame (after the whole ones) and print
+	// where the transfer stands, as the debugger sees it; each pair a stop further on
+	const char* dmaat = getenv("DMAAT");
+	if (dmaat) {
+		int f, t, k, fstart = comp->vid->fcnt;
+		while (sscanf(dmaat, "%d,%d%n", &f, &t, &k) == 2) {
+			while (comp->vid->fcnt - fstart < f) compExec(comp);
+			while (comp->frmtCount < t) compExec(comp);
+			tsRegs r;
+			ts_get_regs(comp, &r);
+			printf("DMAAT: %d,%d act %d src %06X dst %06X burst %d/%d word %d/%d regs %06X %06X\n", f, t, r.dmaact,
+				r.dmaCurSrc & 0xffffff, r.dmaCurDst & 0xffffff, r.dmaBurst, r.dmaBursts, r.dmaWord, r.dmaWords, r.dmasrc, r.dmadst);
+			dmaat += k;
+			while (*dmaat == ' ') dmaat++;
+		}
+		compDestroy(comp);
+		return 0;
+	}
+	const char* redraw = getenv("REDRAW");
+	if (redraw) {
+		redraw_test(comp, redraw);
+		compDestroy(comp);
+		return 0;
+	}
 	int fstart = comp->vid->fcnt;
 	while ((mbox_rd(comp, MBOX) != 0xaa) && (comp->vid->fcnt - fstart < frames))
 		compExec(comp);
@@ -79,6 +229,18 @@ int main(int argc, char** argv) {
 	probe(comp, "PIX", "PIX  ", 8);
 	probe(comp, "PIXH", "PIXH ", 4);
 	printf("BRD  : %02X\n", comp->vid->brdcol);
+	if (getenv("STATE")) state_line(comp, "STATE");
+	if (getenv("SPRCHK")) spr_check(comp);
+	if (getenv("TILECHK")) tile_check(comp);
+	if (getenv("DMALOG")) {
+		unsigned cnt = comp->tsconf.dmalog.count;
+		printf("DMA  : %u started\n", cnt);
+		for (unsigned k = (cnt > TS_DMALOG) ? cnt - TS_DMALOG : 0; k < cnt; k++) {
+			tsDmaRec* r = &comp->tsconf.dmalog.rec[k % TS_DMALOG];
+			printf("DMA  : #%u frame %d at %d:%d ctrl %02X %06X -> %06X %d x %d, %d T%s\n", k, r->fcnt,
+				r->line, r->dot, r->ctrl, r->src, r->dst, r->len, r->num, r->dur, r->cut ? " cut" : "");
+		}
+	}
 	const char* dump = getenv("DUMP");
 	if (dump) {
 		dump_ppm(comp, dump);

@@ -131,3 +131,24 @@ BRD  : 00  MODE: 0  TURBO: 1  BEEP: 0  COVOX: 00
 t19_timing_m3.bin: 38 bytes, done after 0 frames, pc=8025
 TICKS: 15502
 BRD  : 00  MODE: 0  TURBO: 4  BEEP: 0  COVOX: 00
+== e01_regs_pager
+t15_pager.bin: 139 bytes, done after 0 frames, pc=808A
+BF01: 01 5A 5A 09 00 00 00 00 00 00 00 00 00 00 00 00
+BRD  : 00  MODE: 0  TURBO: 1  BEEP: 0  COVOX: 00
+EVO  : 7FFD 00 EFF7 1C BF 00 77 E3 dos 0 vdos 0 vnmi 0 clock 0 trap 0000 border 0 virt 0
+EVO  : pager set 0: 3E/A0 05/40 02/40 00/E0 3C/80 05/40 02/40 00/C0
+EVO  : palette: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+== e02_regs_palette
+t13_palette.bin: 104 bytes, done after 0 frames, pc=8067
+BF01: 21 FF 0C 00 00 00 00 00 00 00 00 00 00 00 00 00
+BRD  : 03  MODE: 0  TURBO: 1  BEEP: 0  COVOX: 00
+EVO  : 7FFD 10 EFF7 14 BF 00 77 E3 dos 0 vdos 0 vnmi 0 clock 0 trap 0000 border 3 virt 0
+EVO  : pager set 4: 3E/80 05/40 02/40 00/C0 3C/80 05/40 02/40 00/C0
+EVO  : palette: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+== e03_regs_77
+t01_vmode_7_21.bin: 51 bytes, done after 0 frames, pc=8032
+BF01: 35 E7 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+BRD  : 00  MODE: 7  TURBO: 1  BEEP: 0  COVOX: 00
+EVO  : 7FFD 10 EFF7 35 BF 00 77 E7 dos 0 vdos 0 vnmi 0 clock 0 trap 0000 border 0 virt 0
+EVO  : pager set 4: 3E/80 05/40 02/40 00/C0 3C/80 05/40 02/40 00/C0
+EVO  : palette: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

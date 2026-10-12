@@ -19,6 +19,7 @@
 #include "xcore/vfilters.h"
 #include "libxpeccy/cpu/Z80/z80.h"
 #include "libxpeccy/xstate.h"
+#include "libxpeccy/xreplay.h"
 #include "libxpeccy/filetypes/szx.h"
 #include "version.h"
 
@@ -518,6 +519,7 @@ void xThread::emuCycle(Computer* comp) {
 	// not yet made, and a cycle can end anywhere. Clearing it dropped that
 	// remainder on every wake-up, and wake-ups come every 2ms.
 	conf.snd.fill = 1;
+	xreplay_hold = conf.emu.fast;	// no redraw snapshots of a machine run fast
 	while (!comp->flgBRK && conf.snd.fill && !finish && !conf.emu.pause) {
 		// the rewind history playing back stands in for the machine
 		if (rewinding) {

@@ -947,6 +947,8 @@ struct xConfig {
 		unsigned sndfm:1;	// sound panel: the FM page of the chip, not the PSG one
 		unsigned sndfit:1;	// sound panel: the scope centres and scales itself
 		unsigned sndlog:1;	// sound panel: the scope draws on a log curve
+		unsigned evodetach:1;	// ZX Evolution panel: shown in a window of its own
+		unsigned evonames:1;	// ZX Evolution panel: fields by their names in the docs, not in words
 		unsigned imglabels:1;	// an image's .labels comes with it
 		QFont font;
 		int dbsize;
@@ -959,12 +961,15 @@ struct xConfig {
 		int scrofs;		// screen panel: offset for XSCR_CUSTOM
 		int reglayout;		// register panel: columns, or DBG_REGS_AUTO
 		int sndchip;		// sound panel: which chip it shows, 0..3
+		int evotab;		// ZX Evolution panel: the tab it shows
 		QPoint pos;
 		QSize siz;
 		QPoint scrpos;		// screen window, -1 for wherever it lands
 		QSize scrsiz;
 		QPoint sndpos;		// sound window, the same way
 		QSize sndsiz;
+		QPoint evopos;		// ZX Evolution window, the same way
+		QSize evosiz;
 	} dbg;
 };
 

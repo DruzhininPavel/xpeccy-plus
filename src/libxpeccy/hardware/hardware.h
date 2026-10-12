@@ -192,6 +192,47 @@ void zx_set_pal(Computer*);	// todo: called from zx_reset only
 // tsconf SYSCONF: the cpu speed (the .spg loader sets it too)
 void tsOut20AF(Computer*, int, int);
 
+// TSConf registers where the machine keeps them, for the debugger. The ones it
+// keeps no byte of are given as what they set (clock, dmactrl from the last start).
+typedef struct {
+	int vconf, vpage, gxoffs, gyoffs, palsel, border;
+	int tsconf, tmpage, t0gpage, t1gpage, sgpage, t0xoffs, t0yoffs, t1xoffs, t1yoffs;
+	int page[4];		// Page0 as written, Page1..3 as mapped
+	int memconf, fmaddr, fmen, cacheconf, fddvirt;
+	int clock;		// ZCLK the cpu runs at: 0 3.5, 1 7, 2 14 MHz
+	int intmask, hsint, vsint, vsinc;
+	int dmasrc, dmadst;	// byte addresses, 22 bits
+	int dmalen, dmanum;	// as written, one less than the count
+	int dmactrl;		// the last DMACtrl that started one, -1 none yet
+	int dmaact;
+	// a transfer running: where it is at, the burst it is in (from 1) of how many,
+	// and the words of it done
+	int dmaCurSrc, dmaCurDst, dmaBurst, dmaBursts, dmaWord, dmaWords;
+	// written, waiting for the next line start (TSL_LAT_*), and what they will be
+	// then: the value now for one not waiting
+	unsigned short lat;
+	int latVconf, latVpage, latGx, latGy, latPal, latT0x, latT1x, latT0g, latT1g;
+} tsRegs;
+void ts_get_regs(Computer*, tsRegs*);
+
+// The ZX Evolution BaseConf state, for the debugger: what the #xxBE/BD readback block
+// gives, taken from the same places
+typedef struct {
+	int p7ffd, peff7, pbf;
+	int p77;		// a14.a9.a8.0.d3..d0 of the last write to #xx77
+	int dos, vdos, vnmi;
+	int clock;		// 0 3.5, 1 7, 2 14 MHz
+	int pg[8];		// the pager's eight entries, (ROM bit of 7FFD) * 4 + window:
+	int pgflag[8];		// b7 7FFD/DOS mixed in, b6 RAM, b5 write protect
+	int pgset;		// 0 or 4: the four entries in use now
+	int trap;		// the breakpoint address of #BF b4
+	int pal[16];		// as last written through #FF
+	int border;		// the palette cell the border is
+	int virt;		// virtual drives, b3..0
+	int ext[4];		// #2F #4F #6F #8F
+} evoRegs;
+void evo_get_regs(Computer*, evoRegs*);
+
 #ifdef __cplusplus
 }
 #endif

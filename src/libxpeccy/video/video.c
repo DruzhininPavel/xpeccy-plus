@@ -28,6 +28,20 @@ static int curbuf = 0;
 int bufSwaps = 0;
 int bufSize = 3;
 
+void vid_buf_get(vBufState* s) {
+	s->scr = scrimg;
+	s->buf = bufimg;
+	s->cur = curbuf;
+	s->swaps = bufSwaps;
+}
+
+void vid_buf_set(const vBufState* s) {
+	scrimg = s->scr;
+	bufimg = s->buf;
+	curbuf = s->cur;
+	bufSwaps = s->swaps;
+}
+
 // Ring buffer is used for antiflicker to store the history of frames.
 // At least 5 frames are required to perform basic 3-Color mode detection.
 #define RING_FRAMES 5

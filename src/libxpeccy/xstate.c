@@ -19,6 +19,8 @@ unsigned x_media_writes = 0;
 typedef struct {
 	void* ptr;
 	size_t size;
+	size_t kind;		// XST_PART_*, 0 for the machine itself; as wide as the rest, so
+				// no padding for xstate_same_layout()'s memcmp to trip on
 } xStateChunk;
 
 // where the bytes of a snapshot belong: all a caller keeping them elsewhere
@@ -45,6 +47,7 @@ struct xState {
 			if (n >= XST_MAX_CHUNKS) return -1; \
 			list[n].ptr = _ptr; \
 			list[n].size = _sz; \
+			list[n].kind = kind; \
 			n++; \
 		} \
 	} while (0)
@@ -52,7 +55,7 @@ struct xState {
 // the page map and the ram behind it. Pages point into mem->ramData, which does
 // not move, so the pointers in the map stay good. The rom is left out: a rom
 // page has no write callback, so it can never change.
-static int add_memory(xStateChunk* list, int n, Memory* mem) {
+static int add_memory(xStateChunk* list, int n, Memory* mem, int kind) {
 	if (!mem) return n;
 	ADD(mem->map, sizeof(mem->map));
 	ADD(mem->ramData, mem_ram_extent(mem));
@@ -63,6 +66,7 @@ static int add_memory(xStateChunk* list, int n, Memory* mem) {
 static int xst_build(Computer* comp, xStateChunk* list) {
 	int n = 0;
 	int i;
+	int kind = 0;
 
 	if (!comp || !comp->cpu || !comp->mem || !comp->vid) return -1;
 
@@ -77,11 +81,14 @@ static int xst_build(Computer* comp, xStateChunk* list) {
 	ADD((char*)comp + offsetof(Computer, heatRam), sizeof(Computer) - offsetof(Computer, heatRam));
 
 	ADD(comp->cpu, sizeof(CPU));
-	n = add_memory(list, n, comp->mem);
+	n = add_memory(list, n, comp->mem, kind);
 
 	ADD(comp->vid, sizeof(Video));
 	ADD(comp->vid->ula, sizeof(ulaPlus));
 
+	// the sound devices, up to the storage controllers: xstate_diff_parts() can
+	// leave them out
+	kind = XST_PART_SOUND;
 	ADD(comp->beep, sizeof(bitChan));
 	// A chip can hold state outside its own struct - a YM2203's fm half
 	// does - and only the struct is here to copy. ts_state_range() hands
@@ -104,10 +111,11 @@ static int xst_build(Computer* comp, xStateChunk* list) {
 	if (comp->gs && comp->gs->enable) {
 		ADD(comp->gs, sizeof(GSound));
 		ADD(comp->gs->cpu, sizeof(CPU));
-		n = add_memory(list, n, comp->gs->mem);
+		n = add_memory(list, n, comp->gs->mem, kind);
 	}
 	ADD(comp->sdrv, sizeof(SDrive));
 	ADD(comp->saa, sizeof(saaChip));
+	kind = 0;
 
 	// the storage controllers, their heads and their timers - but not the
 	// media. A floppy's own struct is taken up to its track data only, and an
@@ -239,8 +247,9 @@ int xstate_load(xState* st, Computer* comp) {
 		return 0;
 	}
 	// nodraw is set from outside the machine (fast loading holds it), so
-	// whoever holds the machine keeps it
+	// whoever holds the machine keeps it; the layers the debugger hides too
 	int nodraw = comp->vid->nodraw;
+	unsigned char hide = comp->vid->tsconf.hide;
 	// A snapshot from under another playback, or none: its recording's file
 	// is closed, so the playback is the live one's - which the load ends.
 	size_t rzxLen = offsetof(Computer, rzx.frm.data) - offsetof(Computer, rzx);
@@ -254,6 +263,7 @@ int xstate_load(xState* st, Computer* comp) {
 		src += st->m.chunk[i].size;
 	}
 	comp->vid->nodraw = nodraw;
+	comp->vid->tsconf.hide = hide;
 	if (comp->ts) ts_state_restore(comp->ts);
 	// The image buffers are outside the snapshot and may have been swapped
 	// since, so the ray goes back by its offset into whichever buffer is
@@ -320,6 +330,10 @@ unsigned char* xstate_put_begin(xState* st, const void* meta) {
 }
 
 size_t xstate_diff(const xState* st, Computer* comp, const unsigned char* other, size_t* first) {
+	return xstate_diff_parts(st, comp, other, first, 0);
+}
+
+size_t xstate_diff_parts(const xState* st, Computer* comp, const unsigned char* other, size_t* first, int leave) {
 	if (!st || (st->m.count < 1)) return 0;
 	// the ray points into whichever image buffer is current, and those swap
 	// every frame: the pointers are not state, their offsets (in the meta) are
@@ -330,6 +344,10 @@ size_t xstate_diff(const xState* st, Computer* comp, const unsigned char* other,
 	for (i = 0; i < st->m.count; i++) {
 		const char* base = (const char*)st->m.chunk[i].ptr;
 		size_t n;
+		if (st->m.chunk[i].kind & leave) {
+			off += st->m.chunk[i].size;
+			continue;
+		}
 		for (n = 0; n < st->m.chunk[i].size; n++) {
 			if (st->data[off + n] == other[off + n]) continue;
 			for (k = 0; k < 2; k++)

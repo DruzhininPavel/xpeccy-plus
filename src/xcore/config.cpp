@@ -383,6 +383,10 @@ void saveConfig() {
 	fprintf(cfile, "snd.log = %s\n", YESNO(conf.dbg.sndlog));
 	fprintf(cfile, "snd.detached = %s\n", YESNO(conf.dbg.snddetach));
 	fprintf(cfile, "snd.window = %i:%i:%i:%i\n",conf.dbg.sndpos.x(),conf.dbg.sndpos.y(),conf.dbg.sndsiz.width(),conf.dbg.sndsiz.height());
+	fprintf(cfile, "evo.tab = %i\n", conf.dbg.evotab);
+	fprintf(cfile, "evo.detached = %s\n", YESNO(conf.dbg.evodetach));
+	fprintf(cfile, "evo.fieldnames = %s\n", YESNO(conf.dbg.evonames));
+	fprintf(cfile, "evo.window = %i:%i:%i:%i\n",conf.dbg.evopos.x(),conf.dbg.evopos.y(),conf.dbg.evosiz.width(),conf.dbg.evosiz.height());
 	fprintf(cfile, "regs.layout = %i\n", conf.dbg.reglayout);
 	fprintf(cfile, "regs.split = %s\n", YESNO(conf.dbg.regsplit));
 	fprintf(cfile, "labels.image = %s\n", YESNO(conf.dbg.imglabels));
@@ -817,6 +821,11 @@ void loadConfig() {
 	conf.dbg.snddetach = 0;
 	conf.dbg.sndpos = QPoint(-1, -1);
 	conf.dbg.sndsiz = QSize(560, 380);
+	conf.dbg.evotab = 0;
+	conf.dbg.evodetach = 0;
+	conf.dbg.evonames = 0;
+	conf.dbg.evopos = QPoint(-1, -1);
+	conf.dbg.evosiz = QSize(560, 480);
 	conf.dbg.reglayout = DBG_REGS_AUTO;
 	conf.dbg.regsplit = 1;
 	conf.dbg.imglabels = 1;
@@ -945,6 +954,18 @@ void loadConfig() {
 							conf.dbg.sndpos.setY(atoi(vect[1].c_str()));
 							fprt = atoi(vect[2].c_str()); if (fprt > 0) conf.dbg.sndsiz.setWidth(fprt);
 							fprt = atoi(vect[3].c_str()); if (fprt > 0) conf.dbg.sndsiz.setHeight(fprt);
+						}
+					}
+					if ((pnam == "evo.tab") && (arg.i >= 0)) conf.dbg.evotab = arg.i;
+					if (pnam == "evo.detached") conf.dbg.evodetach = arg.b;
+					if (pnam == "evo.fieldnames") conf.dbg.evonames = arg.b;
+					if (pnam == "evo.window") {
+						vect = splitstr(pval,":");
+						if (vect.size() > 3) {
+							conf.dbg.evopos.setX(atoi(vect[0].c_str()));
+							conf.dbg.evopos.setY(atoi(vect[1].c_str()));
+							fprt = atoi(vect[2].c_str()); if (fprt > 0) conf.dbg.evosiz.setWidth(fprt);
+							fprt = atoi(vect[3].c_str()); if (fprt > 0) conf.dbg.evosiz.setHeight(fprt);
 						}
 					}
 					if (pnam == "ports") xm_defer(pnam, pval);

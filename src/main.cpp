@@ -29,6 +29,7 @@
 #include "xgui/debuga/debuger.h"
 #include "xgui/scrwin.h"
 #include "xgui/sndwin.h"
+#include "xgui/evowin.h"
 #include "xgui/options/setupwin.h"
 #include "filer.h"
 #include "libxpeccy/xstate.h"
@@ -442,7 +443,8 @@ int main(int ac,char** av) {
 	keyWindow keyw(&mwin);
 	xScrWin scrw(&mwin);
 	xSndWin sndw(&mwin);
-	for (QWidget* win : std::initializer_list<QWidget*>{&tapw, &wutw, &scrw, &sndw})
+	xEvoWin evow(&mwin);
+	for (QWidget* win : std::initializer_list<QWidget*>{&tapw, &wutw, &scrw, &sndw, &evow})
 		mwin.addSatellite(win);
 	mwin.addSatellite(&rzxw, true);		// a recording takes no input: Delete, Home, End go on too
 
@@ -522,6 +524,14 @@ int main(int ac,char** av) {
 	app.connect(&mwin, SIGNAL(s_snd_show()), &dbgw, SLOT(sndToggle()));
 	app.connect(&optw, SIGNAL(s_apply()), &sndw, SLOT(updateStyle()));
 	dbgw.sndSetDetached(conf.dbg.snddetach);
+
+	app.connect(&dbgw, SIGNAL(wannaEvoWin(bool)), &evow, SLOT(setDetached(bool)));
+	app.connect(&evow, SIGNAL(s_detach(bool)), &dbgw, SLOT(evoSetDetached(bool)));
+	app.connect(&evow, SIGNAL(s_picture()), &dbgw, SLOT(evoPicture()));
+	app.connect(&app, SIGNAL(s_frame()), &evow, SLOT(upd()));
+	app.connect(&dbgw, SIGNAL(s_evo_upd()), &evow, SLOT(upd()));
+	app.connect(&optw, SIGNAL(s_apply()), &evow, SLOT(updateStyle()));
+	dbgw.evoSetDetached(conf.dbg.evodetach);
 
 	app.connect(&mwin, SIGNAL(s_keywin_shide()), &keyw, SLOT(switcher()));
 	app.connect(&mwin, SIGNAL(s_keywin_upd(Keyboard*)), &keyw, SLOT(upd(Keyboard*)));

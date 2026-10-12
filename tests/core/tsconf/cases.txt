@@ -35,6 +35,8 @@ bin t15_tiles_y4.bin     t15_tiles.asm        YOFS=4
 bin t16_sprreuse.bin     t16_sprreuse.asm
 bin t17_text_m0.bin      t17_text.asm         MODE=0
 bin t17_text_m1.bin      t17_text.asm         MODE=1
+bin t18_sprview.bin      t18_sprview.asm
+bin t19_tileview.bin     t19_tileview.asm
 
 run t01_frameint14   t01_frameint14.bin   300
 run t02_lineint      t02_lineint.bin      300
@@ -66,3 +68,30 @@ run t15_tiles_y4     t15_tiles_y4.bin     12  "PIX=26,13 26,20 42,1"
 run t16_sprreuse     t16_sprreuse.bin     4   "PIX=104,7 104,8 104,9 204,7 204,8 204,9"
 run t17_text_m0      t17_text_m0.bin      4   "PIX=40,40" "PIXH=104,48 105,48 106,48 107,48 108,48 136,48 137,48"
 run t17_text_m1      t17_text_m1.bin      4   "PIX=40,40" "PIXH=104,48 105,48 106,48 107,48 108,48 136,48 137,48"
+
+# The debugger's layer switches. Hidden layers change the picture only (STATE equal to
+# the run with nothing hidden); a redraw while stopped gives the picture and the state
+# of a run that had the layer hidden from the start (each *_ref beside its case).
+run h01_shown        t02_lineint14.bin    300 STATE=1
+run h01_hidden       t02_lineint14.bin    300 STATE=1 HIDE=0x3f
+run h02_shown        t10_layers_m0.bin    4   STATE=1 "PIX=54,60 58,60 62,60 66,60"
+run h02_hidden_s0    t10_layers_m0.bin    4   STATE=1 HIDE=0x01 "PIX=54,60 58,60 62,60 66,60"
+run h02_hidden_gfx   t10_layers_m0.bin    4   STATE=1 HIDE=0x20 "PIX=54,60 58,60 62,60 66,60"
+run r01_pause        t16_sprreuse.bin     0   REDRAW=3,70000,0x01,0,0
+run r01_pause_ref    t16_sprreuse.bin     0   REDRAW=3,70000,0x01,0,1
+run r02_debugger     t15_tiles_y4.bin     0   REDRAW=3,70000,0x3f,1,0,20000,0
+run r02_debugger_ref t15_tiles_y4.bin     0   REDRAW=3,70000,0x3f,1,1,20000,0
+run r03_poke         t10_layers_m0.bin    0   REDRAW=3,30000,0x01,1,0,0,1
+
+# The debugger's DMA log: every transfer with its device pair, addresses, size and time
+run d01_dmalog       t04_dma.bin          5   DMALOG=1
+run d02_dmalog_time  t13_dmatime_c6.bin   10  DMALOG=1
+run d03_dmalog_reg   t14_dmareg.bin       5   DMALOG=1
+run d04_dma_progress t13_dmatime_c6.bin   0   "DMAAT=0,6000 0,10000 0,14000 0,18000 0,22000 0,26000"
+
+# The debugger's sprite decode (tsl_sprite_dots) against the frame the TSU drew; 20 frames: the
+# program fills its graphics page for about 7
+run v01_sprview      t18_sprview.bin      20  SPRCHK=1
+
+# The debugger's tile map decode (tsl_map_entry/tsl_map_dots) against the frame the TSU drew
+run v02_tileview     t19_tileview.bin     40  TILECHK=1
