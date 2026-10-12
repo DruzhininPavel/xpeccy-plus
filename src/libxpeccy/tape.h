@@ -248,6 +248,7 @@ TapeBlockInfo tapGetBlockInfo(Tape*,int);
 int tapGetBlocksInfo(Tape*,TapeBlockInfo*);
 int tapGetBlockData(Tape*,int,unsigned char*,int);
 int tapGetBlockTime(Tape*,int,int);
+unsigned char tapGetBlockByte(TapeBlock*,int);
 
 void tap_add_block(Tape*,TapeBlock);
 void tap_set_text(Tape*,const char*);
