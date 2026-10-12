@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QKeyEvent>
+#include <algorithm>
 #include <atomic>
 #include <cmath>
 #include <QDir>
@@ -999,12 +1000,6 @@ QStringList xGamepad::confLines() {
 	return res;
 }
 
-void xGamepad::saveConf(FILE* file, const char* pfx) {
-	QString p = (pfx && pfx[0]) ? QString("%0.").arg(pfx) : QString();
-	foreach(const QString& ln, confLines())
-		fprintf(file, "%s\n", (p + ln).toUtf8().data());
-}
-
 void xGamepad::setConfLines(const QStringList& lst) {
 	scm = GPS_KEMPSTON;
 	resetRows();
@@ -1046,33 +1041,35 @@ bool xGamepad::loadConf(const std::string& name, const std::string& val) {
 	return true;
 }
 
-bool xGamepad::saveFile(const std::string& path) {
-	FILE* file = fopen(path.c_str(), "wb");
-	if (!file) return false;
-	saveConf(file, "");
-	fclose(file);
+// Through QFile, not fopen: a Cyrillic name on a Western Windows has no
+// letters in the ANSI code page and would not open.
+static bool padWriteLines(const QString& path, const QStringList& lst) {
+	QFile file(path);
+	if (!file.open(QIODevice::WriteOnly)) return false;
+	foreach(const QString& ln, lst) file.write(ln.toUtf8() + "\n");
 	return true;
 }
 
-// A table saved by Save as, or a .pad from before the table: the first has a
-// "joystick =" line.
-// A .pad's lines, "name = value"; table is false for a .pad from before the table.
-static bool padReadLines(const std::string& path, QStringList* lst, bool* table) {
-	FILE* file = fopen(path.c_str(), "rb");
-	if (!file) return false;
-	char buf[1024];
+bool xGamepad::saveFile(const QString& path) {
+	return padWriteLines(path, confLines());
+}
+
+// A .pad's lines, "name = value"; table is false for a .pad from before the
+// table, which has no "joystick =" line.
+static bool padReadLines(const QString& path, QStringList* lst, bool* table) {
+	QFile file(path);
+	if (!file.open(QIODevice::ReadOnly)) return false;
 	*table = false;
-	while (fgets(buf, sizeof(buf), file)) {
-		std::pair<std::string, std::string> spl = splitline(buf);
+	while (!file.atEnd()) {
+		std::pair<std::string, std::string> spl = splitline(file.readLine(1023).toStdString());
 		if (spl.first.empty() || spl.second.empty()) continue;
 		if (spl.first == "joystick") *table = true;
 		lst->append(QString::fromStdString(spl.first) + " = " + QString::fromStdString(spl.second));
 	}
-	fclose(file);
 	return true;
 }
 
-bool xGamepad::loadFile(const std::string& path) {
+bool xGamepad::loadFile(const QString& path) {
 	QStringList lst;
 	bool table;
 	if (!padReadLines(path, &lst, &table)) return false;
@@ -1084,7 +1081,7 @@ bool xGamepad::loadFile(const std::string& path) {
 // the rest of the player's table stays: an extra row of the player's own goes
 // only when the file binds one of its inputs. A .pad from before the table
 // knows nothing to merge with, and replaces it.
-bool xGamepad::mergeFile(const std::string& path) {
+bool xGamepad::mergeFile(const QString& path) {
 	QStringList lst;
 	bool table;
 	if (!padReadLines(path, &lst, &table)) return false;
@@ -1134,24 +1131,24 @@ static int padRoleOf(int s, const xJoyMapEntry& e) {
 // per target. The kempston.pad that shipped is the defaults: it is told by
 // what it binds to, since one the gui ever saved has its hat written as
 // buttons 12-15.
-void xGamepad::importMap(std::string path) {
+void xGamepad::importMap(const QString& path) {
 	scm = GPS_KEMPSTON;
 	resetRows();
-	if (path.empty()) return;
+	if (path.isEmpty()) return;
 	QList<xJoyMapEntry> ents;
-	FILE* fh = fopen(path.c_str(), "rb");
-	if (!fh) return;
-	char buf[1024];
+	QFile fh(path);
+	if (!fh.open(QIODevice::ReadOnly)) return;
+	QByteArray pname = path.toUtf8();
 	xJoyMapEntry jent;
-	while (fgets(buf, sizeof(buf), fh)) {
-		if (padParseLine(buf, &jent, path.c_str())) ents.append(jent);
+	while (!fh.atEnd()) {
+		QByteArray buf = fh.readLine(1023);
+		if (padParseLine(buf.data(), &jent, pname.constData())) ents.append(jent);
 	}
-	fclose(fh);
 	bool joy = true;
 	foreach(const xJoyMapEntry& e, ents) {
 		if (e.dev != JMAP_JOY) joy = false;
 	}
-	QString name = QFileInfo(QString::fromStdString(path)).fileName();
+	QString name = QFileInfo(path).fileName();
 	if (ents.isEmpty() || ((name == "kempston.pad") && joy)) return;
 	// a scheme is only taken for a map that covers most of its rows: one key
 	// in common - the A of WASD is QAOP's down - would read as nonsense
@@ -1203,7 +1200,7 @@ void xGamepad::importMap(std::string path) {
 	}
 	rebuild();
 	xlog(XLG_INPUT, XLL_INFO, "pad %c: map '%s' brought in as %s and %i extra row(s)",
-		slot ? 'B' : 'A', path.c_str(), pad_scheme_key(scm), (int)rows.size() - PR_JOY);
+		slot ? 'B' : 'A', pname.constData(), pad_scheme_key(scm), (int)rows.size() - PR_JOY);
 }
 
 // gamecontrollerdb.txt: SDL carries a big layout database of its own, this is
@@ -1910,13 +1907,13 @@ bool xGamepadController::gameImage(const QString& image) {
 	QString pad = fi.dir().filePath(fi.completeBaseName() + ".pad");
 	if (!QFile::exists(pad)) return changed;
 	QStringList own = gpada->confLines();
-	if (!gpada->mergeFile(pad.toStdString())) {
+	if (!gpada->mergeFile(pad)) {
 		gpada->setConfLines(own);
 		return changed;
 	}
 	xlog(XLG_INPUT, XLL_INFO, "pad A: bindings from '%s'", pad.toUtf8().data());
 	xGamepad scratch;		// the file alone, in the words confLines() uses
-	scratch.loadFile(pad.toStdString());
+	scratch.loadFile(pad);
 	gameLines = scratch.confLines();
 	gameOwn = own;
 	gameFile = pad;
@@ -1946,16 +1943,46 @@ bool xGamepadController::gameSave(const QString& path) {
 			if (gameOwn.contains(lst.at(i)) && !gameLines.contains(lst.at(i))) lst.removeAt(i);
 		}
 	}
-	FILE* file = fopen(path.toLocal8Bit().data(), "wb");
-	if (!file) return false;
-	foreach(const QString& ln, lst) fprintf(file, "%s\n", ln.toUtf8().data());
-	fclose(file);
-	return true;
+	return padWriteLines(path, lst);
 }
 
 QStringList xGamepadController::tableLines(int s) {
 	if ((s == 0) && !gameFile.isEmpty()) return gameOwn;	// a game's table is not the player's
 	return (s ? gpadb : gpada)->confLines();
+}
+
+void xGamepadController::presetUsed(const QString& path) {
+	for (int i = presets.size() - 1; i >= 0; i--) {
+		if (bkm_same(presets.at(i), path)) presets.removeAt(i);
+	}
+	presets.prepend(bkm_key(path));
+	while (presets.size() > PRESET_MAX) presets.removeLast();
+}
+
+// Shown by name, not by use: switching between two would swap them every time.
+QStringList xGamepadController::presetList() {
+	QStringList res;
+	foreach(const QString& path, presets) {
+		if (QFile::exists(path)) res.append(path);
+	}
+	std::sort(res.begin(), res.end(), [](const QString& a, const QString& b) {
+		return QFileInfo(a).completeBaseName().localeAwareCompare(QFileInfo(b).completeBaseName()) < 0;
+	});
+	return res;
+}
+
+bool xGamepadController::presetLoad(xGamepad* gp, const QString& path) {
+	if (!gp->loadFile(path)) return false;
+	presetUsed(path);
+	return true;
+}
+
+// Read again rather than remembered: an edit, or an edit undone by hand, is
+// seen without anyone having to say so.
+bool xGamepadController::presetIs(xGamepad* gp, const QString& path) {
+	xGamepad scratch;
+	if (!scratch.loadFile(path)) return false;
+	return scratch.confLines() == gp->confLines();
 }
 
 // both QAOPs are one joystick, the key fire presses aside

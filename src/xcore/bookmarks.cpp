@@ -12,11 +12,11 @@ void addBookmark(std::string nm, std::string fp) {
 
 // one file whichever way its path was written; no disk access, so a favorite
 // on a drive that is gone cannot hold the menu up
-static QString bkm_key(const QString& path) {
+QString bkm_key(const QString& path) {
 	return QDir::cleanPath(QFileInfo(path).absoluteFilePath());
 }
 
-static bool bkm_same(const QString& a, const QString& b) {
+bool bkm_same(const QString& a, const QString& b) {
 #ifdef _WIN32
 	return bkm_key(a).compare(bkm_key(b), Qt::CaseInsensitive) == 0;
 #else

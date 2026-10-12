@@ -72,6 +72,8 @@ enum {
 	GPS_COUNT
 };
 
+#define PRESET_MAX 8
+
 // where a change to a game's table goes, once the user has said
 enum {
 	GE_ASK = 0,
@@ -237,14 +239,13 @@ class xGamepad : public QObject {
 
 		// config.conf: "<prefix>.<name> = <value>"; a .pad file is the same
 		// lines with no prefix
-		void saveConf(FILE*, const char*);
 		bool loadConf(const std::string&, const std::string&);
 		QStringList confLines();		// the table as "name = value", no prefix
 		void setConfLines(const QStringList&);
-		bool mergeFile(const std::string&);	// a game's file over this table: what it names wins
-		bool saveFile(const std::string&);
-		bool loadFile(const std::string&);
-		void importMap(std::string);		// a .pad from before the table
+		bool mergeFile(const QString&);		// a game's file over this table: what it names wins
+		bool saveFile(const QString&);
+		bool loadFile(const QString&);
+		void importMap(const QString&);		// a .pad from before the table
 
 		QList<xJoyMapEntry> scanMap(int, int, int);
 		QList<xJoyMapEntry> repTick(int);	// turbo, ms since the last call
@@ -293,6 +294,13 @@ class xGamepadController : public QObject {
 		bool gameRevert();			// the player's own table back, the game's dropped: true if one was on
 		QStringList tableLines(int);		// what config.conf keeps for a player
 		bool gameSave(const QString&);		// player 1's table as a game's file: without the player's own rows
+		// Presets: the .pad files loaded or saved by hand, the PRESET_MAX used
+		// last. A game's own, picked up with its image, is not one.
+		QStringList presets;			// newest first
+		void presetUsed(const QString&);
+		QStringList presetList();		// the ones still there, by name
+		bool presetLoad(xGamepad*, const QString&);
+		bool presetIs(xGamepad*, const QString&);	// the player's table is what the file says
 		QStringList seen;		// guids of the pads met so far, see newPad
 	signals:
 		void devicesChanged();

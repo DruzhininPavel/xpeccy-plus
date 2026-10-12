@@ -650,7 +650,8 @@ xGamepadWidget::xGamepadWidget(xGamepad* gp, QWidget* p):QWidget(p) {
 	};
 	QPushButton* btnSave = sideButton("Save as...", ":/images/floppy.png");
 	btnSave->setToolTip("Keep these bindings in a file, for a game or to share");
-	QPushButton* btnLoad = sideButton("Load...", ":/images/fileopen.png");
+	btnLoad = sideButton("Load...", ":/images/fileopen.png");
+	btnLoad->setToolTip("A preset used before, or a file");
 	btnReset = sideButton("Reset", ":/images/refresh.png");
 	btnReset->setToolTip("Back to the joystick's defaults");
 	labGame = padNote(QString());
@@ -719,7 +720,7 @@ xGamepadWidget::xGamepadWidget(xGamepad* gp, QWidget* p):QWidget(p) {
 	});
 	connect(table, &QTableView::customContextMenuRequested, this, [this](const QPoint& pos) {rowMenu(pos);});
 	connect(btnSave, &QPushButton::clicked, this, [this]() {saveAs();});
-	connect(btnLoad, &QPushButton::clicked, this, [this]() {load();});
+	connect(btnLoad, &QPushButton::clicked, this, [this]() {loadMenu();});
 	connect(btnReset, &QPushButton::clicked, this, [this]() {reset();});
 	connect(btnRevert, &QPushButton::clicked, this, [this]() {revert();});
 	connect(sldTurbo, &QSlider::valueChanged, this, [this](int v) {
@@ -928,15 +929,47 @@ void xGamepadWidget::saveAs() {
 	QString path = QFileDialog::getSaveFileName(this, "Save bindings", def, "Bindings (*.pad)");
 	if (path.isEmpty()) return;
 	if (!path.endsWith(".pad")) path.append(".pad");
-	bool ok = (gpad == conf.gpctrl->gpada) ? conf.gpctrl->gameSave(path) : gpad->saveFile(path.toStdString());
-	if (!ok) showInfo("Can't write the file");
+	bool ok = (gpad == conf.gpctrl->gpada) ? conf.gpctrl->gameSave(path) : gpad->saveFile(path);
+	if (!ok) {
+		showInfo("Can't write the file");
+		return;
+	}
+	// one beside the image, with its name, is that game's and comes by itself
+	QFileInfo img(media_current());
+	QString game = img.dir().filePath(img.completeBaseName() + ".pad");
+	if (!bkm_same(path, conf.gpctrl->gameFile) && (img.fileName().isEmpty() || !bkm_same(path, game)))
+		conf.gpctrl->presetUsed(path);
 }
 
-void xGamepadWidget::load() {
-	QString path = QFileDialog::getOpenFileName(this, "Load bindings", QString::fromStdString(conf.path.confDir),
-		"Bindings (*.pad)");
-	if (path.isEmpty()) return;
-	if (!gpad->loadFile(path.toStdString())) {
+// The presets used last, then the file dialog; with none yet, the dialog.
+void xGamepadWidget::loadMenu() {
+	QStringList lst = conf.gpctrl->presetList();
+	if (lst.isEmpty()) {
+		browse();
+		return;
+	}
+	QMenu menu(this);
+	menu.setToolTipsVisible(true);
+	foreach(const QString& path, lst) {
+		QAction* act = menu.addAction(QFileInfo(path).completeBaseName().replace("&", "&&"), this, [this, path]() {load(path);});
+		act->setToolTip(QDir::toNativeSeparators(path));
+		act->setCheckable(true);
+		act->setChecked(conf.gpctrl->presetIs(gpad, path));
+	}
+	menu.addSeparator();
+	menu.addAction(QIcon(":/images/fileopen.png"), "Browse...", this, [this]() {browse();});
+	menu.exec(btnLoad->mapToGlobal(QPoint(0, btnLoad->height())));
+}
+
+void xGamepadWidget::browse() {
+	QString dir = conf.gpctrl->presets.isEmpty() ? QString::fromLocal8Bit(conf.path.confDir.c_str())
+		: QFileInfo(conf.gpctrl->presets.first()).path();
+	QString path = QFileDialog::getOpenFileName(this, "Load bindings", dir, "Bindings (*.pad)");
+	if (!path.isEmpty()) load(path);
+}
+
+void xGamepadWidget::load(const QString& path) {
+	if (!conf.gpctrl->presetLoad(gpad, path)) {
 		showInfo("Can't read the file");
 		return;
 	}

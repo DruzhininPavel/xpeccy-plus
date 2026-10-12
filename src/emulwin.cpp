@@ -2811,6 +2811,24 @@ void MainWin::fillPadMenu() {
 		act->setCheckable(true);
 		act->setChecked(gp->scheme() == s);
 	}
+	// the presets, for the same player, switched as quickly
+	QStringList lst = conf.gpctrl->presetList();
+	if (!lst.isEmpty()) padMenu->addSeparator();
+	foreach(const QString& path, lst) {
+		QString name = QFileInfo(path).completeBaseName();
+		QAction* act = padMenu->addAction(QString(name).replace("&", "&&"), this, [this, gp, path, name]() {
+			if (!conf.gpctrl->presetLoad(gp, path)) {
+				setMessage(" can't read the preset ");
+				return;
+			}
+			padWin->sync();
+			padGameEdited();
+			saveConfig();
+			setMessage(QString(" gamepad: %0 ").arg(name));
+		});
+		act->setCheckable(true);
+		act->setChecked(conf.gpctrl->presetIs(gp, path));
+	}
 }
 
 void MainWin::padWinShow() {

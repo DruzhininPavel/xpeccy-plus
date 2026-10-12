@@ -565,6 +565,8 @@ typedef struct {
 
 void addBookmark(std::string,std::string);
 int findBookmark(const QString&);		// -1 when the file is not in the list
+QString bkm_key(const QString&);		// a path as the lists keep it
+bool bkm_same(const QString&, const QString&);	// one file, however the paths were written
 #define RECENT_MAX 10
 void recent_add(const QString&);
 void recent_remove(const QString&);
