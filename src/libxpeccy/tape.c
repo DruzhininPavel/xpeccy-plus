@@ -517,11 +517,12 @@ int tapUserPlay(Tape* tap) {
 	return tap_play(tap, 0);
 }
 
-// Flash loading hands a block over without the tape ever moving, so a loader
-// that follows the rom's part has to be given the tape at the moment it starts
-// listening: a fixed lead-in either cuts into its own set-up or lets the block
-// run past it. tapArmPlay leaves the tape standing on the block, and it is
-// pressed on the first read of the tape port that is not the rom's own.
+// Flash loading hands a block over and plays on from the gap after it, as a
+// deck would. Armed, the tape is not stopped by the detector in that gap: code
+// between the two loads may read the port as no loader does, and the loader
+// that follows may not read it the way a start needs (Licence to Kill). A
+// stopped tape that is armed plays on the first read of the tape port that is
+// not the rom's own.
 void tapArmPlay(Tape* tap) {
 	if (!tap->userStop)
 		tap->armed = 1;
@@ -586,6 +587,9 @@ void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int
 		} else if (!tap->alien) {
 			tap->alien = 1;
 			tap->detectAlien = tick;
+		} else if (tap->armed && (tap->pos == 0)) {
+			// the gap after a block flash loading handed over: a deck plays it
+			// out, whatever reads the port meanwhile
 		} else if (tick - tap->detectAlien > TAPE_GONE_TICKS) {
 			xlog(XLG_TAPE, XLL_INFO, "auto stop: the tape port is read as no loader reads it");
 			tapStop(tap);

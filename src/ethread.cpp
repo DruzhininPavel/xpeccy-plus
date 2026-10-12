@@ -362,9 +362,9 @@ void xThread::tap_hand_over(Computer* comp, int blk, int base, int dir) {
 		cpu->regA = a;
 		cpu_set_flag(cpu, fl);
 	}
-	// the block is in memory and the tape never moved for it, so a loader of
-	// its own that reads the next one is handed the tape when it asks - one
-	// the trap reads waits for the rom (Fuse leaves it at the block's pause)
+	// the block is in memory and the tape never moved for it: a next block a
+	// loader of its own reads is played on from here, one the trap reads
+	// waits for the rom
 	int nxt = blk + 1;
 	int arm = (nxt < tap->blkCount) && !tap_block_rom(&tap->blkData[nxt]);
 	// A block with no pause after it runs straight into the next one, and a
@@ -377,6 +377,17 @@ void xThread::tap_hand_over(Computer* comp, int blk, int base, int dir) {
 	if (!TAP_VOL_PAUSE(last) && (tap->block < tap->blkCount)) {
 		tap_play_on(tap, last);
 	} else if (arm) {
+		// The rom would leave here with the tape at the end of the block's
+		// bytes, so it plays on from the image's pause after them. A loader
+		// that sets itself up for longer than that finds the next block's
+		// pilot already running, as from a deck - Speedlock 5 (Action Force 2)
+		// counts edges for a moment and resets on silence. Armed, so that the
+		// detector leaves the gap alone (tapArmPlay).
+		int gap = 0;
+		for (int i = cur->sigCount - 1; (i >= 0) && TAP_VOL_PAUSE(cur->data[i].vol); i--)
+			gap += cur->data[i].size;
+		tap_play_on(tap, last);
+		tap->sigLen = gap;
 		tapArmPlay(tap);
 	}
 	if (copy)
