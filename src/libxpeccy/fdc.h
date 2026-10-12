@@ -112,8 +112,6 @@ typedef struct {
 	int(*in)(struct DiskIF*,int,int*,int);
 	int(*out)(struct DiskIF*,int,int,int);
 	void(*sync)(struct DiskIF*,int);
-	void(*irq)(struct DiskIF*,int);
-	void(*term)(struct DiskIF*);
 } DiskHW;
 
 struct DiskIF {

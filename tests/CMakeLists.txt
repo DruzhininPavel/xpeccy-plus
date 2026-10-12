@@ -31,6 +31,8 @@ find_package(ZLIB REQUIRED)
 
 # CONFIGURE_DEPENDS: a build tree made before a core file was added picks it up
 file(GLOB_RECURSE XLIB_SOURCES CONFIGURE_DEPENDS ${XLIB}/*.c ${XLIB}/*.cpp)
+# included by lh1_decoder.c, not a translation unit of its own
+list(REMOVE_ITEM XLIB_SOURCES ${XLIB}/filetypes/unpackers/lh1/bit_stream_reader.c)
 add_library(xpeccycore STATIC ${XLIB_SOURCES})
 target_include_directories(xpeccycore PUBLIC ${XLIB} ${ZLIB_INCLUDE_DIR})
 target_compile_definitions(xpeccycore PUBLIC ${XENDIAN})

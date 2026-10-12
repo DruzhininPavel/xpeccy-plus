@@ -34,9 +34,6 @@ void dhwSync(DiskIF* dif, int ns) {
 void dhw_irq(int id, void* p) {
 	DiskIF* dif = p; // (DiskIF*)p;
 	if (id == IRQ_FDD_RDY) dif->doors = 1;	// a disk went in or out
-	if (dif->hw->irq && (dif->fdc->dma || dif->inten)) {
-		dif->hw->irq(dif, id);
-	}
 }
 
 void fdc_set_hd(FDC* fdc, int hd) {
@@ -150,10 +147,10 @@ void pdosSync(DiskIF* dif, int ns) {
 // common
 
 static DiskHW dhwTab[] = {
-	{DIF_NONE,dumReset,dumIn,dumOut,dumSync,NULL,NULL},
-	{DIF_BDI,bdiReset,bdiIn,bdiOut,dhwSync,NULL,NULL},
-	{DIF_P3DOS,pdosReset,pdosIn,pdosOut,pdosSync,NULL,NULL},		// upd765 (+3dos)
-	{DIF_END,NULL,NULL,NULL,NULL,NULL,NULL}
+	{DIF_NONE,dumReset,dumIn,dumOut,dumSync},
+	{DIF_BDI,bdiReset,bdiIn,bdiOut,dhwSync},
+	{DIF_P3DOS,pdosReset,pdosIn,pdosOut,pdosSync},		// upd765 (+3dos)
+	{DIF_END,NULL,NULL,NULL,NULL}
 };
 
 DiskHW* findDHW(int id) {

@@ -120,14 +120,9 @@ typedef struct {
 
 typedef struct Keyboard Keyboard;
 
-#define KF_AUTORPT	1
-
 typedef struct {
 	int id;
-	int flag;
-	void(*reset)(Keyboard*);
 	int(*read)(Keyboard*, int);		// address
-	void(*write)(Keyboard*, int, int);	// address, data
 	void(*press)(Keyboard*, keyEntry*);
 	void(*release)(Keyboard*, keyEntry*);
 	void(*sync)(Keyboard*, int);		// ns
