@@ -91,6 +91,13 @@ before that point is upstream's history and is not repeated here.
   alone does and stays pressed for the machine: Ctrl+F12 on TSConf resets into the TS-BIOS
   setup, Shift+F12 into its Caps Shift boot choice.
 
+- **Open in the Disk Manager** and on a drive in the Drives menu puts the disk into that drive
+  and no longer starts it, as Open in the Tape Player does.
+
+- **A machine switch, a reset or another file during fast loading** no longer freezes the
+  window for seconds, brings the old machine back or lets autostart type on into the new
+  one, and a paused machine no longer keeps a CPU core busy.
+
 - **Smaller things**: Record in the tape player works on an empty deck, the Fast Mode button
   switches it when the key is set to Hold, a keymap line with many keys no longer overruns,
   and a number of messages, tooltips and labels are corrected.
