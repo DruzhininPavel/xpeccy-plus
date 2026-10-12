@@ -62,15 +62,25 @@ static QString evo_bits(int v, const evoBit* t, const char* none) {
 // the CPU clocks both boards have
 static const char* const evoClock[3] = {"3.5", "7", "14"};
 
-// A color the picture shows. The two below are the debugger's; index 0 of the
-// TSU's dots is a hole and shows as a checker.
+// A color the picture shows. Index 0 of the TSU's dots is a hole: the pictures
+// leave it transparent and the checker shows through, as an image editor does.
 static QRgb evo_rgb(Video* vid, int idx) {
 	uint32_t c = vid->pal[idx & 0xff];
 	return qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff);
 }
 
-static QRgb evo_checker(int x, int y) {
-	return ((x ^ y) & 4) ? qRgb(0x60, 0x60, 0x60) : qRgb(0x40, 0x40, 0x40);
+#define EVO_CHECK	8	// a checker square, in screen pixels whatever the zoom
+
+// two shades close to the window's own, so the picture over it stands out
+static QBrush evo_checker(const QWidget* w) {
+	QColor bg = w->palette().color(QPalette::Window);
+	QColor alt = (bg.lightness() < 128) ? bg.lighter(135) : bg.darker(110);
+	QPixmap pm(EVO_CHECK * 2, EVO_CHECK * 2);
+	pm.fill(bg);
+	QPainter pnt(&pm);
+	pnt.fillRect(0, 0, EVO_CHECK, EVO_CHECK, alt);
+	pnt.fillRect(EVO_CHECK, EVO_CHECK, EVO_CHECK, EVO_CHECK, alt);
+	return QBrush(pm);
 }
 
 // the panel's tables: read-only, rows alternating as the dumps and the listing have them
@@ -601,16 +611,21 @@ void xTsSprPage::draw_pick() {
 	tsl_get_sprite(vid, sel, &s);
 	static unsigned char dots[64 * 64];
 	tsl_sprite_dots(vid, sel, dots);
-	QImage img(s.w, s.h, QImage::Format_RGB32);
+	QImage img(s.w, s.h, QImage::Format_ARGB32);
 	for (int y = 0; y < s.h; y++) {
 		QRgb* line = (QRgb*)img.scanLine(y);
 		for (int x = 0; x < s.w; x++) {
 			int d = dots[y * s.w + x];
-			line[x] = d ? evo_rgb(vid, d) : evo_checker(x, y);
+			line[x] = d ? evo_rgb(vid, d) : 0;
 		}
 	}
 	int zoom = qMax(1, qMin(qMin(labPic->width(), SPR_PIC) / s.w, qMin(labPic->height(), SPR_PIC) / s.h));
-	labPic->setPixmap(QPixmap::fromImage(img.scaled(s.w * zoom, s.h * zoom)));
+	QPixmap pic(s.w * zoom, s.h * zoom);
+	QPainter pnt(&pic);
+	pnt.fillRect(pic.rect(), evo_checker(labPic));
+	pnt.drawImage(0, 0, img.scaled(pic.size()));
+	pnt.end();
+	labPic->setPixmap(pic);
 	int sg = vid->tsconf.SGPage;
 	labInfo->setText(QString("Sprite %0, %1x%2 at %3,%4\nTile %5: row %6, column %7 of page %8\nPalette %9 (colors %10..%11)")
 		.arg(sel).arg(s.w).arg(s.h).arg(s.x).arg(s.y)
@@ -694,6 +709,8 @@ void xTsMapView::paintEvent(QPaintEvent*) {
 	QPainter pnt(this);
 	QRect t = target();
 	if (t.isEmpty()) return;
+	pnt.setBrushOrigin(t.topLeft());
+	pnt.fillRect(t, evo_checker(this));
 	pnt.drawImage(t, img);
 	double k = (double)t.width() / img.width();
 	QColor col = conf.pal.value("dbg.header.bg");
@@ -764,15 +781,16 @@ xTsTilePage::xTsTilePage(QWidget* p):xEvoPage(HW_TSLAB, p) {
 	// its size whatever the values are
 	row = new QHBoxLayout;
 	view = new xTsMapView;
-	view->img = QImage(512, 512, QImage::Format_RGB32);
+	view->img = QImage(512, 512, QImage::Format_ARGB32);
 	row->addWidget(view);
 	infoBox = new QWidget;
 	evo_info_column(infoBox, names, vals, TILE_INFO);
 	row->addWidget(infoBox);
 	row->addStretch(1);
 	lay->addLayout(row, 1);
-	QLabel* legend = new QLabel("Checker: color 0, or a hole (tile 0 with its Z_EN off). Outlined: the part of the map the frame shows.");
-	legend->setWordWrap(true);
+	QLabel* legend = new QLabel("Checker: transparent - color 0, or a hole (tile 0 with its Z_EN off).\n"
+		"Outlined: the part of the map the frame shows.");
+	legend->setWordWrap(true);		// a narrow window still can be: the text never changes
 	lay->addWidget(legend);
 	view->onHover = [this](int x, int y) {
 		hx = x;
@@ -834,7 +852,7 @@ void xTsTilePage::draw(Computer* comp) {
 	if (mode != shown) setup();
 	sbPage->setEnabled(gfx);
 	sbPal->setEnabled(gfx);
-	// the colors once, then each dot a lookup; 0 is a hole, drawn as the checker
+	// the colors once, then each dot a lookup; 0 is a hole, left transparent
 	QRgb pal[256];
 	for (int i = 1; i < 256; i++)
 		pal[i] = evo_rgb(vid, i);
@@ -854,7 +872,7 @@ void xTsTilePage::draw(Computer* comp) {
 				QRgb* dst = line[y] + (tx << 3);
 				const unsigned char* src = dots + (y << 3);
 				for (int x = 0; x < 8; x++)
-					dst[x] = src[x] ? pal[src[x]] : evo_checker((tx << 3) + x, (ty << 3) + y);
+					dst[x] = src[x] ? pal[src[x]] : 0;
 			}
 		}
 	}
