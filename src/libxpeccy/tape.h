@@ -96,6 +96,10 @@ typedef struct {
 	unsigned isHeader:1;
 	unsigned vol:1;
 	unsigned pend14:1;		// TZX reader: a #14 is among the pending pulses
+	unsigned data14:1;		// ... the only one, whole bytes, nothing after it: a data block if closed now
+	unsigned ownLev:1;		// TZX reader: #15/#18/#19 levels in it, not to be set by the pause rule
+	unsigned levSet:1;		// TZX reader: a #2B set the level of its first pulse...
+	unsigned levAt:1;		// ... to this
 
 	int plen;
 	int s1len;
