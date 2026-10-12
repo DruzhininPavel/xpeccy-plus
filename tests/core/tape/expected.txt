@@ -1,34 +1,34 @@
 == tap_blocks
 blocks: 3
- 0: sig=8370 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@8065 time=6 hdr=1 bytes=1 stop=0 stop48=0 size=17 head=3 'quicktest ' dlen=256 par1=32768 pulses=42F349AD
+ 0: sig=8370 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@8065 time=6 hdr=1 bytes=1 stop=0 stop48=0 size=17 head=3 'quicktest ' dlen=256 par1=32768 pulses=CDA7EFC2
     head: 2168x8063 667x1 735x1 855x28 1710x4 855x2 1710x6 855x6 ...
- 1: sig=7354 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=4 hdr=0 bytes=1 stop=0 stop48=0 size=256 pulses=6CD0C02D
+ 1: sig=7354 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=4 hdr=0 bytes=1 stop=0 stop48=0 size=256 pulses=23FE9242
     head: 2168x3223 667x1 735x1 1710x16 855x26 1710x6 855x8 1710x6 ...
- 2: sig=4858 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=3 hdr=0 bytes=1 stop=0 stop48=0 size=100 pulses=6CE92F3D
+ 2: sig=4858 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=3 hdr=0 bytes=1 stop=0 stop48=0 size=100 pulses=D1202F32
     head: 2168x3223 667x1 735x1 1710x16 855x24 1710x4 855x2 1710x2 ...
 == tap_bytes
  0: 19 bytes D9041F09 as written
  1: 258 bytes 8460D023 as written
  2: 102 bytes 170762D3 as written
 == tap_replay
- 0: 8370 edges: 1762736Tx1 2176Tx4031 2160Tx4031 672Tx1 736Tx1 848Tx117 864Tx91 1712Tx84 1696Tx12 3521120Tx1
- 1: 7354 edges: 1762736Tx1 2176Tx1611 2160Tx1611 672Tx1 736Tx1 1712Tx1803 1696Tx237 848Tx1193 864Tx895 3521136Tx1
- 2: 4859 edges: 1762736Tx1 2176Tx1611 2160Tx1611 672Tx1 736Tx1 1712Tx728 1696Tx100 848Tx456 864Tx348 3521120Tx1 352112Tx1
+ 0: 8370 edges: 1752176Tx1 2160Tx4031 2176Tx4031 672Tx1 736Tx1 848Tx121 864Tx87 1712Tx88 1696Tx8 3500000Tx1
+ 1: 7354 edges: 1752176Tx1 2160Tx1611 2176Tx1611 672Tx1 736Tx1 1696Tx270 1712Tx1770 848Tx1160 864Tx928 3500000Tx1
+ 2: 4859 edges: 1752176Tx1 2160Tx1611 2176Tx1611 672Tx1 736Tx1 1696Tx94 1712Tx734 848Tx462 864Tx342 3500000Tx1 350000Tx1
 == tzx_blocks
 blocks: 7
- 0: sig=8370 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@8065 time=6 hdr=1 bytes=1 stop=0 stop48=0 size=17 head=3 'tzxtest   ' dlen=64 par1=40000 text='xpeccy-plus tape test' pulses=45B4D4AD
+ 0: sig=8371 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@8065 time=6 hdr=1 bytes=1 stop=0 stop48=0 size=17 head=3 'tzxtest   ' dlen=64 par1=40000 text='xpeccy-plus tape test' pulses=EDB61A6E
     head: 2168x8063 667x1 735x1 855x28 1710x4 855x2 1710x6 855x2 ...
- 1: sig=4282 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=3 hdr=0 bytes=1 stop=0 stop48=0 size=64 text='xpeccy-plus tape test' pulses=B567B28D
+ 1: sig=4283 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=3 hdr=0 bytes=1 stop=0 stop48=0 size=64 text='xpeccy-plus tape test' pulses=ED4C888E
     head: 2168x3223 667x1 735x1 1710x16 855x28 1710x4 855x10 1710x4 ...
- 2: sig=2559 pilot=2000 s1=600 s2=700 l0=500 l1=1000 data@1502 time=1 hdr=0 bytes=1 stop=0 stop48=0 size=64 text='xpeccy-plus tape test' pulses=7BC59935
+ 2: sig=2559 pilot=2000 s1=600 s2=700 l0=500 l1=1000 data@1502 time=1 hdr=0 bytes=1 stop=0 stop48=0 size=64 text='xpeccy-plus tape test' pulses=EF73F10B
     head: 2000x1500 600x1 700x1 1000x16 500x26 1000x2 500x2 1000x2 ...
- 3: sig=460 pilot=1500 s1=900 s2=1000 l0=600 l1=1200 data@203 time=1 hdr=1 bytes=1 stop=0 stop48=0 size=14 text='xpeccy-plus tape test' pulses=4D527025
+ 3: sig=461 pilot=1500 s1=900 s2=1000 l0=600 l1=1200 data@203 time=1 hdr=1 bytes=1 stop=0 stop48=0 size=14 text='xpeccy-plus tape test' pulses=B13DB671
     head: 1500x200 800x1 900x1 1000x1 600x24 1200x2 600x2 1200x4 ...
- 4: sig=3642 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=2 hdr=0 bytes=1 stop=0 stop48=0 size=24 text='loop' pulses=277E39CF
+ 4: sig=3643 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=2 hdr=0 bytes=1 stop=0 stop48=0 size=24 text='loop' pulses=EAC1ED9D
     head: 2168x3223 667x1 735x1 1710x16 855x24 1710x2 855x4 1710x2 ...
- 5: sig=3642 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=2 hdr=0 bytes=1 stop=0 stop48=0 size=24 text='loop' pulses=277E39CF
+ 5: sig=3643 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=2 hdr=0 bytes=1 stop=0 stop48=0 size=24 text='loop' pulses=EAC1ED9D
     head: 2168x3223 667x1 735x1 1710x16 855x24 1710x2 855x4 1710x2 ...
- 6: sig=3770 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=3 hdr=0 bytes=1 stop=0 stop48=1 size=32 pulses=0885FE80
+ 6: sig=3771 pilot=2168 s1=667 s2=735 l0=855 l1=1710 data@3225 time=3 hdr=0 bytes=1 stop=0 stop48=1 size=32 pulses=12848ACE
     head: 2168x3223 667x1 735x1 1710x16 855x22 1710x2 855x6 1710x2 ...
 == tzx_bytes
  0: 19 bytes 0F4398DF as written
@@ -39,13 +39,13 @@ blocks: 7
  5: 26 bytes 393463EB as written
  6: 34 bytes 6562600B as written
 == tzx_replay
- 0: 8370 edges: 1762736Tx1 2176Tx4031 2160Tx4031 672Tx1 736Tx1 848Tx117 864Tx91 1712Tx84 1696Tx12 3521120Tx1
- 1: 4282 edges: 1762736Tx1 2176Tx1611 2160Tx1611 672Tx1 736Tx1 1712Tx443 1696Tx53 848Tx324 864Tx236 3521120Tx1
- 2: 2559 edges: 1762576Tx1 2000Tx1499 592Tx1 704Tx1 992Tx252 1008Tx252 496Tx414 512Tx138 1760560Tx1
- 3: 460 edges: 1762064Tx1 1504Tx150 1488Tx49 800Tx1 896Tx1 992Tx1 608Tx74 592Tx74 1200Tx108 3521136Tx1
- 4: 3642 edges: 1762736Tx1 2176Tx1611 2160Tx1611 672Tx1 736Tx1 1712Tx179 1696Tx29 848Tx114 864Tx94 1056336Tx1
- 5: 3642 edges: 1762736Tx1 2176Tx1611 2160Tx1611 672Tx1 736Tx1 1712Tx182 1696Tx26 848Tx117 864Tx91 1056336Tx1
- 6: 3771 edges: 1762736Tx1 2176Tx1611 2160Tx1611 672Tx1 736Tx1 1712Tx240 1696Tx32 848Tx155 864Tx117 3521120Tx1 352112Tx1
+ 0: 8371 edges: 1750000Tx1 2176Tx4032 2160Tx4031 672Tx1 736Tx1 848Tx118 864Tx90 1712Tx85 1696Tx11 3488Tx1
+ 1: 4282 edges: 1752176Tx1 2160Tx1611 2176Tx1611 672Tx1 736Tx1 1696Tx69 1712Tx427 848Tx308 864Tx252 3488Tx1
+ 2: 2558 edges: 1752000Tx1 2000Tx1499 608Tx1 704Tx1 992Tx252 1008Tx252 496Tx414 512Tx138
+ 3: 460 edges: 1751504Tx1 1504Tx149 1488Tx50 800Tx1 912Tx1 992Tx1 608Tx74 592Tx74 1200Tx108 3504Tx1
+ 4: 3642 edges: 1752176Tx1 2160Tx1611 2176Tx1611 672Tx1 736Tx1 1696Tx23 1712Tx185 848Tx120 864Tx88 3488Tx1
+ 5: 3642 edges: 1752176Tx1 2160Tx1611 2176Tx1611 672Tx1 736Tx1 1696Tx23 1712Tx185 848Tx120 864Tx88 3488Tx1
+ 6: 3772 edges: 1752176Tx1 2160Tx1611 2176Tx1611 672Tx1 736Tx1 1696Tx33 1712Tx239 848Tx154 864Tx118 3488Tx1 3496512Tx1 350000Tx1
 == tap_wav
 wav: 3 blocks
 tap -> wav -> tap: identical, 385 bytes
