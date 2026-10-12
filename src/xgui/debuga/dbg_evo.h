@@ -80,24 +80,40 @@ class xTsSprPage : public xEvoPage {
 		void draw_pick();
 };
 
-// A picture its page sizes from the room it has, with a column of values beside it. It
-// asks for the width the page worked out and takes less when the page is narrower: a
-// fixed width would be the page's minimum, and the window could not get narrower then.
+// A picture asking for the width its page fitted, and taking less on a narrower page.
 class xEvoFitView : public QWidget {
 	public:
 		xEvoFitView(QWidget* = nullptr);
-		void setFitWidth(int);
+		void setFitWidth(int);		// no less than the minimum width
 		QSize sizeHint() const;
-		std::function<void()> onResize;	// the page fits it again
-	protected:
-		void resizeEvent(QResizeEvent*);
 	private:
 		int fitW;
 };
 
-// a name and a value a row, in a column of a fixed width, so a value stays where it is
-void evo_info_column(QWidget* box, QLabel** names, QLabel** vals, int n);
-int evo_info_width(const QFontMetrics&, const QStringList& names, const QStringList& vals);
+// A page with a picture at the left and beside it a column of name/value rows of a fixed
+// width, so neither moves as the values change. The page fits the picture on a resize.
+class xEvoInfoPage : public xEvoPage {
+	Q_OBJECT
+	public:
+		xEvoInfoPage(int hw, int rows, QWidget* p = nullptr);
+	protected:
+		QVBoxLayout* lay;		// the row of the two in it; pages add above and below
+		int shown;			// what setup() was last made for, -1 nothing yet
+		virtual void setup(int what) = 0;
+		virtual int fitWidth(int w, int h) = 0;	// the picture's width in w x h
+		void setPicture(xEvoFitView*);
+		void setNames(const QStringList& names, const QStringList& all, const QStringList& widest);
+		void setValues(const QStringList&);	// "-" for the rows past the list
+		void fit();
+		void resizeEvent(QResizeEvent*);
+		void changeEvent(QEvent*);
+	private:
+		QHBoxLayout* row;
+		xEvoFitView* pic;
+		QWidget* infoBox;
+		QVector<QLabel*> names;
+		QVector<QLabel*> vals;
+};
 
 // 512x512 dots of a tile map or a graphics page, scaled to fit, with rectangles on top
 class xTsMapView : public xEvoFitView {
@@ -115,16 +131,14 @@ class xTsMapView : public xEvoFitView {
 		QRect target() const;
 };
 
-#define TILE_INFO	10	// name/value rows beside the tiles, the most a view has
-
-class xTsTilePage : public xEvoPage {
+class xTsTilePage : public xEvoInfoPage {
 	Q_OBJECT
 	public:
 		xTsTilePage(QWidget* = nullptr);
 		void draw(Computer*);
 	protected:
-		void resizeEvent(QResizeEvent*);
-		void changeEvent(QEvent*);
+		void setup(int mode);
+		int fitWidth(int w, int h);
 	private:
 		QComboBox* cbView;
 		QSpinBox* sbPage;
@@ -132,16 +146,9 @@ class xTsTilePage : public xEvoPage {
 		QToolButton* tbT0G;
 		QToolButton* tbT1G;
 		QToolButton* tbSG;
-		QHBoxLayout* row;
 		xTsMapView* view;
-		QWidget* infoBox;
-		QLabel* names[TILE_INFO];
-		QLabel* vals[TILE_INFO];
 		int hx, hy;			// dot under the pointer, -1 none
-		int shown;			// the view the names were set up for, -1 none
-		void setup();
 		void hover_info();
-		void fit();
 };
 
 // A grid of square palette cells, sized as a 16x16 one would be so that a machine with
@@ -174,29 +181,20 @@ class xEvoPalView : public xEvoFitView {
 		int at(QPoint) const;
 };
 
-#define PAL_INFO	9	// name/value rows beside the palette, the most a machine has
-
 // the 256 CRAM colors on TSConf, the 16 cells on BaseConf
-class xEvoPalPage : public xEvoPage {
+class xEvoPalPage : public xEvoInfoPage {
 	Q_OBJECT
 	public:
 		xEvoPalPage(QWidget* = nullptr);
 		void draw(Computer*);
 	protected:
-		void resizeEvent(QResizeEvent*);
-		void changeEvent(QEvent*);
+		void setup(int hw);
+		int fitWidth(int w, int h);
 	private:
-		QHBoxLayout* row;
 		xEvoPalView* view;
-		QWidget* infoBox;
-		QLabel* names[PAL_INFO];
-		QLabel* vals[PAL_INFO];
 		QLabel* labLegend;
 		int hov;			// the cell under the pointer, -1 none
-		int shown;			// the machine the names were set up for, -1 none
-		void setup(int hw);
 		void info();
-		void fit();
 };
 
 // BaseConf

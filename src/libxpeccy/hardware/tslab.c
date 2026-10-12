@@ -853,6 +853,13 @@ int tslIn(Computer* comp, int port) {
 
 // for the debugger
 
+// VPage as written (vpage_r in video_ports.v): #01AF waits in the latch until the
+// line start, #7FFD sets it at once
+static int ts_vpage_reg(Computer* comp) {
+	Video* vid = comp->vid;
+	return (vid->tsconf.lat.mask & TSL_LAT_VPAGE) ? vid->tsconf.lat.vpage : vid->vidPage;
+}
+
 void ts_get_regs(Computer* comp, tsRegs* r) {
 	Video* vid = comp->vid;
 	r->vconf = vid->tsconf.p00af;
@@ -906,7 +913,7 @@ void ts_get_regs(Computer* comp, tsRegs* r) {
 	unsigned short m = vid->tsconf.lat.mask;
 	r->lat = m;
 	r->latVconf = (m & TSL_LAT_VCONF) ? vid->tsconf.lat.vconf : r->vconf;
-	r->latVpage = (m & TSL_LAT_VPAGE) ? vid->tsconf.lat.vpage : r->vpage;
+	r->latVpage = ts_vpage_reg(comp);
 	r->latGx = (((m & TSL_LAT_GXH) ? vid->tsconf.lat.gxh : vid->tsconf.soxh) & 1) << 8
 		| ((m & TSL_LAT_GXL) ? vid->tsconf.lat.gxl : vid->tsconf.soxl);
 	r->latGy = (((m & TSL_LAT_GYH) ? vid->tsconf.lat.gyh : vid->tsconf.soyh) & 1) << 8
@@ -999,13 +1006,6 @@ void ts_keyp(Computer* comp, keyEntry* ent) {
 void ts_keyr(Computer* comp, keyEntry* ent) {
 	zx_keyr(comp, ent);
 	xt_release(comp->keyb, ent);
-}
-
-// VPage as written (vpage_r in video_ports.v): #01AF waits in the latch until the
-// line start, #7FFD sets it at once
-static int ts_vpage_reg(Computer* comp) {
-	Video* vid = comp->vid;
-	return (vid->tsconf.lat.mask & TSL_LAT_VPAGE) ? vid->tsconf.lat.vpage : vid->vidPage;
 }
 
 // tsconf

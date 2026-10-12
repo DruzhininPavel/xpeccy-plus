@@ -278,7 +278,7 @@ static void pwatch_recount(Computer* comp) {
 	int i;
 	comp->pwbus = 0;
 	for (i = 0; i < comp->pwcount; i++) {
-		if (comp->pwatch[i].on && !comp->pwatch[i].offset && !comp->pwatch[i].get)
+		if (comp->pwatch[i].on && !comp->pwatch[i].hw)
 			comp->pwbus++;
 	}
 }
@@ -286,7 +286,7 @@ static void pwatch_recount(Computer* comp) {
 static void pwatch_hit(Computer* comp, int port, int val) {
 	int i;
 	for (i = 0; i < comp->pwcount; i++) {
-		if (!comp->pwatch[i].on || comp->pwatch[i].offset || comp->pwatch[i].get) continue;
+		if (!comp->pwatch[i].on || comp->pwatch[i].hw) continue;
 		if ((port & comp->pwatch[i].mask) != comp->pwatch[i].port) continue;
 		comp->pwatch[i].val = val & 0xff;
 	}
