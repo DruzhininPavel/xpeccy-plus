@@ -209,6 +209,7 @@ typedef struct {
 	// and the words of it done
 	int dmaCurSrc, dmaCurDst, dmaBurst, dmaBursts, dmaWord, dmaWords;
 	// written, waiting for the next line start (TSL_LAT_*), and what they will be
+	// then: the value now for one not waiting
 	unsigned short lat;
 	int latVconf, latVpage, latGx, latGy, latPal, latT0x, latT1x, latT0g, latT1g;
 } tsRegs;

@@ -227,9 +227,11 @@ struct Video {
 		unsigned char hide;		// TSL_HIDE_*: layers the debugger keeps out of the picture
 		// tsNext and line layer by layer, S0 T0 S1 T1 S2: the two are put together
 		// from these, so a layer hidden after they were drawn can still be left out.
-		// Two sets that change places every line; lay[layNext] is the next line's
+		// Two sets that change places every line; lay[layNext] is the next line's.
+		// Only while a layer is hidden or a redraw may come (tslLayersApart): else
+		// the TSU draws straight into tsNext and the set is marked TSL_LAY_WHOLE
 		unsigned char lay[2][5][0x200];
-		unsigned char layUsed[2];	// TSL_HIDE_* bits of the layers drawn into each set
+		unsigned char layUsed[2];	// TSL_HIDE_* bits of the layers drawn into each set, TSL_LAY_WHOLE
 		unsigned char layNext;
 		unsigned char cram[0x200];	// pal = colram?
 		unsigned char sfile[0x200];	// sprites = ram?
@@ -353,6 +355,8 @@ void vid_fnt_del(Video*);
 void tslUpdatePorts(Video*);
 // put this line's and the next one's tiles and sprites together again, after hide changed
 void tsl_recompose(Video*);
+// the TSU draws its layers apart even with none hidden, for a redraw (xreplay_arm)
+extern int tslLayersApart;
 
 // TSConf sprites and tiles for the debugger, decoded the way the TSU does it
 #define TSL_SPRITES	85		// SFILE entries
@@ -362,12 +366,23 @@ typedef struct {
 	int act, leap, xf, yf;
 } tsSprite;
 void tsl_get_sprite(Video*, int idx, tsSprite*);
+// for each entry the sprite layer it is drawn in, 0..2 for S0..S2, -1 after the third LEAP
+void tsl_sprite_layers(Video*, signed char* layer);
 // w*h dots as the TSU puts them out: pal << 4 | dot, 0 where transparent
 void tsl_sprite_dots(Video*, int idx, unsigned char* out);
 // 8x8 dots of a tile of a graphics page, palhi the color's high nibble
 void tsl_tile_dots(Video*, int page, int tile, int palhi, unsigned char* out);
+// where line `line` of tile `tile` of a graphics page starts
+int tsl_gfx_adr(int page, int tile, int line);
 // the tile map entry of layer 0/1 at row, col (0..63), from TMPage
 int tsl_map_entry(Video*, int lay, int row, int col);
+typedef struct {
+	int adr;			// the entry's byte address
+	int entry;
+	int pal;			// the color's high nibble the cell's dots get
+	int hole;			// tile 0 with the layer's Z_EN off: not drawn
+} tsMapCell;
+void tsl_map_cell(Video*, int lay, int row, int col, tsMapCell*);
 // a map cell's 8x8 dots as the layer draws it: page, palette, flips, tile 0 as a hole
 void tsl_map_dots(Video*, int lay, int entry, unsigned char* out);
 
@@ -398,6 +413,8 @@ enum {
 	TSL_HIDE_S2 = 1 << 4,
 	TSL_HIDE_GFX = 1 << 5
 };
+// in layUsed: the set was drawn as one buffer, straight into tsNext - nothing to put together again
+#define TSL_LAY_WHOLE	0x80
 
 #ifdef __cplusplus
 }

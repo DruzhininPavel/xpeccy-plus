@@ -15,6 +15,7 @@
 #include "../xgui/xgui.h"
 #include "autostart.h"
 #include "rewind.h"
+#include "../libxpeccy/xreplay.h"
 #include "vfat_scan.h"
 #include "vscalers.h"
 
@@ -1053,6 +1054,7 @@ bool xm_set(std::string id) {
 	conf.emu.pause |= PR_EXTRA;
 	rzxr_stop(conf.zx);		// a recording is of one machine
 	rewind_clear();
+	xreplay_arm(0);			// the debugger arms it again if it is shown on TSConf
 	// the start and a machine put back to its defaults are not a change of machine
 	bool another = !conf.macId.empty() && (conf.macId != id);
 	if (!conf.macId.empty()) {			// what the machine we leave keeps

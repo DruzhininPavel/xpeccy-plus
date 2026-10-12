@@ -15,6 +15,9 @@
 // byte (xstate_diff). Anything that changed the machine from outside in between
 // - a reset, a load, a poke from the debugger, the tape trap - fails that, and
 // then the picture is left as it was.
+//
+// A snapshot a frame is a few MB copied: it is only taken once armed, which the
+// gui does the first time the debugger is shown on TSConf.
 
 #pragma once
 
@@ -24,11 +27,20 @@
 extern "C" {
 #endif
 
-// set by the gui: keep the snapshots and the log for this machine
-extern int xreplay_on;
-// 0 nothing, 1 logging the INs, 2 a redraw is feeding them back
-extern int xreplay_mode;
+enum {
+	XRP_OFF = 0,
+	XRP_LOG,		// logging the INs
+	XRP_FEED		// a redraw is feeding them back
+};
 
+// armed: keep the snapshots and the log (xreplay_arm)
+extern int xreplay_on;
+extern int xreplay_mode;
+// set by the owner while it runs the machine fast: no snapshots, the ones held dropped
+extern int xreplay_hold;
+
+// start or stop keeping the snapshots; stopping drops them
+void xreplay_arm(int on);
 // a frame has just started (comp_step_end)
 void xreplay_frame(Computer*);
 // what an IN read: logged, or during a redraw swapped for what it read the first time

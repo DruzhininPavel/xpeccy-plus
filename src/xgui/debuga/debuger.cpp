@@ -22,10 +22,11 @@
 #include "../xgui.h"
 #include "../portwatch.h"
 #include "../../libxpeccy/filetypes/filetypes.h"
-#include "../../libxpeccy/xreplay.h"
 
-// debuga.layout format: bump whenever the set of docks changes, so an older
-// file is refused instead of scattering panels it knows nothing about.
+// debuga.layout format: bump when a dock goes or the docks change in a way an
+// older file would put back wrong, so it is refused instead. A dock that is only
+// new needs none: restoreLayout() puts one the file does not name into the
+// bottom group.
 // 1 = cpu, disasm, misc and stack became docks (the MISCTOOLBAR is gone)
 // 2 = empty anchor strips at the left and right edges
 // 3 = the memory map panel is gone, its controls sit in MEMMAP
@@ -210,6 +211,7 @@ void DebugWin::updateStyle() {
 	wid_dump->draw();
 	//ui.dumpTable->update();
 	wid_disk_dump->draw();
+	wid_evo->restyle();
 }
 
 // The boxes come out wide at startup and only shrank once Options re-applied
@@ -372,8 +374,8 @@ void DebugWin::machinePanels() {
 	wid_evo->setVisible((hw == HW_TSLAB) || (hw == HW_PENTEVO));
 	// the ZX Evo panel has a palette tab of its own there
 	wid_pal->setVisible((hw != HW_TSLAB) && (hw != HW_PENTEVO));
-	// the redraw a layer switch asks for runs from the last two frames
-	xreplay_on = (hw == HW_TSLAB);
+	// a switch to TSConf with the debugger up: xm_set() disarmed the snapshots
+	if (isVisible()) evo_arm_replay();
 }
 
 void DebugWin::onPrfChange() {
@@ -1861,6 +1863,7 @@ void DebugWin::updateCpuDockWidth() {
 void DebugWin::showEvent(QShowEvent* ev) {
 	QMainWindow::showEvent(ev);
 	winShown = 1;
+	evo_arm_replay();
 	// the arrangement Qt is about to undo (see hideEvent) goes back in. The
 	// state also carries which panels were up, and the machine may have changed
 	// while the window was away: the list for this one wins.

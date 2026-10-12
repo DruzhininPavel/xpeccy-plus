@@ -68,8 +68,11 @@ unsigned char* xstate_put_begin(xState*, const void* meta);
 // how many of the saved bytes differ from other, a snapshot of the same layout,
 // the ray pointers aside; first gets the first of them
 size_t xstate_diff(const xState*, Computer*, const unsigned char* other, size_t* first);
-// the same, leaving out the parts that start at one of skipped[]
-size_t xstate_diff_skip(const xState*, Computer*, const unsigned char* other, size_t* first, void* const* skipped, int nskip);
+// the same, leaving out the parts of the kinds in `leave` (XST_PART_*)
+size_t xstate_diff_parts(const xState*, Computer*, const unsigned char* other, size_t* first, int leave);
+enum {
+	XST_PART_SOUND = 1	// the sound devices: run by the mixer, outside the machine's own steps
+};
 // which chunk an offset falls into, and where inside it (for a report)
 int xstate_chunk_at(const xState*, size_t off, size_t* inner);
 // how big a chunk is, 0 past the last

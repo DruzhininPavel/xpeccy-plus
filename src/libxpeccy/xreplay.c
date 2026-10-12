@@ -7,7 +7,8 @@
 #include "xlog.h"
 
 int xreplay_on = 0;
-int xreplay_mode = 0;
+int xreplay_mode = XRP_OFF;
+int xreplay_hold = 0;
 
 #define XRP_LOG	0x20000		// INs a frame may read: a tight IN loop at 14 MHz is ~25000
 
@@ -34,40 +35,51 @@ static int frame_init(xrpFrame* f) {
 void xreplay_forget(void) {
 	frm[0].ok = 0;
 	frm[1].ok = 0;
-	if (xreplay_mode == 1) xreplay_mode = 0;
+	if (xreplay_mode == XRP_LOG) xreplay_mode = XRP_OFF;
+}
+
+// the TSU keeps its layers apart only while a redraw may want them
+void xreplay_arm(int on) {
+	if (!xreplay_on != !on) xlog(XLG_CORE, XLL_INFO, "redraw snapshots %s", on ? "on" : "off");
+	xreplay_on = on ? 1 : 0;
+	tslLayersApart = xreplay_on;
+	if (!xreplay_on) xreplay_forget();
 }
 
 void xreplay_frame(Computer* comp) {
-	if (!xreplay_on) {
+	if (!xreplay_on) return;
+	if (x_runahead) return;		// a pass that is thrown away, a redraw's included
+	// a machine run fast, or put no pixels out, is not stopped to be looked at:
+	// a stop after it shows the change from the next frame instead
+	if (xreplay_hold || comp->vid->nodraw) {
 		xreplay_forget();
 		return;
 	}
-	if (x_runahead) return;		// a pass that is thrown away, a redraw's included
 	xrpFrame tmp = frm[0];
 	frm[0] = frm[1];
 	frm[1] = tmp;
 	xrpFrame* f = &frm[1];
 	f->ok = 0;
 	f->len = 0;
-	xreplay_mode = 0;
+	xreplay_mode = XRP_OFF;
 	if (!frame_init(f)) return;
-	if (!xstate_safe(comp) || rzx_playing || rzx_recording || comp->vid->nodraw) return;
+	if (!xstate_safe(comp) || rzx_playing || rzx_recording) return;
 	if (!xstate_save(f->st, comp)) return;
 	f->tick = comp->tickTotal;
 	f->media = x_media_writes;
 	f->ok = 1;
-	xreplay_mode = 1;
+	xreplay_mode = XRP_LOG;
 }
 
 int xreplay_in(int val) {
-	if (xreplay_mode == 1) {
+	if (xreplay_mode == XRP_LOG) {
 		if (x_runahead) return val;		// read by a frame run ahead: not history
 		xrpFrame* f = &frm[1];
 		if (f->len < XRP_LOG) {
 			f->log[f->len++] = val & 0xff;
 		} else {
 			f->ok = 0;
-			xreplay_mode = 0;
+			xreplay_mode = XRP_OFF;
 		}
 		return val;
 	}
@@ -109,37 +121,6 @@ static void owner_set(Computer* comp, const xrpOwner* o) {
 	comp->frmCount = o->frmCount;
 	comp->vid->debug = o->debug;
 	comp->vid->tail = o->tail;
-}
-
-// The sound devices are run by the sound mixer, outside the machine's own steps,
-// so a run does not move them: they are left out of the comparison. What the cpu
-// read from them came from the log anyway.
-static int sound_parts(Computer* comp, void** list) {
-	int n = 0;
-	list[n++] = comp->beep;
-	if (comp->ts) {
-		list[n++] = comp->ts;
-		list[n++] = comp->ts->chipA;
-		list[n++] = comp->ts->chipB;
-		list[n++] = comp->ts->chipC;
-		list[n++] = comp->ts->chipD;
-		for (int i = 0; i < 4; i++) {
-			void* p = NULL;
-			if (ts_state_range(comp->ts, i, &p) > 0) list[n++] = p;
-		}
-	}
-	if (comp->gs) {
-		list[n++] = comp->gs;
-		list[n++] = comp->gs->cpu;
-		if (comp->gs->mem) {
-			list[n++] = comp->gs->mem->map;
-			list[n++] = comp->gs->mem->ramData;
-			list[n++] = (char*)comp->gs->mem + offsetof(Memory, ramSize);
-		}
-	}
-	list[n++] = comp->sdrv;
-	list[n++] = comp->saa;
-	return n;
 }
 
 static xState* stNow = NULL;
@@ -197,12 +178,12 @@ int xreplay_redraw(Computer* comp) {
 	feedPos = 0;
 	feedFail = 0;
 	int guard = 1 << 20;
-	xreplay_mode = 2;
+	xreplay_mode = XRP_FEED;
 	x_runahead = 1;
 	while ((comp->tickTotal < target) && (guard-- > 0))
 		compExec(comp);
 	x_runahead = 0;
-	xreplay_mode = 0;
+	xreplay_mode = XRP_OFF;
 	int ok = (comp->tickTotal == target) && !feedFail && (feedPos == frm[0].len + frm[1].len);
 	if (ok) {
 		owner_set(comp, &own);
@@ -216,9 +197,10 @@ int xreplay_redraw(Computer* comp) {
 		const unsigned char* data = NULL;
 		size_t first = 0;
 		xstate_bytes(stEnd, &data, NULL);
-		void* sound[24];
-		int ns = sound_parts(comp, sound);
-		size_t diff = xstate_diff_skip(stNow, comp, data, &first, sound, ns);
+		// The sound devices are run by the sound mixer, outside the machine's own
+		// steps, so a run does not move them. What the cpu read from them came
+		// from the log anyway.
+		size_t diff = xstate_diff_parts(stNow, comp, data, &first, XST_PART_SOUND);
 		if (diff) {
 			size_t inner = 0;
 			int part = xstate_chunk_at(stNow, first, &inner);
@@ -234,6 +216,6 @@ int xreplay_redraw(Computer* comp) {
 	}
 	xstate_load(stNow, comp);		// the ray by its offset into scrimg, as it now is
 	if (ok) snprintf(why, sizeof(why), "redrawn");
-	xreplay_mode = frm[1].ok ? 1 : 0;
+	xreplay_mode = frm[1].ok ? XRP_LOG : XRP_OFF;
 	return ok;
 }

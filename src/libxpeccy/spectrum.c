@@ -413,7 +413,7 @@ int iord(int port, void* ptr) {
 	if (xreplay_mode) res = xreplay_in(res);
 	if (comp->pwbus) pwatch_hit(comp, port, res);
 	if (comp->rzx.rec.on) rzx_rec_in(comp, res);
-	if (inview.on && (xreplay_mode != 2)) iview_in(&inview, comp, port, res);
+	if (inview.on && (xreplay_mode != XRP_FEED)) iview_in(&inview, comp, port, res);
 	return res;
 }
 

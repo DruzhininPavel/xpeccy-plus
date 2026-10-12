@@ -4,6 +4,7 @@
 #include <QMenu>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QSignalBlocker>
 #include <QSplitter>
 #include <QHeaderView>
 #include <QTreeWidgetItemIterator>
@@ -13,43 +14,76 @@
 #include "dbg_evo.h"
 #include "../../libxpeccy/xreplay.h"
 
-// LIST
+// HELPERS
 
-// the right click on any of the panel's descriptions: in words or by field names
-static void evo_style_menu(const std::function<void()>& done) {
-	QMenu mnu;
-	QAction* words = mnu.addAction("In words");
-	QAction* names = mnu.addAction("Field names");
-	words->setCheckable(true);
-	names->setCheckable(true);
-	words->setChecked(!conf.dbg.evonames);
-	names->setChecked(conf.dbg.evonames);
-	QAction* got = mnu.exec(QCursor::pos());
-	if (!got) return;
-	conf.dbg.evonames = (got == names) ? 1 : 0;
-	if (done) done();
+static QString hex3(int v) {return gethexword(v & 0x1ff).right(3);}
+
+// a 22-bit byte address as the DMA registers set it: page and offset in it
+static QString ts_adr(int a) {
+	return gethexbyte(a >> 14) + ":" + gethexword(a & 0x3fff);
 }
 
-xEvoList::xEvoList(QStringList head, QWidget* p):QTreeWidget(p) {
-	setColumnCount(head.size());
-	setHeaderLabels(head);
-	setRootIsDecorated(false);
-	setItemsExpandable(false);
-	setIndentation(0);
-	setUniformRowHeights(true);
-	setSelectionMode(QAbstractItemView::NoSelection);
-	setFocusPolicy(Qt::NoFocus);
-	setAlternatingRowColors(true);		// as the dumps and the listing have them
-	header()->setStretchLastSection(true);
-	header()->setSectionsMovable(false);
-	header()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-	header()->setToolTip("Right click: in words or by field names");
-	// the last column in plain words or as the docs name the fields, for both lists
-	setContextMenuPolicy(Qt::CustomContextMenu);
-	header()->setContextMenuPolicy(Qt::CustomContextMenu);
-	auto menu = [this](const QPoint&) {evo_style_menu(onStyle);};
-	connect(this, &QWidget::customContextMenuRequested, this, menu);
-	connect(header(), &QWidget::customContextMenuRequested, this, menu);
+static QString plural(int n, const char* one, const char* many) {
+	return QString("%0 %1").arg(n).arg((n == 1) ? one : many);
+}
+
+// the Means column in plain words, or in the names the docs and tsconfig.asm give the fields
+static bool fieldNames() {return conf.dbg.evonames;}
+
+// A register's bits: the field name the docs give it, and the same in words (none: a
+// bit the words leave to the rest of the line)
+struct evoBit {
+	int mask;
+	const char* field;
+	const char* words;
+};
+
+static QStringList evo_bit_list(int v, const evoBit* t) {
+	bool nm = fieldNames();
+	QStringList s;
+	for (; t->mask; t++) {
+		const char* w = nm ? t->field : t->words;
+		if ((v & t->mask) && w) s << w;
+	}
+	return s;
+}
+
+// parts of a description, in words with commas, by field names with spaces
+static QString evo_join(const QStringList& s, const char* none) {
+	bool nm = fieldNames();
+	if (s.isEmpty()) return nm ? "-" : none;
+	return s.join(nm ? " " : ", ");
+}
+
+static QString evo_bits(int v, const evoBit* t, const char* none) {
+	return evo_join(evo_bit_list(v, t), none);
+}
+
+// the CPU clocks both boards have
+static const char* const evoClock[3] = {"3.5", "7", "14"};
+
+// A color the picture shows. The two below are the debugger's; index 0 of the
+// TSU's dots is a hole and shows as a checker.
+static QRgb evo_rgb(Video* vid, int idx) {
+	uint32_t c = vid->pal[idx & 0xff];
+	return qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff);
+}
+
+static QRgb evo_checker(int x, int y) {
+	return ((x ^ y) & 4) ? qRgb(0x60, 0x60, 0x60) : qRgb(0x40, 0x40, 0x40);
+}
+
+// the panel's tables: read-only, rows alternating as the dumps and the listing have them
+static void evo_tree_setup(QTreeWidget* t, const QStringList& head) {
+	t->setColumnCount(head.size());
+	t->setHeaderLabels(head);
+	t->setRootIsDecorated(false);
+	t->setUniformRowHeights(true);
+	t->setSelectionMode(QAbstractItemView::NoSelection);
+	t->setFocusPolicy(Qt::NoFocus);
+	t->setAlternatingRowColors(true);
+	t->header()->setStretchLastSection(true);
+	t->header()->setSectionsMovable(false);
 }
 
 // A column as wide as the widest of its samples, and never narrower than it has
@@ -74,6 +108,37 @@ static void evo_fit_column(QTreeWidget* view, int col, QStringList samples) {
 		view->setColumnWidth(col, w);
 }
 
+// the right click on the panel's descriptions: in words or by field names
+static void evo_style_menu(const std::function<void()>& done) {
+	QMenu mnu;
+	QAction* words = mnu.addAction("In words");
+	QAction* names = mnu.addAction("Field names");
+	words->setCheckable(true);
+	names->setCheckable(true);
+	words->setChecked(!conf.dbg.evonames);
+	names->setChecked(conf.dbg.evonames);
+	QAction* got = mnu.exec(QCursor::pos());
+	if (!got) return;
+	conf.dbg.evonames = (got == names) ? 1 : 0;
+	if (done) done();
+}
+
+// LIST
+
+xEvoList::xEvoList(QStringList head, QWidget* p):QTreeWidget(p) {
+	grown = false;
+	evo_tree_setup(this, head);
+	setItemsExpandable(false);
+	setIndentation(0);
+	header()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	header()->setToolTip("Right click: in words or by field names");
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	header()->setContextMenuPolicy(Qt::CustomContextMenu);
+	auto menu = [this](const QPoint&) {evo_style_menu(onStyle);};
+	connect(this, &QWidget::customContextMenuRequested, this, menu);
+	connect(header(), &QWidget::customContextMenuRequested, this, menu);
+}
+
 // group rows are colored as the debugger's panel headers are
 static void evo_header_colors(QTreeWidgetItem* it, const QFont& base) {
 	QFont fnt = base;
@@ -92,10 +157,19 @@ QTreeWidgetItem* xEvoList::group(const QString& name) {
 	if (it) return it;
 	it = new QTreeWidgetItem(this, QStringList(name));
 	it->setFirstColumnSpanned(true);
-	evo_header_colors(it, font());
 	it->setExpanded(true);
 	groups[name] = it;
+	grown = true;
 	return it;
+}
+
+void xEvoList::begin() {
+	chgBg = conf.pal.value(DBG_PAL_CHG_BG);
+	chgFg = conf.pal.value(DBG_PAL_CHG_TXT);
+	// the switch is made on any of the lists, the header follows it on each
+	QString last = conf.dbg.evonames ? "Fields" : "Means";
+	if ((columnCount() > 3) && (headerItem()->text(3) != last))
+		headerItem()->setText(3, last);
 }
 
 void xEvoList::put(const QString& grp, const QString& name, const QStringList& cols) {
@@ -105,27 +179,27 @@ void xEvoList::put(const QString& grp, const QString& name, const QStringList& c
 	bool fresh = !it;
 	if (fresh) {
 		it = new QTreeWidgetItem(group(grp));
+		it->setTextAlignment(2, Qt::AlignRight | Qt::AlignVCenter);
 		rows[key] = it;
+		grown = true;
 	}
 	// a value that moved since the last look is lit, as the registers are
-	QColor bg = conf.pal.value(DBG_PAL_CHG_BG);
-	QColor fg = conf.pal.value(DBG_PAL_CHG_TXT);
 	for (int i = 0; i < cols.size(); i++) {
 		bool moved = !fresh && (it->text(i) != cols[i]);
-		it->setText(i, cols[i]);
+		if (moved) it->setText(i, cols[i]);
+		else if (fresh) it->setText(i, cols[i]);
 		if (i != 2) continue;
-		it->setTextAlignment(i, Qt::AlignRight | Qt::AlignVCenter);
 		if (moved) {
-			if (bg.isValid()) it->setBackground(i, bg);
-			if (fg.isValid()) it->setForeground(i, fg);
-		} else {
+			if (chgBg.isValid()) it->setBackground(i, chgBg);
+			if (chgFg.isValid()) it->setForeground(i, chgFg);
+		} else if (!fresh) {
 			it->setData(i, Qt::BackgroundRole, QVariant());
 			it->setData(i, Qt::ForegroundRole, QVariant());
 		}
 	}
 }
 
-void xEvoList::finish() {
+bool xEvoList::finish() {
 	foreach (QString key, rows.keys()) {
 		if (seen.contains(key)) continue;
 		delete rows.take(key);
@@ -135,15 +209,24 @@ void xEvoList::finish() {
 		delete groups.take(key);
 	}
 	seen.clear();
+	bool res = grown;
+	if (grown) restyle();
+	grown = false;
+	return res;
 }
 
 void xEvoList::restyle() {
-	if (columnCount() > 3)
-		headerItem()->setText(3, conf.dbg.evonames ? "Fields" : "Means");
 	foreach (QTreeWidgetItem* it, groups)
 		evo_header_colors(it, font());
 	for (int i = 0; i < columnCount() - 1; i++)
 		evo_fit_column(this, i, (i == 2) ? QStringList("000 > 000") : QStringList());
+}
+
+void xEvoList::changeEvent(QEvent* ev) {
+	QTreeWidget::changeEvent(ev);
+	// the debugger's font and colors come after the panel is made, and with a style change
+	QEvent::Type t = ev->type();
+	if ((t == QEvent::FontChange) || (t == QEvent::StyleChange) || (t == QEvent::PaletteChange)) restyle();
 }
 
 // exactly as tall as its rows, for a list that shares the page with another
@@ -163,6 +246,12 @@ static QString layersNote;
 
 QString evo_layers_note() {
 	return layersNote;
+}
+
+// A snapshot a frame is a copy of the machine every frame: not taken until the
+// debugger has been shown on TSConf once, and kept on from then
+void evo_arm_replay() {
+	if (conf.zx && (conf.zx->hw->id == HW_TSLAB) && !xreplay_on) xreplay_arm(1);
 }
 
 // The machine's own lock keeps the emulation out while the mask changes. A
@@ -189,77 +278,47 @@ int evo_set_layers(int hide) {
 	return res;
 }
 
-// HELPERS
+// DMA
 
-static QString hex2(int v) {return QString::number(v & 0xff, 16).toUpper().rightJustified(2, '0');}
-static QString hex3(int v) {return QString::number(v & 0x1ff, 16).toUpper().rightJustified(3, '0');}
+// DMACtrl's device pair, W/R:DDEV: in words, and as tsconfig.asm names it (DMA_ dropped)
+static const struct {
+	const char* words;
+	const char* field;
+} tsDmaDev[16] = {
+	{nullptr, nullptr}, {"RAM > RAM", "RAM"}, {"SPI > RAM", "SPI_RAM"}, {"IDE > RAM", "IDE_RAM"},
+	{"fill > RAM", "FILL"}, {nullptr, nullptr}, {"add-blit > RAM", nullptr}, {nullptr, nullptr},
+	{nullptr, nullptr}, {"blit > RAM", "BLT"}, {"RAM > SPI", "RAM_SPI"}, {"RAM > IDE", "RAM_IDE"},
+	{"RAM > CRAM", "RAM_CRAM"}, {"RAM > SFILE", "RAM_SFILE"}, {nullptr, nullptr}, {nullptr, nullptr}
+};
 
-// a 22-bit byte address as the DMA registers set it: page and offset in it
-static QString ts_adr(int a) {
-	return QString("%0:%1").arg(hex2(a >> 14)).arg(QString::number(a & 0x3fff, 16).toUpper().rightJustified(4, '0'));
+static QString ts_dev(int ctrl, bool nm) {
+	int dev = ((ctrl & 0x80) >> 4) | (ctrl & 7);
+	const char* s = nm ? tsDmaDev[dev].field : tsDmaDev[dev].words;
+	if (s) return s;
+	return nm ? QString("%0:%1").arg((ctrl >> 7) & 1).arg(ctrl & 7) : "?";
 }
 
-static const char* ts_dev_name(int ctrl) {
-	switch (((ctrl & 0x80) >> 4) | (ctrl & 7)) {
-		case 0x1: return "RAM > RAM";
-		case 0x9: return "blit > RAM";
-		case 0x6: return "add-blit > RAM";
-		case 0x2: return "SPI > RAM";
-		case 0xa: return "RAM > SPI";
-		case 0x3: return "IDE > RAM";
-		case 0xb: return "RAM > IDE";
-		case 0x4: return "fill > RAM";
-		case 0xc: return "RAM > CRAM";
-		case 0xd: return "RAM > SFILE";
-	}
-	return "?";
-}
-
-// the Means column in plain words, or in the names the docs and tsconfig.asm give the fields
-static bool fieldNames() {return conf.dbg.evonames;}
-
-// DDEV with W/R as tsconfig.asm names it (DMA_ dropped); 6 is not in it
-static QString ts_ddev_name(int ctrl) {
-	switch (((ctrl & 0x80) >> 4) | (ctrl & 7)) {
-		case 0x1: return "RAM";
-		case 0x9: return "BLT";
-		case 0x2: return "SPI_RAM";
-		case 0xa: return "RAM_SPI";
-		case 0x3: return "IDE_RAM";
-		case 0xb: return "RAM_IDE";
-		case 0x4: return "FILL";
-		case 0xc: return "RAM_CRAM";
-		case 0xd: return "RAM_SFILE";
-	}
-	return QString("%0:%1").arg((ctrl >> 7) & 1).arg(ctrl & 7);
-}
-
-static QString plural(int n, const char* one, const char* many) {
-	return QString("%0 %1").arg(n).arg((n == 1) ? one : many);
-}
+static const evoBit dmaCtrlBits[] = {
+	{0x20, "S_ALGN", "source aligned"},
+	{0x10, "D_ALGN", "destination aligned"},
+	{0x08, "A_SZ", "to 512"},
+	{0x40, "OPT", "saturate"},
+	{0, nullptr, nullptr}
+};
 
 static void dma_regs(xEvoList* l, const tsRegs& r) {
 	const QString g("DMA");
 	bool nm = fieldNames();
 	l->put(g, "src", {"1A..1CAF", "DMASAddr", ts_adr(r.dmasrc), ""});
 	l->put(g, "dst", {"1D..1FAF", "DMADAddr", ts_adr(r.dmadst), ""});
-	l->put(g, "len", {"26AF", "DMALen", hex2(r.dmalen), plural(r.dmalen + 1, "word a burst", "words a burst")});
-	l->put(g, "num", {"28AF", "DMANum", hex2(r.dmanum), plural(r.dmanum + 1, "burst", "bursts")});
+	l->put(g, "len", {"26AF", "DMALen", gethexbyte(r.dmalen), plural(r.dmalen + 1, "word a burst", "words a burst")});
+	l->put(g, "num", {"28AF", "DMANum", gethexbyte(r.dmanum), plural(r.dmanum + 1, "burst", "bursts")});
 	QString ctl = nm ? "-" : "nothing started yet";
-	if ((r.dmactrl >= 0) && nm) {
-		QStringList f("DDEV=" + ts_ddev_name(r.dmactrl));
-		if (r.dmactrl & 0x20) f << "S_ALGN";
-		if (r.dmactrl & 0x10) f << "D_ALGN";
-		if (r.dmactrl & 0x08) f << "A_SZ";
-		if (r.dmactrl & 0x40) f << "OPT";
-		ctl = f.join(" ");
-	} else if (r.dmactrl >= 0) {
-		ctl = ts_dev_name(r.dmactrl);
-		if (r.dmactrl & 0x20) ctl += QString(", src align %0").arg((r.dmactrl & 8) ? 512 : 256);
-		if (r.dmactrl & 0x10) ctl += QString(", dst align %0").arg((r.dmactrl & 8) ? 512 : 256);
-		if ((r.dmactrl & 0x40) && ((r.dmactrl & 0x87) == 0x06)) ctl += ", saturate";
+	if (r.dmactrl >= 0) {
+		QStringList f(nm ? "DDEV=" + ts_dev(r.dmactrl, true) : ts_dev(r.dmactrl, false));
+		ctl = evo_join(f + evo_bit_list(r.dmactrl, dmaCtrlBits), "");
 	}
-	l->put(g, "ctrl", {"27AF", "DMACtrl", (r.dmactrl < 0) ? "-" : hex2(r.dmactrl), ctl});
+	l->put(g, "ctrl", {"27AF", "DMACtrl", (r.dmactrl < 0) ? "-" : gethexbyte(r.dmactrl), ctl});
 	l->put(g, "status", {"27AF", "DMAStatus", r.dmaact ? "80" : "00", r.dmaact ? (nm ? "DMA_ACT" : "running") : (nm ? "-" : "idle")});
 	// where a running transfer is: the address registers are put back only at its end
 	bool run = (r.dmaCurSrc >= 0);
@@ -277,8 +336,7 @@ static const char* layTips[6] = {
 	"Tile layer 1", "Sprites over both tile layers", "The bitmap screen"
 };
 
-xTsRegsPage::xTsRegsPage(QWidget* p):QWidget(p) {
-	hold = false;
+xTsRegsPage::xTsRegsPage(QWidget* p):xEvoPage(HW_TSLAB, p) {
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
 	QHBoxLayout* row = new QHBoxLayout;
@@ -297,12 +355,11 @@ xTsRegsPage::xTsRegsPage(QWidget* p):QWidget(p) {
 	labNote->hide();
 	lay->addWidget(labNote);
 	list = new xEvoList({"Port", "Register", "Value", "Means"});
-	list->onStyle = [this]() {draw();};
+	list->onStyle = [this]() {if (conf.zx) draw(conf.zx);};
 	lay->addWidget(list, 1);
 }
 
 void xTsRegsPage::layer_toggled() {
-	if (hold) return;
 	int hide = 0;
 	for (int i = 0; i < 6; i++)
 		if (!lay[i]->isChecked()) hide |= 1 << i;
@@ -310,110 +367,104 @@ void xTsRegsPage::layer_toggled() {
 	emit s_layers();
 }
 
+static const evoBit vconfBits[] = {
+	{0x20, "NOGFX", "no bitmap"},
+	{0x10, "NOTSU", "no tiles or sprites"},
+	{0x08, "GFXOVR", "bitmap over them"},
+	{0x04, "FT_EN", "VDAC2"},
+	{0, nullptr, nullptr}
+};
+
 static QString vconf_means(int v) {
 	static const char* modes[4] = {"ZX", "16c", "256c", "text"};
 	static const char* res[4] = {"256x192", "320x200", "320x240", "360x288"};
-	if (fieldNames()) {
-		QStringList f;
-		f << QString("VM=%0").arg(modes[v & 3]) << QString("RRES=%0").arg(res[(v >> 6) & 3]);
-		if (v & 0x20) f << "NOGFX";
-		if (v & 0x10) f << "NOTSU";
-		if (v & 0x08) f << "GFXOVR";
-		if (v & 0x04) f << "FT_EN";
-		return f.join(" ");
-	}
-	QString s = QString("%0 %1").arg(modes[v & 3]).arg(res[(v >> 6) & 3]);
-	if (v & 0x20) s += ", no bitmap";
-	if (v & 0x10) s += ", no tiles or sprites";
-	if (v & 0x08) s += ", bitmap over them";
-	if (v & 0x04) s += ", VDAC2";
-	return s;
+	QStringList s;
+	if (fieldNames()) s << QString("VM=%0").arg(modes[v & 3]) << QString("RRES=%0").arg(res[(v >> 6) & 3]);
+	else s << QString("%0 %1").arg(modes[v & 3]).arg(res[(v >> 6) & 3]);
+	return evo_join(s + evo_bit_list(v, vconfBits), "");
 }
 
-static QString tsconf_means(int v) {
-	if (fieldNames()) {
-		QStringList f;
-		if (v & 0x80) f << "S_EN";
-		if (v & 0x40) f << "T1_EN";
-		if (v & 0x20) f << "T0_EN";
-		if (v & 0x08) f << "T1Z_EN";
-		if (v & 0x04) f << "T0Z_EN";
-		if (v & 0x01) f << "TS_EXT";
-		return f.isEmpty() ? "-" : f.join(" ");
-	}
-	QStringList on;
-	if (v & 0x80) on << "sprites";
-	if (v & 0x20) on << ((v & 0x04) ? "tiles 0 (with tile 0)" : "tiles 0");
-	if (v & 0x40) on << ((v & 0x08) ? "tiles 1 (with tile 0)" : "tiles 1");
-	QString s = on.isEmpty() ? "all off" : on.join(", ");
-	if (v & 0x01) s += "; over 360x288";
-	return s;
-}
+static const evoBit tsconfBits[] = {
+	{0x80, "S_EN", "sprites"},
+	{0x20, "T0_EN", "tiles 0"},
+	{0x04, "T0Z_EN", "tile 0 drawn on 0"},
+	{0x40, "T1_EN", "tiles 1"},
+	{0x08, "T1Z_EN", "tile 0 drawn on 1"},
+	{0x01, "TS_EXT", "over 360x288"},
+	{0, nullptr, nullptr}
+};
+
+static const evoBit memconfBits[] = {
+	{0x08, "W0_RAM", "window 0 RAM"},
+	{0x02, "W0_WE", "writable"},
+	{0x04, "!W0_MAP", "Page0 as is"},
+	{0x01, "ROM128", "ROM 48 when mapped"},
+	{0, nullptr, nullptr}
+};
 
 static QString memconf_means(int v) {
-	static const char* lck[4] = {"7FFD 512K", "7FFD 128K", "7FFD auto", "7FFD 1024K"};
+	static const char* lck[4] = {"512K", "128K", "auto", "1024K"};
 	static const char* lckf[4] = {"512", "128", "AUTO", "1024"};
-	QStringList s;
-	if (fieldNames()) {
-		s << QString("LCK=%0").arg(lckf[(v >> 6) & 3]);
-		if (v & 8) s << "W0_RAM";
-		if (v & 4) s << "!W0_MAP";
-		if (v & 2) s << "W0_WE";
-		if (v & 1) s << "ROM128";
-		return s.join(" ");
-	}
-	s << ((v & 8) ? "window 0 RAM" : "window 0 ROM");
-	if (v & 2) s << "writable";
-	s << ((v & 4) ? "Page0 as is" : ((v & 1) ? "mapped, ROM 48" : "mapped, ROM 128"));
-	s << lck[(v >> 6) & 3];
-	return s.join(", ");
+	QStringList s(fieldNames() ? QString("LCK=%0").arg(lckf[(v >> 6) & 3]) : QString("7FFD %0").arg(lck[(v >> 6) & 3]));
+	return evo_join(s + evo_bit_list(v, memconfBits), "");
 }
 
-static QString pending(int now, int next, bool on, QString (*fmt)(int)) {
+static const evoBit cacheBits[] = {
+	{1, "EN_0000", "#0000"}, {2, "EN_4000", "#4000"}, {4, "EN_8000", "#8000"}, {8, "EN_C000", "#C000"},
+	{0, nullptr, nullptr}
+};
+
+static const evoBit fddBits[] = {
+	{1, "VIRT_A", "A virtual"}, {2, "VIRT_B", "B virtual"}, {4, "VIRT_C", "C virtual"}, {8, "VIRT_D", "D virtual"},
+	{0x80, "OPEN_VG", "ports open outside DOS"},
+	{0, nullptr, nullptr}
+};
+
+static const evoBit intBits[] = {
+	{1, "FRAME", "frame"}, {2, "LINE", "line"}, {4, "DMA", "DMA"},
+	{0, nullptr, nullptr}
+};
+
+// a latched register: as it is, and what it becomes at the next line start
+static QString pending(int now, int next, QString (*fmt)(int)) {
 	QString s = fmt(now);
-	if (on && (next != now)) s += " > " + fmt(next);
+	if (next != now) s += " > " + fmt(next);
 	return s;
 }
 
-void xTsRegsPage::draw() {
-	Computer* comp = conf.zx;
-	if (!comp || (comp->hw->id != HW_TSLAB)) return;
+void xTsRegsPage::draw(Computer* comp) {
 	tsRegs r;
 	ts_get_regs(comp, &r);
 	// the switches follow the machine: another panel or a reset may have moved them
-	hold = true;
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 6; i++) {
+		QSignalBlocker hold(lay[i]);
 		lay[i]->setChecked(!(comp->vid->tsconf.hide & (1 << i)));
-	hold = false;
+	}
 	QString note = evo_layers_note();
 	labNote->setText(note);
 	labNote->setVisible(!note.isEmpty());
 
-	QString g = "Video";
-	list->put(g, "vconf", {"00AF", "VConfig", pending(r.vconf, r.latVconf, r.lat & TSL_LAT_VCONF, hex2),
-		vconf_means((r.lat & TSL_LAT_VCONF) ? r.latVconf : r.vconf)});
-	list->put(g, "vpage", {"01AF", "VPage", pending(r.vpage, r.latVpage, r.lat & TSL_LAT_VPAGE, hex2), ""});
-	list->put(g, "gx", {"02/03AF", "GXOffs", pending(r.gxoffs, r.latGx, r.lat & (TSL_LAT_GXL | TSL_LAT_GXH), hex3),
-		QString::number((r.lat & (TSL_LAT_GXL | TSL_LAT_GXH)) ? r.latGx : r.gxoffs)});
-	list->put(g, "gy", {"04/05AF", "GYOffs", pending(r.gyoffs, r.latGy, r.lat & (TSL_LAT_GYL | TSL_LAT_GYH), hex3),
-		QString::number((r.lat & (TSL_LAT_GYL | TSL_LAT_GYH)) ? r.latGy : r.gyoffs)});
 	bool nm = fieldNames();
-	int pal = (r.lat & TSL_LAT_PAL) ? r.latPal : r.palsel;
-	list->put(g, "pal", {"07AF", "PalSel", pending(r.palsel, r.latPal, r.lat & TSL_LAT_PAL, hex2),
+	list->begin();
+	QString g = "Video";
+	list->put(g, "vconf", {"00AF", "VConfig", pending(r.vconf, r.latVconf, gethexbyte), vconf_means(r.latVconf)});
+	list->put(g, "vpage", {"01AF", "VPage", pending(r.vpage, r.latVpage, gethexbyte), ""});
+	list->put(g, "gx", {"02/03AF", "GXOffs", pending(r.gxoffs, r.latGx, hex3), QString::number(r.latGx)});
+	list->put(g, "gy", {"04/05AF", "GYOffs", pending(r.gyoffs, r.latGy, hex3), QString::number(r.latGy)});
+	int pal = r.latPal;
+	list->put(g, "pal", {"07AF", "PalSel", pending(r.palsel, r.latPal, gethexbyte),
 		QString(nm ? "GPAL=%0 T0PAL=%1 T1PAL=%2" : "bitmap %0, tiles 0 %1, tiles 1 %2").arg(pal & 15).arg((pal >> 4) & 3).arg((pal >> 6) & 3)});
-	list->put(g, "brd", {"0FAF", "Border", hex2(r.border), ""});
+	list->put(g, "brd", {"0FAF", "Border", gethexbyte(r.border), ""});
 
 	g = "Tiles and sprites";
-	list->put(g, "tsconf", {"06AF", "TSConfig", hex2(r.tsconf), tsconf_means(r.tsconf)});
-	list->put(g, "tmp", {"16AF", "TMPage", hex2(r.tmpage), "tile maps"});
-	list->put(g, "t0g", {"17AF", "T0GPage", pending(r.t0gpage, r.latT0g, r.lat & TSL_LAT_T0G, hex2), "tiles 0 graphics"});
-	list->put(g, "t1g", {"18AF", "T1GPage", pending(r.t1gpage, r.latT1g, r.lat & TSL_LAT_T1G, hex2), "tiles 1 graphics"});
-	list->put(g, "sg", {"19AF", "SGPage", hex2(r.sgpage), "sprite graphics"});
-	list->put(g, "t0x", {"40/41AF", "T0XOffs", pending(r.t0xoffs, r.latT0x, r.lat & (TSL_LAT_T0XL | TSL_LAT_T0XH), hex3),
-		QString::number((r.lat & (TSL_LAT_T0XL | TSL_LAT_T0XH)) ? r.latT0x : r.t0xoffs)});
+	list->put(g, "tsconf", {"06AF", "TSConfig", gethexbyte(r.tsconf), evo_bits(r.tsconf, tsconfBits, "all off")});
+	list->put(g, "tmp", {"16AF", "TMPage", gethexbyte(r.tmpage), "tile maps"});
+	list->put(g, "t0g", {"17AF", "T0GPage", pending(r.t0gpage, r.latT0g, gethexbyte), "tiles 0 graphics"});
+	list->put(g, "t1g", {"18AF", "T1GPage", pending(r.t1gpage, r.latT1g, gethexbyte), "tiles 1 graphics"});
+	list->put(g, "sg", {"19AF", "SGPage", gethexbyte(r.sgpage), "sprite graphics"});
+	list->put(g, "t0x", {"40/41AF", "T0XOffs", pending(r.t0xoffs, r.latT0x, hex3), QString::number(r.latT0x)});
 	list->put(g, "t0y", {"42/43AF", "T0YOffs", hex3(r.t0yoffs), QString::number(r.t0yoffs)});
-	list->put(g, "t1x", {"44/45AF", "T1XOffs", pending(r.t1xoffs, r.latT1x, r.lat & (TSL_LAT_T1XL | TSL_LAT_T1XH), hex3),
-		QString::number((r.lat & (TSL_LAT_T1XL | TSL_LAT_T1XH)) ? r.latT1x : r.t1xoffs)});
+	list->put(g, "t1x", {"44/45AF", "T1XOffs", pending(r.t1xoffs, r.latT1x, hex3), QString::number(r.latT1x)});
 	list->put(g, "t1y", {"46/47AF", "T1YOffs", hex3(r.t1yoffs), QString::number(r.t1yoffs)});
 
 	g = "Memory";
@@ -421,70 +472,45 @@ void xTsRegsPage::draw() {
 		QString means;
 		if (i == 0) {
 			MemPage* pg = &comp->mem->map[0];
-			means = QString("%0 page %1 in window 0").arg((pg->type == MEM_RAM) ? "RAM" : "ROM").arg(hex2(pg->num >> 6));
+			means = QString("%0 page %1 in window 0").arg((pg->type == MEM_RAM) ? "RAM" : "ROM").arg(gethexbyte(pg->num >> 6));
 		}
-		list->put(g, QString("page%0").arg(i), {QString("%0AF").arg(0x10 + i, 2, 16, QChar('0')).toUpper(),
-			QString("Page%0").arg(i), hex2(r.page[i]), means});
+		list->put(g, QString("page%0").arg(i), {gethexbyte(0x10 + i) + "AF", QString("Page%0").arg(i), gethexbyte(r.page[i]), means});
 	}
-	list->put(g, "memconf", {"21AF", "MemConfig", hex2(r.memconf), memconf_means(r.memconf)});
-	QString fmat = QString("#%0000").arg(QString::number(r.fmaddr, 16).toUpper());
-	list->put(g, "fm", {"15AF", "FMAddr", hex2(r.fmaddr | (r.fmen ? 0x10 : 0)), nm ? QString("FM_EN=%0 FM_ADDR=%1").arg(r.fmen).arg(fmat)
+	list->put(g, "memconf", {"21AF", "MemConfig", gethexbyte(r.memconf), memconf_means(r.memconf)});
+	QString fmat = "#" + gethexbyte(r.fmaddr << 4) + "00";
+	list->put(g, "fm", {"15AF", "FMAddr", gethexbyte(r.fmaddr | (r.fmen ? 0x10 : 0)), nm ? QString("FM_EN=%0 FM_ADDR=%1").arg(r.fmen).arg(fmat)
 		: (r.fmen ? QString("CRAM and SFILE at %0").arg(fmat) : "off")});
-	QStringList cw;
-	for (int i = 0; i < 4; i++)
-		if (r.cacheconf & (1 << i)) cw << QString(nm ? "EN_%0" : "#%0").arg(QString::number(i << 14, 16).toUpper().rightJustified(4, '0'));
-	list->put(g, "cache", {"2BAF", "CacheConfig", hex2(r.cacheconf), cw.isEmpty() ? (nm ? "-" : "off") : cw.join(" ")});
-	QStringList fd;
-	for (int i = 0; i < 4; i++)
-		if (r.fddvirt & (1 << i)) fd << QString(nm ? "VIRT_%0" : "%0").arg(QChar('A' + i));
-	QString fds;
-	if (nm) {
-		if (r.fddvirt & 0x80) fd << "OPEN_VG";
-		fds = fd.isEmpty() ? "-" : fd.join(" ");
-	} else {
-		fds = fd.isEmpty() ? "none virtual" : fd.join(" ") + " virtual";
-		if (r.fddvirt & 0x80) fds += ", ports open outside DOS";
-	}
-	list->put(g, "fdd", {"29AF", "FDDVirt", hex2(r.fddvirt), fds});
+	list->put(g, "cache", {"2BAF", "CacheConfig", gethexbyte(r.cacheconf), evo_bits(r.cacheconf, cacheBits, "off")});
+	list->put(g, "fdd", {"29AF", "FDDVirt", gethexbyte(r.fddvirt), evo_bits(r.fddvirt, fddBits, "none virtual")});
 
 	g = "System";
-	static const char* clk[3] = {"3.5 MHz", "7 MHz", "14 MHz"};
-	static const char* clkf[3] = {"3.5", "7", "14"};
-	list->put(g, "sys", {"20AF", "SysConfig", "-", nm ? QString("ZCLK=%0").arg(clkf[r.clock])
-		: QString("%0, cache %1").arg(clk[r.clock]).arg(r.cacheconf ? "on" : "off")});
-	QStringList ints;
-	if (r.intmask & 1) ints << (nm ? "FRAME" : "frame");
-	if (r.intmask & 2) ints << (nm ? "LINE" : "line");
-	if (r.intmask & 4) ints << "DMA";
-	list->put(g, "intmask", {"2AAF", "INTMask", hex2(r.intmask), ints.isEmpty() ? (nm ? "-" : "none") : ints.join(nm ? " " : ", ")});
-	list->put(g, "hsint", {"22AF", "HSINT", hex2(r.hsint), QString("dot %0 of the line").arg(r.hsint * 2)});
+	list->put(g, "sys", {"20AF", "SysConfig", "-", nm ? QString("ZCLK=%0").arg(evoClock[r.clock])
+		: QString("%0 MHz, cache %1").arg(evoClock[r.clock]).arg(r.cacheconf ? "on" : "off")});
+	list->put(g, "intmask", {"2AAF", "INTMask", gethexbyte(r.intmask), evo_bits(r.intmask, intBits, "none")});
+	list->put(g, "hsint", {"22AF", "HSINT", gethexbyte(r.hsint), QString("dot %0 of the line").arg(r.hsint * 2)});
 	list->put(g, "vsint", {"23/24AF", "VSINT", hex3(r.vsint), r.vsinc ? QString("line %0, then %1 lines on").arg(r.vsint).arg(r.vsinc)
 		: QString("line %0").arg(r.vsint)});
 
 	dma_regs(list, r);
 	list->finish();
-	list->restyle();
 }
 
 // SPRITES PAGE
 
 #define SPR_PIC		192	// the picked sprite is drawn this big at most
 
-xTsSprPage::xTsSprPage(QWidget* p):QWidget(p) {
+xTsSprPage::xTsSprPage(QWidget* p):xEvoPage(HW_TSLAB, p) {
 	sel = -1;
+	fitted = false;
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
 	cbActive = new QCheckBox("Active only");
 	cbActive->setChecked(true);
 	lay->addWidget(cbActive);
 	list = new QTreeWidget;
-	list->setRootIsDecorated(false);
-	list->setUniformRowHeights(true);
-	list->setAlternatingRowColors(true);
+	evo_tree_setup(list, {"#", "Layer", "X", "Y", "Size", "Tile", "Pal", "Flags"});
 	list->setSelectionMode(QAbstractItemView::SingleSelection);
-	list->setHeaderLabels({"#", "Layer", "X", "Y", "Size", "Tile", "Pal", "Flags"});
-	list->header()->setStretchLastSection(true);
-	list->header()->setSectionsMovable(false);
+	list->setFocusPolicy(Qt::StrongFocus);
 	// the list over the picked sprite, the line between them movable
 	QSplitter* split = new QSplitter(Qt::Vertical);
 	split->setChildrenCollapsible(false);
@@ -506,18 +532,21 @@ xTsSprPage::xTsSprPage(QWidget* p):QWidget(p) {
 	split->setStretchFactor(0, 2);
 	split->setStretchFactor(1, 1);
 	lay->addWidget(split, 1);
-	connect(cbActive, &QCheckBox::toggled, this, [this]() {draw();});
+	connect(cbActive, &QCheckBox::toggled, this, [this]() {if (conf.zx) draw(conf.zx);});
 	connect(list, &QTreeWidget::currentItemChanged, this, [this](QTreeWidgetItem* it) {
 		sel = it ? it->data(0, Qt::UserRole).toInt() : -1;
 		draw_pick();
 	});
 }
 
-static const char* sprLayer[4] = {"S0", "S1", "S2", "-"};
+void xTsSprPage::changeEvent(QEvent* ev) {
+	xEvoPage::changeEvent(ev);
+	if (ev->type() == QEvent::FontChange) fitted = false;
+}
 
-void xTsSprPage::draw() {
-	Computer* comp = conf.zx;
-	if (!comp || (comp->hw->id != HW_TSLAB)) return;
+static const char* sprLayer[4] = {"-", "S0", "S1", "S2"};
+
+void xTsSprPage::draw(Computer* comp) {
 	Video* vid = comp->vid;
 	if (list->topLevelItemCount() == 0) {
 		for (int i = 0; i < TSL_SPRITES; i++) {
@@ -527,9 +556,8 @@ void xTsSprPage::draw() {
 				it->setTextAlignment(c, Qt::AlignRight | Qt::AlignVCenter);
 		}
 	}
-	// S0 runs from the first entry to the first LEAP, S1 on to the next, S2 to the
-	// third: what comes after that is never drawn
-	int layer = 0;
+	signed char layer[TSL_SPRITES];
+	tsl_sprite_layers(vid, layer);
 	QColor dim = palette().color(QPalette::Disabled, QPalette::Text);
 	for (int i = 0; i < TSL_SPRITES; i++) {
 		tsSprite s;
@@ -540,19 +568,22 @@ void xTsSprPage::draw() {
 		if (s.xf) fl << "XF";
 		if (s.yf) fl << "YF";
 		if (s.leap) fl << "LEAP";
-		QStringList cols = {QString::number(i), sprLayer[layer], QString::number(s.x), QString::number(s.y),
+		QStringList cols = {QString::number(i), sprLayer[layer[i] + 1], QString::number(s.x), QString::number(s.y),
 			QString("%0x%1").arg(s.w).arg(s.h), QString::number(s.tile), QString::number(s.pal), fl.join(" ")};
+		bool drawn = s.act && (layer[i] >= 0);
 		for (int c = 0; c < cols.size(); c++) {
 			it->setText(c, cols[c]);
-			if (s.act && (layer < 3)) it->setData(c, Qt::ForegroundRole, QVariant());
+			if (drawn) it->setData(c, Qt::ForegroundRole, QVariant());
 			else it->setForeground(c, dim);
 		}
 		it->setHidden(cbActive->isChecked() && !s.act);
-		if (s.leap && (layer < 3)) layer++;
 	}
-	static const QStringList widest[7] = {{"84"}, {"Layer", "S0"}, {"511"}, {"511"}, {"64x64"}, {"4095"}, {"Pal", "15"}};
-	for (int i = 0; i < 7; i++)
-		evo_fit_column(list, i, widest[i]);
+	if (!fitted) {
+		static const QStringList widest[7] = {{"84"}, {"Layer", "S0"}, {"511"}, {"511"}, {"64x64"}, {"4095"}, {"Pal", "15"}};
+		for (int i = 0; i < 7; i++)
+			evo_fit_column(list, i, widest[i]);
+		fitted = true;
+	}
 	draw_pick();
 }
 
@@ -572,14 +603,10 @@ void xTsSprPage::draw_pick() {
 	tsl_sprite_dots(vid, sel, dots);
 	QImage img(s.w, s.h, QImage::Format_RGB32);
 	for (int y = 0; y < s.h; y++) {
+		QRgb* line = (QRgb*)img.scanLine(y);
 		for (int x = 0; x < s.w; x++) {
 			int d = dots[y * s.w + x];
-			if (d) {
-				uint32_t c = vid->pal[d];
-				img.setPixel(x, y, qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff));
-			} else {
-				img.setPixel(x, y, ((x ^ y) & 4) ? qRgb(0x60, 0x60, 0x60) : qRgb(0x40, 0x40, 0x40));
-			}
+			line[x] = d ? evo_rgb(vid, d) : evo_checker(x, y);
 		}
 	}
 	int zoom = qMax(1, qMin(qMin(labPic->width(), SPR_PIC) / s.w, qMin(labPic->height(), SPR_PIC) / s.h));
@@ -587,15 +614,8 @@ void xTsSprPage::draw_pick() {
 	int sg = vid->tsconf.SGPage;
 	labInfo->setText(QString("Sprite %0, %1x%2 at %3,%4\nTile %5: row %6, column %7 of page %8\nPalette %9 (colors %10..%11)")
 		.arg(sel).arg(s.w).arg(s.h).arg(s.x).arg(s.y)
-		.arg(s.tile).arg(s.tile >> 6).arg(s.tile & 63).arg(hex2(sg))
-		.arg(s.pal).arg(hex2(s.pal << 4)).arg(hex2((s.pal << 4) | 15)));
-}
-
-// a TSConf color as the picture shows it; 0 (a hole) as a checker
-static QRgb ts_rgb(Video* vid, int idx, int x, int y) {
-	if (!idx) return ((x ^ y) & 4) ? qRgb(0x60, 0x60, 0x60) : qRgb(0x40, 0x40, 0x40);
-	uint32_t c = vid->pal[idx & 0xff];
-	return qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff);
+		.arg(s.tile).arg(s.tile >> 6).arg(s.tile & 63).arg(gethexbyte(sg))
+		.arg(s.pal).arg(gethexbyte(s.pal << 4)).arg(gethexbyte((s.pal << 4) | 15)));
 }
 
 // MAP VIEW
@@ -646,7 +666,7 @@ void xTsMapView::leaveEvent(QEvent*) {
 
 enum {TV_MAP0 = 0, TV_MAP1, TV_GFX};
 
-xTsTilePage::xTsTilePage(QWidget* p):QWidget(p) {
+xTsTilePage::xTsTilePage(QWidget* p):xEvoPage(HW_TSLAB, p) {
 	hx = hy = -1;
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
@@ -680,6 +700,7 @@ xTsTilePage::xTsTilePage(QWidget* p):QWidget(p) {
 	row->addStretch(1);
 	lay->addLayout(row);
 	view = new xTsMapView;
+	view->img = QImage(512, 512, QImage::Format_RGB32);
 	lay->addWidget(view, 1);
 	labInfo = new QLabel;
 	labInfo->setWordWrap(true);
@@ -689,7 +710,7 @@ xTsTilePage::xTsTilePage(QWidget* p):QWidget(p) {
 		hy = y;
 		hover_info();
 	};
-	auto redraw = [this]() {draw();};
+	auto redraw = [this]() {if (conf.zx && (conf.zx->hw->id == HW_TSLAB)) draw(conf.zx);};
 	connect(cbView, QOverload<int>::of(&QComboBox::currentIndexChanged), this, redraw);
 	connect(sbPage, QOverload<int>::of(&QSpinBox::valueChanged), this, redraw);
 	connect(sbPal, QOverload<int>::of(&QSpinBox::valueChanged), this, redraw);
@@ -704,27 +725,34 @@ xTsTilePage::xTsTilePage(QWidget* p):QWidget(p) {
 	connect(tbSG, &QToolButton::clicked, this, [pick]() {pick(2);});
 }
 
-void xTsTilePage::draw() {
-	Computer* comp = conf.zx;
-	if (!comp || (comp->hw->id != HW_TSLAB)) return;
+void xTsTilePage::draw(Computer* comp) {
 	Video* vid = comp->vid;
 	int mode = cbView->currentData().toInt();
 	bool gfx = (mode == TV_GFX);
 	sbPage->setEnabled(gfx);
 	sbPal->setEnabled(gfx);
-	QImage img(512, 512, QImage::Format_RGB32);
+	// the colors once, then each dot a lookup; 0 is a hole, drawn as the checker
+	QRgb pal[256];
+	for (int i = 1; i < 256; i++)
+		pal[i] = evo_rgb(vid, i);
 	unsigned char dots[64];
 	view->marks.clear();
 	for (int ty = 0; ty < 64; ty++) {
+		QRgb* line[8];
+		for (int y = 0; y < 8; y++)
+			line[y] = (QRgb*)view->img.scanLine((ty << 3) + y);
 		for (int tx = 0; tx < 64; tx++) {
 			if (gfx) {
 				tsl_tile_dots(vid, sbPage->value(), (ty << 6) | tx, sbPal->value() << 4, dots);
 			} else {
 				tsl_map_dots(vid, mode, tsl_map_entry(vid, mode, ty, tx), dots);
 			}
-			for (int y = 0; y < 8; y++)
+			for (int y = 0; y < 8; y++) {
+				QRgb* dst = line[y] + (tx << 3);
+				const unsigned char* src = dots + (y << 3);
 				for (int x = 0; x < 8; x++)
-					img.setPixel((tx << 3) + x, (ty << 3) + y, ts_rgb(vid, dots[(y << 3) + x], (tx << 3) + x, (ty << 3) + y));
+					dst[x] = src[x] ? pal[src[x]] : evo_checker((tx << 3) + x, (ty << 3) + y);
+			}
 		}
 	}
 	if (!gfx) {
@@ -740,7 +768,6 @@ void xTsTilePage::draw() {
 			}
 		}
 	}
-	view->img = img;
 	view->update();
 	hover_info();
 }
@@ -751,104 +778,103 @@ void xTsTilePage::hover_info() {
 	Video* vid = comp->vid;
 	int mode = cbView->currentData().toInt();
 	if ((hx < 0) || (hy < 0)) {
-		labInfo->setText((mode == TV_GFX) ? "64x64 tiles of 8x8 dots" : QString("TMPage %0; the frame shows the outlined part").arg(hex2(vid->tsconf.TMPage)));
+		labInfo->setText((mode == TV_GFX) ? "64x64 tiles of 8x8 dots" : QString("TMPage %0; the frame shows the outlined part").arg(gethexbyte(vid->tsconf.TMPage)));
 		return;
 	}
 	int tx = hx >> 3;
 	int ty = hy >> 3;
 	if (mode == TV_GFX) {
 		int tile = (ty << 6) | tx;
-		int ofs = ((tile & 0xfc0) << 5) | ((tile & 0x3f) << 2);
+		int a = tsl_gfx_adr(sbPage->value(), tile, 0);
 		labInfo->setText(QString("Tile %0 (row %1, column %2): page %3, lines at %4 + n * 100")
-			.arg(tile).arg(ty).arg(tx).arg(hex2(sbPage->value() + (ofs >> 14))).arg(QString::number(ofs & 0x3fff, 16).toUpper().rightJustified(4, '0')));
+			.arg(tile).arg(ty).arg(tx).arg(gethexbyte(a >> 14)).arg(gethexword(a & 0x3fff)));
 		return;
 	}
-	int e = tsl_map_entry(vid, mode, ty, tx);
-	int ofs = (ty << 8) | (mode << 7) | (tx << 1);
-	int palhi = ((e >> 8) & 0x30) | (mode ? vid->tsconf.T1Pal76 : vid->tsconf.T0Pal76);
+	tsMapCell c;
+	tsl_map_cell(vid, mode, ty, tx, &c);
 	QStringList fl;
-	if (e & 0x4000) fl << "XF";
-	if (e & 0x8000) fl << "YF";
-	bool hole = !(e & 0xfff) && !(vid->tsconf.tconfig & (mode ? 8 : 4));
+	if (c.entry & 0x4000) fl << "XF";
+	if (c.entry & 0x8000) fl << "YF";
 	labInfo->setText(QString("Cell %0,%1 at %2:%3 = %4: tile %5 (row %6, column %7), colors %8..%9%10%11")
-		.arg(tx).arg(ty).arg(hex2(vid->tsconf.TMPage)).arg(QString::number(ofs, 16).toUpper().rightJustified(4, '0'))
-		.arg(QString::number(e, 16).toUpper().rightJustified(4, '0')).arg(e & 0xfff).arg((e & 0xfff) >> 6).arg(e & 63)
-		.arg(hex2(palhi)).arg(hex2(palhi | 15)).arg(fl.isEmpty() ? "" : " " + fl.join(" ")).arg(hole ? ", a hole (tile 0)" : ""));
+		.arg(tx).arg(ty).arg(gethexbyte(c.adr >> 14)).arg(gethexword(c.adr & 0x3fff))
+		.arg(gethexword(c.entry)).arg(c.entry & 0xfff).arg((c.entry & 0xfff) >> 6).arg(c.entry & 63)
+		.arg(gethexbyte(c.pal)).arg(gethexbyte(c.pal | 15)).arg(fl.isEmpty() ? "" : " " + fl.join(" ")).arg(c.hole ? ", a hole (tile 0)" : ""));
 }
 
 // BASECONF PORTS PAGE
 
-xEvoPortsPage::xEvoPortsPage(QWidget* p):QWidget(p) {
+xEvoPortsPage::xEvoPortsPage(QWidget* p):xEvoPage(HW_PENTEVO, p) {
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
 	list = new xEvoList({"Port", "Register", "Value", "Means"});
-	list->onStyle = [this]() {draw();};
+	list->onStyle = [this]() {if (conf.zx) draw(conf.zx);};
 	lay->addWidget(list, 1);
 }
 
-// the set bits of v by name, b0 first; nullptr for a bit with no name
-static QStringList bit_names(int v, const char* const* names) {
-	QStringList s;
-	for (int i = 0; i < 8; i++)
-		if ((v & (1 << i)) && names[i]) s << names[i];
-	return s;
-}
+static const evoBit p7ffdBits[] = {
+	{0x08, "SCR", nullptr}, {0x10, "ROM", nullptr}, {0x20, "LOCK", nullptr},
+	{0, nullptr, nullptr}
+};
 
-static QString hex4(int v) {return QString::number(v & 0xffff, 16).toUpper().rightJustified(4, '0');}
+static const evoBit eff7Bits[] = {
+	{0x01, "P16C", "16 colors"},
+	{0x04, "BLOCK1M", "7FFD as 128K"},
+	{0x08, "RAM0_0", "RAM 0 at #0000"},
+	{0x10, "TURBOOFF", "turbo off"},
+	{0x20, "HWMC", "multicolor"},
+	{0x80, "GLUCLOCK", "clock chip ports"},
+	{0, nullptr, nullptr}
+};
 
-void xEvoPortsPage::draw() {
-	Computer* comp = conf.zx;
-	if (!comp || (comp->hw->id != HW_PENTEVO)) return;
+static const evoBit bfBits[] = {
+	{0x01, "SHADOW_EN", "shadow ports"},
+	{0x02, "ROMRW_EN", "ROM writable"},
+	{0x04, "FNTW_EN", "font writable"},
+	{0x08, "SET_NMI", "NMI"},
+	{0x10, "BRK_ENA", "trap on"},
+	{0x20, "PAL444_ENA", "4-4-4 palette"},
+	{0, nullptr, nullptr}
+};
+
+void xEvoPortsPage::draw(Computer* comp) {
 	evoRegs r;
 	evo_get_regs(comp, &r);
 	bool nm = fieldNames();
+	list->begin();
 
 	QString g = "Ports";
-	static const char* const p7N[8] = {0, 0, 0, "SCR", "ROM", "LOCK", 0, 0};
-	list->put(g, "7ffd", {"7FFD", "7FFD", hex2(r.p7ffd), nm
-		? QString("PG=%0 %1").arg(r.p7ffd & 7).arg(bit_names(r.p7ffd, p7N).join(" "))
+	list->put(g, "7ffd", {"7FFD", "7FFD", gethexbyte(r.p7ffd), nm
+		? QString("PG=%0 %1").arg(r.p7ffd & 7).arg(evo_bit_list(r.p7ffd, p7ffdBits).join(" "))
 		: QString("RAM page %0 at #C000, screen %1, ROM %2%3").arg(r.p7ffd & 7).arg((r.p7ffd & 8) ? 7 : 5)
 			.arg((r.p7ffd >> 4) & 1).arg((r.p7ffd & 0x20) ? ", locked" : "")});
-	static const char* const effN[8] = {"P16C", 0, "BLOCK1M", "RAM0_0", "TURBOOFF", "HWMC", 0, "GLUCLOCK"};
-	static const char* const effW[8] = {"16 colors", 0, "7FFD as 128K", "RAM 0 at #0000", "turbo off", "multicolor", 0, "clock chip ports"};
-	QStringList ew = bit_names(r.peff7, nm ? effN : effW);
-	list->put(g, "eff7", {"EFF7", "EFF7", hex2(r.peff7), ew.isEmpty() ? "-" : ew.join(nm ? " " : ", ")});
+	list->put(g, "eff7", {"EFF7", "EFF7", gethexbyte(r.peff7), evo_bits(r.peff7, eff7Bits, "-")});
 	static const char* atmModes[8] = {"EGA", "?", "hardware multicolor", "ZX", "?", "?", "text", "Evo text"};
 	bool pager = r.p77 & 0x20;
-	list->put(g, "77", {"xx77", "77", hex2(r.p77), nm
+	list->put(g, "77", {"xx77", "77", gethexbyte(r.p77), nm
 		? QString("RG=%0%1 PEN=%2 CPM_N=%3 PEN2=%4").arg(r.p77 & 7).arg((r.p77 & 8) ? " TURBO" : "")
 			.arg(pager ? 0 : 1).arg((r.p77 >> 6) & 1).arg((r.p77 & 0x80) ? 0 : 1)
 		: QString("mode %0 (%1)%2, pager %3%4, palette %5").arg(r.p77 & 7).arg(atmModes[r.p77 & 7])
 			.arg((r.p77 & 8) ? ", turbo" : "").arg(pager ? "on" : "off").arg((r.p77 & 0x40) ? "" : ", DOS held on")
 			.arg((r.p77 & 0x80) ? "closed" : "open")});
-	static const char* const bfN[8] = {"SHADOW_EN", "ROMRW_EN", "FNTW_EN", "SET_NMI", "BRK_ENA", "PAL444_ENA", 0, 0};
-	static const char* const bfW[8] = {"shadow ports", "ROM writable", "font writable", "NMI", "trap on", "4-4-4 palette", 0, 0};
-	QStringList bw = bit_names(r.pbf, nm ? bfN : bfW);
-	list->put(g, "bf", {"xxBF", "BF", hex2(r.pbf), bw.isEmpty() ? "-" : bw.join(nm ? " " : ", ")});
+	list->put(g, "bf", {"xxBF", "BF", gethexbyte(r.pbf), evo_bits(r.pbf, bfBits, "-")});
 
 	g = "Windows";
 	for (int i = 0; i < 4; i++) {
 		MemPage* pg = &comp->mem->map[i << 6];
-		list->put(g, QString("w%0").arg(i), {"", QString("#%0").arg(hex4(i << 14)), hex2(pg->num >> 6),
-			QString("%0 page %1").arg((pg->type == MEM_RAM) ? "RAM" : "ROM").arg(hex2(pg->num >> 6))});
+		list->put(g, QString("w%0").arg(i), {"", "#" + gethexword(i << 14), gethexbyte(pg->num >> 6),
+			QString("%0 page %1").arg((pg->type == MEM_RAM) ? "RAM" : "ROM").arg(gethexbyte(pg->num >> 6))});
 	}
 
 	g = "Pager";
 	for (int i = 0; i < 8; i++) {
 		int f = r.pgflag[i];
 		QStringList m;
-		if (nm) {
-			m << ((f & 0x40) ? "RAM" : "ROM");
-			if (f & 0x80) m << "MIX";
-			if (f & 0x20) m << "WP";
-		} else {
-			m << ((f & 0x40) ? "RAM" : "ROM");
-			if (f & 0x80) m << ((f & 0x40) ? "7FFD bits mixed in" : "DOS bit mixed in");
-			if (f & 0x20) m << "write protected";
-		}
+		m << ((f & 0x40) ? "RAM" : "ROM");
+		if (f & 0x80) m << (nm ? "MIX" : (f & 0x40) ? "7FFD bits mixed in" : "DOS bit mixed in");
+		if (f & 0x20) m << (nm ? "WP" : "write protected");
 		bool live = ((i & 4) == r.pgset);
 		list->put(g, QString("p%0").arg(i), {QString("%0FF7").arg((i & 3) << 2, 1, 16).toUpper(),
-			QString("W%0 ROM=%1%2").arg(i & 3).arg(i >> 2).arg(live ? " *" : ""), hex2(r.pg[i]), m.join(nm ? " " : ", ")});
+			QString("W%0 ROM=%1%2").arg(i & 3).arg(i >> 2).arg(live ? " *" : ""), gethexbyte(r.pg[i]), m.join(nm ? " " : ", ")});
 	}
 
 	g = "System";
@@ -856,25 +882,26 @@ void xEvoPortsPage::draw() {
 	if (r.dos) st << "DOS";
 	if (r.vdos) st << (nm ? "VDOS" : "TR-DOS emulation");
 	if (r.vnmi) st << (nm ? "VNMI" : "in NMI");
-	static const char* clk[3] = {"3.5 MHz", "7 MHz", "14 MHz"};
 	list->put(g, "state", {"", "State", "", st.isEmpty() ? "-" : st.join(", ")});
-	list->put(g, "clock", {"", "Clock", "", clk[r.clock]});
-	list->put(g, "trap", {"00/01BD", "Trap", hex4(r.trap), (r.pbf & 0x10) ? "on" : "off"});
+	list->put(g, "clock", {"", "Clock", "", QString("%0 MHz").arg(evoClock[r.clock])});
+	list->put(g, "trap", {"00/01BD", "Trap", gethexword(r.trap), (r.pbf & 0x10) ? "on" : "off"});
 	list->put(g, "brd", {"", "Border", QString::number(r.border, 16).toUpper(), "palette cell"});
 	QStringList vd;
 	for (int i = 0; i < 4; i++)
 		if (r.virt & (1 << i)) vd << QString(QChar('A' + i));
 	list->put(g, "virt", {"13BD", "Virtual", QString::number(r.virt, 16).toUpper(), vd.isEmpty() ? "-" : vd.join(" ")});
-	list->put(g, "ext", {"2F..8F", "2F 4F 6F 8F", "", QString("%0 %1 %2 %3").arg(hex2(r.ext[0])).arg(hex2(r.ext[1]))
-		.arg(hex2(r.ext[2])).arg(hex2(r.ext[3]))});
+	list->put(g, "ext", {"2F..8F", "2F 4F 6F 8F", "", QString("%0 %1 %2 %3").arg(gethexbyte(r.ext[0])).arg(gethexbyte(r.ext[1]))
+		.arg(gethexbyte(r.ext[2])).arg(gethexbyte(r.ext[3]))});
 	list->finish();
-	list->restyle();
 }
 
 // PALETTE VIEW
 
 #define PAL_SIDE	16	// cells are as big as on a grid this many a side
 #define PAL_CELL	32	// and no bigger
+// The cell size takes room for the names and PAL_TAGS tag columns whether a machine has
+// them or not, so both machines get the same cells in the same dock.
+#define PAL_TAGS	4
 
 xEvoPalView::xEvoPalView(QWidget* p):QWidget(p) {
 	cols = rows = side = 0;
@@ -888,10 +915,6 @@ int xEvoPalView::tagColumn() const {
 	QFontMetrics fm(font());
 	return fm.horizontalAdvance("T0") + fm.averageCharWidth() / 2 + 1;
 }
-
-// The cell size takes room for the names and PAL_TAGS tag columns whether a machine has
-// them or not, so both machines get the same cells in the same dock.
-#define PAL_TAGS	4
 
 QRect xEvoPalView::gridIn(int w, int h) const {
 	if (!cols || !rows) return QRect();
@@ -993,8 +1016,9 @@ void xEvoPalView::resizeEvent(QResizeEvent* ev) {
 
 // PALETTE PAGE
 
-xEvoPalPage::xEvoPalPage(QWidget* p):QWidget(p) {
+xEvoPalPage::xEvoPalPage(QWidget* p):xEvoPage(-1, p) {
 	hov = -1;
+	shown = -1;
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
 	// the grid, and beside it what the cell under the pointer or picked is: a name and a
@@ -1037,32 +1061,68 @@ xEvoPalPage::xEvoPalPage(QWidget* p):QWidget(p) {
 	view->onResize = [this]() {fit();};
 }
 
-static QRgb evo_rgb(uint32_t c) {return qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff);}
-
 // the tag columns on TSConf, a bit each in rowTags
 static const QStringList palTags = {"B", "T0", "T1", "S"};
 enum {PAL_B = 1, PAL_T0 = 2, PAL_T1 = 4, PAL_S = 8};
 
-void xEvoPalPage::draw() {
-	Computer* comp = conf.zx;
-	if (!comp) return;
-	Video* vid = comp->vid;
-	int hw = comp->hw->id;
-	view->cells.clear();
+// the names, the legend and the room for the values: once a machine, and again with a font
+void xEvoPalPage::setup(int hw) {
+	shown = hw;
+	bool ts = (hw == HW_TSLAB);
+	QStringList nl;
+	if (ts) {
+		nl << "Index" << "CRAM" << "Word" << "R" << "G" << "B" << "VDAC_MODE" << "RGB" << "Used by";
+	} else {
+		nl << "Index" << "#FF" << "R" << "G" << "B" << "RGB" << "Used by";
+	}
+	QFontMetrics fm(font());
+	int nw = 0;
+	foreach (QString s, nl) nw = qMax(nw, fm.horizontalAdvance(s));
+	// the column as wide as its widest value can be, whatever is shown now
+	int vw = qMax(fm.horizontalAdvance("#FFFFFF"), fm.horizontalAdvance("border"));
+	infoBox->setFixedWidth(nw + vw + 2 * fm.averageCharWidth());
+	for (int k = 0; k < PAL_INFO; k++) {
+		names[k]->setVisible(k < nl.size());
+		vals[k]->setVisible(k < nl.size());
+		names[k]->setText(nl.value(k));
+	}
 	view->rowNames.clear();
 	view->colNames.clear();
-	view->tagNames.clear();
-	view->rowTags.clear();
 	for (int i = 0; i < 16; i++)
 		view->colNames << QString::number(i, 16).toUpper();
+	if (ts) {
+		view->cols = view->rows = 16;
+		for (int i = 0; i < 16; i++)
+			view->rowNames << gethexbyte(i << 4);
+		view->tagNames = palTags;
+	} else {
+		view->cols = 16;
+		view->rows = 1;
+		view->rowNames << "0";
+		view->tagNames.clear();
+	}
+	view->pick = -1;
+	labLegend->setText(ts ? "B, T0, T1, S: the rows the bitmap, tile layers and sprites use now. Dashed: the border. "
+		"With VDAC_MODE 0 (PWM) a level is full from 24." : "Dashed: the border.");
+	fit();
+}
+
+void xEvoPalPage::changeEvent(QEvent* ev) {
+	xEvoPage::changeEvent(ev);
+	if ((ev->type() == QEvent::FontChange) && (shown >= 0)) setup(shown);
+}
+
+void xEvoPalPage::draw(Computer* comp) {
+	Video* vid = comp->vid;
+	int hw = comp->hw->id;
+	if (hw != shown) setup(hw);
+	view->cells.clear();
+	view->rowTags.clear();
 	if (hw == HW_TSLAB) {
 		tsRegs r;
 		ts_get_regs(comp, &r);
-		view->cols = view->rows = 16;
 		for (int i = 0; i < 256; i++)
-			view->cells << evo_rgb(vid->pal[i]);
-		for (int i = 0; i < 16; i++)
-			view->rowNames << hex2(i << 4);
+			view->cells << evo_rgb(vid, i);
 		// the rows the layers take their colors from now
 		int use[16] = {0};
 		int mode = r.vconf & 3;
@@ -1079,12 +1139,12 @@ void xEvoPalPage::draw() {
 			if (r.tsconf & 0x40) use[(((r.palsel >> 6) & 3) << 2) | k] |= PAL_T1;
 		}
 		if (r.tsconf & 0x80) {
-			int layer = 0;
-			for (int i = 0; (i < TSL_SPRITES) && (layer < 3); i++) {
+			signed char layer[TSL_SPRITES];
+			tsl_sprite_layers(vid, layer);
+			for (int i = 0; i < TSL_SPRITES; i++) {
 				tsSprite s;
 				tsl_get_sprite(vid, i, &s);
-				if (s.act) use[s.pal & 15] |= PAL_S;
-				if (s.leap) layer++;
+				if (s.act && (layer[i] >= 0)) use[s.pal & 15] |= PAL_S;
 			}
 		}
 		// text mode puts out the low nibble only, under GPAL: tiles and sprites as well
@@ -1096,26 +1156,14 @@ void xEvoPalPage::draw() {
 			}
 			use[gpal] = all;
 		}
-		view->tagNames = palTags;
 		for (int i = 0; i < 16; i++)
 			view->rowTags << use[i];
 		view->border = (mode == 3) ? ((gpal << 4) | (r.border & 15)) : (r.border & 0xff);
 	} else if (hw == HW_PENTEVO) {
-		evoRegs r;
-		evo_get_regs(comp, &r);
-		view->cols = 16;
-		view->rows = 1;
 		for (int i = 0; i < 16; i++)
-			view->cells << evo_rgb(vid->pal[i]);
-		view->rowNames << "0";
-		view->border = r.border & 15;
-	} else {
-		view->cols = view->rows = 0;
+			view->cells << evo_rgb(vid, i);
+		view->border = vid->nextbrd & 15;
 	}
-	if (view->pick >= view->cells.size()) view->pick = -1;
-	labLegend->setText((hw == HW_TSLAB) ? "B, T0, T1, S: the rows the bitmap, tile layers and sprites use now. Dashed: the border. "
-		"With VDAC_MODE 0 (PWM) a level is full from 24."
-		: (hw == HW_PENTEVO) ? "Dashed: the border." : "");
 	view->update();
 	info();
 }
@@ -1127,94 +1175,64 @@ void xEvoPalPage::fit() {
 }
 
 void xEvoPalPage::resizeEvent(QResizeEvent* ev) {
-	QWidget::resizeEvent(ev);
+	xEvoPage::resizeEvent(ev);
 	fit();
 }
 
-// by the names the docs give the fields
+// the cell under the pointer or picked, by the names the docs give the fields
 void xEvoPalPage::info() {
 	Computer* comp = conf.zx;
 	if (!comp) return;
-	bool ts = (comp->hw->id == HW_TSLAB);
-	QStringList nl;
-	if (ts) {
-		nl << "Index" << "CRAM" << "Word" << "R" << "G" << "B" << "VDAC_MODE" << "RGB" << "Used by";
-	} else {
-		nl << "Index" << "#FF" << "R" << "G" << "B" << "RGB" << "Used by";
-	}
-	// the column as wide as its widest value can be, whatever is shown now
-	QFontMetrics fm(font());
-	int nw = 0;
-	foreach (QString s, nl) nw = qMax(nw, fm.horizontalAdvance(s));
-	int vw = qMax(fm.horizontalAdvance("#FFFFFF"), fm.horizontalAdvance("border"));
-	infoBox->setFixedWidth(nw + vw + 2 * fm.averageCharWidth());
 	QStringList vl;
 	int i = (hov >= 0) ? hov : view->pick;
 	if ((i >= 0) && (i < view->cells.size())) {
-		uint32_t c = comp->vid->pal[i];
-		int cr = c & 0xff;
-		int cg = (c >> 8) & 0xff;
-		int cb = (c >> 16) & 0xff;
-		QString rgb = QString("#%0%1%2").arg(hex2(cr)).arg(hex2(cg)).arg(hex2(cb));
+		QRgb c = evo_rgb(comp->vid, i);
+		QString rgb = "#" + gethexbyte(qRed(c)) + gethexbyte(qGreen(c)) + gethexbyte(qBlue(c));
 		QStringList use;
 		for (int t = 0; t < view->tagNames.size(); t++)
 			if (view->rowTags.value(i / view->cols) & (1 << t)) use << view->tagNames[t];
 		if (i == view->border) use << "border";
-		if (ts) {
+		if (comp->hw->id == HW_TSLAB) {
 			unsigned char* cram = comp->vid->tsconf.cram;
 			int w = cram[i << 1] | (cram[(i << 1) + 1] << 8);
-			vl << hex2(i) << QString::number(i << 1, 16).toUpper().rightJustified(3, '0') << hex4(w)
+			vl << gethexbyte(i) << hex3(i << 1) << gethexword(w)
 				<< QString::number((w >> 10) & 31) << QString::number((w >> 5) & 31) << QString::number(w & 31)
 				<< QString::number((w >> 15) & 1);
 		} else {
 			evoRegs r;
 			evo_get_regs(comp, &r);
 			// the levels are n * 0x11: atm3clev in pentevo.c
-			vl << QString::number(i, 16).toUpper() << hex2(r.pal[i])
-				<< QString::number(cr / 17) << QString::number(cg / 17) << QString::number(cb / 17);
+			vl << QString::number(i, 16).toUpper() << gethexbyte(r.pal[i])
+				<< QString::number(qRed(c) / 17) << QString::number(qGreen(c) / 17) << QString::number(qBlue(c) / 17);
 		}
 		vl << rgb << (use.isEmpty() ? "-" : use.join("\n"));
 	}
-	for (int k = 0; k < PAL_INFO; k++) {
-		names[k]->setVisible(k < nl.size());
-		vals[k]->setVisible(k < nl.size());
-		names[k]->setText(nl.value(k));
-		vals[k]->setText(vl.value(k, (k < nl.size()) ? "-" : ""));
-	}
-	fit();
+	for (int k = 0; k < PAL_INFO; k++)
+		vals[k]->setText(vl.value(k, names[k]->isVisibleTo(this) ? "-" : ""));
 }
 
 // DMA PAGE
 
-xTsDmaPage::xTsDmaPage(QWidget* p):QWidget(p) {
+xTsDmaPage::xTsDmaPage(QWidget* p):xEvoPage(HW_TSLAB, p) {
 	logCount = ~0u;
 	logFrame = -1;
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
 	regs = new xEvoList({"Port", "Register", "Value", "Means"});
-	regs->onStyle = [this]() {draw();};
+	regs->onStyle = [this]() {if (conf.zx) draw(conf.zx);};
 	lay->addWidget(regs, 0);
 	lay->addWidget(new QLabel("Started this frame and the last"));
 	log = new QTreeWidget;
-	log->setRootIsDecorated(false);
-	log->setUniformRowHeights(true);
-	log->setAlternatingRowColors(true);
-	log->setSelectionMode(QAbstractItemView::NoSelection);
-	log->setFocusPolicy(Qt::NoFocus);
-	log->setHeaderLabels({"Frame", "Line:dot", "Transfer", "From", "To", "Size", "Took"});
-	log->header()->setStretchLastSection(true);
+	evo_tree_setup(log, {"Frame", "Line:dot", "Transfer", "From", "To", "Size", "Took"});
 	lay->addWidget(log, 1);
 }
 
-void xTsDmaPage::draw() {
-	Computer* comp = conf.zx;
-	if (!comp || (comp->hw->id != HW_TSLAB)) return;
+void xTsDmaPage::draw(Computer* comp) {
 	tsRegs r;
 	ts_get_regs(comp, &r);
+	regs->begin();
 	dma_regs(regs, r);
-	regs->finish();
-	regs->restyle();
-	regs->fitHeight();
+	if (regs->finish()) regs->fitHeight();
 	// the list only when it can have changed: a transfer started or ended, or a frame went
 	unsigned cnt = comp->tsconf.dmalog.count;
 	tsDmaRec* last = cnt ? &comp->tsconf.dmalog.rec[(cnt - 1) % TS_DMALOG] : nullptr;
@@ -1232,7 +1250,7 @@ void xTsDmaPage::draw() {
 		QString took = (d->dur < 0) ? "running" : QString("%0 T, %1 lines%2").arg(d->dur)
 			.arg(d->dur / tPerLine, 0, 'f', 1).arg(d->cut ? ", cut short" : "");
 		QTreeWidgetItem* it = new QTreeWidgetItem(log, {age ? "last" : "this", QString("%0:%1").arg(d->line).arg(d->dot),
-			ts_dev_name(d->ctrl), ts_adr(d->src), ts_adr(d->dst), QString("%0 x %1").arg(d->len).arg(d->num), took});
+			ts_dev(d->ctrl, false), ts_adr(d->src), ts_adr(d->dst), QString("%0 x %1").arg(d->len).arg(d->num), took});
 		it->setTextAlignment(1, Qt::AlignRight | Qt::AlignVCenter);
 	}
 	static const QStringList widest[6] = {{"Frame", "last"}, {"Line:dot", "319:447"}, {"add-blit > RAM"},
@@ -1246,7 +1264,6 @@ void xTsDmaPage::draw() {
 
 xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 	hw = -1;
-	hold = false;
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
 	QHBoxLayout* head = new QHBoxLayout;
@@ -1267,20 +1284,12 @@ xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 	lay->addLayout(head);
 
 	stack = new QStackedWidget;
-	tsRegs = new xTsRegsPage;
-	tsSpr = new xTsSprPage;
-	tsTile = new xTsTilePage;
-	tsDma = new xTsDmaPage;
-	evoPorts = new xEvoPortsPage;
-	pal = new xEvoPalPage;
+	xTsRegsPage* tsRegs = new xTsRegsPage;
+	pages << tsRegs << new xTsSprPage << new xTsTilePage << new xEvoPalPage << new xTsDmaPage << new xEvoPortsPage;
+	foreach (xEvoPage* pg, pages)
+		stack->addWidget(pg);
 	noMachine = new QLabel("Nothing to show on this machine");
 	noMachine->setAlignment(Qt::AlignCenter);
-	stack->addWidget(tsRegs);
-	stack->addWidget(tsSpr);
-	stack->addWidget(tsTile);
-	stack->addWidget(tsDma);
-	stack->addWidget(evoPorts);
-	stack->addWidget(pal);
 	stack->addWidget(noMachine);
 	lay->addWidget(stack, 1);
 
@@ -1292,53 +1301,59 @@ xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 	});
 }
 
+// pages[] in the order the constructor makes them, and the tabs each machine has
+static const char* const pageNames[] = {"Registers", "Sprites", "Tiles", "Palette", "DMA", "Ports"};
+static const QList<int> tsTabs = {0, 1, 2, 3, 4};
+static const QList<int> evoTabs = {5, 3};
+
 void xEvoPanel::build_tabs() {
-	hold = true;
+	QSignalBlocker hold(tabs);
 	while (tabs->count() > 0)
 		tabs->removeTab(0);
+	tabPages.clear();
 	hw = conf.zx ? conf.zx->hw->id : -1;
-	if (hw == HW_TSLAB) {
-		tabs->setTabData(tabs->addTab("Registers"), QVariant::fromValue((void*)tsRegs));
-		tabs->setTabData(tabs->addTab("Sprites"), QVariant::fromValue((void*)tsSpr));
-		tabs->setTabData(tabs->addTab("Tiles"), QVariant::fromValue((void*)tsTile));
-		tabs->setTabData(tabs->addTab("Palette"), QVariant::fromValue((void*)pal));
-		tabs->setTabData(tabs->addTab("DMA"), QVariant::fromValue((void*)tsDma));
-	} else if (hw == HW_PENTEVO) {
-		tabs->setTabData(tabs->addTab("Ports"), QVariant::fromValue((void*)evoPorts));
-		tabs->setTabData(tabs->addTab("Palette"), QVariant::fromValue((void*)pal));
+	foreach (int k, (hw == HW_TSLAB) ? tsTabs : (hw == HW_PENTEVO) ? evoTabs : QList<int>()) {
+		tabPages << pages[k];
+		tabs->addTab(pageNames[k]);
 	}
 	tabs->setVisible(tabs->count() > 0);
 	int idx = qBound(0, conf.dbg.evotab, qMax(0, tabs->count() - 1));
 	tabs->setCurrentIndex(idx);
-	stack->setCurrentWidget(tabs->count() ? (QWidget*)tabs->tabData(idx).value<void*>() : noMachine);
-	hold = false;
+	stack->setCurrentWidget(tabPages.isEmpty() ? (QWidget*)noMachine : tabPages[idx]);
+	// a switch to TSConf with the panel up: xm_set() disarmed the snapshots
+	if (isVisible()) evo_arm_replay();
 }
 
 void xEvoPanel::tab_changed(int idx) {
-	if (hold || (idx < 0)) return;
+	if ((idx < 0) || (idx >= tabPages.size())) return;
 	conf.dbg.evotab = idx;
-	stack->setCurrentWidget((QWidget*)tabs->tabData(idx).value<void*>());
+	stack->setCurrentWidget(tabPages[idx]);
 	draw();
 }
 
 void xEvoPanel::reload() {
 	tbDetach->setChecked(conf.dbg.evodetach);
 	build_tabs();
+	restyle();
 	draw();
 }
 
+// the header colors may be new: Options applied
+void xEvoPanel::restyle() {
+	foreach (QTreeWidget* t, findChildren<QTreeWidget*>()) {
+		xEvoList* l = dynamic_cast<xEvoList*>(t);
+		if (l) l->restyle();
+	}
+}
+
 void xEvoPanel::draw() {
-	if (!conf.zx) return;
-	if (conf.zx->hw->id != hw)
+	Computer* comp = conf.zx;
+	if (!comp) return;
+	if (comp->hw->id != hw)
 		build_tabs();
-	labHidden->setVisible((hw == HW_TSLAB) && (conf.zx->vid->tsconf.hide != 0));
-	QWidget* cur = stack->currentWidget();
-	if (cur == tsRegs) tsRegs->draw();
-	if (cur == tsSpr) tsSpr->draw();
-	if (cur == tsTile) tsTile->draw();
-	if (cur == tsDma) tsDma->draw();
-	if (cur == evoPorts) evoPorts->draw();
-	if (cur == pal) pal->draw();
+	labHidden->setVisible((hw == HW_TSLAB) && (comp->vid->tsconf.hide != 0));
+	xEvoPage* pg = qobject_cast<xEvoPage*>(stack->currentWidget());
+	if (pg && ((pg->hw < 0) || (pg->hw == hw))) pg->draw(comp);
 }
 
 // DOCK
@@ -1380,4 +1395,8 @@ void xEvoWidget::setDetached(bool on) {
 void xEvoWidget::draw() {
 	if (panel->isVisible())
 		panel->draw();
+}
+
+void xEvoWidget::restyle() {
+	panel->restyle();
 }

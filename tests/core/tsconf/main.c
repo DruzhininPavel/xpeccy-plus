@@ -110,7 +110,7 @@ static void tile_check(Computer* comp) {
 static void redraw_test(Computer* comp, const char* spec) {
 	int frames = 2, t = 0, mask = 0, dbg = 0, ref = 0, steps = 0, poke = 0;
 	sscanf(spec, "%d,%d,%i,%d,%d,%d,%d", &frames, &t, &mask, &dbg, &ref, &steps, &poke);
-	xreplay_on = !ref;
+	xreplay_arm(!ref);
 	if (ref) comp->vid->tsconf.hide = mask;
 	int fstart = comp->vid->fcnt;
 	while (comp->vid->fcnt - fstart < frames)

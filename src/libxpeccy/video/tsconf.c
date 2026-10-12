@@ -44,10 +44,23 @@ static void ts_compose(unsigned char* dst, unsigned char lay[5][0x200], int use)
 	}
 }
 
+int tslLayersApart = 0;
+
+// a line drawn whole keeps what it has: its layers were never apart
 void tsl_recompose(Video* vid) {
 	int n = vid->tsconf.layNext;
-	ts_compose(vid->line, vid->tsconf.lay[n ^ 1], vid->tsconf.layUsed[n ^ 1] & ~vid->tsconf.hide);
-	ts_compose(vid->tsconf.tsNext, vid->tsconf.lay[n], vid->tsconf.layUsed[n] & ~vid->tsconf.hide);
+	unsigned char* dst[2] = {vid->line, vid->tsconf.tsNext};
+	for (int k = 0; k < 2; k++) {
+		int used = vid->tsconf.layUsed[n ^ k ^ 1];
+		if (!(used & TSL_LAY_WHOLE))
+			ts_compose(dst[k], vid->tsconf.lay[n ^ k ^ 1], used & ~vid->tsconf.hide);
+	}
+}
+
+// Where the entry of tile layer lay at row, col of the map is: a row of the map is 256
+// bytes, layer 0's 64 entries in the first half and layer 1's in the second
+static inline int ts_map_adr(int page, int lay, int row, int col) {
+	return (page << 14) | ((row & 63) << 8) | ((lay & 1) << 7) | ((col & 63) << 1);
 }
 
 // The tile map is read 16 lines ahead of the line it is for, 8 entries a line for each layer,
@@ -59,11 +72,11 @@ static int vidTSLReadMap(Video* vid, int ln) {
 	int tml = ln + 16;
 	for (int lay = 0; lay < 2; lay++) {
 		if (!(vid->tsconf.tconfig & (lay ? 0x40 : 0x20))) continue;
-		int row = ((tml >> 3) + ((lay ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset) >> 3)) & 63;
-		int base = (vid->tsconf.TMPage << 14) | (row << 8) | (lay << 7);
+		int row = (tml >> 3) + ((lay ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset) >> 3);
 		for (int n = 0; n < 8; n++) {
 			int c = ((tml & 7) << 3) | n;
-			vid->tsconf.tmb[lay][(tml >> 3) & 3][c] = vid->mrd(base | (c << 1), vid->xptr) | (vid->mrd(base | (c << 1) | 1, vid->xptr) << 8);
+			int a = ts_map_adr(vid->tsconf.TMPage, lay, row, c);
+			vid->tsconf.tmb[lay][(tml >> 3) & 3][c] = vid->mrd(a, vid->xptr) | (vid->mrd(a | 1, vid->xptr) << 8);
 			res++;
 		}
 	}
@@ -86,6 +99,11 @@ static inline int ts_cell_line_adr(int page, int entry, int line) {
 // the color's high nibble a map entry gets: PalSel b7..6 for the layer, b5..4 its own
 static inline int ts_cell_pal(int entry, int palhi) {
 	return palhi | ((entry >> 8) & 0x30);
+}
+
+// tile 0 is a hole in the layer unless its Z_EN is on
+static inline int ts_cell_hole(Video* vid, int lay, int entry) {
+	return !(entry & 0xfff) && !(vid->tsconf.tconfig & (lay ? 8 : 4));
 }
 
 // render tiles
@@ -263,14 +281,34 @@ void tsl_sprite_dots(Video* vid, int idx, unsigned char* out) {
 	}
 }
 
+// Which of S0, S1, S2 each SFILE entry is drawn in, the way vidTSRender's three passes
+// share sadr: each goes on from where the one before stopped, to the next LEAP
+void tsl_sprite_layers(Video* vid, signed char* layer) {
+	int l = 0;
+	for (int i = 0; i < TSL_SPRITES; i++) {
+		layer[i] = (l < 3) ? l : -1;
+		if (vid->tsconf.sfile[i * 6 + 1] & 0x40) l++;
+	}
+}
+
+int tsl_gfx_adr(int page, int tile, int line) {
+	return ts_gfx_adr(page, tile, line);
+}
+
 int tsl_map_entry(Video* vid, int lay, int row, int col) {
-	int a = (vid->tsconf.TMPage << 14) | ((row & 63) << 8) | ((lay & 1) << 7) | ((col & 63) << 1);
+	int a = ts_map_adr(vid->tsconf.TMPage, lay, row, col);
 	return vid->mrd(a, vid->xptr) | (vid->mrd(a | 1, vid->xptr) << 8);
 }
 
+void tsl_map_cell(Video* vid, int lay, int row, int col, tsMapCell* c) {
+	c->adr = ts_map_adr(vid->tsconf.TMPage, lay, row, col);
+	c->entry = tsl_map_entry(vid, lay, row, col);
+	c->pal = ts_cell_pal(c->entry, lay ? vid->tsconf.T1Pal76 : vid->tsconf.T0Pal76);
+	c->hole = ts_cell_hole(vid, lay, c->entry);
+}
+
 void tsl_map_dots(Video* vid, int lay, int entry, unsigned char* out) {
-	int zen = vid->tsconf.tconfig & (lay ? 8 : 4);
-	if (!(entry & 0xfff) && !zen) {			// tile 0 is a hole unless Z_EN
+	if (ts_cell_hole(vid, lay, entry)) {
 		memset(out, 0x00, 64);
 		return;
 	}
@@ -353,6 +391,9 @@ int vidTSLRenderText(Video* vid) {
 	return vid->scrsize.x >> 1;		// 4 of every 8 cycles
 }
 
+// the TSConfig bit each layer is on by: S0 T0 S1 T1 S2
+static const unsigned char tsLayerOn[5] = {0x80, 0x20, 0x80, 0x40, 0x80};
+
 // DRAM cycles (one a dot) the line takes: bitmap fetch as video_mode.v sets it, tile map
 // prefetch, a word per 4 tile/sprite pixels
 int vidTSRender(Video* vid) {
@@ -382,36 +423,35 @@ int vidTSRender(Video* vid) {
 	int ln = (vid->ray.y + 1 - vid->tsconf.tsYPos + vid->full.y) % vid->full.y;
 	if (ln >= vid->full.y - 16) ln -= vid->full.y;
 	res += vidTSLReadMap(vid, ln);
-	// the set the next line goes to: only what was drawn into it has to be cleared
+	// The layers each into a buffer of their own while one is hidden or a redraw
+	// may come, put together after; else all into tsNext, over each other as they
+	// go. The set the next line goes to: only what was drawn into it is cleared.
+	int apart = tslLayersApart || vid->tsconf.hide;
 	int n = vid->tsconf.layNext;
 	unsigned char (*lay)[0x200] = vid->tsconf.lay[n];
 	for (int i = 0; i < 5; i++)
 		if (vid->tsconf.layUsed[n] & (1 << i)) memset(lay[i], 0x00, 0x200);
-	vid->tsconf.layUsed[n] = 0;
-	if ((ln < 0) || (ln >= vid->tsconf.tsSize.y)) {
-		memset(vid->tsconf.tsNext, 0x00, 0x200);
-		return res;
-	}
+	vid->tsconf.layUsed[n] = apart ? 0 : TSL_LAY_WHOLE;
+	tsl = vid->tsconf.tsNext;
+	if (!apart || (ln < 0) || (ln >= vid->tsconf.tsSize.y)) memset(tsl, 0x00, 0x200);
+	if ((ln < 0) || (ln >= vid->tsconf.tsSize.y)) return res;
 	sadr = 0x000;					// adr inside SFILE
 	int used = 0;					// a sprite layer with no sprite on the line stays clear
-	int r;
-// S0
-	tsl = lay[0];
-	if (vid->tsconf.tconfig & 0x80) {r = vidTSLRenderSprites(vid, ln); res += r; if (r) used |= TSL_HIDE_S0;}
-// T0
-	tsl = lay[1];
-	if (vid->tsconf.tconfig & 0x20) {res += vidTSLRenderTiles(vid,ln,0,vid->tsconf.T0YOffset,vid->tsconf.T0XOffset,vid->tsconf.T0GPage,vid->tsconf.T0Pal76); used |= TSL_HIDE_T0;}
-// S1
-	tsl = lay[2];
-	if (vid->tsconf.tconfig & 0x80) {r = vidTSLRenderSprites(vid, ln); res += r; if (r) used |= TSL_HIDE_S1;}
-// T1
-	tsl = lay[3];
-	if (vid->tsconf.tconfig & 0x40) {res += vidTSLRenderTiles(vid,ln,1,vid->tsconf.T1YOffset,vid->tsconf.T1XOffset,vid->tsconf.T1GPage,vid->tsconf.T1Pal76); used |= TSL_HIDE_T1;}
-// S2
-	tsl = lay[4];
-	if (vid->tsconf.tconfig & 0x80) {r = vidTSLRenderSprites(vid, ln); res += r; if (r) used |= TSL_HIDE_S2;}
-	vid->tsconf.layUsed[n] = used;
-	ts_compose(vid->tsconf.tsNext, lay, used & ~vid->tsconf.hide);
+	for (int i = 0; i < 5; i++) {			// S0 T0 S1 T1 S2, each a TSL_HIDE_* bit
+		if (!(vid->tsconf.tconfig & tsLayerOn[i])) continue;
+		if (apart) tsl = lay[i];
+		int t = i >> 1;
+		int r = (i & 1) ? vidTSLRenderTiles(vid, ln, t, t ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset,
+				t ? vid->tsconf.T1XOffset : vid->tsconf.T0XOffset, t ? vid->tsconf.T1GPage : vid->tsconf.T0GPage,
+				t ? vid->tsconf.T1Pal76 : vid->tsconf.T0Pal76)
+			: vidTSLRenderSprites(vid, ln);
+		res += r;
+		if (r || (i & 1)) used |= 1 << i;
+	}
+	if (apart) {
+		vid->tsconf.layUsed[n] = used;
+		ts_compose(vid->tsconf.tsNext, lay, used & ~vid->tsconf.hide);
+	}
 	return res;
 }
 

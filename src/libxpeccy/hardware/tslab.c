@@ -612,6 +612,11 @@ static void ts_dma_word(Computer* comp) {
 	}
 }
 
+// the byte address a DMA source or destination register pair is set to: page, word in it
+static int ts_dma_reg_adr(const xreg32* r) {
+	return (r->ih << 14) | (r->w & 0x3ffe);
+}
+
 // the transfer running now in the debugger's list, NULL when none is
 static tsDmaRec* ts_dma_rec_running(Computer* comp) {
 	if (!comp->tsconf.dmalog.count) return NULL;
@@ -635,8 +640,8 @@ static void ts_dma_rec_start(Computer* comp, int val) {
 	r->line = comp->vid->ray.y;
 	r->dot = comp->vid->ray.x;
 	r->ctrl = val & 0xff;
-	r->src = (comp->dmaSrc.ih << 14) | (comp->dmaSrc.w & 0x3ffe);
-	r->dst = (comp->dmaDst.ih << 14) | (comp->dmaDst.w & 0x3ffe);
+	r->src = ts_dma_reg_adr(&comp->dmaSrc);
+	r->dst = ts_dma_reg_adr(&comp->dmaDst);
 	r->len = comp->dmaLen + 1;
 	r->num = comp->dmaCnt + 1;
 	r->start = now;
@@ -886,8 +891,8 @@ void ts_get_regs(Computer* comp, tsRegs* r) {
 	r->hsint = vid->tsconf.hsint >> 1;
 	r->vsint = vid->tsconf.intLine;
 	r->vsinc = vid->tsconf.intInc;
-	r->dmasrc = (comp->dmaSrc.ih << 14) | (comp->dmaSrc.w & 0x3ffe);
-	r->dmadst = (comp->dmaDst.ih << 14) | (comp->dmaDst.w & 0x3ffe);
+	r->dmasrc = ts_dma_reg_adr(&comp->dmaSrc);
+	r->dmadst = ts_dma_reg_adr(&comp->dmaDst);
 	r->dmalen = comp->dmaLen;
 	r->dmanum = comp->dmaCnt;
 	unsigned n = comp->tsconf.dmalog.count;
@@ -906,19 +911,19 @@ void ts_get_regs(Computer* comp, tsRegs* r) {
 	}
 	unsigned short m = vid->tsconf.lat.mask;
 	r->lat = m;
-	r->latVconf = vid->tsconf.lat.vconf;
-	r->latVpage = vid->tsconf.lat.vpage;
+	r->latVconf = (m & TSL_LAT_VCONF) ? vid->tsconf.lat.vconf : r->vconf;
+	r->latVpage = (m & TSL_LAT_VPAGE) ? vid->tsconf.lat.vpage : r->vpage;
 	r->latGx = (((m & TSL_LAT_GXH) ? vid->tsconf.lat.gxh : vid->tsconf.soxh) & 1) << 8
 		| ((m & TSL_LAT_GXL) ? vid->tsconf.lat.gxl : vid->tsconf.soxl);
 	r->latGy = (((m & TSL_LAT_GYH) ? vid->tsconf.lat.gyh : vid->tsconf.soyh) & 1) << 8
 		| ((m & TSL_LAT_GYL) ? vid->tsconf.lat.gyl : vid->tsconf.soyl);
-	r->latPal = vid->tsconf.lat.palsel;
+	r->latPal = (m & TSL_LAT_PAL) ? vid->tsconf.lat.palsel : r->palsel;
 	r->latT0x = (((m & TSL_LAT_T0XH) ? vid->tsconf.lat.t0xh : vid->tsconf.t0xh) & 1) << 8
 		| ((m & TSL_LAT_T0XL) ? vid->tsconf.lat.t0xl : vid->tsconf.t0xl);
 	r->latT1x = (((m & TSL_LAT_T1XH) ? vid->tsconf.lat.t1xh : vid->tsconf.t1xh) & 1) << 8
 		| ((m & TSL_LAT_T1XL) ? vid->tsconf.lat.t1xl : vid->tsconf.t1xl);
-	r->latT0g = vid->tsconf.lat.t0g;
-	r->latT1g = vid->tsconf.lat.t1g;
+	r->latT0g = (m & TSL_LAT_T0G) ? vid->tsconf.lat.t0g : r->t0gpage;
+	r->latT1g = (m & TSL_LAT_T1G) ? vid->tsconf.lat.t1g : r->t1gpage;
 }
 
 // irq
