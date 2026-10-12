@@ -780,11 +780,6 @@ void comp_snap_reset(Computer* comp, int res) {
 
 void comp_update_timings(Computer* comp) {
 	comp->nsPerTick = 1e3 / comp->cpuFrq;
-	// A tape is real time, kept in T states of a 3.5 MHz clock (TZX 1.20: "1 T
-	// state = 1/3500000 s") whatever machine plays it: a 128K's 3.5469 MHz
-	// counts more of its own T in each pulse, as it would off a cassette. The
-	// turbo multiplier does not touch it either.
-	tape_set_tick_ns(comp->tape, 1e9 / TAPTPS);
 	if (comp->hw->init)
 		comp->hw->init(comp);
 	comp->nsPerTick /= comp->frqMul * comp->hwMul;

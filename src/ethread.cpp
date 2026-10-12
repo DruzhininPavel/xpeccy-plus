@@ -264,22 +264,19 @@ void xThread::tap_hand_over(Computer* comp, int blk, int base, int dir) {
 	unsigned short ix = comp->cpu->regIX;
 	// read before the block lands: it may cover the stack
 	int ldret = (cpu_peek_word(tap_peek, comp, comp->cpu->regSP) == tap_ld_ret(comp, base));
-	TapeBlockInfo inf = tapGetBlockInfo(tap,blk);
-	unsigned char* blkData = (unsigned char*)malloc(inf.size + 2);
-	tapGetBlockData(tap,blk,blkData, inf.size + 2);
-	// Every way out of LD-BYTES (#05A9..#05E2) as its code leaves it, measured
-	// against hardware by Woody's tapetest. It reads the flag byte, then DE bytes,
-	// then one more as the parity: H is the XOR of all of them, L the last one,
-	// B is #B0 after each. Where it leaves sets PC.
+	TapeBlock* tb = &tap->blkData[blk];
+	int bytes = tap_block_bytes(tb);
+	unsigned char* blkData = (unsigned char*)malloc(bytes + 2);
+	tapGetBlockData(tap,blk,blkData, bytes + 2);
+	// Every way out of LD-BYTES (#05A9..#05E2) as its code leaves it: the flag
+	// byte, DE bytes, the parity; H is the XOR of all, L the last, B #B0 after
+	// each. Where it leaves sets PC.
 	CPU* cpu = comp->cpu;
 	int load = cpu->regFa & 1;		// carry in F': LOAD, else VERIFY
 	unsigned char flag = blkData[0];
 	unsigned char h = flag;
 	unsigned char l = flag;
-	// bytes after the flag, the parity among them - none at all for a bare flag
-	// byte, which tapGetBlockSize's flag-and-parity count cannot tell from one
-	TapeBlock* tb = &tap->blkData[blk];
-	int avail = ((tb->dataPos >= 0) ? ((tb->sigCount - tb->dataPos) >> 4) : 1) - 1;
+	int avail = bytes - 1;			// after the flag, the parity among them
 	int n = 0;
 	int exitPc = LDC_TAIL;			// LD A,H / CP 1 / RET
 	int fl = -1;				// else A and F as they come out, through the RET
@@ -367,23 +364,16 @@ void xThread::tap_hand_over(Computer* comp, int blk, int base, int dir) {
 	// the trap reads waits for the rom (Fuse leaves it at the block's pause)
 	int nxt = blk + 1;
 	int arm = (nxt < tap->blkCount) && !tap_block_rom(&tap->blkData[nxt]);
-	// A block with no pause after it runs straight into the next one, and a
-	// loader that reads that one is timing it from here: play it now, with
-	// no lead-in, from the level the handed-over block ended on.
-	TapeBlock* cur = &tap->blkData[blk];
-	int last = cur->sigCount ? cur->data[cur->sigCount - 1].vol : 0x80;
+	// A block with no pause after it, or one too short to end a block, runs
+	// on into the next as on a deck: a loader reading that one times it from
+	// here. It plays now, after that pause, from the level the block ended on.
+	int last = tb->sigCount ? tb->data[tb->sigCount - 1].vol : 0x80;
 	int gap = 0;
-	for (int i = cur->sigCount - 1; (i >= 0) && TAP_VOL_PAUSE(cur->data[i].vol); i--)
-		gap += cur->data[i].size;
+	for (int i = tb->sigCount - 1; (i >= 0) && TAP_VOL_PAUSE(tb->data[i].vol); i--)
+		gap += tb->data[i].size;
 	tapNextBlock(tap);
 	fastload_forget();
-	if (!TAP_VOL_PAUSE(last) && (tap->block < tap->blkCount)) {
-		tap_play_on(tap, last);
-	} else if (arm && (gap < TAPE_PAUSE_TICKS)) {
-		// A pause too short to end a block is no gap for a loader's work: the
-		// next block runs on from it as on a deck. Speedlock 5 (Action Force
-		// 2, 7 ms) decrypts for a second, then counts edges for a moment and
-		// resets on silence - the tone has been running all that time.
+	if ((tap->block < tap->blkCount) && (!TAP_VOL_PAUSE(last) || (arm && (gap < TAPE_PAUSE_TICKS)))) {
 		tap_play_on(tap, last);
 		tap->sigLen = gap;
 	} else if (arm) {

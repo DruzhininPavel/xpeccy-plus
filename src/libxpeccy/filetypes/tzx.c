@@ -19,33 +19,30 @@ typedef struct {
 	void(*callback)(FILE*, Tape*);
 } tzxBCall;
 
-static int sigLens[] = {PILOTLEN,SYNC1LEN,SYNC2LEN,SIGN0LEN,SIGN1LEN,0,-1};	// 0->SYNC3LEN
-
 // the levels of signals from..to turned over, a pause's with its pulse's
 static void tzxFlip(TapeBlock* blk, int from, int to) {
 	for (int i = from; i < to; i++)
 		blk->data[i].vol ^= TAP_VOL_PAUSE(blk->data[i].vol) ? 0xff : 0xe0;
 }
 
-// A pause is silence, and silence is low: the edge that ends the pulse before it
-// (a high pause after a low pulse) lasts 1 ms, then the level falls (TZX 1.20). Held
-// high through the pause, the ear bit read 1 where the machine hears nothing.
+// a high pause right after a pulse and longer than 1 ms: it falls low after that ms
+static int tzxSplits(TapeSignal s, int afterPulse) {
+	return TAP_VOL_PAUSE(s.vol) && afterPulse && TAP_VOL_LEV(s.vol) && (s.size > TAPE_MS_TICKS);
+}
+
+// A pause is low, after the 1 ms edge that ends the pulse before it (TZX 1.20).
 static void tzxAddSettled(Tape* tape, TapeBlock* blk, int prevPulse) {
 	int ms1 = TAPE_MS_TICKS;
 	int n = blk->sigCount;
 	int split = 0;
 	int pp = prevPulse;
 	for (int i = 0; i < n; i++) {
-		int v = blk->data[i].vol;
-		if (!TAP_VOL_PAUSE(v)) {
-			pp = 1;
-			continue;
-		}
-		if (pp && TAP_VOL_LEV(v) && (blk->data[i].size > ms1))
+		TapeSignal* s = &blk->data[i];
+		if (tzxSplits(*s, pp))
 			split++;
-		else if (!pp)
-			blk->data[i].vol = TAP_PAUSE_VOL(0);
-		pp = 0;
+		else if (TAP_VOL_PAUSE(s->vol) && !pp)
+			s->vol = TAP_PAUSE_VOL(0);
+		pp = !TAP_VOL_PAUSE(s->vol);
 	}
 	if (!split) {
 		tap_add_block(tape, *blk);
@@ -57,7 +54,7 @@ static void tzxAddSettled(Tape* tape, TapeBlock* blk, int prevPulse) {
 	pp = prevPulse;
 	for (int i = 0; i < n; i++) {
 		TapeSignal s = blk->data[i];
-		if (TAP_VOL_PAUSE(s.vol) && pp && TAP_VOL_LEV(s.vol) && (s.size > ms1)) {
+		if (tzxSplits(s, pp)) {
 			tmp.data[k].size = ms1;
 			tmp.data[k++].vol = TAP_PAUSE_VOL(1);
 			s.size -= ms1;
@@ -73,16 +70,9 @@ static void tzxAddSettled(Tape* tape, TapeBlock* blk, int prevPulse) {
 	free(tmp.data);
 }
 
-// The levels as TZX 1.20 has them (and libspectrum plays them): the tape starts
-// low, a pause leaves it low, and with no pause between two pulses the second is
-// the opposite of the first. A pause starts with the level opposite to the pulse
-// before it - the edge that ends that pulse - and the pulse after it is low: no
-// edge where the pause was low already. Blocks are built
-// from scratch, so each run of pulses starting at the wrong level is turned over,
-// with the pauses after it. Direct recordings, CSW and generalized data (#15, #18,
-// #19) carry levels of their own: they only get the edge into them when no pause
-// comes first. A loader that tells the levels apart (Gremlin's: Basil, MASK)
-// depends on this.
+// Levels as TZX 1.20 has them: low at the start and after a pause, else opposite to
+// the pulse before; a pause opens with the edge that ends its pulse. Runs at the
+// wrong level are turned over; #15/#18/#19 keep their own and only get that edge.
 static void tzxAddBlock(Tape* tape) {
 	TapeBlock* blk = &tape->tmpBlock;
 	int n = blk->sigCount;
@@ -189,13 +179,19 @@ static int tzxCloseRun(Tape* tape, int ms) {
 	return 1;
 }
 
+// #15, #18 and #19 carry levels of their own; a run with a #14 in it ends before them
+static void tzxOwnLevels(Tape* tape) {
+	if (tape->tmpBlock.pend14) tzxCloseRun(tape, 0);
+	tape->tmpBlock.ownLev = 1;
+}
+
 // #10: <pause:2>,<datalen:2>,{data}
 void tzxBlock10(FILE* file, Tape* tape) {
 	int pausems = fgetw(file);
 	int len = fgetw(file);
 	char buf[0x10000];
 	fread(buf, len, 1, file);
-	tzxTakeData(tape, tapDataToBlock(buf, len, sigLens));
+	tzxTakeData(tape, tapDataToBlock(buf, len, NULL));
 	tzxCloseBlock(tape, pausems);
 }
 
@@ -306,8 +302,7 @@ void tzxBlock14(FILE* file, Tape* tape) {
 // last of the one it closes - counting it into neither made every pulse a
 // sample short, which a loader reading four samples to a bit cannot survive.
 void tzxBlock15(FILE* file, Tape* tape) {
-	if (tape->tmpBlock.pend14) tzxCloseRun(tape, 0);
-	tape->tmpBlock.ownLev = 1;
+	tzxOwnLevels(tape);
 	int size = fgetw(file);
 	int pausems = fgetw(file);
 	int pause = pausems * TAPE_MS_TICKS;
@@ -344,8 +339,7 @@ void tzxBlock15(FILE* file, Tape* tape) {
 // the four after it. Compression 2 is that stream deflated. The lengths are
 // summed before they are turned into ticks, so the rounding does not add up.
 void tzxBlock18(FILE* file, Tape* tape) {
-	if (tape->tmpBlock.pend14) tzxCloseRun(tape, 0);
-	tape->tmpBlock.ownLev = 1;
+	tzxOwnLevels(tape);
 	int len = fgeti(file);
 	int pausems = fgetw(file);
 	long long rate = fgett(file);
@@ -441,8 +435,7 @@ static void tzxSymbol(Tape* tape, unsigned char* def, int npulses) {
 // generalized data: a pilot and sync as runs of symbols, then data as symbols
 // of ceil(log2(asd)) bits each, most significant first
 void tzxBlock19(FILE* file, Tape* tape) {
-	if (tape->tmpBlock.pend14) tzxCloseRun(tape, 0);
-	tape->tmpBlock.ownLev = 1;
+	tzxOwnLevels(tape);
 	int len = fgeti(file);
 	int pausems = fgetw(file);
 	long totp = fgeti(file);
@@ -501,11 +494,8 @@ void tzxBlock19(FILE* file, Tape* tape) {
 // pending leads into the next block.
 void tzxBlock20(FILE* file, Tape* tape) {
 	int ms = fgetw(file);
-	if (tzxCloseRun(tape, ms)) {
-		// closed with the pause
-	} else if (ms) {
+	if (!tzxCloseRun(tape, ms) && ms)
 		blkAddPause(&tape->tmpBlock, ms * TAPE_MS_TICKS);
-	}
 	if (!ms) {
 		tape->tmpBlock.breakPoint = 1;
 		tape->tmpBlock.stopMark = 1;

@@ -12,7 +12,9 @@ extern "C" {
 #define TAPE_MS_TICKS	(TAPTPS / 1000)	// ticks per ms
 #define TAPE_PAUSE_TICKS (TAPTPS / 5)	// a gap this long is the end of a block
 #define TAPE_TAIL_TICKS  (TAPTPS / 10)	// run-out played after the last pulse
-#define TAPE_RATE_BITS	32		// fraction bits of ticksPerNsFixed
+#define TAPE_RATE_BITS	32		// fraction bits of TAPE_TICKS_PER_NS
+// ticks in one ns, rounded: a constant, so tapSync multiplies by no variable
+#define TAPE_TICKS_PER_NS (((1LL << TAPE_RATE_BITS) * TAPTPS + 500000000) / 1000000000)
 #define TAPE_GONE_TICKS	69888		// a frame of the port read, and never as a loader: it has gone
 
 // ZX spectrum signal timings, T
@@ -138,7 +140,6 @@ typedef struct {
 	int inFrame;		// on which frame
 	int inUse;		// and what it was
 
-	long long ticksPerNsFixed;	// ticks in one ns, TAPE_RATE_BITS fraction bits
 	long long tickAcc;		// ticks not played yet, same fraction
 	int nsLazy;		// ns tapSync() was handed and has not made into ticks yet
 	int nsCalm;		// nsLazy may grow up to this with no pulse ending
@@ -175,7 +176,6 @@ Tape* tape_create(cbirq, void*);
 void tape_destroy(Tape*);
 
 void tape_set_path(Tape*, const char*);
-void tape_set_tick_ns(Tape*, double);
 
 void tapEject(Tape*);
 int tapPlay(Tape*);
@@ -223,6 +223,7 @@ enum {
 };
 void tapDetectLoader(Tape*, int tick, int pc, const unsigned char* regs, int kind, int fromRam);
 int tap_block_rom(TapeBlock*);
+int tap_block_bytes(TapeBlock*);
 void tap_detect_skipped(Tape*, int tick, int regB);
 void tapArmPlay(Tape*);
 

@@ -223,7 +223,7 @@ static long long fl_tape_room(Computer* comp) {
 	int sig = tape_sig_len(tap);
 	if (!tap->on || tap->rec || (sig < 2)) return 0;
 	// tape ticks in one T of the machine, the way tapSync() counts them
-	double tpt = (double)tap->ticksPerNsFixed / (1LL << TAPE_RATE_BITS) * tap->speed / 100.0
+	double tpt = (double)TAPE_TICKS_PER_NS / (1LL << TAPE_RATE_BITS) * tap->speed / 100.0
 		* comp->nsPerTickFixed / NS_FIXED_ONE;
 	if (tpt <= 0) return 0;
 	return (long long)((sig - 1) / tpt);

@@ -26,17 +26,10 @@ static unsigned fnv_add(unsigned h, const unsigned char* p, int n) {
 	return h;
 }
 
-// a machine whose tape counts T at CPU_HZ
-static Computer* new_comp(void) {
-	Computer* comp = compCreate();
-	tape_set_tick_ns(comp->tape, 1e9 / CPU_HZ);
-	return comp;
-}
-
 static Computer* load(const char* dir, const char* name) {
 	char path[4096];
 	snprintf(path, sizeof(path), "%s/%s", dir, name);
-	Computer* comp = new_comp();
+	Computer* comp = compCreate();
 	const char* ext = strrchr(name, '.');
 	int err = (ext && !strcmp(ext, ".tzx")) ? loadTZX(comp, path, 0) : loadTAP(comp, path, 0);
 	if (err != ERR_OK) {
@@ -170,7 +163,7 @@ static void wav_round_trip(Computer* comp, const char* dir) {
 		printf("saveWAV failed\n");
 		return;
 	}
-	Computer* c2 = new_comp();
+	Computer* c2 = compCreate();
 	if (loadWAV(c2, wav, 0) != ERR_OK) {
 		printf("loadWAV failed\n");
 		return;
