@@ -114,6 +114,7 @@ int loadSPG(Computer* comp, const char* name, int drv) {
 	memSetBank(comp->mem,0xc0,MEM_RAM,hd.page3,MEM_16K,NULL,NULL,NULL);
 	comp->vid->tsconf.tconfig = 0;
 	comp->vid->nogfx = 0;
+	comp->vid->tslKey = -1;		// nogfx set behind tslUpdatePorts' back
 	tsReset(comp->ts);
 	fclose(file);
 	return ERR_OK;

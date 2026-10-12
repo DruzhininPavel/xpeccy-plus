@@ -101,7 +101,8 @@ struct Video {
 	unsigned nogfx:1;	// tsl : nogfx flag, pc98xx:disable display
 	unsigned newFrame:1;	// set @ start of VBlank
 	int intFRAME;		// aka INT
-	int intlen;		// dots the pulse in intFRAME started with
+	int intlen;		// dots the pulse in intFRAME started with; keeps its
+				// value while intFRAME is 0 - a snapshot saves it
 	unsigned intLINE:1;	// for TSConf
 	unsigned intDMA:1;	// for TSConf
 //	unsigned noScreen:1;
@@ -174,10 +175,11 @@ struct Video {
 	int idx;
 
 	vCoord scrsize;		// << tsconf.xSize, tsconf.ySize
-	// what tslUpdatePorts() last derived from; never snapshotted
+	// what tslUpdatePorts() last derived from; -1 forces the next call to
+	// recompute. vid_upd_layout() and whatever changes vmode/nogfx behind
+	// tslUpdatePorts' back (reset, snapshot loaders) reset it. xstate copies
+	// the whole Video, so a rollback keeps the key and the ports in step.
 	int tslKey;		// p00af | p07af<<8 | tconfig<<16
-	int tslVendX;
-	int tslVendY;
 
 	struct {
 		int xPos;			// position of screen @ monitor [32|12] x [44|24|0]
@@ -253,9 +255,11 @@ static inline void vid_unlazy(Video* vid) {
 }
 // The ray as vid_sync_fixed() would move it, but the dots of an undrawn blind
 // frame that pass no event are only counted, and walked when something looks:
-// vid_settle(), which every reader of the ray inside an instruction calls, or
-// the next vid_sync_fixed(). Only for the cpu's own bus cycles - the code that
-// runs between two of them must not change the video.
+// vid_settle() or the next vid_sync_fixed(). A reader of the ray inside an
+// instruction settles AFTER walking the video up to the cpu's t - on a
+// contended machine the time handed in may lag it (see res4 in spectrum.h).
+// Only for the cpu's own bus cycles - the code that runs between two of them
+// must not change the video.
 static inline void vid_sync_lazy(Video* vid, long long nsFixed) {
 	long long d = vid->nsDrawFixed + nsFixed;
 	if ((nsFixed >= 0) && (d < vid->nsCalmFixed)) {
@@ -270,6 +274,24 @@ static inline void vid_settle(Video* vid) {
 	if ((vid->nsDrawFixed >= vid->nsPerDotFixed) && (vid->nsCalmFixed > vid->nsPerDotFixed))
 		vid_settle_slow(vid);
 }
+// Whole dots in f at period p (both 16.16 ns), the remainder left in *rem.
+// A span is nearly always a few dots, so they are counted off; the 64-bit
+// division only runs for a long stretch, where it is paid once per many dots.
+// Exact only for f >= 0.
+static inline int vid_count_dots(long long f, long long p, long long* rem) {
+	int n = 0;
+	if (f < (p << 4)) {
+		while (f >= p) {
+			f -= p;
+			n++;
+		}
+	} else {
+		n = (int)(f / p);
+		f -= (long long)n * p;
+	}
+	*rem = f;
+	return n;
+}
 // sets the dot period alone. vid_upd_timings() is the complete one - it also
 // re-derives nsPerFrame, which the frame timer in emulwin.cpp reads
 void vid_set_dot_ns(Video*,double);
@@ -281,14 +303,21 @@ void vid_set_ray(Video*, int);
 int vid_ray_dots(Video*);
 
 int vid_wait_dots(Video*, int, int);		// contention wait in dots, not ns
+// An internal cycle only parks an address on the bus, no MREQ; the Ferranti
+// ULA contends it all the same, the +2A/+3 asic leaves it alone. The one
+// place that rule lives.
+static inline int vid_cont_internal(Video* vid, int mreq) {
+	return mreq || (vid->ula->conttype == CONT_PATA);
+}
 // Can this physical address be contended at all - the pattern/address test of
 // vid_wait_dots() alone, with the ray left untouched. A miss here means
 // vid_wait_dots() would return 0 without looking at the ray, so the caller may
 // skip the video sync the ray read would have needed.
 static inline int vid_cont_hit(Video* vid, int adr, int mreq) {
+	if (!vid_cont_internal(vid, mreq)) return 0;
 	switch (vid->ula->conttype) {
-		case CONT_PATA: return adr & 0x4000;			// pages 1,3,5,7
-		case CONT_PATB: return mreq ? (adr & 0x10000) : 0;	// pages 4,5,6,7; mreq only
+		case CONT_PATA: return adr & 0x4000;		// pages 1,3,5,7
+		case CONT_PATB: return adr & 0x10000;		// pages 4,5,6,7
 	}
 	return 0;
 }
@@ -342,6 +371,10 @@ static inline int zx_box_atr_adr(int idx) {
 // the same pixel address from screen coordinates
 static inline int zx_pix_adr_xy(int x, int y) {
 	return ((y & 0xc0) << 5) | ((y & 7) << 8) | ((y & 0x38) << 2) | ((x & 0xf8) >> 3);
+}
+// ...and the attribute address of the cell those coordinates land in
+static inline int zx_atr_adr_xy(int x, int y) {
+	return 0x1800 | ((y & 0xf8) << 2) | ((x & 0xf8) >> 3);
 }
 int vid_scr_dot(int, int*, int*);
 int vid_scr_bit(int);

@@ -99,6 +99,7 @@ void tslReset(Computer* comp) {
 	memSetBank(comp->mem, 0x40, MEM_RAM, 5, MEM_16K, NULL, NULL, NULL);
 	memSetBank(comp->mem, 0x80, MEM_RAM, 2, MEM_16K, NULL, NULL, NULL);
 	memSetBank(comp->mem, 0xc0, MEM_RAM, 0, MEM_16K, NULL, NULL, NULL);
+	comp->vid->tslKey = -1;		// vmode may have been set behind the ports' back
 	tslUpdatePorts(comp->vid);
 	tslMapMem(comp);
 }
@@ -659,19 +660,9 @@ static void ts_dma_end(Computer* comp) {
 static void ts_dma_run(Computer* comp, int ns) {
 	int ramc = tsDmaDram[comp->tsconf.dma.dev] * 448;
 	int devc = tsDmaDots[comp->tsconf.dma.dev];
+	// ns >= 0 keeps f in vid_count_dots' exact range
 	long long f = ((long long)ns << NS_FIXED_BITS) + comp->tsconf.dma.frac;
-	const long long p = comp->vid->nsPerDotFixed;
-	int dots = 0;
-	if (f < (p << 4)) {		// a short span: count the dots off
-		while (f >= p) {
-			f -= p;
-			dots++;
-		}
-		comp->tsconf.dma.frac = f;
-	} else {
-		dots = (int)(f / p);
-		comp->tsconf.dma.frac = f % p;
-	}
+	int dots = vid_count_dots(f, comp->vid->nsPerDotFixed, &comp->tsconf.dma.frac);
 	comp->tsconf.dma.free += (long long)dots * (448 - comp->vid->tsconf.dramLoad) - comp->tsconf.cpuDram * 448;
 	if (comp->tsconf.dma.free < 0) comp->tsconf.dma.free = 0;
 	comp->tsconf.dma.time += dots;

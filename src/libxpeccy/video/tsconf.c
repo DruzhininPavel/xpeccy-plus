@@ -464,12 +464,9 @@ static const int tslModeTab[4] = {VID_TSL_NORMAL, VID_TSL_16, VID_TSL_256, VID_T
 void tslUpdatePorts(Video* vid) {
 	unsigned char val = vid->tsconf.p00af;
 	int key = val | (vid->tsconf.p07af << 8) | (vid->tsconf.tconfig << 16);
-	if ((key == vid->tslKey) && (vid->tslVendX == vid->vend.x) && (vid->tslVendY == vid->vend.y)
-			&& (vid->nogfx == (unsigned)!!(val & 0x20)) && (vid->vmode == tslModeTab[val & 3]))
+	if (key == vid->tslKey)
 		return;
 	vid->tslKey = key;
-	vid->tslVendX = vid->vend.x;
-	vid->tslVendY = vid->vend.y;
 	vid->scrsize.x = tslXRes[(val >> 6) & 3];
 	vid->scrsize.y = tslYRes[(val >> 6) & 3];
 	vid->tsconf.xPos = (vid->vend.x - vid->scrsize.x) / 2;
@@ -560,7 +557,7 @@ void vidDrawTSLNormal(Video* vid) {
 		if ((xscr >= 0) && (xscr < vid->scrn.x)) {
 			if ((xscr & 7) == 0) {
 				scrbyte = nxtbyte;
-				adr = 0x1800 | ((yscr & 0xc0) << 2) | ((yscr & 0x38) << 2) | (((xscr + 4) & 0xf8) >> 3);
+				adr = zx_atr_adr_xy(xscr + 4, yscr);
 				vid->atrbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				if ((vid->atrbyte & 0x80) && vid->flash) scrbyte ^= 0xff;
 				ink = (vid->atrbyte & 0x07) | ((vid->atrbyte & 0x40) >> 3);

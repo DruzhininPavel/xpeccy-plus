@@ -208,10 +208,9 @@ typedef struct Computer {
 	// every memory access, and llround() is an out-of-line CRT call with gcc
 	// at -O2. Derived by comp_update_timings(), never set by hand.
 	long long nsPerTickFixed;
-	// contention wait, dots -> ticks, cached off the two periods above
-	// (zx_cont_ticks_update); never snapshotted, rebuilt on first use
-	long long contDotFixed;
-	long long contTickFixed;
+	// contention wait, dots -> ticks, derived by comp_update_timings() off the
+	// two periods. vid_wait_dots() tops out at 14, so 16 entries cover it.
+	// xstate copies it with the rest of the head: same periods, same table.
 	int contTicks[16];
 	double earTpt;		// ticks in a 3.5 MHz T (comp_update_timings), zx_ear_edge's scale
 
@@ -317,18 +316,25 @@ static inline int ns_fixed_to_ticks_up(Computer* comp, long long ns_fixed) {
 	return (int)((ns_fixed + comp->nsPerTickFixed - 1) / comp->nsPerTickFixed);
 }
 
-// Walk the video up to the cpu's t. res4 tracks the t it stands at, so a
-// second call in the same place costs nothing.
+// Walk the video up to the cpu's t. res4 tracks the t the video stands at, so
+// a second call in the same place costs nothing. On a contended machine the
+// miss path of comp_cont leaves res4 lagging cpu->t mid-instruction: whatever
+// reads the ray inside an instruction walks the video first (comp_vid_to_t),
+// vid_settle() alone does not cover the lag.
 extern int res4;
+
+static inline void comp_vid_to(Computer* comp, int t) {		// dots drawn through
+	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, t - res4));
+	res4 = t;
+}
 
 static inline void comp_vid_to_t(Computer* comp) {		// counting allowed
 	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
 	res4 = comp->cpu->t;
 }
 
-static inline void comp_vid_to_t_full(Computer* comp) {		// dots drawn through
-	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
+static inline void comp_vid_to_t_full(Computer* comp) {
+	comp_vid_to(comp, comp->cpu->t);
 }
 
 // A board that drops its turbo for a while owes the next bus cycle what a step

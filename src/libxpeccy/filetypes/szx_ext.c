@@ -703,6 +703,7 @@ static void ext_vid(Computer* comp, const unsigned char* p, size_t n) {
 	memcpy(vid->linb, tmp_.linb, sizeof(vid->linb));
 	if (tmp_.vmode != vid->vmode)
 		vid_set_mode(vid, tmp_.vmode);
+	vid->tslKey = -1;	// vmode/nogfx set behind tslUpdatePorts' back
 }
 
 static void ext_chip_load(Computer* comp, int n, const unsigned char* p, size_t len) {

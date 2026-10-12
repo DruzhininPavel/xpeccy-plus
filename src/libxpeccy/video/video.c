@@ -133,7 +133,6 @@ Video* vidCreate(cbxrd cb, cbirq ci, void* dptr) {
 	vid->snowLow = -1;
 	vid->res.x = -1;
 	vid->res.y = -1;
-	vid->tslVendX = -1;		// first tslUpdatePorts() always runs
 	vid_set_mode(vid, VID_UNKNOWN);
 	vLayout vlay = {{448,320},{74,48},{64,32},{256,192},{0,0},64};
 	vid_set_layout(vid, &vlay);
@@ -317,6 +316,7 @@ void vid_upd_crop(Video* vid) {
 // [ <--------- full --------> ]
 // ? = brdr = full - bord - scr - blank
 void vid_upd_layout(Video* vid) {
+	vid->tslKey = -1;		// vend moves: tslUpdatePorts re-centers off it
 	vid->vend.x = vid->full.x - vid->blank.x;		// visible right dot
 	vid->vend.y = vid->full.y - vid->blank.y;		// visible bottom line
 	vid->send.x = vid->bord.x + vid->scrn.x;		// screen end column
@@ -649,7 +649,7 @@ int vid_scr_dot(int off, int* x, int* y) {
 // from the address its page is seen at.
 void vid_scr_adr(int base, int x, int y, int* pix, int* atr) {
 	if (pix) *pix = (base + zx_pix_adr_xy(x, y)) & 0xffff;
-	if (atr) *atr = (base + 0x1800 + (((y & 0xf8) << 2) | ((x & 0xf8) >> 3))) & 0xffff;
+	if (atr) *atr = (base + zx_atr_adr_xy(x, y)) & 0xffff;
 }
 
 // ula 5c/6c horizontal timings:
@@ -669,6 +669,7 @@ void vid_scr_adr(int base, int x, int y, int* pix, int* atr) {
 // (T14336 here), 4dots pre-wait, 2dots ula read pixels, 2dots ula read attr, (T14340:output starts here), 2 dots ula read next pixels, 2 dots ula read next atr, 4 no-wait dots
 // ^ repeat 16 times each 16 dots in each of 192 screen rows
 
+// The longest wait is 14 dots; contTicks[16] in Computer is sized off that.
 static int contTabA[] = {12,11,10,9,8,7,6,5,4,3,2,1,0,0,0,0};		// 48K 128K +2 (bank 1,3,5,7)
 static int contTabB[] = {2,1,0,0,14,13,12,11,10,9,8,7,6,5,4,3};		// +2A +3 (bank 4,5,6,7)
 
@@ -694,23 +695,16 @@ static int ula_fetch_x(Video* vid, int dotofs) {
 // ula_contention / ula_contention_no_mreq. An i/o cycle reads the same table
 // at the same point, as it does in fuse.
 int vid_wait_dots(Video* vid, int adr, int mreq) {
+	if (!vid_cont_hit(vid, adr, mreq)) return 0;	// pattern/address test, the ray untouched
 	int xscr;
 	int end = vid->scrn.x;
-	int* contTab = NULL;
-	switch (vid->ula->conttype) {
-		case CONT_PATA:
-			adr &= 0x4000;			// pages 1,3,5,7
-			contTab = contTabA;
-			break;
-		case CONT_PATB:				// pages 4,5,6,7
-			if (!mreq) return 0;		// asic contends mreq cycles only
-			adr &= 0x10000;
-			contTab = contTabB;
-			end += 2;			// the gate array holds one tick past the line
-			break;
+	int* contTab;
+	if (vid->ula->conttype == CONT_PATB) {
+		contTab = contTabB;
+		end += 2;			// the gate array holds one tick past the line
+	} else {
+		contTab = contTabA;
 	}
-	if (!contTab) return 0;				// unknown patern
-	if (!adr) return 0;				// address not in contention limits
 	vid_settle(vid);
 	if (vid->vbrd) return 0;			// border (vertical)
 	xscr = ula_fetch_x(vid, 0);
@@ -1690,22 +1684,8 @@ static void vid_run(Video* vid, int k) {
 // dropped once per call.
 static inline void vid_take_dots(Video* vid) {
 	if (vid->nsDrawFixed >= vid->nsPerDotFixed) {
-		// the whole dots in nsDrawFixed. A sync spans a few dots nearly
-		// always, so they are counted off; the 64-bit division only runs
-		// for a long stretch, where it is paid once per many dots.
-		const long long p = vid->nsPerDotFixed;
-		long long left = vid->nsDrawFixed - p;
-		int n = 1;
-		if (left < (p << 4)) {
-			while (left >= p) {
-				left -= p;
-				n++;
-			}
-		} else {
-			int m = (int)(left / p);
-			n += m;
-			left -= (long long)m * p;
-		}
+		long long left;
+		int n = vid_count_dots(vid->nsDrawFixed, vid->nsPerDotFixed, &left);
 		vid->nsOwedFixed += vid->nsDrawFixed - left;
 		vid->nsDrawFixed = left;
 		while (n > 0) {

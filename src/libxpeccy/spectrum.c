@@ -201,9 +201,9 @@ static void memwr_watched(Computer* comp, int adr, int val) {
 // "a contended page" - the caller has already looked at the port itself.
 
 void zx_cont_delay(Computer* comp) {
-	long long wns = vid_wait_dots(comp->vid, 5 << 14, 0) * (long long)comp->vid->nsPerDotFixed;	// video is already at end of wait cycle
+	int wdots = vid_wait_dots(comp->vid, 5 << 14, 0);	// video is already at end of wait cycle
 	int t0 = comp->cpu->t;
-	comp->cpu->t += ns_fixed_to_ticks_up(comp, wns);
+	comp->cpu->t += comp->contTicks[wdots];
 	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - t0));
 	res4 = comp->cpu->t;
 }
@@ -375,8 +375,7 @@ int iord(int port, void* ptr) {
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;		// z80_iord puts the four back
 	} else {
-		vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t + 3 - res4));
-		res4 = comp->cpu->t + 3;
+		comp_vid_to(comp, comp->cpu->t + 3);
 	}
 // play rzx
 	int res = 0xff;
@@ -427,8 +426,7 @@ void iowr(int port, int val, void* ptr) {
 		comp->cpu->t -= 4;
 	} else {
 		// the ray up to T+1 in one step: the OUT reaches the device mid-cycle
-		vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t + 1 - res4));
-		res4 = comp->cpu->t + 1;
+		comp_vid_to(comp, comp->cpu->t + 1);
 		comp->hw->out(comp, port, val);
 	}
 	if (comp->vid->ula->palchan) {
@@ -491,10 +489,6 @@ void comp_irq(int t, void* ptr) {
 		case IRQ_CPU_SYNC:
 			comp_vid_to_t(comp);
 			return;			// no machine acts on a plain sync
-		case IRQ_CPU_CONT:
-		case IRQ_CPU_CONTNM:
-			comp_vid_to_t_full(comp);
-			break;
 		case IRQ_CPU_RFSH:
 			comp_vid_to_t(comp);
 			zx_snow(comp);
@@ -808,6 +802,10 @@ void comp_update_timings(Computer* comp) {
 		comp->nsPerTickFixed = NSD_TO_FIXED(comp->nsPerTick);
 	}
 	comp->earTpt = (1e9 / 3.5e6) / comp->nsPerTick;	// machine ticks in a 3.5 MHz T, for zx_ear_edge
+	// contention wait, dots -> ticks: both periods are settled just above, and
+	// nothing moves either without coming back through here
+	for (int i = 0; i < 16; i++)
+		comp->contTicks[i] = ns_fixed_to_ticks_up(comp, (long long)i * comp->vid->nsPerDotFixed);
 	comp_set_cont(comp, comp->flgCNTM);	// a turbo arbiter follows hwMul
 }
 
@@ -846,17 +844,16 @@ void comp_set_layout(Computer* comp, vLayout* lay) {
 // reports the refresh cycle while a machine actually wants it.
 // The start of a bus cycle on a machine that contends one: the ray up to it,
 // then the wait states. Called straight from the cpu rather than through
-// comp_irq and the machine's own irq handler - zx_contend() is what every one
-// of them does with it, and this runs on every memory access.
+// comp_irq and a machine's own irq handler - this is what every one of them
+// would do with it, and it runs on every memory access.
 // The cheap tests come first: an address the pattern cannot touch needs no
 // video sync at all (vid_wait_dots would return 0 before reading the ray),
 // so res4 just lags until something that matters syncs. The ray is walked to
 // cpu->t only for an address that can actually wait.
 static void comp_cont(void* ptr, int mreq) {
 	Computer* comp = (Computer*)ptr;
-	// the +2A/+3 asic leaves internal cycles alone: one compare instead of a
-	// page lookup per tick of every z80_wait
-	if (!mreq && (comp->vid->ula->conttype != CONT_PATA)) return;
+	// one compare instead of a page lookup per tick of every z80_wait
+	if (!vid_cont_internal(comp->vid, mreq)) return;
 	MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
 	if (pg->type != MEM_RAM) return;
 	int adr = pg->num << comp->mem->pgshift;
