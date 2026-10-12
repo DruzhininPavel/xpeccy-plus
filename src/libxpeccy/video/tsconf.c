@@ -70,6 +70,24 @@ static int vidTSLReadMap(Video* vid, int ln) {
 	return res;
 }
 
+// Where line `line` of graphics tile `tile` starts. A graphics page is 64x64 tiles of
+// 8x8 dots, two dots a byte: 4 bytes a tile line, 256 bytes a line across the page.
+static inline int ts_gfx_adr(int page, int tile, int line) {
+	return (page << 14) + (((tile & 0xfc0) << 5) | ((line & 7) << 8) | ((tile & 0x3f) << 2));
+}
+
+// A tile map entry: tile b11..0, palette b13..12, XFlip b14, YFlip b15. Where line `line`
+// of the cell starts, YFlip taken in.
+static inline int ts_cell_line_adr(int page, int entry, int line) {
+	int fa = ts_gfx_adr(page, entry, line);
+	return (entry & 0x8000) ? (fa ^ 0x0700) : fa;
+}
+
+// the colour's high nibble a map entry gets: PalSel b7..6 for the layer, b5..4 its own
+static inline int ts_cell_pal(int entry, int palhi) {
+	return palhi | ((entry >> 8) & 0x30);
+}
+
 // render tiles
 int vidTSLRenderTiles(Video* vid, int ln, int lay, unsigned short yoffs, unsigned short xoffs, unsigned char gpage, unsigned char palhi) {
 	int j;
@@ -85,11 +103,9 @@ int vidTSLRenderTiles(Video* vid, int ln, int lay, unsigned short yoffs, unsigne
 		tile = row[adr];									// tile dsc
 
 		if ((tile & 0xfff) || xadr) {							// !0 or (0 enabled)
-			fadr = gpage << 14;
-			fadr += ((tile & 0xfc0) << 5) | ((yscr & 7) << 8) | ((tile & 0x3f) << 2);	// full addr of row of this tile
-			if (tile & 0x8000) fadr ^= 0x0700;						// YFlip
+			fadr = ts_cell_line_adr(gpage, tile, yscr);				// full addr of row of this tile
 			if (vis) res += 2;		// 8 dots, 2 memory readings
-			col = palhi | ((tile >> 8) & 0x30);					// palette (b7..4 of color)
+			col = ts_cell_pal(tile, palhi);						// palette (b7..4 of color)
 			if (tile & 0x4000) {							// XFlip
 				xscr += 8;
 				for (j = 0; j < 4; j++) {
@@ -144,27 +160,39 @@ typedef struct {
 	unsigned pal:4;		// 5[4:7]
 } TSpr;
 
+static void ts_spr_parse(const unsigned char* ptr, TSpr* spr) {
+	spr->y = ptr[0];
+	spr->y |= (ptr[1] & 1) << 8;
+	spr->ys = (ptr[1] & 0x0e) >> 1;
+	spr->res1 = (ptr[1] & 0x10) ? 1 : 0;
+	spr->act = (ptr[1] & 0x20) ? 1 : 0;
+	spr->leap = (ptr[1] & 0x40) ? 1 : 0;
+	spr->yf = (ptr[1] & 0x80) ? 1 : 0;
+	spr->x = ptr[2];
+	spr->x |= (ptr[3] & 1) << 8;
+	spr->xs = (ptr[3] & 0x0e) >> 1;
+	spr->res2 = (ptr[3] & 0x70) >> 4;
+	spr->xf = (ptr[3] & 0x80) ? 1 : 0;
+	spr->tnum = ptr[4];
+	spr->tnum |= (ptr[5] & 0x0f) << 8;
+	spr->pal = (ptr[5] & 0xf0) >> 4;
+}
+
+// where line `line` of a sprite (counted in the graphics, after YFlip) starts
+static int ts_spr_line_adr(Video* vid, const TSpr* spr, int line) {
+	return ts_gfx_adr(vid->tsconf.SGPage, spr->tnum + ((line & 0x1f8) << 3), line);
+}
+
+// the next byte of a sprite line: it wraps round in its line across the page
+static inline int ts_spr_next(int fadr) {
+	return (fadr & ~0xff) | ((fadr + 1) & 0xff);
+}
+
 int vidTSLRenderSprites(Video* vid, int ln) {
-	unsigned char* ptr;
 	TSpr spr;
 	int res = 0;
 	while (sadr < (0x200 - 6)) {
-		ptr = &vid->tsconf.sfile[sadr];
-		spr.y = ptr[0];
-		spr.y |= (ptr[1] & 1) << 8;
-		spr.ys = (ptr[1] & 0x0e) >> 1;
-		spr.res1 = (ptr[1] & 0x10) ? 1 : 0;
-		spr.act = (ptr[1] & 0x20) ? 1 : 0;
-		spr.leap = (ptr[1] & 0x40) ? 1 : 0;
-		spr.yf = (ptr[1] & 0x80) ? 1 : 0;
-		spr.x = ptr[2];
-		spr.x |= (ptr[3] & 1) << 8;
-		spr.xs = (ptr[3] & 0x0e) >> 1;
-		spr.res2 = (ptr[3] & 0x70) >> 4;
-		spr.xf = (ptr[3] & 0x80) ? 1 : 0;
-		spr.tnum = ptr[4];
-		spr.tnum |= (ptr[5] & 0x0f) << 8;
-		spr.pal = (ptr[5] & 0xf0) >> 4;
+		ts_spr_parse(&vid->tsconf.sfile[sadr], &spr);
 		if (spr.act) {
 			adr = spr.y;
 			xscr = (spr.ys + 1) << 3;		// Ysize - 000:8; 001:16; 010:24; ...
@@ -173,10 +201,7 @@ int vidTSLRenderSprites(Video* vid, int ln) {
 				res += (spr.xs + 1) << 1;	// a word for every 4 dots across
 				yscr -= adr;			// line inside sprite;
 				if (spr.yf) yscr = xscr - yscr - 1;	// YFlip (Ysize - norm.pos - 1)
-				tile = spr.tnum + ((yscr & 0x1f8) << 3);	// shift to current tile line
-
-				fadr = vid->tsconf.SGPage << 14;
-				fadr += ((tile & 0xfc0) << 5) | ((yscr & 7) << 8) | ((tile & 0x3f) << 2);	// fadr = adr of pix line to put in buf
+				fadr = ts_spr_line_adr(vid, &spr, yscr);	// adr of pix line to put in buf
 
 				col = spr.pal << 4;
 				xadr = (spr.xs + 1) << 3;	// xsoze
@@ -191,7 +216,7 @@ int vidTSLRenderSprites(Video* vid, int ln) {
 					col |= (vid->mrd(fadr, vid->xptr) & 0x0f);		// right pixel
 					if (col & 0x0f) tsl[adr & 0x1ff] = col;
 					if (spr.xf) adr--; else adr++;
-					fadr = (fadr & ~0xff) | ((fadr + 1) & 0xff);
+					fadr = ts_spr_next(fadr);
 				}
 			}
 		}
@@ -199,6 +224,80 @@ int vidTSLRenderSprites(Video* vid, int ln) {
 		if (spr.leap) break;		// LEAP
 	}
 	return res;
+}
+
+// for the debugger: a sprite and its dots, the way the TSU reads and draws them
+
+void tsl_get_sprite(Video* vid, int idx, tsSprite* s) {
+	TSpr spr;
+	ts_spr_parse(&vid->tsconf.sfile[(idx % TSL_SPRITES) * 6], &spr);
+	s->x = spr.x;
+	s->y = spr.y;
+	s->w = (spr.xs + 1) << 3;
+	s->h = (spr.ys + 1) << 3;
+	s->tile = spr.tnum;
+	s->pal = spr.pal;
+	s->act = spr.act;
+	s->leap = spr.leap;
+	s->xf = spr.xf;
+	s->yf = spr.yf;
+}
+
+void tsl_sprite_dots(Video* vid, int idx, unsigned char* out) {
+	TSpr spr;
+	ts_spr_parse(&vid->tsconf.sfile[(idx % TSL_SPRITES) * 6], &spr);
+	int w = (spr.xs + 1) << 3;
+	int h = (spr.ys + 1) << 3;
+	for (int r = 0; r < h; r++) {
+		int fa = ts_spr_line_adr(vid, &spr, spr.yf ? (h - r - 1) : r);
+		unsigned char* row = out + r * w;
+		for (int c = 0; c < w; c += 2) {
+			int b = vid->mrd(fa, vid->xptr);
+			int d0 = (b >> 4) & 15;
+			int d1 = b & 15;
+			// the left dot of a byte goes first, from the right edge with XFlip
+			row[spr.xf ? (w - 1 - c) : c] = d0 ? (spr.pal << 4) | d0 : 0;
+			row[spr.xf ? (w - 2 - c) : (c + 1)] = d1 ? (spr.pal << 4) | d1 : 0;
+			fa = ts_spr_next(fa);
+		}
+	}
+}
+
+int tsl_map_entry(Video* vid, int lay, int row, int col) {
+	int a = (vid->tsconf.TMPage << 14) | ((row & 63) << 8) | ((lay & 1) << 7) | ((col & 63) << 1);
+	return vid->mrd(a, vid->xptr) | (vid->mrd(a | 1, vid->xptr) << 8);
+}
+
+void tsl_map_dots(Video* vid, int lay, int entry, unsigned char* out) {
+	int zen = vid->tsconf.tconfig & (lay ? 8 : 4);
+	if (!(entry & 0xfff) && !zen) {			// tile 0 is a hole unless Z_EN
+		memset(out, 0x00, 64);
+		return;
+	}
+	int page = lay ? vid->tsconf.T1GPage : vid->tsconf.T0GPage;
+	int pal = ts_cell_pal(entry, lay ? vid->tsconf.T1Pal76 : vid->tsconf.T0Pal76);
+	int xf = entry & 0x4000;
+	for (int r = 0; r < 8; r++) {
+		int fa = ts_cell_line_adr(page, entry, r);
+		for (int c = 0; c < 8; c += 2) {
+			int b = vid->mrd(fa++, vid->xptr);
+			int d0 = b >> 4;
+			int d1 = b & 15;
+			out[r * 8 + (xf ? 7 - c : c)] = d0 ? pal | d0 : 0;
+			out[r * 8 + (xf ? 6 - c : c + 1)] = d1 ? pal | d1 : 0;
+		}
+	}
+}
+
+void tsl_tile_dots(Video* vid, int page, int tile, int palhi, unsigned char* out) {
+	for (int r = 0; r < 8; r++) {
+		int fa = ts_gfx_adr(page, tile, r);
+		for (int c = 0; c < 8; c += 2) {
+			int b = vid->mrd(fa++, vid->xptr);
+			out[r * 8 + c] = (b & 0xf0) ? (palhi & 0xf0) | (b >> 4) : 0;
+			out[r * 8 + c + 1] = (b & 0x0f) ? (palhi & 0xf0) | (b & 15) : 0;
+		}
+	}
 }
 
 //render 4bpp mode line

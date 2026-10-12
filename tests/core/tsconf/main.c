@@ -33,6 +33,74 @@ static void state_line(Computer* comp, const char* tag) {
 		comp->cpu->regPC, comp->cpu->regSP, comp->cpu->regAF, comp->tickTotal);
 }
 
+// SPRCHK=1: every active sprite as the debugger draws it (tsl_sprite_dots) against
+// the last whole frame, dot for dot: a transparent dot has to show what is under it,
+// which the test programs make the border
+static void spr_check(Computer* comp) {
+	Video* vid = comp->vid;
+	static unsigned char dots[64 * 64];
+	for (int i = 0; i < TSL_SPRITES; i++) {
+		tsSprite s;
+		tsl_get_sprite(vid, i, &s);
+		if (!s.act) continue;
+		tsl_sprite_dots(vid, i, dots);
+		int n = 0, bad = 0;
+		for (int r = 0; r < s.h; r++) {
+			for (int c = 0; c < s.w; c++) {
+				int x = vid->tsconf.tsXPos + ((s.x + c) & 0x1ff);
+				int y = vid->tsconf.tsYPos + ((s.y + r) & 0x1ff);
+				if ((x >= vid->full.x) || (y >= vid->full.y)) continue;
+				int32_t got = *(int32_t*)(bufimg + y * bytesPerLine + x * 8);
+				int idx = dots[r * s.w + c];
+				if (got != (int32_t)vid->pal[idx ? idx : vid->brdcol]) {
+					if (getenv("SPRWHY"))
+						printf("SPR  : %d differs at %d,%d: dot %02X, frame shows %02X\n", i, c, r, idx, pal_index(comp, got) & 0xff);
+					bad++;
+				}
+				n++;
+			}
+		}
+		printf("SPR  : %d at %d,%d %dx%d tile %d pal %d%s%s%s: %d dots, %d differ\n", i, s.x, s.y, s.w, s.h,
+			s.tile, s.pal, s.xf ? " XF" : "", s.yf ? " YF" : "", s.leap ? " LEAP" : "", n, bad);
+	}
+}
+
+// TILECHK=1: the tile/sprite window put together the debugger's way - each enabled
+// tile layer's map cell at the dot plus its offsets (tsl_map_entry, tsl_map_dots), T1
+// over T0, the border where both are holes - against the last whole frame
+static void tile_check(Computer* comp) {
+	Video* vid = comp->vid;
+	unsigned char dots[64];
+	int n = 0, bad = 0, seen[2] = {0, 0};
+	for (int dy = 0; dy < vid->tsconf.tsSize.y; dy++) {
+		for (int dx = 0; dx < vid->tsconf.tsSize.x; dx++) {
+			int want = vid->brdcol;
+			for (int lay = 0; lay < 2; lay++) {
+				if (!(vid->tsconf.tconfig & (lay ? 0x40 : 0x20))) continue;
+				int mx = (dx + (lay ? vid->tsconf.T1XOffset : vid->tsconf.T0XOffset)) & 0x1ff;
+				int my = (dy + (lay ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset)) & 0x1ff;
+				tsl_map_dots(vid, lay, tsl_map_entry(vid, lay, my >> 3, mx >> 3), dots);
+				int d = dots[(my & 7) * 8 + (mx & 7)];
+				if (d) {
+					want = d;
+					seen[lay]++;
+				}
+			}
+			int x = vid->tsconf.tsXPos + dx;
+			int y = vid->tsconf.tsYPos + dy;
+			int32_t got = *(int32_t*)(bufimg + y * bytesPerLine + x * 8);
+			if (got != (int32_t)vid->pal[want]) {
+				if (getenv("TILEWHY") && (bad < 10))
+					printf("TILE : differs at %d,%d: want %02X, frame shows %02X\n", dx, dy, want, pal_index(comp, got) & 0xff);
+				bad++;
+			}
+			n++;
+		}
+	}
+	printf("TILE : %dx%d dots, T0 shows in %d, T1 in %d, %d differ\n", vid->tsconf.tsSize.x, vid->tsconf.tsSize.y,
+		seen[0], seen[1], bad);
+}
+
 // REDRAW="frames,t,mask,dbg,ref[,steps,poke]": run whole frames, then on to T t
 // of the next one, and stop there as the debugger (dbg=1) or a pause (dbg=0) does;
 // in the debugger, step on steps instructions. Then hide the mask and redraw
@@ -162,6 +230,8 @@ int main(int argc, char** argv) {
 	probe(comp, "PIXH", "PIXH ", 4);
 	printf("BRD  : %02X\n", comp->vid->brdcol);
 	if (getenv("STATE")) state_line(comp, "STATE");
+	if (getenv("SPRCHK")) spr_check(comp);
+	if (getenv("TILECHK")) tile_check(comp);
 	if (getenv("DMALOG")) {
 		unsigned cnt = comp->tsconf.dmalog.count;
 		printf("DMA  : %u started\n", cnt);

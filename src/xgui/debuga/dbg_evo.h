@@ -4,6 +4,8 @@
 // the debugger's dock or in a window of its own.
 
 #include <QCheckBox>
+#include <QComboBox>
+#include <QSpinBox>
 #include <QLabel>
 #include <QStackedWidget>
 #include <QTabBar>
@@ -47,6 +49,53 @@ class xTsRegsPage : public QWidget {
 		void layer_toggled();
 };
 
+class xTsSprPage : public QWidget {
+	Q_OBJECT
+	public:
+		xTsSprPage(QWidget* = nullptr);
+		void draw();
+	private:
+		QCheckBox* cbActive;
+		QTreeWidget* list;
+		QLabel* labPic;
+		QLabel* labInfo;
+		int sel;			// the sprite picked, -1 none
+		void draw_pick();
+};
+
+// 512x512 dots of a tile map or a graphics page, scaled to fit, with rectangles on top
+class xTsMapView : public QWidget {
+	public:
+		xTsMapView(QWidget* = nullptr);
+		QImage img;
+		QList<QRect> marks;		// in image dots
+		std::function<void(int, int)> onHover;	// image dot under the pointer, -1 when it left
+	protected:
+		void paintEvent(QPaintEvent*);
+		void mouseMoveEvent(QMouseEvent*);
+		void leaveEvent(QEvent*);
+	private:
+		QRect target() const;
+};
+
+class xTsTilePage : public QWidget {
+	Q_OBJECT
+	public:
+		xTsTilePage(QWidget* = nullptr);
+		void draw();
+	private:
+		QComboBox* cbView;
+		QSpinBox* sbPage;
+		QSpinBox* sbPal;
+		QToolButton* tbT0G;
+		QToolButton* tbT1G;
+		QToolButton* tbSG;
+		xTsMapView* view;
+		QLabel* labInfo;
+		int hx, hy;			// dot under the pointer, -1 none
+		void hover_info();
+};
+
 class xTsDmaPage : public QWidget {
 	Q_OBJECT
 	public:
@@ -78,6 +127,8 @@ class xEvoPanel : public QWidget {
 		QToolButton* tbDetach;
 		QLabel* labHidden;		// says a layer is kept out of the picture
 		xTsRegsPage* tsRegs;
+		xTsSprPage* tsSpr;
+		xTsTilePage* tsTile;
 		xTsDmaPage* tsDma;
 		QLabel* noMachine;
 		int hw;				// the machine the tab row was built for

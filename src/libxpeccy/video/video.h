@@ -354,6 +354,23 @@ void tslUpdatePorts(Video*);
 // put this line's and the next one's tiles and sprites together again, after hide changed
 void tsl_recompose(Video*);
 
+// TSConf sprites and tiles for the debugger, decoded the way the TSU does it
+#define TSL_SPRITES	85		// SFILE entries
+typedef struct {
+	int x, y, w, h;			// position in the tile/sprite window, size in dots
+	int tile, pal;
+	int act, leap, xf, yf;
+} tsSprite;
+void tsl_get_sprite(Video*, int idx, tsSprite*);
+// w*h dots as the TSU puts them out: pal << 4 | dot, 0 where transparent
+void tsl_sprite_dots(Video*, int idx, unsigned char* out);
+// 8x8 dots of a tile of a graphics page, palhi the colour's high nibble
+void tsl_tile_dots(Video*, int page, int tile, int palhi, unsigned char* out);
+// the tile map entry of layer 0/1 at row, col (0..63), from TMPage
+int tsl_map_entry(Video*, int lay, int row, int col);
+// a map cell's 8x8 dots as the layer draws it: page, palette, flips, tile 0 as a hole
+void tsl_map_dots(Video*, int lay, int entry, unsigned char* out);
+
 // TSConf registers the controller takes at the start of a line, not at once
 enum {
 	TSL_LAT_VCONF = 1 << 0,

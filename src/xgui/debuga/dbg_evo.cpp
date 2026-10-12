@@ -1,6 +1,9 @@
 #include <QCursor>
 #include <QHBoxLayout>
 #include <QMenu>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QSplitter>
 #include <QHeaderView>
 #include <QTreeWidgetItemIterator>
 #include <QPushButton>
@@ -459,6 +462,316 @@ void xTsRegsPage::draw() {
 	list->restyle();
 }
 
+// SPRITES PAGE
+
+#define SPR_PIC		192	// the picked sprite is drawn this big at most
+
+xTsSprPage::xTsSprPage(QWidget* p):QWidget(p) {
+	sel = -1;
+	QVBoxLayout* lay = new QVBoxLayout(this);
+	lay->setContentsMargins(0, 0, 0, 0);
+	cbActive = new QCheckBox("Active only");
+	cbActive->setChecked(true);
+	lay->addWidget(cbActive);
+	list = new QTreeWidget;
+	list->setRootIsDecorated(false);
+	list->setUniformRowHeights(true);
+	list->setAlternatingRowColors(true);
+	list->setSelectionMode(QAbstractItemView::SingleSelection);
+	list->setHeaderLabels({"#", "Layer", "X", "Y", "Size", "Tile", "Pal", "Flags"});
+	list->header()->setStretchLastSection(true);
+	list->header()->setSectionsMovable(false);
+	// the list over the picked sprite, the line between them movable
+	QSplitter* split = new QSplitter(Qt::Vertical);
+	split->setChildrenCollapsible(false);
+	split->addWidget(list);
+	QWidget* bot = new QWidget;
+	QHBoxLayout* blay = new QHBoxLayout(bot);
+	blay->setContentsMargins(0, 0, 0, 0);
+	labPic = new QLabel;
+	labPic->setMinimumSize(64, 64);
+	labPic->setMaximumWidth(SPR_PIC);
+	labPic->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	labPic->setAlignment(Qt::AlignCenter);
+	labInfo = new QLabel;
+	labInfo->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	labInfo->setWordWrap(true);
+	blay->addWidget(labPic);
+	blay->addWidget(labInfo, 1);
+	split->addWidget(bot);
+	split->setStretchFactor(0, 2);
+	split->setStretchFactor(1, 1);
+	lay->addWidget(split, 1);
+	connect(cbActive, &QCheckBox::toggled, this, [this]() {draw();});
+	connect(list, &QTreeWidget::currentItemChanged, this, [this](QTreeWidgetItem* it) {
+		sel = it ? it->data(0, Qt::UserRole).toInt() : -1;
+		draw_pick();
+	});
+}
+
+static const char* sprLayer[4] = {"S0", "S1", "S2", "-"};
+
+void xTsSprPage::draw() {
+	Computer* comp = conf.zx;
+	if (!comp || (comp->hw->id != HW_TSLAB)) return;
+	Video* vid = comp->vid;
+	if (list->topLevelItemCount() == 0) {
+		for (int i = 0; i < TSL_SPRITES; i++) {
+			QTreeWidgetItem* it = new QTreeWidgetItem(list);
+			it->setData(0, Qt::UserRole, i);
+			for (int c = 0; c < 7; c++)
+				it->setTextAlignment(c, Qt::AlignRight | Qt::AlignVCenter);
+		}
+	}
+	// S0 runs from the first entry to the first LEAP, S1 on to the next, S2 to the
+	// third: what comes after that is never drawn
+	int layer = 0;
+	QColor dim = palette().color(QPalette::Disabled, QPalette::Text);
+	for (int i = 0; i < TSL_SPRITES; i++) {
+		tsSprite s;
+		tsl_get_sprite(vid, i, &s);
+		QTreeWidgetItem* it = list->topLevelItem(i);
+		QStringList fl;
+		if (s.act) fl << "ACT";
+		if (s.xf) fl << "XF";
+		if (s.yf) fl << "YF";
+		if (s.leap) fl << "LEAP";
+		QStringList cols = {QString::number(i), sprLayer[layer], QString::number(s.x), QString::number(s.y),
+			QString("%0x%1").arg(s.w).arg(s.h), QString::number(s.tile), QString::number(s.pal), fl.join(" ")};
+		for (int c = 0; c < cols.size(); c++) {
+			it->setText(c, cols[c]);
+			if (s.act && (layer < 3)) it->setData(c, Qt::ForegroundRole, QVariant());
+			else it->setForeground(c, dim);
+		}
+		it->setHidden(cbActive->isChecked() && !s.act);
+		if (s.leap && (layer < 3)) layer++;
+	}
+	static const QStringList widest[7] = {{"84"}, {"Layer", "S0"}, {"511"}, {"511"}, {"64x64"}, {"4095"}, {"Pal", "15"}};
+	for (int i = 0; i < 7; i++)
+		evo_fit_column(list, i, widest[i]);
+	draw_pick();
+}
+
+// the picked sprite as the TSU draws it, through the colours as they are now;
+// a transparent dot shows as a checker
+void xTsSprPage::draw_pick() {
+	Computer* comp = conf.zx;
+	if (!comp || (comp->hw->id != HW_TSLAB) || (sel < 0)) {
+		labPic->clear();
+		labInfo->setText(sel < 0 ? "Pick a sprite to see it" : "");
+		return;
+	}
+	Video* vid = comp->vid;
+	tsSprite s;
+	tsl_get_sprite(vid, sel, &s);
+	static unsigned char dots[64 * 64];
+	tsl_sprite_dots(vid, sel, dots);
+	QImage img(s.w, s.h, QImage::Format_RGB32);
+	for (int y = 0; y < s.h; y++) {
+		for (int x = 0; x < s.w; x++) {
+			int d = dots[y * s.w + x];
+			if (d) {
+				uint32_t c = vid->pal[d];
+				img.setPixel(x, y, qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff));
+			} else {
+				img.setPixel(x, y, ((x ^ y) & 4) ? qRgb(0x60, 0x60, 0x60) : qRgb(0x40, 0x40, 0x40));
+			}
+		}
+	}
+	int zoom = qMax(1, qMin(qMin(labPic->width(), SPR_PIC) / s.w, qMin(labPic->height(), SPR_PIC) / s.h));
+	labPic->setPixmap(QPixmap::fromImage(img.scaled(s.w * zoom, s.h * zoom)));
+	int sg = vid->tsconf.SGPage;
+	labInfo->setText(QString("Sprite %0, %1x%2 at %3,%4\nTile %5: row %6, column %7 of page %8\nPalette %9 (colours %10..%11)")
+		.arg(sel).arg(s.w).arg(s.h).arg(s.x).arg(s.y)
+		.arg(s.tile).arg(s.tile >> 6).arg(s.tile & 63).arg(hex2(sg))
+		.arg(s.pal).arg(hex2(s.pal << 4)).arg(hex2((s.pal << 4) | 15)));
+}
+
+// a TSConf colour as the picture shows it; 0 (a hole) as a checker
+static QRgb ts_rgb(Video* vid, int idx, int x, int y) {
+	if (!idx) return ((x ^ y) & 4) ? qRgb(0x60, 0x60, 0x60) : qRgb(0x40, 0x40, 0x40);
+	uint32_t c = vid->pal[idx & 0xff];
+	return qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff);
+}
+
+// MAP VIEW
+
+xTsMapView::xTsMapView(QWidget* p):QWidget(p) {
+	setMouseTracking(true);
+	setMinimumSize(128, 128);
+	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+}
+
+// the image as big as fits, square, in whole steps when it is bigger than 1:1
+QRect xTsMapView::target() const {
+	if (img.isNull()) return QRect();
+	int side = qMin(width(), height());
+	if (side >= img.width()) side = (side / img.width()) * img.width();
+	return QRect((width() - side) / 2, (height() - side) / 2, side, side);
+}
+
+void xTsMapView::paintEvent(QPaintEvent*) {
+	QPainter pnt(this);
+	QRect t = target();
+	if (t.isEmpty()) return;
+	pnt.drawImage(t, img);
+	double k = (double)t.width() / img.width();
+	QColor col = conf.pal.value("dbg.header.bg");
+	if (!col.isValid()) col = Qt::yellow;
+	pnt.setPen(QPen(col, 2));
+	pnt.setBrush(Qt::NoBrush);
+	foreach (QRect r, marks)
+		pnt.drawRect(QRectF(t.x() + r.x() * k, t.y() + r.y() * k, r.width() * k, r.height() * k));
+}
+
+void xTsMapView::mouseMoveEvent(QMouseEvent* ev) {
+	QRect t = target();
+	if (t.isEmpty() || !t.contains(ev->pos())) {
+		if (onHover) onHover(-1, -1);
+		return;
+	}
+	double k = (double)img.width() / t.width();
+	if (onHover) onHover((int)((ev->pos().x() - t.x()) * k), (int)((ev->pos().y() - t.y()) * k));
+}
+
+void xTsMapView::leaveEvent(QEvent*) {
+	if (onHover) onHover(-1, -1);
+}
+
+// TILES PAGE
+
+enum {TV_MAP0 = 0, TV_MAP1, TV_GFX};
+
+xTsTilePage::xTsTilePage(QWidget* p):QWidget(p) {
+	hx = hy = -1;
+	QVBoxLayout* lay = new QVBoxLayout(this);
+	lay->setContentsMargins(0, 0, 0, 0);
+	QHBoxLayout* row = new QHBoxLayout;
+	cbView = new QComboBox;
+	cbView->addItem("Map, layer 0", TV_MAP0);
+	cbView->addItem("Map, layer 1", TV_MAP1);
+	cbView->addItem("Graphics", TV_GFX);
+	cbView->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	row->addWidget(cbView);
+	row->addWidget(new QLabel("Page"));
+	sbPage = new QSpinBox;
+	sbPage->setDisplayIntegerBase(16);
+	sbPage->setRange(0, 255);
+	sbPage->setSingleStep(8);		// a graphics page is 8 pages long: 512x512 dots
+	row->addWidget(sbPage);
+	auto preset = [this, row](const char* name, const char* tip) {
+		QToolButton* tb = new QToolButton;
+		tb->setText(name);
+		tb->setToolTip(tip);
+		row->addWidget(tb);
+		return tb;
+	};
+	tbT0G = preset("T0G", "The page T0GPage points at");
+	tbT1G = preset("T1G", "The page T1GPage points at");
+	tbSG = preset("SG", "The page SGPage points at");
+	row->addWidget(new QLabel("Palette"));
+	sbPal = new QSpinBox;
+	sbPal->setRange(0, 15);
+	row->addWidget(sbPal);
+	row->addStretch(1);
+	lay->addLayout(row);
+	view = new xTsMapView;
+	lay->addWidget(view, 1);
+	labInfo = new QLabel;
+	labInfo->setWordWrap(true);
+	lay->addWidget(labInfo);
+	view->onHover = [this](int x, int y) {
+		hx = x;
+		hy = y;
+		hover_info();
+	};
+	auto redraw = [this]() {draw();};
+	connect(cbView, QOverload<int>::of(&QComboBox::currentIndexChanged), this, redraw);
+	connect(sbPage, QOverload<int>::of(&QSpinBox::valueChanged), this, redraw);
+	connect(sbPal, QOverload<int>::of(&QSpinBox::valueChanged), this, redraw);
+	auto pick = [this](int which) {
+		if (!conf.zx) return;
+		Video* vid = conf.zx->vid;
+		sbPage->setValue(which == 0 ? vid->tsconf.T0GPage : (which == 1) ? vid->tsconf.T1GPage : vid->tsconf.SGPage);
+		cbView->setCurrentIndex(TV_GFX);
+	};
+	connect(tbT0G, &QToolButton::clicked, this, [pick]() {pick(0);});
+	connect(tbT1G, &QToolButton::clicked, this, [pick]() {pick(1);});
+	connect(tbSG, &QToolButton::clicked, this, [pick]() {pick(2);});
+}
+
+void xTsTilePage::draw() {
+	Computer* comp = conf.zx;
+	if (!comp || (comp->hw->id != HW_TSLAB)) return;
+	Video* vid = comp->vid;
+	int mode = cbView->currentData().toInt();
+	bool gfx = (mode == TV_GFX);
+	sbPage->setEnabled(gfx);
+	sbPal->setEnabled(gfx);
+	QImage img(512, 512, QImage::Format_RGB32);
+	unsigned char dots[64];
+	view->marks.clear();
+	for (int ty = 0; ty < 64; ty++) {
+		for (int tx = 0; tx < 64; tx++) {
+			if (gfx) {
+				tsl_tile_dots(vid, sbPage->value(), (ty << 6) | tx, sbPal->value() << 4, dots);
+			} else {
+				tsl_map_dots(vid, mode, tsl_map_entry(vid, mode, ty, tx), dots);
+			}
+			for (int y = 0; y < 8; y++)
+				for (int x = 0; x < 8; x++)
+					img.setPixel((tx << 3) + x, (ty << 3) + y, ts_rgb(vid, dots[(y << 3) + x], (tx << 3) + x, (ty << 3) + y));
+		}
+	}
+	if (!gfx) {
+		// the window the offsets show, in up to four pieces where it wraps round
+		int ox = (mode ? vid->tsconf.T1XOffset : vid->tsconf.T0XOffset) & 0x1ff;
+		int oy = (mode ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset) & 0x1ff;
+		int w = vid->tsconf.tsSize.x;
+		int h = vid->tsconf.tsSize.y;
+		for (int sy = 0; sy < 2; sy++) {
+			for (int sx = 0; sx < 2; sx++) {
+				QRect r = QRect(ox - sx * 512, oy - sy * 512, w, h).intersected(QRect(0, 0, 512, 512));
+				if (!r.isEmpty()) view->marks << r;
+			}
+		}
+	}
+	view->img = img;
+	view->update();
+	hover_info();
+}
+
+void xTsTilePage::hover_info() {
+	Computer* comp = conf.zx;
+	if (!comp || (comp->hw->id != HW_TSLAB)) return;
+	Video* vid = comp->vid;
+	int mode = cbView->currentData().toInt();
+	if ((hx < 0) || (hy < 0)) {
+		labInfo->setText((mode == TV_GFX) ? "64x64 tiles of 8x8 dots" : QString("TMPage %0; the frame shows the outlined part").arg(hex2(vid->tsconf.TMPage)));
+		return;
+	}
+	int tx = hx >> 3;
+	int ty = hy >> 3;
+	if (mode == TV_GFX) {
+		int tile = (ty << 6) | tx;
+		int ofs = ((tile & 0xfc0) << 5) | ((tile & 0x3f) << 2);
+		labInfo->setText(QString("Tile %0 (row %1, column %2): page %3, lines at %4 + n * 100")
+			.arg(tile).arg(ty).arg(tx).arg(hex2(sbPage->value() + (ofs >> 14))).arg(QString::number(ofs & 0x3fff, 16).toUpper().rightJustified(4, '0')));
+		return;
+	}
+	int e = tsl_map_entry(vid, mode, ty, tx);
+	int ofs = (ty << 8) | (mode << 7) | (tx << 1);
+	int palhi = ((e >> 8) & 0x30) | (mode ? vid->tsconf.T1Pal76 : vid->tsconf.T0Pal76);
+	QStringList fl;
+	if (e & 0x4000) fl << "XF";
+	if (e & 0x8000) fl << "YF";
+	bool hole = !(e & 0xfff) && !(vid->tsconf.tconfig & (mode ? 8 : 4));
+	labInfo->setText(QString("Cell %0,%1 at %2:%3 = %4: tile %5 (row %6, column %7), colours %8..%9%10%11")
+		.arg(tx).arg(ty).arg(hex2(vid->tsconf.TMPage)).arg(QString::number(ofs, 16).toUpper().rightJustified(4, '0'))
+		.arg(QString::number(e, 16).toUpper().rightJustified(4, '0')).arg(e & 0xfff).arg((e & 0xfff) >> 6).arg(e & 63)
+		.arg(hex2(palhi)).arg(hex2(palhi | 15)).arg(fl.isEmpty() ? "" : " " + fl.join(" ")).arg(hole ? ", a hole (tile 0)" : ""));
+}
+
 // DMA PAGE
 
 xTsDmaPage::xTsDmaPage(QWidget* p):QWidget(p) {
@@ -543,10 +856,14 @@ xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 
 	stack = new QStackedWidget;
 	tsRegs = new xTsRegsPage;
+	tsSpr = new xTsSprPage;
+	tsTile = new xTsTilePage;
 	tsDma = new xTsDmaPage;
 	noMachine = new QLabel("Nothing to show on this machine");
 	noMachine->setAlignment(Qt::AlignCenter);
 	stack->addWidget(tsRegs);
+	stack->addWidget(tsSpr);
+	stack->addWidget(tsTile);
 	stack->addWidget(tsDma);
 	stack->addWidget(noMachine);
 	lay->addWidget(stack, 1);
@@ -566,6 +883,8 @@ void xEvoPanel::build_tabs() {
 	hw = conf.zx ? conf.zx->hw->id : -1;
 	if (hw == HW_TSLAB) {
 		tabs->setTabData(tabs->addTab("Registers"), QVariant::fromValue((void*)tsRegs));
+		tabs->setTabData(tabs->addTab("Sprites"), QVariant::fromValue((void*)tsSpr));
+		tabs->setTabData(tabs->addTab("Tiles"), QVariant::fromValue((void*)tsTile));
 		tabs->setTabData(tabs->addTab("DMA"), QVariant::fromValue((void*)tsDma));
 	}
 	tabs->setVisible(tabs->count() > 0);
@@ -595,6 +914,8 @@ void xEvoPanel::draw() {
 	labHidden->setVisible((hw == HW_TSLAB) && (conf.zx->vid->tsconf.hide != 0));
 	QWidget* cur = stack->currentWidget();
 	if (cur == tsRegs) tsRegs->draw();
+	if (cur == tsSpr) tsSpr->draw();
+	if (cur == tsTile) tsTile->draw();
 	if (cur == tsDma) tsDma->draw();
 }
 

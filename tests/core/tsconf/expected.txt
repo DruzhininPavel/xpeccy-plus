@@ -316,3 +316,20 @@ DMAAT: 0,14000 act 1 src 040E3C dst 080E3C burst 8/16 word 30/256 regs 040000 08
 DMAAT: 0,18000 act 1 src 041608 dst 081608 burst 12/16 word 4/256 regs 040000 080000
 DMAAT: 0,22000 act 1 src 041DD8 dst 081DD8 burst 15/16 word 236/256 regs 040000 080000
 DMAAT: 0,26000 act 0 src FFFFFF dst FFFFFF burst 0/0 word 0/0 regs 042000 082000
+== v01_sprview
+t18_sprview.bin: 140 bytes, TIMEOUT after 20 frames, pc=8072
+BRD  : 3F
+SPR  : 0 at 10,20 16x16 tile 0 pal 1: 256 dots, 0 differ
+SPR  : 1 at 60,20 16x16 tile 2 pal 2 XF: 256 dots, 0 differ
+SPR  : 2 at 10,60 8x24 tile 5 pal 1 YF: 192 dots, 0 differ
+SPR  : 3 at 60,60 24x16 tile 62 pal 2 XF YF LEAP: 384 dots, 0 differ
+CRAM : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+LINB : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+SFILE: 14 22 0A 02 00 10 14 22 3C 82 02 20 3C A4 0A 00
+== v02_tileview
+t19_tileview.bin: 322 bytes, TIMEOUT after 40 frames, pc=813E
+BRD  : 3F
+TILE : 256x192 dots, T0 shows in 46284, T1 in 22269, 0 differ
+CRAM : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+LINB : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+SFILE: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
