@@ -956,9 +956,22 @@ int shortcut_event(int grp, QKeyEvent* ev) {
 }
 
 // the hotkey a key means in the main window, -1 for none; a grabbed keyboard
-// goes to the machine whole, but for the key that lets it go
-int hotkey_for(int key, Qt::KeyboardModifiers mod, bool kgrab) {
+// goes to the machine whole, but for the key that lets it go.
+// An unbound Shift/Ctrl combination falls back to the bare key's action and the
+// modifiers stay pressed in the machine (*fallback): they are its Caps/Symbol
+// Shift there, so Shift held through the reset hotkey reaches TS-BIOS and the
+// like. Alt/Meta stay the app's own, and a grabbed keyboard stays strict.
+int hotkey_for(int key, Qt::KeyboardModifiers mod, bool kgrab, bool* fallback) {
+	if (fallback) *fallback = false;
 	int id = shortcut_find(SCG_MAIN, key, mod);
+	if ((id < 0) && !kgrab) {
+		Qt::KeyboardModifiers nmod = xNativeMods(mod);
+		Qt::KeyboardModifiers mach = nmod & (Qt::ShiftModifier | Qt::ControlModifier);
+		if (mach && !(nmod & ~(mach | Qt::KeypadModifier))) {
+			id = shortcut_find(SCG_MAIN, key, xNativeMods(nmod & ~mach));
+			if ((id >= 0) && fallback) *fallback = true;
+		}
+	}
 	return (kgrab && (id != XCUT_GRABKBD)) ? -1 : id;
 }
 
