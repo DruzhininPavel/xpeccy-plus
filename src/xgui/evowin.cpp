@@ -12,7 +12,7 @@
 
 xEvoWin::xEvoWin(QWidget* p):QDialog(p) {
 	setWindowTitle("ZX Evolution");
-	setWindowIcon(QIcon(":/images/grp-board.png"));
+	setWindowIcon(QIcon(":/images/nedoos.png"));
 	setSizeGripEnabled(true);
 	lastfrm = 0;
 	QVBoxLayout* lay = new QVBoxLayout(this);

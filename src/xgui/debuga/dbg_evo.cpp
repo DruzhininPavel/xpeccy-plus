@@ -788,7 +788,7 @@ xTsTilePage::xTsTilePage(QWidget* p):xEvoPage(HW_TSLAB, p) {
 	row->addWidget(infoBox);
 	row->addStretch(1);
 	lay->addLayout(row, 1);
-	QLabel* legend = new QLabel("Checker: transparent - color 0, or a hole (tile 0 with its Z_EN off).\n"
+	QLabel* legend = new QLabel("Checker: color 0, or tile 0 without Z_EN.\n"
 		"Outlined: the part of the map the frame shows.");
 	legend->setWordWrap(true);		// a narrow window still can be: the text never changes
 	lay->addWidget(legend);
