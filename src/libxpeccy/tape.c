@@ -548,7 +548,11 @@ void tapArmPlay(Tape* tap) {
 // between blocks, or unpacking what it has read (DeciLoad with ZX0), reads
 // nothing, and is waited for. Basic between two LOADs does stop it, as in Fuse:
 // the pilot is kept for a loader that sits out the rom's second of LD-WAIT
-// (Saigon Combat Unit's).
+// (Saigon Combat Unit's). Nor does a key scan stop it while the tape plays a
+// pause: that is the gap the tape was made with for the program's work between
+// two loads, and a deck plays all of it - stopped there, the gap comes out
+// longer (Moonlighter reads its decryption key off the gap between two tones).
+// Once the next pulses come and only the keys are read, the loader has gone.
 void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int kind, int fromRam) {
 	int tickDiff = tick - tap->detectLastTick;
 	int bDiff = (regs[1] - tap->detectRegs[1]) & 0xff;
@@ -576,6 +580,8 @@ void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int
 			tap->alien = 0;
 			tap->loaderReads++;		// fast loading's too: where the loader left
 		} else if (!tap->detectOn) {
+			return;
+		} else if ((kind == TAPE_RD_KEYS) && TAP_VOL_PAUSE(tap->volPlay)) {
 			return;
 		} else if (!tap->alien) {
 			tap->alien = 1;
