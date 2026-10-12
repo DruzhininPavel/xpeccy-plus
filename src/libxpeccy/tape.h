@@ -6,50 +6,28 @@ extern "C" {
 
 #include "defines.h"
 
-// A tape tick is one T state of the machine playing the tape - the real period
-// comes from the cpu clock through tape_set_tick_ns(), this is only the fallback.
-#define TAPCPUNS	284		// ns per cpu tick @ 3.49MHz
-#define TAPTICKNS	TAPCPUNS	// ns in one tape tick
-// The three below are counts of ticks, not durations: they are read against sigLen
-// and never turned back into seconds.
-#define TAPTPS		(1000000000/TAPTICKNS)	// ticks per second
+// A tape tick is a T state of 3.5 MHz on every machine (TZX: 1 T = 1/3500000 s);
+// ms, ns and wav samples are made into ticks at this rate, nowhere else.
+#define TAPTPS		3500000		// ticks per second
+#define TAPE_MS_TICKS	(TAPTPS / 1000)	// ticks per ms
 #define TAPE_PAUSE_TICKS (TAPTPS / 5)	// a gap this long is the end of a block
 #define TAPE_TAIL_TICKS  (TAPTPS / 10)	// run-out played after the last pulse
 #define TAPE_RATE_BITS	32		// fraction bits of ticksPerNsFixed
-#define TAPE_CLOCK_HZ	3500000		// what a tape tick is: a T state of the 48K's clock (TZX, TAP)
 #define TAPE_GONE_TICKS	69888		// a frame of the port read, and never as a loader: it has gone
 
-// ZX spectrum signal timings
-// 1T ~ 284ns ~ 0.284mks @ 3.51MHz
-// pilot	2168T	615 mks
-// sync1	667T	189 mks
-// sync2	735T	208 mks
-// 0		855T	242 mks
-// 1		1710T	485 mks
-// sync3	954T	270 mks
-#define	PILOTLEN	2168*TAPCPUNS/TAPTICKNS
-#define	SYNC1LEN	667*TAPCPUNS/TAPTICKNS
-#define	SYNC2LEN	735*TAPCPUNS/TAPTICKNS
-#define	SIGN0LEN	855*TAPCPUNS/TAPTICKNS
-#define	SIGN1LEN	1710*TAPCPUNS/TAPTICKNS
+// ZX spectrum signal timings, T
+#define	PILOTLEN	2168
+#define	SYNC1LEN	667
+#define	SYNC2LEN	735
+#define	SIGN0LEN	855
+#define	SIGN1LEN	1710
 
 // A pulse carries its level in bit 7 of TapeSignal.vol. A pause is marked by
 // a volume at the middle, and still carries the level change that closes the
-// pulse before it. The lengths above are T states at the standard clock,
-// whatever clock the machine playing the tape runs at.
+// pulse before it.
 #define TAP_VOL_PAUSE(v)	(((v) == 0x80) || ((v) == 0x7f))
 #define TAP_VOL_LEV(v)		(((v) & 0x80) ? 1 : 0)
 #define TAP_PAUSE_VOL(lev)	((lev) ? 0x80 : 0x7f)
-#define TAPE_STD_TPS		3500000
-
-// A pulse carries its level in bit 7 of TapeSignal.vol. A pause is marked by
-// a volume at the middle, and still carries the level change that closes the
-// pulse before it. The lengths above are T states at the standard clock,
-// whatever clock the machine playing the tape runs at.
-#define TAP_VOL_PAUSE(v)	(((v) == 0x80) || ((v) == 0x7f))
-#define TAP_VOL_LEV(v)		(((v) & 0x80) ? 1 : 0)
-#define TAP_PAUSE_VOL(lev)	((lev) ? 0x80 : 0x7f)
-#define TAPE_STD_TPS		3500000
 
 enum {
 	TAPE_HEAD = 0,

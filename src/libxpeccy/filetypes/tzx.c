@@ -19,10 +19,6 @@ typedef struct {
 	void(*callback)(FILE*, Tape*);
 } tzxBCall;
 
-//#define NS_TICK TAPCPUNS
-//#define NS_TICK 284
-// #define NS_TICK tape->t_ns
-
 static int sigLens[] = {PILOTLEN,SYNC1LEN,SYNC2LEN,SIGN0LEN,SIGN1LEN,0,-1};	// 0->SYNC3LEN
 
 // the levels of signals from..to turned over, a pause's with its pulse's
@@ -35,7 +31,7 @@ static void tzxFlip(TapeBlock* blk, int from, int to) {
 // (a high pause after a low pulse) lasts 1 ms, then the level falls (TZX 1.20). Held
 // high through the pause, the ear bit read 1 where the machine hears nothing.
 static void tzxAddSettled(Tape* tape, TapeBlock* blk, int prevPulse) {
-	int ms1 = 1e6 / TAPTICKNS;		// as the reader turns a pause's ms into ticks
+	int ms1 = TAPE_MS_TICKS;
 	int n = blk->sigCount;
 	int split = 0;
 	int pp = prevPulse;
@@ -172,7 +168,7 @@ static void tzxCloseBlock(Tape* tape, int ms) {
 		blk->hasBytes = 1;
 		blk->isHeader = !(tapGetBlockByte(blk, 0) & 0x80);	// as tapDataToBlock has it
 	}
-	blkAddPause(blk, ms * 1e6 / TAPTICKNS);
+	blkAddPause(blk, ms * TAPE_MS_TICKS);
 	tzxAddBlock(tape);
 	blkClear(blk);
 }
@@ -206,11 +202,11 @@ void tzxBlock10(FILE* file, Tape* tape) {
 // #11: <pilot:2>,<sync1:2>,<sync2:2>,<bit0:2>,<bit1:2>,<pilotcnt:2>,<usedbits:1>,<pause:2>,<datalen:3>,{data}
 void tzxBlock11(FILE* file, Tape* tape) {
 	int altLens[7];
-	altLens[0] = fgetw(file) * TAPCPUNS / TAPTICKNS;	// pilot
-	altLens[1] = fgetw(file) * TAPCPUNS / TAPTICKNS;	// sync1
-	altLens[2] = fgetw(file) * TAPCPUNS / TAPTICKNS;	// sync2
-	altLens[3] = fgetw(file) * TAPCPUNS / TAPTICKNS;	// 0
-	altLens[4] = fgetw(file) * TAPCPUNS / TAPTICKNS;	// 1
+	altLens[0] = fgetw(file);	// pilot
+	altLens[1] = fgetw(file);	// sync1
+	altLens[2] = fgetw(file);	// sync2
+	altLens[3] = fgetw(file);	// 0
+	altLens[4] = fgetw(file);	// 1
 	altLens[6] = fgetw(file);			// pilot pulses
 	int bits = fgetc(file);				// used bits in last byte
 	int pausems = fgetw(file);
@@ -232,7 +228,7 @@ void tzxBlock11(FILE* file, Tape* tape) {
 
 // #12: <pulselen:2>,<count:2>
 void tzxBlock12(FILE* file, Tape* tape) {
-	int len = fgetw(file) * TAPCPUNS / TAPTICKNS;	// Length of one pulse in T-states -> mks
+	int len = fgetw(file);		// Length of one pulse in T-states
 	int count = fgetw(file);		// Number of pulses
 	while (count > 0) {
 		blkAddPulse(&tape->tmpBlock, len, -1);
@@ -247,7 +243,7 @@ void tzxBlock13(FILE* file, Tape* tape) {
 	int len;
 	int count = fgetc(file);
 	while (count > 0) {
-		len = fgetw(file) * TAPCPUNS / TAPTICKNS;
+		len = fgetw(file);
 		blkAddPulse(&tape->tmpBlock, len, -1);
 		count--;
 	}
@@ -257,12 +253,12 @@ void tzxBlock13(FILE* file, Tape* tape) {
 
 // #14: <bit0:2>,<bit1:2>,<usedbits:1>,<pause:2>,<len:3>,{data:len}
 void tzxBlock14(FILE* file, Tape* tape) {
-	int bit0 = fgetw(file) * TAPCPUNS / TAPTICKNS;
-	int bit1 = fgetw(file) * TAPCPUNS / TAPTICKNS;
+	int bit0 = fgetw(file);
+	int bit1 = fgetw(file);
 	int data;
 	int bits = fgetc(file);			// used bits in last byte
 	int pausems = fgetw(file);
-	int pause = pausems * 1e6 / TAPTICKNS;	// ms -> ticks
+	int pause = pausems * TAPE_MS_TICKS;
 	int len = fgett(file);
 	TapeBlock* blk = &tape->tmpBlock;
 	int pre = blk->sigCount;
@@ -312,9 +308,9 @@ void tzxBlock14(FILE* file, Tape* tape) {
 void tzxBlock15(FILE* file, Tape* tape) {
 	if (tape->tmpBlock.pend14) tzxCloseRun(tape, 0);
 	tape->tmpBlock.ownLev = 1;
-	int size = fgetw(file) * TAPCPUNS / TAPTICKNS;
+	int size = fgetw(file);
 	int pausems = fgetw(file);
-	int pause = pausems * 1e6 / TAPTICKNS;
+	int pause = pausems * TAPE_MS_TICKS;
 	int last = fgetc(file);
 	if ((last < 1) || (last > 8)) last = 8;		// bits used in the last byte
 	int len = (fgett(file) - 1) * 8 + last;		// bits
@@ -396,7 +392,7 @@ void tzxBlock18(FILE* file, Tape* tape) {
 			i += 4;
 		}
 		samples += n;
-		long long end = samples * 1000000000LL / (rate * TAPTICKNS);
+		long long end = samples * TAPTPS / rate;
 		blkAddPulse(&tape->tmpBlock, (int)(end - ticks), -1);
 		ticks = end;
 	}
@@ -413,7 +409,7 @@ static void tzxSymbol(Tape* tape, unsigned char* def, int npulses) {
 	int flag = def[0] & 3;
 	int i;
 	for (i = 0; i < npulses; i++) {
-		int len = (def[1 + i * 2] | (def[2 + i * 2] << 8)) * TAPCPUNS / TAPTICKNS;
+		int len = def[1 + i * 2] | (def[2 + i * 2] << 8);
 		if (len == 0) break;
 		// the signal the symbol goes on from: the last one played, which is
 		// in the block before when this one has none yet
@@ -508,7 +504,7 @@ void tzxBlock20(FILE* file, Tape* tape) {
 	if (tzxCloseRun(tape, ms)) {
 		// closed with the pause
 	} else if (ms) {
-		blkAddPause(&tape->tmpBlock, ms * 1e6 / TAPTICKNS);
+		blkAddPause(&tape->tmpBlock, ms * TAPE_MS_TICKS);
 	}
 	if (!ms) {
 		tape->tmpBlock.breakPoint = 1;

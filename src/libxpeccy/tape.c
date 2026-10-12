@@ -17,7 +17,7 @@ Tape* tape_create(cbirq cb, void* p) {
 	tap->xirq = cb;
 	tap->xptr = p;
 	tap->volPlay = 0x80;
-	tape_set_tick_ns(tap, TAPTICKNS);
+	tape_set_tick_ns(tap, 1e9 / TAPTPS);
 	tap->speed = 100;
 	tap->autorew = 1;
 	tap->ldBase = -1;
@@ -33,10 +33,10 @@ void tape_destroy(Tape* tap) {
 	free(tap);
 }
 
-// The machine's own tick period: tzx/tap times are T states, and this is what
-// one of them lasts. A fixed 284ns tick (3.52MHz) made every pulse .6% short
-// of what a 3.5MHz loader measures, which is enough for a loader that checks
-// its pilot against a fixed length to reject the tape outright.
+// The tick period: tzx/tap times are T states at 3.5MHz, and this is what one
+// of them lasts. A 284ns tick (3.52MHz) made every pulse .6% short of what a
+// 3.5MHz loader measures, which is enough for a loader that checks its pilot
+// against a fixed length to reject the tape outright.
 // Kept as its reciprocal: tapSync runs once per opcode, and a divide by a
 // variable there is an idiv the compiler cannot fold away.
 void tape_set_tick_ns(Tape* tap, double ns) {
