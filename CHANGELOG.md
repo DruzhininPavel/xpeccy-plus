@@ -42,6 +42,11 @@ before that point is upstream's history and is not repeated here.
   Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
   which the +3 reads too, show as well.
 
+### Changed
+
+- **Faster emulation** of the Sinclair machines: about a quarter faster on the 48K, a fifth
+  on the 128K and two fifths on the +2A/+3, with every machine running exactly as before.
+
 ### Fixed
 
 - **720K disks on the +3** load again: the second side of a double-sided disk read as an
