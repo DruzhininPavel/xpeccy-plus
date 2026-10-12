@@ -140,7 +140,6 @@ static const szxField fld_vid[] = {
 	FLD(Video, nsOwedFixed),
 	FLD(Video, nsCalmFixed),
 	FLD(Video, time),
-	FLD(Video, busy),
 	FLD(Video, flash),
 	FLD(Video, vidPage),
 	FLD(Video, brdcol),
@@ -155,8 +154,6 @@ static const szxField fld_vid[] = {
 	FLD(Video, intp),
 	FLD(Video, intsize),
 	FLD(Video, scrsize),
-	FLD(Video, inth),
-	FLD(Video, intf),
 	FLD(Video, idx),
 	FLD(Video, tsconf),
 	FLD(Video, line),		// the line TSConf's layers are drawn into, half done mid-line
@@ -687,7 +684,6 @@ static void ext_vid(Computer* comp, const unsigned char* p, size_t n) {
 	vid->nsOwedFixed = tmp_.nsOwedFixed;
 	vid->nsCalmFixed = tmp_.nsCalmFixed;
 	vid->time = tmp_.time;
-	vid->busy = tmp_.busy;
 	vid->flash = tmp_.flash;
 	vid->vidPage = tmp_.vidPage;
 	vid->brdcol = tmp_.brdcol;
@@ -701,8 +697,6 @@ static void ext_vid(Computer* comp, const unsigned char* p, size_t n) {
 	vid->intp = tmp_.intp;
 	vid->intsize = tmp_.intsize;
 	vid->scrsize = tmp_.scrsize;
-	vid->inth = tmp_.inth;
-	vid->intf = tmp_.intf;
 	vid->idx = tmp_.idx;
 	memcpy(&vid->tsconf, &tmp_.tsconf, sizeof(vid->tsconf));
 	memcpy(vid->line, tmp_.line, sizeof(vid->line));

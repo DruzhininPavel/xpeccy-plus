@@ -216,10 +216,6 @@ void vid_set_ray(Video* vid, int dots) {
 	int p = vid_wrap(vid, b + (vid->vend.y - 1) * fx + vid->vend.x);
 	vid->ray.y = p / fx;
 	vid->ray.x = p % fx;
-	// xs/ys restart at bord.x on line bord.y
-	int s = vid_wrap(vid, p - vid->bord.y * fx - vid->bord.x);
-	vid->ray.ys = s / fx;
-	vid->ray.xs = s % fx;
 	vid->hblank = (vid->ray.x >= vid->vend.x);
 	vid->vblank = (vid->ray.y >= vid->vend.y);
 	vid->hbrd = (vid->ray.x < vid->bord.x) || (vid->ray.x >= vid->send.x);
@@ -1575,7 +1571,6 @@ void vid_tick(Video* vid) {
 	// move ray to next dot, update counters
 	vid->ray.x++;
 	vid->ray.xb++;
-	vid->ray.xs++;
 	if (vid->ray.x >= vid->full.x) {			// new line
 		vid_line(vid);					// next row of the image buffer
 		vid->hblank = 0;
@@ -1606,11 +1601,6 @@ void vid_tick(Video* vid) {
 			vid->cb->line(vid);
 		vid->vbrd = (vid->ray.y < vid->bord.y) || (vid->ray.y >= vid->send.y);
 	}
-	if (vid->ray.x == vid->bord.x) {
-		vid->ray.xs = 0;
-		vid->ray.ys++;
-		if (vid->ray.y == vid->bord.y) vid->ray.ys = 0;
-	}
 	if (vid->ray.x == vid->vend.x) {			// hblank
 		vid->ray.xb = 0;
 		vid->ray.yb++;
@@ -1631,19 +1621,12 @@ void vid_tick(Video* vid) {
 	} else if ((vid->ray.yb == vid->intp.y) && (vid->ray.xb == vid->intp.x) && (vid->inten & 1)) {		// added: ...and frame int enabled
 		vid->xirq(IRQ_VID_INT, vid->xptr);
 	}
-	if (vid->busy > 0) {
-		vid->busy--;
-		if ((vid->busy == 0) && vid->cbCount)
-			vid->cbCount(vid);
-	}
-	if (vid->inth > 0) vid->inth--;
-	if (vid->intf > 0) vid->intf--;
 }
 
 // How many of the next n dots vid_tick() would do nothing for but draw and
-// count: the run stops short of the line end, the border edges, the blanking,
-// the interrupt edge and the end of a busy count, which are all left to
-// vid_tick() itself. 0 when the very next dot is one of those.
+// count: the run stops short of the line end, the border edges, the blanking
+// and the interrupt edge, which are all left to vid_tick() itself. 0 when the
+// very next dot is one of those.
 static int vid_run_len(Video* vid, int n) {
 	int x = vid->ray.x;
 	int k = n;
@@ -1656,7 +1639,6 @@ static int vid_run_len(Video* vid, int n) {
 	} else if ((vid->inten & 1) && (vid->ray.yb == vid->intp.y) && (vid->intp.x > vid->ray.xb)) {
 		if (vid->intp.x - 1 - vid->ray.xb < k) k = vid->intp.x - 1 - vid->ray.xb;
 	}
-	if ((vid->busy > 0) && (vid->busy - 1 < k)) k = vid->busy - 1;
 	return k;
 }
 
@@ -1698,11 +1680,7 @@ static void vid_run(Video* vid, int k) {
 	vid->hbrd = (end < vid->bord.x) || (end >= vid->send.x);
 	vid->ray.x = end;
 	vid->ray.xb += k;
-	vid->ray.xs += k;
 	if (vid->intFRAME > 0) vid->intFRAME -= k;
-	if (vid->busy > 0) vid->busy -= k;
-	vid->inth = (vid->inth > k) ? vid->inth - k : 0;
-	vid->intf = (vid->intf > k) ? vid->intf - k : 0;
 }
 
 // Draws the whole dots that nsDrawFixed holds. The ray steps in fixed point ns.

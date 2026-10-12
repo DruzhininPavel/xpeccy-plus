@@ -126,7 +126,6 @@ struct Video {
 	long long nsOwedFixed;	// fraction of a ns owed to vid->time, carried not dropped
 	long long nsCalmFixed;	// nsDrawFixed may grow up to this with no dot drawn (vid_sync_lazy)
 	int time;		// whole ns drawn since the step began
-	int busy;		// (cycles) to emulate busy period
 	int dotPerFrame;
 
 	int flash;
@@ -145,7 +144,6 @@ struct Video {
 
 	int vmode;
 	xVideoMode* cb;
-	cbvid cbCount;		// call when busy count down to 0
 
 	cbxrd mrd;		// external memory reading
 	cbirq xirq;		// interrupt
@@ -176,8 +174,6 @@ struct Video {
 	int idx;
 
 	vCoord scrsize;		// << tsconf.xSize, tsconf.ySize
-	int inth;		// interrupts
-	int intf;
 
 	struct {
 		int xPos;			// position of screen @ monitor [32|12] x [44|24|0]

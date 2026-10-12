@@ -24,8 +24,6 @@ typedef struct {
 	int y;
 	int xb;		// from leading edge of hblank/vblank
 	int yb;
-	int xs;		// from top-left corner of main screen
-	int ys;
 } vRay;
 
 typedef struct {
