@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int hwflags = 0;
-
 extern HardWare dum_hw_core;
 extern HardWare z48_hw_core;
 extern HardWare z128_hw_core;
@@ -175,30 +173,3 @@ void hwOut(xPort* ptab, Computer* comp, int port, int val, int mult) {
 	}
 }
 
-// max 32 ports
-xPortValue pvTab[33];
-
-xPortValue* hwGetPorts(Computer* comp) {
-	int i = 0;
-	xPortDsc* tab = comp->hw->portab;
-	if (tab) {
-		void* ptr;
-		while ((tab[i].port > 0) && (i < 33)) {
-			pvTab[i].port = tab[i].port;
-			if (tab[i].offset) {
-				ptr = ((void*)comp) + tab[i].offset;
-				switch(tab[i].type) {
-					case REG_BYTE: pvTab[i].value = *((unsigned char*)ptr) & 0xff; break;
-					case REG_WORD: pvTab[i].value = *((unsigned short*)ptr) & 0xffff; break;
-					case REG_32: pvTab[i].value = *((unsigned int*)ptr); break;
-					default: pvTab[i].value = *((unsigned char*)ptr) & 0xff; break;
-				}
-			} else if (comp->hw->in) {
-				pvTab[i].value = comp->hw->in(comp, pvTab[i].port);
-			}
-			i++;
-		}
-	}
-	pvTab[i].port = -1;
-	return pvTab;
-}

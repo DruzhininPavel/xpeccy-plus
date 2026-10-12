@@ -133,7 +133,6 @@ void difDestroy(DiskIF*);
 
 void difReset(DiskIF*);
 void difSync(DiskIF*, int);
-void difTerminal(DiskIF*);
 int difOut(DiskIF*, int, int, int);
 int difIn(DiskIF*, int, int*, int);
 

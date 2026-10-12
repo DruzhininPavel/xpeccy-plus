@@ -101,22 +101,6 @@ typedef struct {
 } Mouse;
 
 typedef struct {
-	int key;
-	const char seq[8];
-} xKeySeq;
-
-typedef struct {
-	char key;
-	unsigned char row;
-	unsigned char mask;
-} xKeyMtrx;
-
-typedef struct {
-	int pos;
-	unsigned char data[16];
-} xKeyBuf;
-
-typedef struct {
 	unsigned char cpmCode;
 	unsigned char rowScan;
 } atmKey;
@@ -222,7 +206,6 @@ Keyboard* kbd_create(cbirq, void*);
 void kbd_destroy(Keyboard*);
 void kbd_set_type(Keyboard*, int);
 void kbd_set_core(Keyboard*, xKbdCore*);
-// void kbdSetMode(Keyboard*, int);
 void kbd_press(Keyboard*, keyEntry*);
 void kbd_release(Keyboard*, keyEntry*);
 void kbdTrigger(Keyboard*, keyEntry*);
@@ -231,17 +214,8 @@ void kbd_reset(Keyboard*);
 void kbd_sync(Keyboard*, int);
 void kbd_set_repeat(Keyboard*, int);
 int kbd_rd(Keyboard*, int);
-void kbd_wr(Keyboard*, int, int);
-// TODO: terminate this:
-//void key_press_seq(Keyboard* kbd, keyScan* tab, int* mtrx, unsigned char* xk);
-//void key_release_seq(Keyboard* kbd, keyScan* tab, int* mtrx, unsigned char* xk);
-//void xt_press(Keyboard*, keyEntry*);
-//void xt_release(Keyboard*, keyEntry*);
 int xt_read(Keyboard*);
 void xt_log_clear(Keyboard*);
-// void kbd_nec_write(Keyboard*, int, int);
-//void xt_sync(Keyboard*, int);
-// end of TODO
 
 Mouse* mouseCreate(cbirq, void*);
 void mouseDestroy(Mouse*);

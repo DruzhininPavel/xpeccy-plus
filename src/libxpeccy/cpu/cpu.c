@@ -22,13 +22,6 @@ int parity(int val) {
 	return parity & 1;
 }
 
-// TODO: apply cpu adr bus mask here
-int cpu_fetch(CPU* cpu, int adr) {return cpu->mrd(adr, 1, cpu->xptr);}
-int cpu_mrd(CPU* cpu, int adr) {return cpu->mrd(adr, 0, cpu->xptr);}
-void cpu_mwr(CPU* cpu, int adr, int v) {cpu->mwr(adr, v, cpu->xptr);}
-int cpu_ird(CPU* cpu, int adr) {return cpu->ird(adr, cpu->xptr);}
-void cpu_iwr(CPU* cpu, int adr, int v) {cpu->iwr(adr, v, cpu->xptr);}
-
 // no-proc
 
 const char nomnem[] = "undef";
@@ -39,8 +32,6 @@ xRegDsc nil_reg_tab[] = {
 
 void nil_reset(CPU* cpu) {}
 int nil_exec(CPU* cpu) {return 1;}
-int nil_int(CPU* cpu) {return 1;}
-int nil_nmi(CPU* cpu) {return 1;}
 xAsmScan nil_asm(int adr, const char* com, char* buf) {
 	xAsmScan res;
 	res.match = 0;
@@ -54,11 +45,6 @@ xMnem nil_mnem(CPU* cpu, int adr, cbdmr mrd, void* data) {
 	res.cond = 0;
 	return res;
 }
-void nil_get_regs(CPU* cpu, xRegBunch* bunch) {}
-void nil_set_regs(CPU* cpu, xRegBunch bunch) {}
-int nil_get_flag(CPU* cpu) {return 0;}
-void nil_set_flag(CPU* cpu, int v) {}
-
 cpuCore dumCore = {CPU_NONE, "none", nil_reg_tab, 8, NULL, nil_reset, nil_exec, nil_asm, nil_mnem};
 
 extern xRegDsc z80RegTab[];
@@ -518,19 +504,6 @@ int reg_set_value(CPU* cpu, xRegDsc* dsc, int val) {
 		res = 0;
 	}
 	return res;
-}
-
-xRegister cpuGetReg(CPU* cpu, int id) {
-	xRegister reg;
-	reg.size = REG_EOT;
-	xRegDsc* rd = find_reg_id(cpu, id);
-	if (rd) {
-		reg.size = rd->size;
-		reg.flag = rd->flag;
-		reg.name = rd->name;
-		reg.value = reg_get_value(cpu, rd);
-	}
-	return reg;
 }
 
 // f is pointer to bool variable: false if register doesn't exists

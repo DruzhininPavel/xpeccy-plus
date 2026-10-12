@@ -226,7 +226,6 @@ typedef struct {
 	long long tickAcc;
 } TapePos;
 TapePos tape_pos(Tape*);
-void tape_set_sig_len(Tape*, int);
 int tap_play_on(Tape*, int);
 void tape_set_speed(Tape*, int);
 void tapNextBlock(Tape*);
@@ -247,7 +246,6 @@ void tapArmPlay(Tape*);
 TapeBlockInfo tapGetBlockInfo(Tape*,int);
 int tapGetBlocksInfo(Tape*,TapeBlockInfo*);
 int tapGetBlockData(Tape*,int,unsigned char*,int);
-int tapGetBlockTime(Tape*,int,int);
 unsigned char tapGetBlockByte(TapeBlock*,int);
 
 void tap_add_block(Tape*,TapeBlock);

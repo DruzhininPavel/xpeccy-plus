@@ -201,46 +201,6 @@ void tsReset(TSound* ts) {
 	ts->r_stat = 0;		// read chip registers, as any AY does. TSFM switches this on itself
 }
 
-void tsSetRomSize(TSound* ts, int sz) {
-	if (sz < 1) {
-		if (ts->rom.data) {
-			free(ts->rom.data);
-			ts->rom.data = NULL;
-			ts->rom.size = 0;
-			ts->rom.mask = 0;
-		}
-	} else {
-		if (sz < MEM_256) {
-			sz = MEM_256;
-		} else if (sz > MEM_128K) {
-			sz = MEM_128K;
-		} else {
-			int s = MEM_256;
-			while (s < sz) {
-				s <<= 1;
-			}
-			sz = s;
-		}
-		ts->rom.data = realloc(ts->rom.data, sz);
-		ts->rom.size = sz;
-		ts->rom.mask = sz - 1;
-	}
-}
-
-void tsLoadRom(TSound* ts, const char* path) {
-	FILE* file = fopen(path, "rb");
-	if (file) {
-		fseek(file, 0, SEEK_END);
-		int sz = ftell(file);
-		rewind(file);
-		tsSetRomSize(ts, sz);
-		fread(ts->rom.data, ts->rom.size, 1, file);
-		fclose(file);
-	} else {
-		tsSetRomSize(ts, 0);
-	}
-}
-
 // fffd (a14 = 1)	wr:reg.num	rd:reg.data
 // bffd (a14 = 0)	wr:reg.data	rd:FF
 
@@ -300,16 +260,6 @@ void tsOut(TSound* ts, int port, int val) {
 	} else {
 		ts->curChip->wr(ts->curChip, port, val);
 	}
-}
-
-int tsReadRom(TSound* ts, int adr) {
-	int r;
-	if (ts->rom.size > adr) {
-		r = ts->rom.data[adr];
-	} else {
-		r = 0x00;
-	}
-	return r;
 }
 
 // overall

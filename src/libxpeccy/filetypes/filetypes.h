@@ -312,7 +312,6 @@ int snapHwIs(int snap, int hwid);
 
 int loadSZX(Computer*, const char*, int);
 int loadSZX_buf(Computer*, const unsigned char*, size_t);
-int saveSZX(Computer*, const char*, int);
 int szxCanSave(Computer*);
 int szxGetHardware(const char*);
 int szx_hardware_of(const unsigned char*, size_t);
@@ -327,7 +326,6 @@ int z80_hardware_of(const unsigned char*, int);
 int loadZ80(Computer*,const char*, int);
 int loadZ80_f(Computer*, FILE*);
 int saveZ80(Computer*, const char*, int);
-int z80CanSave(Computer*);			// the format can name this machine
 int z80GetHardware(const char*);
 
 int loadSNA(Computer*,const char*, int);

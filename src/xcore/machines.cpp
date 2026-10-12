@@ -814,7 +814,6 @@ void xm_set_roms(const xRomset& rs, bool poweron) {
 	bool withfnt = poweron || (rs.fntFile != conf.roms.fntFile);
 	conf.roms = rs;
 	Computer* comp = conf.zx;
-	tsSetRomSize(comp->ts, 0);
 	mac_load_rom(comp, rs.roms, rs.gsFile, rs.fntFile, withfnt);
 	emu_unlock();
 }

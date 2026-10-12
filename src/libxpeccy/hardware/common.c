@@ -7,29 +7,6 @@
 
 int compflags = 0;
 
-// debug
-
-int brkIn(Computer* comp, int port) {
-	xlog(XLG_HW, XLL_ERROR, "IN %.4X (dos:rom:cpm = %i:%i:%i)",port,comp->flgDOS,comp->flgROM,comp->flgCPM);
-	assert(0);
-	//comp->brk = 1;
-	return -1;
-}
-
-void brkOut(Computer* comp, int port, int val) {
-	xlog(XLG_HW, XLL_ERROR, "OUT %.4X,%.2X (dos:rom:cpm = %i:%i:%i)",port,val,comp->flgDOS,comp->flgROM,comp->flgCPM);
-	assert(0);
-	//comp->brk = 1;
-}
-
-int dummyIn(Computer* comp, int port) {
-	return -1;
-}
-
-void dummyOut(Computer* comp, int port, int val) {
-
-}
-
 // mem
 
 // The 128K memory map, which the Pentagon inherits: the ROM pair at 0x0000

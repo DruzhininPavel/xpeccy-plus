@@ -696,7 +696,6 @@ void compReset(Computer* comp,int res) {
 
 	vid_reset(comp->vid);
 	// kbdReleaseAll(comp->keyb);
-//	kbdSetMode(comp->keyb, KBD_SPECTRUM);
 	difReset(comp->dif);
 	// a level left high is a dc on the mix, and the ear bit reads it back
 	bcReset(comp->beep);

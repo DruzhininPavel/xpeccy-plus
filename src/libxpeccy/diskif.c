@@ -107,16 +107,11 @@ void bdiReset(DiskIF* dif) {
 	bdiOut(dif, 0xff, 0x00, 1);
 }
 
-void bdiSync(DiskIF* dif, int ns) {
-	fdcSync(dif->fdc, ns);
-}
-
 // +3DOS (uPD765)
 
 void uReset(FDC*);
 unsigned char uRead(FDC*, int);
 void uWrite(FDC*, int, unsigned char);
-void uTCount(FDC*);
 
 int pdosGetPort(int p) {
 	int port = -1;
@@ -219,13 +214,6 @@ void fdc_set_irqn(FDC* fdc, int in, int irn, int iwn) {
 	fdc->irqwn = iwn;
 }
 
-void fdc_set_flps(FDC* fdc, Floppy* fa, Floppy* fb, Floppy* fc, Floppy* fd) {
-	fdc->flop[0] = fa;
-	fdc->flop[1] = fb;
-	fdc->flop[2] = fc;
-	fdc->flop[3] = fd;
-}
-
 void dif_align_flps(DiskIF* dif, FDC* fdc, int n0, int n1, int n2, int n3) {
 	fdc->flop[0] = dif->flp[n0 & 3];
 	fdc->flop[1] = dif->flp[n1 & 3];
@@ -310,9 +298,4 @@ int difOut(DiskIF* dif, int port, int val, int dos) {
 
 int difIn(DiskIF* dif, int port, int* res, int dos) {
 	return dif->hw->in(dif,port,res,dos);
-}
-
-void difTerminal(DiskIF* dif) {
-	if (dif->hw->term)
-		dif->hw->term(dif);
 }

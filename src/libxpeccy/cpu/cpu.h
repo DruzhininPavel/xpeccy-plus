@@ -221,7 +221,6 @@ xAsmScan scanAsmTab(const char*, opCode*);
 unsigned short cpu_peek_word(cbdmr, void*, int);	// little-endian word at adr, wrapping at 0xffff
 
 xRegBunch cpuGetRegs(CPU*);
-xRegister cpuGetReg(CPU*, int);
 void cpuSetRegs(CPU*, xRegBunch);
 xRegDsc* find_reg_type(CPU*, int);
 xRegDsc* find_reg_name(CPU*, const char*);
@@ -238,11 +237,6 @@ int reg_set_value(CPU*, xRegDsc*, int);
 
 int parity(int);
 
-int cpu_fetch(CPU*, int);
-int cpu_mrd(CPU*, int);
-void cpu_mwr(CPU*, int, int);
-int cpu_ird(CPU*, int);
-void cpu_iwr(CPU*, int, int);
 static inline void cpu_irq(CPU* cpu, int id) {cpu->xirq(id, cpu->xptr);}
 
 #ifdef __cplusplus

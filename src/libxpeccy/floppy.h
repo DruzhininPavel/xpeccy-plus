@@ -87,7 +87,6 @@ void flp_set_interleave(int);
 int flp_get_interleave();
 
 void flpFillFields(Floppy*,int,int);
-int flp_check_marker(Floppy*, int);
 
 void flpPutTrack(Floppy*,int,unsigned char*,int);
 void flpGetTrack(Floppy*,int,unsigned char*);

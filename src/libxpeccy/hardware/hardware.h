@@ -95,18 +95,12 @@ typedef struct {
 } xPort;
 
 typedef struct {
-	int port;
-	int value;
-} xPortValue;
-
-typedef struct {
 	int id;
 	HardWare* core;
 } tabHwItem;
 
 int hwIn(xPort* ptab, Computer* comp, int port);
 void hwOut(xPort* ptab, Computer* comp, int port, int val, int mult);
-xPortValue* hwGetPorts(Computer*);
 
 // extern HardWare hwTab[];
 
@@ -135,14 +129,6 @@ int stdMRd(Computer*, int, int);
 void stdMWr(Computer*, int, int);
 int asicMRd(Computer*, int, int);	// stdMRd/stdMWr plus the +2A/+3 bus latch
 void asicMWr(Computer*, int, int);
-
-// debug IO
-
-int brkIn(Computer*, int);
-void brkOut(Computer*, int, int);
-
-int dummyIn(Computer*, int);
-void dummyOut(Computer*, int, int);
 
 // common IO
 

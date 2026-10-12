@@ -890,24 +890,6 @@ void vid_set_col(Video* vid, int i, xColor xcol) {
 	vid->gpal[i & 0xff] = uint_to_grey(vid->pal[i & 0xff]);
 }
 
-void vid_set_red(Video* vid, int i, int v) {
-	xColor col = vid_get_col(vid, i);
-	col.r = v & 0xff;
-	vid_set_col(vid, i, col);
-}
-
-void vid_set_green(Video* vid, int i, int v) {
-	xColor col = vid_get_col(vid, i);
-	col.g = v & 0xff;
-	vid_set_col(vid, i, col);
-}
-
-void vid_set_blue(Video* vid, int i, int v) {
-	xColor col = vid_get_col(vid, i);
-	col.b = v & 0xff;
-	vid_set_col(vid, i, col);
-}
-
 // A preset palette only reaches the screen in the modes that show the plain 16
 // zx colors. A machine running a palette of its own keeps it and takes the
 // preset at its next reset.
@@ -1551,14 +1533,6 @@ void vidDrawTSLExt(Video*);
 void vidDrawTSLText(Video*);
 void vidDrawEvoText(Video*);
 
-// debug
-
-void vidBreak(Video* vid) {
-	xlog(XLG_VIDEO, XLL_DEBUG, "vid->mode = 0x%.2X",vid->vmode);
-	// assert(0);
-}
-
-
 // weiter
 
 // id,(@on),(@every_visible_dot),(@HBlank),(@LineStart),(@VBlank),(@Frame)
@@ -1814,6 +1788,3 @@ void vid_settle_slow(Video* vid) {
 	vid->nsCalmFixed = calm - (d - vid->nsDrawFixed);
 }
 
-void vid_sync(Video* vid, int ns) {
-	vid_sync_fixed(vid, NS_TO_FIXED(ns));
-}

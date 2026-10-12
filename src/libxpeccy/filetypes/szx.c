@@ -1029,11 +1029,3 @@ int szx_write(szxBuf* b, const char* name) {
 	sb_free(&o);
 	return res;
 }
-
-int saveSZX(Computer* comp, const char* name, int drv) {
-	szxBuf b;
-	int res = szx_build(comp, &b);
-	if (res == ERR_OK)
-		res = szx_write(&b, name);
-	return res;
-}

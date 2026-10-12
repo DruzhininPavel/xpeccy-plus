@@ -407,10 +407,6 @@ static void z80_write_page(FILE* file, unsigned char* src, int num) {
 	fwrite(raw ? src : buf, raw ? MEM_16K : len, 1, file);
 }
 
-int z80CanSave(Computer* comp) {
-	return z80_snap_hw(comp->hw->id) != SNAP_HW_UNKNOWN;
-}
-
 int saveZ80(Computer* comp, const char* name, int drv) {
 	int snap = z80_snap_hw(comp->hw->id);
 	if ((snap == SNAP_HW_128K) && (comp->snapModel == SNAP_HW_PLUS2))

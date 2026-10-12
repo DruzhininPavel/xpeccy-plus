@@ -252,7 +252,6 @@ Video* vidCreate(cbxrd, cbirq, void*);
 void vidDestroy(Video*);
 
 void vid_reset(Video*);
-void vid_sync(Video*,int);		// whole-ns entry point, for callers outside the ZX paths
 void vid_sync_fixed(Video*,long long);
 void vid_sync_lazy_slow(Video*,long long);
 void vid_unlazy_slow(Video*);
@@ -340,9 +339,6 @@ int vid_scr_bit(int);
 void vid_set_grey(int);
 xColor vid_get_col(Video*, int);
 void vid_set_col(Video*, int, xColor);
-void vid_set_red(Video*, int, int);
-void vid_set_green(Video*, int, int);
-void vid_set_blue(Video*, int, int);
 int vid_zx_palette(Video*);
 void vid_set_bcol(Video*, int, xColor);
 void vid_reset_col(Video*, int);

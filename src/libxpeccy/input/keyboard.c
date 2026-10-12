@@ -306,11 +306,6 @@ void kbd_destroy(Keyboard* keyb) {
 	free(keyb);
 }
 
-// TODO: make this obsolete
-void kbdSetMode(Keyboard* kbd, int mode) {
-	kbd->mode = mode;
-}
-
 // key press/release/trigger
 
 void kbd_press(Keyboard* kbd, keyEntry* ent) {
@@ -447,14 +442,6 @@ int kbd_rd(Keyboard* kbd, int port) {
 		}
 	}
 	return res;
-}
-
-void kbd_wr(Keyboard* kbd, int adr, int val) {
-	if (kbd->core) {
-		if (kbd->core->write) {
-			kbd->core->write(kbd, adr, val);
-		}
-	}
 }
 
 void kbd_sync(Keyboard* kbd, int ns) {

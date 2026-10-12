@@ -948,11 +948,6 @@ unsigned char uRead(FDC* fdc, int adr) {
 	return res;
 }
 
-// terminal count (TC pin)
-void uTCount(FDC* fdc) {
-	fdc->mr = 1;		// acts as Terminal Count: break current read/write operation
-}
-
 // Every plan a command can run, so a snapshot can name the one in progress
 // (dif_plan_id())
 fdcCall* const uPlans[] = {utermTab, uSpecify, uDrvStat, uCalib, uSeek, uReadID, uReadD01,
