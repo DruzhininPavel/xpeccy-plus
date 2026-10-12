@@ -293,6 +293,8 @@ class xGamepadController : public QObject {
 		bool gameImage(const QString&);		// an image was opened: true if player 1's table changed
 		void gameKeep();			// the game's table becomes the player's own
 		bool gameRevert();			// the player's own table back, the game's dropped: true if one was on
+		bool gameChanged();			// player 1's table is not the one the game's file gave
+		void gameUndo();			// ...and back to that one
 		QStringList tableLines(int);		// what config.conf keeps for a player
 		bool gameSave(const QString&);		// player 1's table as a game's file: without the player's own rows
 		// Presets: the .pad files loaded or saved by hand, the PRESET_MAX used
@@ -313,6 +315,7 @@ class xGamepadController : public QObject {
 	private:
 		QStringList gameOwn;			// player 1's own table while a game's is in effect
 		QStringList gameLines;			// what the game's file said, as confLines() has it
+		QStringList gameStart;			// player 1's table as the game's file left it
 		QString gameBeside;			// the open image's own .pad, there or not: never a preset
 		void meetNew(const QList<xPadDev>&, const int*);
 };
