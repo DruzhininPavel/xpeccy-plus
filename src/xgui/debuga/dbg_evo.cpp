@@ -618,20 +618,76 @@ void xTsSprPage::draw_pick() {
 		.arg(s.pal).arg(gethexbyte(s.pal << 4)).arg(gethexbyte((s.pal << 4) | 15)));
 }
 
-// MAP VIEW
+// FIT VIEW
 
-xTsMapView::xTsMapView(QWidget* p):QWidget(p) {
-	setMouseTracking(true);
-	setMinimumSize(128, 128);
-	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+xEvoFitView::xEvoFitView(QWidget* p):QWidget(p) {
+	fitW = 128;
+	setMinimumSize(64, 64);
+	setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
 }
 
-// the image as big as fits, square, in whole steps when it is bigger than 1:1
+void xEvoFitView::setFitWidth(int w) {
+	if (w == fitW) return;
+	fitW = w;
+	updateGeometry();
+}
+
+QSize xEvoFitView::sizeHint() const {
+	return QSize(fitW, minimumHeight());
+}
+
+void xEvoFitView::resizeEvent(QResizeEvent* ev) {
+	QWidget::resizeEvent(ev);
+	if (onResize) onResize();
+}
+
+// the labels go into box, top aligned; the page sets the box's width
+void evo_info_column(QWidget* box, QLabel** names, QLabel** vals, int n) {
+	QVBoxLayout* lay = new QVBoxLayout(box);
+	lay->setContentsMargins(0, 0, 0, 0);
+	QGridLayout* grid = new QGridLayout;
+	grid->setContentsMargins(0, 0, 0, 0);
+	for (int i = 0; i < n; i++) {
+		names[i] = new QLabel;
+		vals[i] = new QLabel;
+		names[i]->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+		vals[i]->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+		grid->addWidget(names[i], i, 0);
+		grid->addWidget(vals[i], i, 1);
+	}
+	grid->setColumnStretch(1, 1);
+	lay->addLayout(grid);
+	lay->addStretch(1);
+}
+
+// as wide as the widest name and the widest value can be, whatever is shown now
+int evo_info_width(const QFontMetrics& fm, const QStringList& names, const QStringList& vals) {
+	int nw = 0;
+	int vw = 0;
+	foreach (QString s, names) nw = qMax(nw, fm.horizontalAdvance(s));
+	foreach (QString s, vals) vw = qMax(vw, fm.horizontalAdvance(s));
+	return nw + vw + 2 * fm.averageCharWidth();
+}
+
+// MAP VIEW
+
+xTsMapView::xTsMapView(QWidget* p):xEvoFitView(p) {
+	setMouseTracking(true);
+	setMinimumSize(128, 128);
+}
+
+// as big as fits, square, in whole steps when it is bigger than 1:1
+int xTsMapView::sideFor(int w, int h) const {
+	int side = qMin(w, h);
+	if (side >= img.width()) side = (side / img.width()) * img.width();
+	return side;
+}
+
+// at the top left, so the values beside it stay close
 QRect xTsMapView::target() const {
 	if (img.isNull()) return QRect();
-	int side = qMin(width(), height());
-	if (side >= img.width()) side = (side / img.width()) * img.width();
-	return QRect((width() - side) / 2, (height() - side) / 2, side, side);
+	int side = sideFor(width(), height());
+	return QRect(0, 0, side, side);
 }
 
 void xTsMapView::paintEvent(QPaintEvent*) {
@@ -666,50 +722,64 @@ void xTsMapView::leaveEvent(QEvent*) {
 
 enum {TV_MAP0 = 0, TV_MAP1, TV_GFX};
 
+// the rows of the value column, for a map and for a graphics page
+static const QStringList tileMapNames = {"TMPage", "Cell", "Address", "Entry", "Tile", "Row", "Column", "Colors", "Flip", "Hole"};
+static const QStringList tileGfxNames = {"Page", "Tile", "Row", "Column", "Address", "Line step"};
+
 xTsTilePage::xTsTilePage(QWidget* p):xEvoPage(HW_TSLAB, p) {
 	hx = hy = -1;
+	shown = -1;
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
-	QHBoxLayout* row = new QHBoxLayout;
+	QHBoxLayout* top = new QHBoxLayout;
 	cbView = new QComboBox;
 	cbView->addItem("Map, layer 0", TV_MAP0);
 	cbView->addItem("Map, layer 1", TV_MAP1);
 	cbView->addItem("Graphics", TV_GFX);
 	cbView->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	row->addWidget(cbView);
-	row->addWidget(new QLabel("Page"));
+	top->addWidget(cbView);
+	top->addWidget(new QLabel("Page"));
 	sbPage = new QSpinBox;
 	sbPage->setDisplayIntegerBase(16);
 	sbPage->setRange(0, 255);
 	sbPage->setSingleStep(8);		// a graphics page is 8 pages long: 512x512 dots
-	row->addWidget(sbPage);
-	auto preset = [this, row](const char* name, const char* tip) {
+	top->addWidget(sbPage);
+	auto preset = [top](const char* name, const char* tip) {
 		QToolButton* tb = new QToolButton;
 		tb->setText(name);
 		tb->setToolTip(tip);
-		row->addWidget(tb);
+		top->addWidget(tb);
 		return tb;
 	};
 	tbT0G = preset("T0G", "The page T0GPage points at");
 	tbT1G = preset("T1G", "The page T1GPage points at");
 	tbSG = preset("SG", "The page SGPage points at");
-	row->addWidget(new QLabel("Palette"));
+	top->addWidget(new QLabel("Palette"));
 	sbPal = new QSpinBox;
 	sbPal->setRange(0, 15);
-	row->addWidget(sbPal);
-	row->addStretch(1);
-	lay->addLayout(row);
+	top->addWidget(sbPal);
+	top->addStretch(1);
+	lay->addLayout(top);
+	// the picture at the left, what is under the pointer beside it: the picture keeps
+	// its size whatever the values are
+	row = new QHBoxLayout;
 	view = new xTsMapView;
 	view->img = QImage(512, 512, QImage::Format_RGB32);
-	lay->addWidget(view, 1);
-	labInfo = new QLabel;
-	labInfo->setWordWrap(true);
-	lay->addWidget(labInfo);
+	row->addWidget(view);
+	infoBox = new QWidget;
+	evo_info_column(infoBox, names, vals, TILE_INFO);
+	row->addWidget(infoBox);
+	row->addStretch(1);
+	lay->addLayout(row, 1);
+	QLabel* legend = new QLabel("Checker: color 0, or a hole (tile 0 with its Z_EN off). Outlined: the part of the map the frame shows.");
+	legend->setWordWrap(true);
+	lay->addWidget(legend);
 	view->onHover = [this](int x, int y) {
 		hx = x;
 		hy = y;
 		hover_info();
 	};
+	view->onResize = [this]() {fit();};
 	auto redraw = [this]() {if (conf.zx && (conf.zx->hw->id == HW_TSLAB)) draw(conf.zx);};
 	connect(cbView, QOverload<int>::of(&QComboBox::currentIndexChanged), this, redraw);
 	connect(sbPage, QOverload<int>::of(&QSpinBox::valueChanged), this, redraw);
@@ -723,12 +793,45 @@ xTsTilePage::xTsTilePage(QWidget* p):xEvoPage(HW_TSLAB, p) {
 	connect(tbT0G, &QToolButton::clicked, this, [pick]() {pick(0);});
 	connect(tbT1G, &QToolButton::clicked, this, [pick]() {pick(1);});
 	connect(tbSG, &QToolButton::clicked, this, [pick]() {pick(2);});
+	setup();
+}
+
+// the names of the view picked; the column as wide as both views need, so it stays put
+void xTsTilePage::setup() {
+	int mode = cbView->currentData().toInt();
+	shown = mode;
+	const QStringList& nl = (mode == TV_GFX) ? tileGfxNames : tileMapNames;
+	infoBox->setFixedWidth(evo_info_width(QFontMetrics(font()), tileMapNames + tileGfxNames,
+		{"FF:3FFE", "63, 63", "4095", "F0..FF", "XF YF", "yes"}));
+	for (int k = 0; k < TILE_INFO; k++) {
+		names[k]->setVisible(k < nl.size());
+		vals[k]->setVisible(k < nl.size());
+		names[k]->setText(nl.value(k));
+	}
+	fit();
+}
+
+void xTsTilePage::changeEvent(QEvent* ev) {
+	xEvoPage::changeEvent(ev);
+	if ((ev->type() == QEvent::FontChange) && (shown >= 0)) setup();
+}
+
+// the picture as big as the height lets it be, the values right beside it
+void xTsTilePage::fit() {
+	int w = width() - infoBox->width() - row->spacing();
+	view->setFitWidth(qMax(view->minimumWidth(), view->sideFor(w, view->height())));
+}
+
+void xTsTilePage::resizeEvent(QResizeEvent* ev) {
+	xEvoPage::resizeEvent(ev);
+	fit();
 }
 
 void xTsTilePage::draw(Computer* comp) {
 	Video* vid = comp->vid;
 	int mode = cbView->currentData().toInt();
 	bool gfx = (mode == TV_GFX);
+	if (mode != shown) setup();
 	sbPage->setEnabled(gfx);
 	sbPal->setEnabled(gfx);
 	// the colors once, then each dot a lookup; 0 is a hole, drawn as the checker
@@ -772,33 +875,42 @@ void xTsTilePage::draw(Computer* comp) {
 	hover_info();
 }
 
+// the cell or tile under the pointer; "-" off the picture, the page's own register stays
 void xTsTilePage::hover_info() {
 	Computer* comp = conf.zx;
 	if (!comp || (comp->hw->id != HW_TSLAB)) return;
 	Video* vid = comp->vid;
 	int mode = cbView->currentData().toInt();
-	if ((hx < 0) || (hy < 0)) {
-		labInfo->setText((mode == TV_GFX) ? "64x64 tiles of 8x8 dots" : QString("TMPage %0; the frame shows the outlined part").arg(gethexbyte(vid->tsconf.TMPage)));
-		return;
-	}
+	bool in = (hx >= 0) && (hy >= 0);
 	int tx = hx >> 3;
 	int ty = hy >> 3;
+	QStringList vl;
 	if (mode == TV_GFX) {
-		int tile = (ty << 6) | tx;
-		int a = tsl_gfx_adr(sbPage->value(), tile, 0);
-		labInfo->setText(QString("Tile %0 (row %1, column %2): page %3, lines at %4 + n * 100")
-			.arg(tile).arg(ty).arg(tx).arg(gethexbyte(a >> 14)).arg(gethexword(a & 0x3fff)));
-		return;
+		vl << gethexbyte(sbPage->value());
+		if (in) {
+			int tile = (ty << 6) | tx;
+			int a = tsl_gfx_adr(sbPage->value(), tile, 0);
+			vl << QString::number(tile) << QString::number(ty) << QString::number(tx)
+				<< QString("%0:%1").arg(gethexbyte(a >> 14), gethexword(a & 0x3fff)) << "100";
+		}
+	} else {
+		vl << gethexbyte(vid->tsconf.TMPage);
+		if (in) {
+			tsMapCell c;
+			tsl_map_cell(vid, mode, ty, tx, &c);
+			QStringList fl;
+			if (c.entry & 0x4000) fl << "XF";
+			if (c.entry & 0x8000) fl << "YF";
+			vl << QString("%0, %1").arg(tx).arg(ty)
+				<< QString("%0:%1").arg(gethexbyte(c.adr >> 14), gethexword(c.adr & 0x3fff))
+				<< gethexword(c.entry) << QString::number(c.entry & 0xfff)
+				<< QString::number((c.entry & 0xfff) >> 6) << QString::number(c.entry & 63)
+				<< QString("%0..%1").arg(gethexbyte(c.pal), gethexbyte(c.pal | 15))
+				<< (fl.isEmpty() ? "-" : fl.join(" ")) << (c.hole ? "yes" : "no");
+		}
 	}
-	tsMapCell c;
-	tsl_map_cell(vid, mode, ty, tx, &c);
-	QStringList fl;
-	if (c.entry & 0x4000) fl << "XF";
-	if (c.entry & 0x8000) fl << "YF";
-	labInfo->setText(QString("Cell %0,%1 at %2:%3 = %4: tile %5 (row %6, column %7), colors %8..%9%10%11")
-		.arg(tx).arg(ty).arg(gethexbyte(c.adr >> 14)).arg(gethexword(c.adr & 0x3fff))
-		.arg(gethexword(c.entry)).arg(c.entry & 0xfff).arg((c.entry & 0xfff) >> 6).arg(c.entry & 63)
-		.arg(gethexbyte(c.pal)).arg(gethexbyte(c.pal | 15)).arg(fl.isEmpty() ? "" : " " + fl.join(" ")).arg(c.hole ? ", a hole (tile 0)" : ""));
+	for (int k = 0; k < TILE_INFO; k++)
+		vals[k]->setText(vl.value(k, names[k]->isVisibleTo(this) ? "-" : ""));
 }
 
 // BASECONF PORTS PAGE
@@ -903,12 +1015,10 @@ void xEvoPortsPage::draw(Computer* comp) {
 // them or not, so both machines get the same cells in the same dock.
 #define PAL_TAGS	4
 
-xEvoPalView::xEvoPalView(QWidget* p):QWidget(p) {
+xEvoPalView::xEvoPalView(QWidget* p):xEvoFitView(p) {
 	cols = rows = side = 0;
 	border = pick = -1;
 	setMouseTracking(true);
-	setMinimumSize(128, 64);
-	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 int xEvoPalView::tagColumn() const {
@@ -1009,11 +1119,6 @@ void xEvoPalView::leaveEvent(QEvent*) {
 	if (onHover) onHover(-1);
 }
 
-void xEvoPalView::resizeEvent(QResizeEvent* ev) {
-	QWidget::resizeEvent(ev);
-	if (onResize) onResize();
-}
-
 // PALETTE PAGE
 
 xEvoPalPage::xEvoPalPage(QWidget* p):xEvoPage(-1, p) {
@@ -1027,21 +1132,7 @@ xEvoPalPage::xEvoPalPage(QWidget* p):xEvoPage(-1, p) {
 	view = new xEvoPalView;
 	row->addWidget(view);
 	infoBox = new QWidget;
-	QVBoxLayout* ilay = new QVBoxLayout(infoBox);
-	ilay->setContentsMargins(0, 0, 0, 0);
-	QGridLayout* grid = new QGridLayout;
-	grid->setContentsMargins(0, 0, 0, 0);
-	for (int i = 0; i < PAL_INFO; i++) {
-		names[i] = new QLabel;
-		vals[i] = new QLabel;
-		names[i]->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-		vals[i]->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-		grid->addWidget(names[i], i, 0);
-		grid->addWidget(vals[i], i, 1);
-	}
-	grid->setColumnStretch(1, 1);
-	ilay->addLayout(grid);
-	ilay->addStretch(1);
+	evo_info_column(infoBox, names, vals, PAL_INFO);
 	row->addWidget(infoBox);
 	row->addStretch(1);
 	lay->addLayout(row, 1);
@@ -1075,12 +1166,7 @@ void xEvoPalPage::setup(int hw) {
 	} else {
 		nl << "Index" << "#FF" << "R" << "G" << "B" << "RGB" << "Used by";
 	}
-	QFontMetrics fm(font());
-	int nw = 0;
-	foreach (QString s, nl) nw = qMax(nw, fm.horizontalAdvance(s));
-	// the column as wide as its widest value can be, whatever is shown now
-	int vw = qMax(fm.horizontalAdvance("#FFFFFF"), fm.horizontalAdvance("border"));
-	infoBox->setFixedWidth(nw + vw + 2 * fm.averageCharWidth());
+	infoBox->setFixedWidth(evo_info_width(QFontMetrics(font()), nl, {"#FFFFFF", "border"}));
 	for (int k = 0; k < PAL_INFO; k++) {
 		names[k]->setVisible(k < nl.size());
 		vals[k]->setVisible(k < nl.size());
@@ -1171,7 +1257,7 @@ void xEvoPalPage::draw(Computer* comp) {
 // the grid as big as the height lets it be, the values right beside it
 void xEvoPalPage::fit() {
 	int w = width() - infoBox->width() - row->spacing();
-	view->setFixedWidth(qMax(64, view->widthFor(w, view->height())));
+	view->setFitWidth(qMax(64, view->widthFor(w, view->height())));
 }
 
 void xEvoPalPage::resizeEvent(QResizeEvent* ev) {

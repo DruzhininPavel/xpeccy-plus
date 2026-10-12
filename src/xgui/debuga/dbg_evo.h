@@ -80,13 +80,33 @@ class xTsSprPage : public xEvoPage {
 		void draw_pick();
 };
 
+// A picture its page sizes from the room it has, with a column of values beside it. It
+// asks for the width the page worked out and takes less when the page is narrower: a
+// fixed width would be the page's minimum, and the window could not get narrower then.
+class xEvoFitView : public QWidget {
+	public:
+		xEvoFitView(QWidget* = nullptr);
+		void setFitWidth(int);
+		QSize sizeHint() const;
+		std::function<void()> onResize;	// the page fits it again
+	protected:
+		void resizeEvent(QResizeEvent*);
+	private:
+		int fitW;
+};
+
+// a name and a value a row, in a column of a fixed width, so a value stays where it is
+void evo_info_column(QWidget* box, QLabel** names, QLabel** vals, int n);
+int evo_info_width(const QFontMetrics&, const QStringList& names, const QStringList& vals);
+
 // 512x512 dots of a tile map or a graphics page, scaled to fit, with rectangles on top
-class xTsMapView : public QWidget {
+class xTsMapView : public xEvoFitView {
 	public:
 		xTsMapView(QWidget* = nullptr);
 		QImage img;
 		QList<QRect> marks;		// in image dots
 		std::function<void(int, int)> onHover;	// image dot under the pointer, -1 when it left
+		int sideFor(int w, int h) const;	// the picture's side in w x h
 	protected:
 		void paintEvent(QPaintEvent*);
 		void mouseMoveEvent(QMouseEvent*);
@@ -95,11 +115,16 @@ class xTsMapView : public QWidget {
 		QRect target() const;
 };
 
+#define TILE_INFO	10	// name/value rows beside the tiles, the most a view has
+
 class xTsTilePage : public xEvoPage {
 	Q_OBJECT
 	public:
 		xTsTilePage(QWidget* = nullptr);
 		void draw(Computer*);
+	protected:
+		void resizeEvent(QResizeEvent*);
+		void changeEvent(QEvent*);
 	private:
 		QComboBox* cbView;
 		QSpinBox* sbPage;
@@ -107,16 +132,22 @@ class xTsTilePage : public xEvoPage {
 		QToolButton* tbT0G;
 		QToolButton* tbT1G;
 		QToolButton* tbSG;
+		QHBoxLayout* row;
 		xTsMapView* view;
-		QLabel* labInfo;
+		QWidget* infoBox;
+		QLabel* names[TILE_INFO];
+		QLabel* vals[TILE_INFO];
 		int hx, hy;			// dot under the pointer, -1 none
+		int shown;			// the view the names were set up for, -1 none
+		void setup();
 		void hover_info();
+		void fit();
 };
 
 // A grid of square palette cells, sized as a 16x16 one would be so that a machine with
 // fewer gets cells of the same size: names of the rows on the left, and on the right a
 // column for each tag, marked on the rows it is on.
-class xEvoPalView : public QWidget {
+class xEvoPalView : public xEvoFitView {
 	public:
 		xEvoPalView(QWidget* = nullptr);
 		int cols, rows;
@@ -129,11 +160,9 @@ class xEvoPalView : public QWidget {
 		int pick;			// the cell framed as picked, -1 none
 		std::function<void(int)> onHover;	// the cell under the pointer, -1 when it left
 		std::function<void(int)> onPick;
-		std::function<void()> onResize;
 		int widthFor(int w, int h);	// and the cells take the size that fits there
 	protected:
 		void paintEvent(QPaintEvent*);
-		void resizeEvent(QResizeEvent*);
 		void mouseMoveEvent(QMouseEvent*);
 		void mousePressEvent(QMouseEvent*);
 		void leaveEvent(QEvent*);
