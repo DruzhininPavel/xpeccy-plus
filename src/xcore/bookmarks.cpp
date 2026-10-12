@@ -12,7 +12,7 @@ void addBookmark(std::string nm, std::string fp) {
 
 // one file whichever way its path was written; no disk access, so a favorite
 // on a drive that is gone cannot hold the menu up
-QString bkm_key(const QString& path) {
+static QString bkm_key(const QString& path) {
 	return QDir::cleanPath(QFileInfo(path).absoluteFilePath());
 }
 
@@ -51,17 +51,25 @@ void clearBookmarks() {
 	conf.bookmarkList.clear();
 }
 
-// Recent files: one entry per file, however its path was written
-void recent_remove(const QString& path) {
-	for (int i = conf.recentList.size() - 1; i >= 0; i--) {
-		if (bkm_same(conf.recentList[i], path))
-			conf.recentList.removeAt(i);
+// Newest first, one entry per file, however its path was written
+static void mru_remove(QStringList& lst, const QString& path) {
+	for (int i = lst.size() - 1; i >= 0; i--) {
+		if (bkm_same(lst[i], path))
+			lst.removeAt(i);
 	}
 }
 
+void mru_add(QStringList& lst, const QString& path, int max) {
+	mru_remove(lst, path);
+	lst.prepend(bkm_key(path));
+	while (lst.size() > max)
+		lst.removeLast();
+}
+
+void recent_remove(const QString& path) {
+	mru_remove(conf.recentList, path);
+}
+
 void recent_add(const QString& path) {
-	recent_remove(path);
-	conf.recentList.prepend(bkm_key(path));
-	while (conf.recentList.size() > RECENT_MAX)
-		conf.recentList.removeLast();
+	mru_add(conf.recentList, path, RECENT_MAX);
 }

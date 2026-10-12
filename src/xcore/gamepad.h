@@ -107,6 +107,7 @@ int pad_scheme_kind(int);			// the joystick: both QAOPs are one
 const char* pad_kbd_key(int);			// GPK_* as config.conf has it, "" for none
 int pad_kbd_find(const QString&);		// GPK_NONE if the word is not one
 const char* pad_kbd_name(int);			// what the gui says
+QString pad_game_file(const QString&);		// an image's own .pad: beside it, with its name
 QString pad_key_name(int);			// a host key, XKEY_*, as the gui says it
 const char* pad_role_name(int);			// Up, Down...
 int pad_role_bit(const char*);			// XJ_* of a row by its config word (up, fire2...), 0 if none
@@ -300,7 +301,7 @@ class xGamepadController : public QObject {
 		void presetUsed(const QString&);
 		QStringList presetList();		// the ones still there, by name
 		bool presetLoad(xGamepad*, const QString&);
-		bool presetIs(xGamepad*, const QString&);	// the player's table is what the file says
+		bool presetIs(const QStringList&, const QString&);	// a table's confLines() are what the file says
 		QStringList seen;		// guids of the pads met so far, see newPad
 	signals:
 		void devicesChanged();
@@ -312,6 +313,7 @@ class xGamepadController : public QObject {
 	private:
 		QStringList gameOwn;			// player 1's own table while a game's is in effect
 		QStringList gameLines;			// what the game's file said, as confLines() has it
+		QString gameBeside;			// the open image's own .pad, there or not: never a preset
 		void meetNew(const QList<xPadDev>&, const int*);
 };
 

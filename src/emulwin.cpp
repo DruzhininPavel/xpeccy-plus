@@ -273,6 +273,7 @@ MainWin::MainWin(QMainWindow* frm) {
 		pause(away, PR_FOCUS);
 	});
 	fillUserMenu();
+	fillPadMenu();		// not empty before its first opening
 
 #ifdef __APPLE__
 	// Cocoa always gives the app a menu bar, even though this app never creates a
@@ -1918,6 +1919,8 @@ void MainWin::initUserMenu() {
 	cutActs.append({pckAct, pckAct->text(), XCUT_GRABKBD});	// its key, shown; the action is its own
 	cutAction(userMenu, "Virtual Keyboard", XCUT_KEYBOARD, "keyboardzx");
 	padMenu = userMenu->addMenu(QIcon(":/images/gamepad.png"), "Gamepads");
+	// on its own opening only: the presets are files, read for the check marks
+	connect(padMenu, &QMenu::aboutToShow, this, &MainWin::fillPadMenu);
 	// the debugger and its detached panels
 	dbgMenu = userMenu->addMenu(QIcon(":/images/bug.png"), "Debugger");
 	watchAct = dbgMenu->addAction(QIcon(":/images/objective.png"),"Watcher", this, SIGNAL(s_watch_show()));
@@ -2514,7 +2517,6 @@ void MainWin::fillUserMenu() {
 		act = resMenu->addAction("Boots its own firmware");
 		act->setEnabled(false);
 	}
-	fillPadMenu();
 	// fill keymaps menu
 	keyMenu->clear();
 	act = keyMenu->addAction("Default");
@@ -2804,13 +2806,17 @@ void MainWin::fillPadMenu() {
 		head->setEnabled(false);
 	};
 	section(QString("Player 1: %0").arg(dev));
+	// a change from here: the window shows it, a game's table asks where it goes
+	auto done = [this](const QString& msg) {
+		padWin->sync();
+		padGameEdited();
+		saveConfig();
+		setMessage(QString(" %0 ").arg(msg));
+	};
 	for (int s = 0; s < GPS_COUNT; s++) {
-		QAction* act = padMenu->addAction(pad_scheme_name(s), this, [this, gp, s]() {
+		QAction* act = padMenu->addAction(pad_scheme_name(s), this, [gp, s, done]() {
 			gp->setScheme(s);
-			padWin->sync();
-			padGameEdited();
-			saveConfig();
-			setMessage(QString(" joystick: %0 ").arg(pad_scheme_name(s)));
+			done(QString("joystick: %0").arg(pad_scheme_name(s)));
 		});
 		act->setCheckable(true);
 		act->setChecked(gp->scheme() == s);
@@ -2822,28 +2828,18 @@ void MainWin::fillPadMenu() {
 	} else {
 		section("Saved presets");
 	}
-	foreach(const QString& path, lst) {
-		QString name = QFileInfo(path).completeBaseName();
-		QAction* act = padMenu->addAction(QString(name).replace("&", "&&"), this, [this, gp, path, name]() {
-			if (!conf.gpctrl->presetLoad(gp, path)) {
-				setMessage(" can't read the preset ");
-				return;
-			}
-			padWin->sync();
-			padGameEdited();
-			saveConfig();
-			setMessage(QString(" gamepad: %0 ").arg(name));
-		});
-		act->setCheckable(true);
-		act->setChecked(conf.gpctrl->presetIs(gp, path));
-	}
+	xGamepadWidget::presetItems(padMenu, gp, lst, [this, gp, done](const QString& path) {
+		if (conf.gpctrl->presetLoad(gp, path)) {
+			done(QString("gamepad: %0").arg(QFileInfo(path).completeBaseName()));
+		} else {
+			setMessage(" can't read the preset ");
+		}
+	});
 	// as the window's Reset: not on a game's table, Revert is the way back there
-	QAction* act = padMenu->addAction(QIcon(":/images/refresh.png"), "Reset to defaults", this, [this, gp]() {
-		if (!areSure("Back to the joystick's defaults? Extra rows go.")) return;
+	QAction* act = padMenu->addAction(QIcon(":/images/refresh.png"), "Reset to defaults", this, [gp, done]() {
+		if (!xGamepadWidget::askReset()) return;
 		gp->resetRows();
-		padWin->sync();
-		saveConfig();
-		setMessage(" gamepad: defaults ");
+		done("gamepad: defaults");
 	});
 	act->setEnabled(conf.gpctrl->gameFile.isEmpty());
 }

@@ -38,6 +38,10 @@ before that point is upstream's history and is not repeated here.
   layers and the bitmap - without changing the machine's timing. With the machine stopped in
   the debugger, the picture is redrawn at once.
 
+- **Gamepad presets in a click**: Load in the Gamepads window lists the `.pad` files used
+  last, the one in play checked, and the Gamepads menu switches between them mid-game or
+  resets the table to the defaults. *(thanks to Volutar)*
+
 - **The Disk Manager shows +3DOS disks**: each file's type, address, length and size, with
   Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
   which the +3 reads too, show as well.
@@ -72,6 +76,8 @@ before that point is upstream's history and is not repeated here.
 
 - **A save that fails says so**, such as a tape TAP cannot hold or a disk that is not
   TR-DOS, and a file of an unknown type is reported and kept out of the recent list.
+
+- **A `.pad` file with a non-Latin name** loads and saves on Windows.
 
 - **Apply with another model** in Options keeps what was changed on the other pages.
 

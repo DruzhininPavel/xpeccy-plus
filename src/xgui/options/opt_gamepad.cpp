@@ -923,8 +923,7 @@ void xGamepadWidget::saveAs() {
 	if (def.isEmpty()) {
 		QString img = media_current();
 		if (img.isEmpty() && !conf.recentList.isEmpty()) img = conf.recentList.first();
-		QFileInfo fi(img);
-		def = img.isEmpty() ? QString::fromStdString(conf.path.confDir) : fi.dir().filePath(fi.completeBaseName() + ".pad");
+		def = img.isEmpty() ? QString::fromLocal8Bit(conf.path.confDir.c_str()) : pad_game_file(img);
 	}
 	QString path = QFileDialog::getSaveFileName(this, "Save bindings", def, "Bindings (*.pad)");
 	if (path.isEmpty()) return;
@@ -934,11 +933,22 @@ void xGamepadWidget::saveAs() {
 		showInfo("Can't write the file");
 		return;
 	}
-	// one beside the image, with its name, is that game's and comes by itself
-	QFileInfo img(media_current());
-	QString game = img.dir().filePath(img.completeBaseName() + ".pad");
-	if (!bkm_same(path, conf.gpctrl->gameFile) && (img.fileName().isEmpty() || !bkm_same(path, game)))
-		conf.gpctrl->presetUsed(path);
+	conf.gpctrl->presetUsed(path);
+}
+
+void xGamepadWidget::presetItems(QMenu* menu, xGamepad* gp, const QStringList& lst, std::function<void(const QString&)> pick) {
+	QStringList cur = gp->confLines();
+	menu->setToolTipsVisible(true);
+	foreach(const QString& path, lst) {
+		QAction* act = menu->addAction(QFileInfo(path).completeBaseName().replace("&", "&&"), menu, [pick, path]() {pick(path);});
+		act->setToolTip(QDir::toNativeSeparators(path));
+		act->setCheckable(true);
+		act->setChecked(conf.gpctrl->presetIs(cur, path));
+	}
+}
+
+bool xGamepadWidget::askReset() {
+	return areSure("Back to the joystick's defaults? Extra rows go.");
 }
 
 // The presets used last, then the file dialog; with none yet, the dialog.
@@ -949,13 +959,7 @@ void xGamepadWidget::loadMenu() {
 		return;
 	}
 	QMenu menu(this);
-	menu.setToolTipsVisible(true);
-	foreach(const QString& path, lst) {
-		QAction* act = menu.addAction(QFileInfo(path).completeBaseName().replace("&", "&&"), this, [this, path]() {load(path);});
-		act->setToolTip(QDir::toNativeSeparators(path));
-		act->setCheckable(true);
-		act->setChecked(conf.gpctrl->presetIs(gpad, path));
-	}
+	presetItems(&menu, gpad, lst, [this](const QString& path) {load(path);});
 	menu.addSeparator();
 	menu.addAction(QIcon(":/images/fileopen.png"), "Browse...", this, [this]() {browse();});
 	menu.exec(btnLoad->mapToGlobal(QPoint(0, btnLoad->height())));
@@ -979,7 +983,7 @@ void xGamepadWidget::load(const QString& path) {
 }
 
 void xGamepadWidget::reset() {
-	if (!areSure("Back to the joystick's defaults? Extra rows go.")) return;
+	if (!askReset()) return;
 	gpad->resetRows();
 	tableChanged();
 }

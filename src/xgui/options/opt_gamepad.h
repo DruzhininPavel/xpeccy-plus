@@ -97,6 +97,9 @@ class xGamepadWidget : public QWidget {
 		void setNameWidth(int);
 		std::function<void()> changed;		// the player's input now does something else
 		std::function<void()> edited;		// ...and it was the table: what a .pad keeps
+		// shared with the main window's Gamepads menu
+		static void presetItems(QMenu*, xGamepad*, const QStringList&, std::function<void(const QString&)>);	// checked on the one in use
+		static bool askReset();
 	private:
 		xGamepad* gpad;
 		xPadTableModel* model;

@@ -1898,14 +1898,18 @@ void xGamepadController::rescan() {
 	meetNew(devs, pick);
 }
 
+QString pad_game_file(const QString& image) {
+	QFileInfo fi(image);
+	return fi.dir().filePath(fi.completeBaseName() + ".pad");
+}
+
 // The player's own table comes back first, whatever the image: a game's
 // lasts until the next one. Only player 1 takes a game's file.
 bool xGamepadController::gameImage(const QString& image) {
 	bool changed = gameRevert();
-	if (!gameOn || image.isEmpty()) return changed;
-	QFileInfo fi(image);
-	QString pad = fi.dir().filePath(fi.completeBaseName() + ".pad");
-	if (!QFile::exists(pad)) return changed;
+	QString pad = image.isEmpty() ? QString() : pad_game_file(image);
+	gameBeside = pad;
+	if (!gameOn || pad.isEmpty() || !QFile::exists(pad)) return changed;
 	QStringList own = gpada->confLines();
 	if (!gpada->mergeFile(pad)) {
 		gpada->setConfLines(own);
@@ -1952,11 +1956,8 @@ QStringList xGamepadController::tableLines(int s) {
 }
 
 void xGamepadController::presetUsed(const QString& path) {
-	for (int i = presets.size() - 1; i >= 0; i--) {
-		if (bkm_same(presets.at(i), path)) presets.removeAt(i);
-	}
-	presets.prepend(bkm_key(path));
-	while (presets.size() > PRESET_MAX) presets.removeLast();
+	if (!gameBeside.isEmpty() && bkm_same(path, gameBeside)) return;	// that one comes by itself
+	mru_add(presets, path, PRESET_MAX);
 }
 
 // Shown by name, not by use: switching between two would swap them every time.
@@ -1979,10 +1980,10 @@ bool xGamepadController::presetLoad(xGamepad* gp, const QString& path) {
 
 // Read again rather than remembered: an edit, or an edit undone by hand, is
 // seen without anyone having to say so.
-bool xGamepadController::presetIs(xGamepad* gp, const QString& path) {
+bool xGamepadController::presetIs(const QStringList& lines, const QString& path) {
 	xGamepad scratch;
 	if (!scratch.loadFile(path)) return false;
-	return scratch.confLines() == gp->confLines();
+	return scratch.confLines() == lines;
 }
 
 // both QAOPs are one joystick, the key fire presses aside
