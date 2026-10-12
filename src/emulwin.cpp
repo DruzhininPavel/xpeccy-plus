@@ -2794,12 +2794,16 @@ void MainWin::fillPadMenu() {
 	QString dev = gp->isKeyboard() ? QString(pad_kbd_name(gp->keyboard()))
 		: gp->padId().isEmpty() ? QString("no device")
 		: gp->isOpened() ? gp->padId().title() : QString("%0 (not connected)").arg(gp->padId().title());
-	padMenu->addSeparator();		// a section's own title is not drawn by every style
-	QAction* head = padMenu->addAction(QString("Player 1: %0").arg(dev));
-	QFont fnt = head->font();
-	fnt.setItalic(true);
-	head->setFont(fnt);
-	head->setEnabled(false);
+	// a section's own title is not drawn by every style
+	auto section = [this](const QString& title) {
+		padMenu->addSeparator();
+		QAction* head = padMenu->addAction(title);
+		QFont fnt = head->font();
+		fnt.setItalic(true);
+		head->setFont(fnt);
+		head->setEnabled(false);
+	};
+	section(QString("Player 1: %0").arg(dev));
 	for (int s = 0; s < GPS_COUNT; s++) {
 		QAction* act = padMenu->addAction(pad_scheme_name(s), this, [this, gp, s]() {
 			gp->setScheme(s);
@@ -2813,7 +2817,11 @@ void MainWin::fillPadMenu() {
 	}
 	// the presets, for the same player, switched as quickly
 	QStringList lst = conf.gpctrl->presetList();
-	if (!lst.isEmpty()) padMenu->addSeparator();
+	if (lst.isEmpty()) {
+		padMenu->addSeparator();
+	} else {
+		section("Saved presets");
+	}
 	foreach(const QString& path, lst) {
 		QString name = QFileInfo(path).completeBaseName();
 		QAction* act = padMenu->addAction(QString(name).replace("&", "&&"), this, [this, gp, path, name]() {
@@ -2829,6 +2837,14 @@ void MainWin::fillPadMenu() {
 		act->setCheckable(true);
 		act->setChecked(conf.gpctrl->presetIs(gp, path));
 	}
+	// as the window's Reset: not on a game's table, Revert is the way back there
+	QAction* act = padMenu->addAction(QIcon(":/images/refresh.png"), "Reset to defaults", this, [this, gp]() {
+		gp->resetRows();
+		padWin->sync();
+		saveConfig();
+		setMessage(" gamepad: defaults ");
+	});
+	act->setEnabled(conf.gpctrl->gameFile.isEmpty());
 }
 
 void MainWin::padWinShow() {
