@@ -349,6 +349,8 @@ void saveConfig() {
 			fprintf(cfile, "%s.%s\n", pfx, ln.toUtf8().data());
 	}
 	fprintf(cfile, "padfiles = %s\n", YESNO(conf.gpctrl->gameOn));
+	foreach(const QString& path, conf.gpctrl->presets)
+		fprintf(cfile, "padpreset = %s\n", path.toUtf8().data());
 
 	fprintf(cfile, "\n[LEDS]\n\n");
 	fprintf(cfile, "mouse = %s\n", YESNO(conf.led.mouse));
@@ -749,6 +751,7 @@ void loadConfig() {
 		compSetHardware(conf.zx, "Dummy");
 	}
 	conf.bookmarkList.clear();
+	conf.gpctrl->presets.clear();
 	fm_clear();
 	char buf[0x4000];
 	QColor col;
@@ -1026,6 +1029,8 @@ void loadConfig() {
 						|| (pnam=="frq.mul") || (pnam=="kbd.scantab"))
 						xm_defer(pnam, pval);
 					if (pnam=="padfiles") conf.gpctrl->gameOn = arg.b;
+					if ((pnam == "padpreset") && (conf.gpctrl->presets.size() < PRESET_MAX))
+						conf.gpctrl->presets.append(QString::fromUtf8(pval.c_str()));
 					if (pnam=="deadzone") conf.gpctrl->gpada->setDeadZone(arg.i);
 					if (pnam=="deadzone2") conf.gpctrl->gpadb->setDeadZone(arg.i);
 					if ((pnam=="gamepad") || (pnam=="gamepad2")) {
@@ -1299,8 +1304,8 @@ void loadConfig() {
 	conf.macBase = conf.macId;		// what this start took is the user's pick
 	xm_finish_load();
 	// a config from before the table only names a map file
-	if (!padNew[0] && !conf.jmapNameA.empty()) conf.gpctrl->gpada->importMap(conf.path.confDir + SLASH + conf.jmapNameA);
-	if (!padNew[1] && !conf.jmapNameB.empty()) conf.gpctrl->gpadb->importMap(conf.path.confDir + SLASH + conf.jmapNameB);
+	if (!padNew[0] && !conf.jmapNameA.empty()) conf.gpctrl->gpada->importMap(QString::fromLocal8Bit((conf.path.confDir + SLASH + conf.jmapNameA).c_str()));
+	if (!padNew[1] && !conf.jmapNameB.empty()) conf.gpctrl->gpadb->importMap(QString::fromLocal8Bit((conf.path.confDir + SLASH + conf.jmapNameB).c_str()));
 	// xm_set() loads the keys itself; a migrating profile only names its layout
 	// after that has run, so that path needs them loaded again
 	if (schema < 2) loadKeys();

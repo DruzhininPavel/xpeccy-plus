@@ -650,7 +650,8 @@ xGamepadWidget::xGamepadWidget(xGamepad* gp, QWidget* p):QWidget(p) {
 	};
 	QPushButton* btnSave = sideButton("Save as...", ":/images/floppy.png");
 	btnSave->setToolTip("Keep these bindings in a file, for a game or to share");
-	QPushButton* btnLoad = sideButton("Load...", ":/images/fileopen.png");
+	btnLoad = sideButton("Load...", ":/images/fileopen.png");
+	btnLoad->setToolTip("A preset used before, or a file");
 	btnReset = sideButton("Reset", ":/images/refresh.png");
 	btnReset->setToolTip("Back to the joystick's defaults");
 	labGame = padNote(QString());
@@ -719,7 +720,7 @@ xGamepadWidget::xGamepadWidget(xGamepad* gp, QWidget* p):QWidget(p) {
 	});
 	connect(table, &QTableView::customContextMenuRequested, this, [this](const QPoint& pos) {rowMenu(pos);});
 	connect(btnSave, &QPushButton::clicked, this, [this]() {saveAs();});
-	connect(btnLoad, &QPushButton::clicked, this, [this]() {load();});
+	connect(btnLoad, &QPushButton::clicked, this, [this]() {loadMenu();});
 	connect(btnReset, &QPushButton::clicked, this, [this]() {reset();});
 	connect(btnRevert, &QPushButton::clicked, this, [this]() {revert();});
 	connect(sldTurbo, &QSlider::valueChanged, this, [this](int v) {
@@ -922,21 +923,57 @@ void xGamepadWidget::saveAs() {
 	if (def.isEmpty()) {
 		QString img = media_current();
 		if (img.isEmpty() && !conf.recentList.isEmpty()) img = conf.recentList.first();
-		QFileInfo fi(img);
-		def = img.isEmpty() ? QString::fromStdString(conf.path.confDir) : fi.dir().filePath(fi.completeBaseName() + ".pad");
+		def = img.isEmpty() ? QString::fromLocal8Bit(conf.path.confDir.c_str()) : pad_game_file(img);
 	}
 	QString path = QFileDialog::getSaveFileName(this, "Save bindings", def, "Bindings (*.pad)");
 	if (path.isEmpty()) return;
 	if (!path.endsWith(".pad")) path.append(".pad");
-	bool ok = (gpad == conf.gpctrl->gpada) ? conf.gpctrl->gameSave(path) : gpad->saveFile(path.toStdString());
-	if (!ok) showInfo("Can't write the file");
+	bool ok = (gpad == conf.gpctrl->gpada) ? conf.gpctrl->gameSave(path) : gpad->saveFile(path);
+	if (!ok) {
+		showInfo("Can't write the file");
+		return;
+	}
+	conf.gpctrl->presetUsed(path);
 }
 
-void xGamepadWidget::load() {
-	QString path = QFileDialog::getOpenFileName(this, "Load bindings", QString::fromStdString(conf.path.confDir),
-		"Bindings (*.pad)");
-	if (path.isEmpty()) return;
-	if (!gpad->loadFile(path.toStdString())) {
+void xGamepadWidget::presetItems(QMenu* menu, xGamepad* gp, const QStringList& lst, std::function<void(const QString&)> pick) {
+	QStringList cur = gp->confLines();
+	menu->setToolTipsVisible(true);
+	foreach(const QString& path, lst) {
+		QAction* act = menu->addAction(QFileInfo(path).completeBaseName().replace("&", "&&"), menu, [pick, path]() {pick(path);});
+		act->setToolTip(QDir::toNativeSeparators(path));
+		act->setCheckable(true);
+		act->setChecked(conf.gpctrl->presetIs(cur, path));
+	}
+}
+
+bool xGamepadWidget::askReset() {
+	return areSure("Back to the joystick's defaults? Extra rows go.");
+}
+
+// The presets used last, then the file dialog; with none yet, the dialog.
+void xGamepadWidget::loadMenu() {
+	QStringList lst = conf.gpctrl->presetList();
+	if (lst.isEmpty()) {
+		browse();
+		return;
+	}
+	QMenu menu(this);
+	presetItems(&menu, gpad, lst, [this](const QString& path) {load(path);});
+	menu.addSeparator();
+	menu.addAction(QIcon(":/images/fileopen.png"), "Browse...", this, [this]() {browse();});
+	menu.exec(btnLoad->mapToGlobal(QPoint(0, btnLoad->height())));
+}
+
+void xGamepadWidget::browse() {
+	QString dir = conf.gpctrl->presets.isEmpty() ? QString::fromLocal8Bit(conf.path.confDir.c_str())
+		: QFileInfo(conf.gpctrl->presets.first()).path();
+	QString path = QFileDialog::getOpenFileName(this, "Load bindings", dir, "Bindings (*.pad)");
+	if (!path.isEmpty()) load(path);
+}
+
+void xGamepadWidget::load(const QString& path) {
+	if (!conf.gpctrl->presetLoad(gpad, path)) {
 		showInfo("Can't read the file");
 		return;
 	}
@@ -946,7 +983,7 @@ void xGamepadWidget::load() {
 }
 
 void xGamepadWidget::reset() {
-	if (!areSure("Back to the joystick's defaults? Extra rows go.")) return;
+	if (!askReset()) return;
 	gpad->resetRows();
 	tableChanged();
 }

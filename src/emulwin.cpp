@@ -273,6 +273,7 @@ MainWin::MainWin(QMainWindow* frm) {
 		pause(away, PR_FOCUS);
 	});
 	fillUserMenu();
+	fillPadMenu();		// not empty before its first opening
 
 #ifdef __APPLE__
 	// Cocoa always gives the app a menu bar, even though this app never creates a
@@ -1919,6 +1920,8 @@ void MainWin::initUserMenu() {
 	cutActs.append({pckAct, pckAct->text(), XCUT_GRABKBD});	// its key, shown; the action is its own
 	cutAction(userMenu, "Virtual Keyboard", XCUT_KEYBOARD, "keyboardzx");
 	padMenu = userMenu->addMenu(QIcon(":/images/gamepad.png"), "Gamepads");
+	// on its own opening only: the presets are files, read for the check marks
+	connect(padMenu, &QMenu::aboutToShow, this, &MainWin::fillPadMenu);
 	// the debugger and its detached panels
 	dbgMenu = userMenu->addMenu(QIcon(":/images/bug.png"), "Debugger");
 	watchAct = dbgMenu->addAction(QIcon(":/images/objective.png"),"Watcher", this, SIGNAL(s_watch_show()));
@@ -2515,7 +2518,6 @@ void MainWin::fillUserMenu() {
 		act = resMenu->addAction("Boots its own firmware");
 		act->setEnabled(false);
 	}
-	fillPadMenu();
 	// fill keymaps menu
 	keyMenu->clear();
 	act = keyMenu->addAction("Default");
@@ -2798,23 +2800,52 @@ void MainWin::fillPadMenu() {
 	QString dev = gp->isKeyboard() ? QString(pad_kbd_name(gp->keyboard()))
 		: gp->padId().isEmpty() ? QString("no device")
 		: gp->isOpened() ? gp->padId().title() : QString("%0 (not connected)").arg(gp->padId().title());
-	padMenu->addSeparator();		// a section's own title is not drawn by every style
-	QAction* head = padMenu->addAction(QString("Player 1: %0").arg(dev));
-	QFont fnt = head->font();
-	fnt.setItalic(true);
-	head->setFont(fnt);
-	head->setEnabled(false);
+	// a section's own title is not drawn by every style
+	auto section = [this](const QString& title) {
+		padMenu->addSeparator();
+		QAction* head = padMenu->addAction(title);
+		QFont fnt = head->font();
+		fnt.setItalic(true);
+		head->setFont(fnt);
+		head->setEnabled(false);
+	};
+	section(QString("Player 1: %0").arg(dev));
+	// a change from here: the window shows it, a game's table asks where it goes
+	auto done = [this](const QString& msg) {
+		padWin->sync();
+		padGameEdited();
+		saveConfig();
+		setMessage(QString(" %0 ").arg(msg));
+	};
 	for (int s = 0; s < GPS_COUNT; s++) {
-		QAction* act = padMenu->addAction(pad_scheme_name(s), this, [this, gp, s]() {
+		QAction* act = padMenu->addAction(pad_scheme_name(s), this, [gp, s, done]() {
 			gp->setScheme(s);
-			padWin->sync();
-			padGameEdited();
-			saveConfig();
-			setMessage(QString(" joystick: %0 ").arg(pad_scheme_name(s)));
+			done(QString("joystick: %0").arg(pad_scheme_name(s)));
 		});
 		act->setCheckable(true);
 		act->setChecked(gp->scheme() == s);
 	}
+	// the presets, for the same player, switched as quickly
+	QStringList lst = conf.gpctrl->presetList();
+	if (lst.isEmpty()) {
+		padMenu->addSeparator();
+	} else {
+		section("Saved presets");
+	}
+	xGamepadWidget::presetItems(padMenu, gp, lst, [this, gp, done](const QString& path) {
+		if (conf.gpctrl->presetLoad(gp, path)) {
+			done(QString("gamepad: %0").arg(QFileInfo(path).completeBaseName()));
+		} else {
+			setMessage(" can't read the preset ");
+		}
+	});
+	// as the window's Reset: not on a game's table, Revert is the way back there
+	QAction* act = padMenu->addAction(QIcon(":/images/refresh.png"), "Reset to defaults", this, [gp, done]() {
+		if (!xGamepadWidget::askReset()) return;
+		gp->resetRows();
+		done("gamepad: defaults");
+	});
+	act->setEnabled(conf.gpctrl->gameFile.isEmpty());
 }
 
 void MainWin::padWinShow() {

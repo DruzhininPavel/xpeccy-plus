@@ -97,6 +97,9 @@ class xGamepadWidget : public QWidget {
 		void setNameWidth(int);
 		std::function<void()> changed;		// the player's input now does something else
 		std::function<void()> edited;		// ...and it was the table: what a .pad keeps
+		// shared with the main window's Gamepads menu
+		static void presetItems(QMenu*, xGamepad*, const QStringList&, std::function<void(const QString&)>);	// checked on the one in use
+		static bool askReset();
 	private:
 		xGamepad* gpad;
 		xPadTableModel* model;
@@ -105,6 +108,7 @@ class xGamepadWidget : public QWidget {
 		QLabel* labGame;			// player 1 on a game's .pad
 		QPushButton* btnRevert;			// ...and the way off it
 		QPushButton* btnReset;
+		QPushButton* btnLoad;
 		QButtonGroup* grpScheme;
 		QComboBox* cbQaop;
 		QTableView* table;
@@ -123,7 +127,9 @@ class xGamepadWidget : public QWidget {
 		void toggleTurbo(int);
 		void rowMenu(const QPoint&);
 		void saveAs();
-		void load();
+		void loadMenu();
+		void browse();
+		void load(const QString&);
 		void reset();
 		void revert();
 		void tableChanged();
