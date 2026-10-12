@@ -129,7 +129,8 @@ void MainWin::fillDrivesMenu() {
 void MainWin::diskOp(int op, int drv) {
 	switch (op) {
 		case DW_OPEN:
-			openMedia(QString(), FH_DRIVE_A + drv, drv, conf.autorun);
+			// a disk put into a named drive, as the Tape Player's open: nothing starts
+			openMedia(QString(), FH_DRIVE_A + drv, drv, AR_MOUNT, true);
 			if (diskWin->isVisible()) diskWin->refresh();
 			break;
 		case DW_NEW: diskNew(drv); break;
