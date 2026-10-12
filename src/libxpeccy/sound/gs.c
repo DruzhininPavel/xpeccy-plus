@@ -103,14 +103,12 @@ int gsintrq(void* ptr) {
 	return 0xff;
 }
 
-void gs_xirq(int t, void* p) {}
-
 // EXTERNAL
 
 GSound* gsCreate() {
 	GSound* res = (GSound*)malloc(sizeof(GSound));
 	memset(res,0x00,sizeof(GSound));
-	res->cpu = cpuCreate(CPU_Z80, gsmemrd, gsmemwr, gsiord, gsiowr, gsintrq, gs_xirq, res);
+	res->cpu = cpuCreate(CPU_Z80, gsmemrd, gsmemwr, gsiord, gsiowr, gsintrq, NULL, res);
 	res->cpu->inten = 0;
 	res->cpu->flgACK = 1;
 	res->mem = memCreate();

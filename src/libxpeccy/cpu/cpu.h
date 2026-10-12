@@ -225,7 +225,11 @@ static inline int parity(int val) {
 	return __builtin_parity((unsigned int)val) ^ 1;
 }
 
-static inline void cpu_irq(CPU* cpu, int id) {cpu->xirq(id, cpu->xptr);}
+// xirq may be NULL: the GS card's Z80 has no machine behind it to tell
+static inline void cpu_irq(CPU* cpu, int id) {
+	if (cpu->xirq)
+		cpu->xirq(id, cpu->xptr);
+}
 
 #ifdef __cplusplus
 }

@@ -97,7 +97,7 @@ void z80_mwr(CPU *cpu, int adr, int data) {
 	if (cpu->flgCONT)
 		cpu->xcont(cpu->xptr, 1);		// wait states, sampled at T1
 	cpu->t += 2;		// T1, T2
-	cpu->xirq(IRQ_CPU_SYNC, cpu->xptr);	// the ray up to the transfer: a write can change what is drawn next
+	cpu_irq(cpu, IRQ_CPU_SYNC);	// the ray up to the transfer: a write can change what is drawn next
 	cpu->mwr(adr, data, cpu->xptr);
 	cpu->t++;		// T3
 }
