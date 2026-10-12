@@ -5,6 +5,7 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QHBoxLayout>
 #include <QSpinBox>
 #include <QLabel>
 #include <QStackedWidget>
@@ -110,16 +111,20 @@ class xEvoPalView : public QWidget {
 		int pick;			// the cell framed as picked, -1 none
 		std::function<void(int)> onHover;	// the cell under the pointer, -1 when it left
 		std::function<void(int)> onPick;
+		int widthFor(int w, int h) const;
 	protected:
 		void paintEvent(QPaintEvent*);
 		void mouseMoveEvent(QMouseEvent*);
 		void mousePressEvent(QMouseEvent*);
 		void leaveEvent(QEvent*);
 	private:
-		int cell;			// a cell's side
+		QRect gridIn(int w, int h) const;
 		QRect grid() const;		// the cells, without the names
+		int tagWidth() const;
 		int at(QPoint) const;
 };
+
+#define PAL_INFO	9	// name/value rows beside the palette, the most a machine has
 
 // the 256 CRAM colors on TSConf, the 16 cells on BaseConf
 class xEvoPalPage : public QWidget {
@@ -127,11 +132,19 @@ class xEvoPalPage : public QWidget {
 	public:
 		xEvoPalPage(QWidget* = nullptr);
 		void draw();
+	protected:
+		void resizeEvent(QResizeEvent*);
 	private:
+		QHBoxLayout* row;
 		xEvoPalView* view;
-		QLabel* labInfo;
+		QWidget* infoBox;
+		QLabel* swatch;
+		QLabel* names[PAL_INFO];
+		QLabel* vals[PAL_INFO];
+		QLabel* labLegend;
 		int hov;			// the cell under the pointer, -1 none
 		void info();
+		void fit();
 };
 
 // BaseConf
