@@ -2839,6 +2839,7 @@ void MainWin::fillPadMenu() {
 	}
 	// as the window's Reset: not on a game's table, Revert is the way back there
 	QAction* act = padMenu->addAction(QIcon(":/images/refresh.png"), "Reset to defaults", this, [this, gp]() {
+		if (!areSure("Back to the joystick's defaults? Extra rows go.")) return;
 		gp->resetRows();
 		padWin->sync();
 		saveConfig();
