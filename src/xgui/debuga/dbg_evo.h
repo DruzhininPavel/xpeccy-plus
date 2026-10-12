@@ -97,30 +97,35 @@ class xTsTilePage : public QWidget {
 		void hover_info();
 };
 
-// a grid of palette cells: names of the rows on the left, what uses a row on the right
+// A grid of square palette cells, sized as a 16x16 one would be so that a machine with
+// fewer gets cells of the same size: names of the rows on the left, and on the right a
+// column for each tag, marked on the rows it is on.
 class xEvoPalView : public QWidget {
 	public:
 		xEvoPalView(QWidget* = nullptr);
 		int cols, rows;
 		QVector<QRgb> cells;
-		QStringList cellText;		// over each cell, when there is room; may be empty
 		QStringList rowNames;
 		QStringList colNames;
-		QStringList rowTags;
+		QStringList tagNames;		// none: no tag columns
+		QVector<int> rowTags;		// a bit for each of tagNames
 		int border;			// the cell framed as the border, -1 none
 		int pick;			// the cell framed as picked, -1 none
 		std::function<void(int)> onHover;	// the cell under the pointer, -1 when it left
 		std::function<void(int)> onPick;
-		int widthFor(int w, int h) const;
+		std::function<void()> onResize;
+		int widthFor(int w, int h);	// and the cells take the size that fits there
 	protected:
 		void paintEvent(QPaintEvent*);
+		void resizeEvent(QResizeEvent*);
 		void mouseMoveEvent(QMouseEvent*);
 		void mousePressEvent(QMouseEvent*);
 		void leaveEvent(QEvent*);
 	private:
+		int side;			// a cell's side from the last widthFor, 0 none yet
 		QRect gridIn(int w, int h) const;
 		QRect grid() const;		// the cells, without the names
-		int tagWidth() const;
+		int tagColumn() const;		// one tag column's width
 		int at(QPoint) const;
 };
 
@@ -138,7 +143,6 @@ class xEvoPalPage : public QWidget {
 		QHBoxLayout* row;
 		xEvoPalView* view;
 		QWidget* infoBox;
-		QLabel* swatch;
 		QLabel* names[PAL_INFO];
 		QLabel* vals[PAL_INFO];
 		QLabel* labLegend;

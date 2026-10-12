@@ -873,52 +873,59 @@ void xEvoPortsPage::draw() {
 
 // PALETTE VIEW
 
+#define PAL_SIDE	16	// cells are as big as on a grid this many a side
+#define PAL_CELL	32	// and no bigger
+
 xEvoPalView::xEvoPalView(QWidget* p):QWidget(p) {
-	cols = rows = 0;
+	cols = rows = side = 0;
 	border = pick = -1;
 	setMouseTracking(true);
 	setMinimumSize(128, 64);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
-// square cells as big as fit; the room for the tags is the widest they can be, so the
-// grid stays put while they change
-int xEvoPalView::tagWidth() const {
+int xEvoPalView::tagColumn() const {
 	QFontMetrics fm(font());
-	return rowTags.isEmpty() ? 0 : fm.horizontalAdvance("B T0 T1 S") + fm.averageCharWidth();
+	return fm.horizontalAdvance("T0") + fm.averageCharWidth() / 2 + 1;
 }
+
+// The cell size takes room for the names and PAL_TAGS tag columns whether a machine has
+// them or not, so both machines get the same cells in the same dock.
+#define PAL_TAGS	4
 
 QRect xEvoPalView::gridIn(int w, int h) const {
 	if (!cols || !rows) return QRect();
 	QFontMetrics fm(font());
-	int lw = 0;
-	foreach (QString s, rowNames) lw = qMax(lw, fm.horizontalAdvance(s));
-	if (lw) lw += fm.averageCharWidth();
+	int lw = fm.horizontalAdvance("00") + fm.averageCharWidth();
+	int tw = fm.averageCharWidth() + tagColumn() * PAL_TAGS;
 	int top = colNames.isEmpty() ? 0 : fm.height();
-	int cw = qMin((w - lw - tagWidth()) / cols, 48);
-	int ch = qMin((h - top) / rows, 48);
-	// square while the height is what limits it; when the width is, the cells take the
-	// height there is, up to twice as tall as wide
-	if (ch <= cw) cw = ch;
-	else ch = qMin(ch, cw * 2);
-	if ((cw < 4) || (ch < 4)) return QRect();
-	return QRect(lw, top, cw * cols, ch * rows);
+	int c = qMin(qMin((w - lw - tw) / qMax(cols, PAL_SIDE), (h - top) / qMax(rows, PAL_SIDE)), PAL_CELL);
+	if (c < 4) return QRect();
+	return QRect(lw, top, c * cols, c * rows);
 }
 
+// the cells as big as the page's last fit made them: the view is narrowed to them then,
+// and the tag room it takes without tags would make them smaller still
 QRect xEvoPalView::grid() const {
-	return gridIn(width(), height());
+	if (!side || !cols || !rows) return gridIn(width(), height());
+	QFontMetrics fm(font());
+	return QRect(fm.horizontalAdvance("00") + fm.averageCharWidth(), colNames.isEmpty() ? 0 : fm.height(), side * cols, side * rows);
 }
 
 // as wide as the grid, its names and tags need in w x h, so what is beside it stays close
-int xEvoPalView::widthFor(int w, int h) const {
+int xEvoPalView::widthFor(int w, int h) {
 	QRect g = gridIn(w, h);
-	return g.isEmpty() ? w : qMin(w, g.right() + 1 + tagWidth());
+	side = g.isEmpty() ? 0 : g.width() / cols;
+	if (g.isEmpty()) return w;
+	int tw = tagNames.isEmpty() ? 0 : QFontMetrics(font()).averageCharWidth() + tagColumn() * tagNames.size();
+	return qMin(w, g.right() + 1 + tw);
 }
 
 int xEvoPalView::at(QPoint pos) const {
 	QRect g = grid();
 	if (g.isEmpty() || !g.contains(pos)) return -1;
-	int idx = ((pos.y() - g.y()) / (g.height() / rows)) * cols + (pos.x() - g.x()) / (g.width() / cols);
+	int c = g.width() / cols;
+	int idx = ((pos.y() - g.y()) / c) * cols + (pos.x() - g.x()) / c;
 	return (idx < cells.size()) ? idx : -1;
 }
 
@@ -926,28 +933,29 @@ void xEvoPalView::paintEvent(QPaintEvent*) {
 	QPainter pnt(this);
 	QRect g = grid();
 	if (g.isEmpty()) return;
-	int cw = g.width() / cols;
-	int ch = g.height() / rows;
-	auto cell = [&](int i) {return QRect(g.x() + (i % cols) * cw, g.y() + (i / cols) * ch, cw, ch);};
+	int c = g.width() / cols;
+	auto cell = [&](int i) {return QRect(g.x() + (i % cols) * c, g.y() + (i / cols) * c, c, c);};
 	QFontMetrics fm(font());
 	int gap = fm.averageCharWidth();
+	int tc = tagColumn();
+	int tx = g.right() + 1 + gap;
 	pnt.setPen(palette().color(QPalette::WindowText));
 	for (int i = 0; i < colNames.size(); i++)
-		pnt.drawText(QRect(g.x() + i * cw, 0, cw, g.y()), Qt::AlignCenter, colNames[i]);
+		pnt.drawText(QRect(g.x() + i * c, 0, c, g.y()), Qt::AlignCenter, colNames[i]);
+	for (int t = 0; t < tagNames.size(); t++)
+		pnt.drawText(QRect(tx + t * tc, 0, tc, g.y()), Qt::AlignCenter, tagNames[t]);
+	// a name every other row when the rows are too low for each
+	int every = (c < fm.height()) ? 2 : 1;
 	for (int r = 0; r < rows; r++) {
-		if (r < rowNames.size())
-			pnt.drawText(QRect(0, g.y() + r * ch, g.x() - gap, ch), Qt::AlignRight | Qt::AlignVCenter, rowNames[r]);
-		if (r < rowTags.size())
-			pnt.drawText(QRect(g.right() + 1 + gap, g.y() + r * ch, width(), ch), Qt::AlignLeft | Qt::AlignVCenter, rowTags[r]);
+		int y = g.y() + r * c;
+		if ((r < rowNames.size()) && !(r % every))
+			pnt.drawText(QRect(0, y - c, g.x() - gap, 3 * c), Qt::AlignRight | Qt::AlignVCenter, rowNames[r]);
+		for (int t = 0; t < tagNames.size(); t++)
+			if (rowTags.value(r) & (1 << t))
+				pnt.drawText(QRect(tx + t * tc, y, tc, c), Qt::AlignCenter, tagNames[t]);
 	}
-	for (int i = 0; i < cells.size(); i++) {
-		QRect rc = cell(i);
-		pnt.fillRect(rc.adjusted(0, 0, -1, -1), QColor(cells[i]));
-		if ((i < cellText.size()) && (fm.horizontalAdvance(cellText[i]) < cw - 2)) {
-			pnt.setPen((qGray(cells[i]) > 128) ? Qt::black : Qt::white);
-			pnt.drawText(rc, Qt::AlignCenter, cellText[i]);
-		}
-	}
+	for (int i = 0; i < cells.size(); i++)
+		pnt.fillRect(cell(i).adjusted(0, 0, -1, -1), QColor(cells[i]));
 	pnt.setBrush(Qt::NoBrush);
 	if ((border >= 0) && (border < cells.size())) {
 		QColor col = conf.pal.value("dbg.header.bg");
@@ -978,6 +986,11 @@ void xEvoPalView::leaveEvent(QEvent*) {
 	if (onHover) onHover(-1);
 }
 
+void xEvoPalView::resizeEvent(QResizeEvent* ev) {
+	QWidget::resizeEvent(ev);
+	if (onResize) onResize();
+}
+
 // PALETTE PAGE
 
 xEvoPalPage::xEvoPalPage(QWidget* p):QWidget(p) {
@@ -992,8 +1005,6 @@ xEvoPalPage::xEvoPalPage(QWidget* p):QWidget(p) {
 	infoBox = new QWidget;
 	QVBoxLayout* ilay = new QVBoxLayout(infoBox);
 	ilay->setContentsMargins(0, 0, 0, 0);
-	swatch = new QLabel;
-	ilay->addWidget(swatch);
 	QGridLayout* grid = new QGridLayout;
 	grid->setContentsMargins(0, 0, 0, 0);
 	for (int i = 0; i < PAL_INFO; i++) {
@@ -1013,11 +1024,6 @@ xEvoPalPage::xEvoPalPage(QWidget* p):QWidget(p) {
 	labLegend = new QLabel;
 	labLegend->setWordWrap(true);
 	lay->addWidget(labLegend);
-	auto menu = [this](const QPoint&) {evo_style_menu([this]() {info();});};
-	view->setContextMenuPolicy(Qt::CustomContextMenu);
-	infoBox->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(view, &QWidget::customContextMenuRequested, this, menu);
-	connect(infoBox, &QWidget::customContextMenuRequested, this, menu);
 	view->onHover = [this](int idx) {
 		hov = idx;
 		info();
@@ -1027,10 +1033,14 @@ xEvoPalPage::xEvoPalPage(QWidget* p):QWidget(p) {
 		view->update();
 		info();
 	};
+	// its height comes from the page's: the width follows it
+	view->onResize = [this]() {fit();};
 }
 
 static QRgb evo_rgb(uint32_t c) {return qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff);}
 
+// the tag columns on TSConf, a bit each in rowTags
+static const QStringList palTags = {"B", "T0", "T1", "S"};
 enum {PAL_B = 1, PAL_T0 = 2, PAL_T1 = 4, PAL_S = 8};
 
 void xEvoPalPage::draw() {
@@ -1039,20 +1049,20 @@ void xEvoPalPage::draw() {
 	Video* vid = comp->vid;
 	int hw = comp->hw->id;
 	view->cells.clear();
-	view->cellText.clear();
 	view->rowNames.clear();
 	view->colNames.clear();
+	view->tagNames.clear();
 	view->rowTags.clear();
+	for (int i = 0; i < 16; i++)
+		view->colNames << QString::number(i, 16).toUpper();
 	if (hw == HW_TSLAB) {
 		tsRegs r;
 		ts_get_regs(comp, &r);
 		view->cols = view->rows = 16;
 		for (int i = 0; i < 256; i++)
 			view->cells << evo_rgb(vid->pal[i]);
-		for (int i = 0; i < 16; i++) {
+		for (int i = 0; i < 16; i++)
 			view->rowNames << hex2(i << 4);
-			view->colNames << QString::number(i, 16).toUpper();
-		}
 		// the rows the layers take their colors from now
 		int use[16] = {0};
 		int mode = r.vconf & 3;
@@ -1086,35 +1096,26 @@ void xEvoPalPage::draw() {
 			}
 			use[gpal] = all;
 		}
-		for (int i = 0; i < 16; i++) {
-			QStringList t;
-			if (use[i] & PAL_B) t << "B";
-			if (use[i] & PAL_T0) t << "T0";
-			if (use[i] & PAL_T1) t << "T1";
-			if (use[i] & PAL_S) t << "S";
-			view->rowTags << t.join(" ");
-		}
+		view->tagNames = palTags;
+		for (int i = 0; i < 16; i++)
+			view->rowTags << use[i];
 		view->border = (mode == 3) ? ((gpal << 4) | (r.border & 15)) : (r.border & 0xff);
 	} else if (hw == HW_PENTEVO) {
 		evoRegs r;
 		evo_get_regs(comp, &r);
-		view->cols = 8;
-		view->rows = 2;
-		for (int i = 0; i < 16; i++) {
+		view->cols = 16;
+		view->rows = 1;
+		for (int i = 0; i < 16; i++)
 			view->cells << evo_rgb(vid->pal[i]);
-			view->cellText << hex2(r.pal[i]);
-		}
-		view->rowNames << "0" << "8";
-		for (int i = 0; i < 8; i++)
-			view->colNames << QString::number(i);
+		view->rowNames << "0";
 		view->border = r.border & 15;
 	} else {
 		view->cols = view->rows = 0;
 	}
 	if (view->pick >= view->cells.size()) view->pick = -1;
-	labLegend->setText((hw == HW_TSLAB) ? "Rows the layers use now: B bitmap, T0 and T1 tiles, S sprites. The border's color is framed. "
-		"A level is full from 24 with PWM, at 31 with VDAC."
-		: (hw == HW_PENTEVO) ? "Each cell shows the byte written to it. The border's cell is framed." : "");
+	labLegend->setText((hw == HW_TSLAB) ? "B, T0, T1, S: the rows the bitmap, tile layers and sprites use now. Dashed: the border. "
+		"With VDAC_MODE 0 (PWM) a level is full from 24."
+		: (hw == HW_PENTEVO) ? "Dashed: the border." : "");
 	view->update();
 	info();
 }
@@ -1130,28 +1131,23 @@ void xEvoPalPage::resizeEvent(QResizeEvent* ev) {
 	fit();
 }
 
+// by the names the docs give the fields
 void xEvoPalPage::info() {
 	Computer* comp = conf.zx;
 	if (!comp) return;
 	bool ts = (comp->hw->id == HW_TSLAB);
-	bool nm = fieldNames();
 	QStringList nl;
 	if (ts) {
-		nl << "Color" << "CRAM" << "Word" << (nm ? "R" : "Red") << (nm ? "G" : "Green") << (nm ? "B" : "Blue")
-			<< (nm ? "VDAC_MODE" : "DAC") << "RGB" << "Used by";
+		nl << "Index" << "CRAM" << "Word" << "R" << "G" << "B" << "VDAC_MODE" << "RGB" << "Used by";
 	} else {
-		nl << "Cell" << (nm ? "D" : "Written") << (nm ? "R" : "Red") << (nm ? "G" : "Green") << (nm ? "B" : "Blue")
-			<< "RGB" << "Used by";
+		nl << "Index" << "#FF" << "R" << "G" << "B" << "RGB" << "Used by";
 	}
 	// the column as wide as its widest value can be, whatever is shown now
 	QFontMetrics fm(font());
 	int nw = 0;
 	foreach (QString s, nl) nw = qMax(nw, fm.horizontalAdvance(s));
-	int vw = 0;
-	foreach (QString s, QStringList({"#FFFFFF", "bitmap", "tiles 0", "sprites"}))
-		vw = qMax(vw, fm.horizontalAdvance(s));
-	infoBox->setFixedWidth(nw + vw + 3 * fm.averageCharWidth());
-	swatch->setFixedSize(infoBox->width(), fm.lineSpacing() * 2);
+	int vw = qMax(fm.horizontalAdvance("#FFFFFF"), fm.horizontalAdvance("border"));
+	infoBox->setFixedWidth(nw + vw + 2 * fm.averageCharWidth());
 	QStringList vl;
 	int i = (hov >= 0) ? hov : view->pick;
 	if ((i >= 0) && (i < view->cells.size())) {
@@ -1161,29 +1157,23 @@ void xEvoPalPage::info() {
 		int cb = (c >> 16) & 0xff;
 		QString rgb = QString("#%0%1%2").arg(hex2(cr)).arg(hex2(cg)).arg(hex2(cb));
 		QStringList use;
+		for (int t = 0; t < view->tagNames.size(); t++)
+			if (view->rowTags.value(i / view->cols) & (1 << t)) use << view->tagNames[t];
+		if (i == view->border) use << "border";
 		if (ts) {
 			unsigned char* cram = comp->vid->tsconf.cram;
 			int w = cram[i << 1] | (cram[(i << 1) + 1] << 8);
-			foreach (QString t, view->rowTags.value(i >> 4).split(' ', X_SkipEmptyParts))
-				use << ((t == "B") ? "bitmap" : (t == "T0") ? "tiles 0" : (t == "T1") ? "tiles 1" : "sprites");
-			if (i == view->border) use << "border";
 			vl << hex2(i) << QString::number(i << 1, 16).toUpper().rightJustified(3, '0') << hex4(w)
 				<< QString::number((w >> 10) & 31) << QString::number((w >> 5) & 31) << QString::number(w & 31)
-				<< (nm ? QString::number((w >> 15) & 1) : (w & 0x8000) ? "VDAC" : "PWM")
-				<< rgb << (use.isEmpty() ? "-" : use.join("\n"));
+				<< QString::number((w >> 15) & 1);
 		} else {
 			evoRegs r;
 			evo_get_regs(comp, &r);
-			if (i == view->border) use << "border";
 			// the levels are n * 0x11: atm3clev in pentevo.c
-			vl << QString::number(i) << hex2(r.pal[i]) << QString::number(cr / 17) << QString::number(cg / 17)
-				<< QString::number(cb / 17) << rgb << (use.isEmpty() ? "-" : use.join("\n"));
+			vl << QString::number(i, 16).toUpper() << hex2(r.pal[i])
+				<< QString::number(cr / 17) << QString::number(cg / 17) << QString::number(cb / 17);
 		}
-		QPixmap pxm(swatch->size());
-		pxm.fill(QColor(cr, cg, cb));
-		swatch->setPixmap(pxm);
-	} else {
-		swatch->clear();
+		vl << rgb << (use.isEmpty() ? "-" : use.join("\n"));
 	}
 	for (int k = 0; k < PAL_INFO; k++) {
 		names[k]->setVisible(k < nl.size());
