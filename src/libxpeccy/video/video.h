@@ -79,7 +79,6 @@ void vid_dot_half(Video*, unsigned char);
 //typedef int(*vcbmrd)(int, void*);
 //typedef void(*vcbmwr)(int, int, void*);
 typedef void(*cbvid)(Video*);
-typedef void(*vcbptr)(void*);
 
 typedef struct {
 	int id;

@@ -7,14 +7,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 
-#include <setjmp.h>		// to implement try-catch
-//#define THROW(__N) longjmp(cpu->jbuf, __N)
-//#define THROW_EC(__N,__C) cpu->errcod = __C; longjmp(cpu->jbuf, __N)
-
 #include "../defines.h"
-
-typedef unsigned char xbyte;
-typedef unsigned short xword;
 
 typedef struct {
 	unsigned cond:1;	// condition present
@@ -99,7 +92,6 @@ typedef int(*cbdmr)(int, void*);
 #define OF_PREFIX	1
 #define OF_SKIPABLE	(1<<1)		// opcode is skipable by f8
 #define OF_RELJUMP	(1<<2)
-#define OF_MBYTE	(1<<3)		// operand is byte from memory
 #define OF_MWORD	(1<<4)		// operand is word from memory
 #define OF_MEMADR	(1<<5)		// operand contains memory address (nn)
 
@@ -128,9 +120,7 @@ enum {
 	CPU_Z80
 };
 
-#define flgTMP flags[63]
 #define flgHALT	flags[62]		// cpu halted, undo on interrput
-#define flgEXC	flags[61]		// exception occured
 #define flgNOINT flags[60]		// Z80: don't handle INT after EI
 #define flgWAIT	flags[59]		// ALL: WAIT signal (dummy 1T)
 #define flgACK	flags[58]		// Z80: acknowledge INT after execution (prevent last-1T INT)
@@ -141,7 +131,6 @@ enum {
 #define flgNMIOK flags[52]		// Z80: ...and an NMI, the same way
 
 #define regCallCnt regs[63].ih
-#define regExcCode regs[63].l		// exception code if flgEXC
 
 struct CPU {
 	// common part

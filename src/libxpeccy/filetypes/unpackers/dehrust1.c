@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEHRUST_PC_VERSION	"1.0i"
-
 /* depacker */
 
 WORD dehrust( BYTE* source, BYTE* dest ) {

@@ -5,7 +5,6 @@
 #include "saa1099.h"
 
 #define TSTEP 256
-#define USE_TONE_ENV 1
 
 // xx0 : stay
 // xx1 : repeat

@@ -30,7 +30,6 @@ typedef struct {
 } szxField;
 
 #define FLD(type, f)		{#f, offsetof(type, f), sizeof(((type*)0)->f)}
-#define FLDN(key, type, f)	{key, offsetof(type, f), sizeof(((type*)0)->f)}
 #define FLDRAW(key, off, sz)	{key, off, sz}
 #define FLDEND			{NULL, 0, 0}
 

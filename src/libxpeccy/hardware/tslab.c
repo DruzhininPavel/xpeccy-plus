@@ -11,11 +11,6 @@
 #define flgDINT	flag[3]		// (same for dma int)
 
 #define p01AF	reg[7]		// move to tsconf.c (what to do with ports tab?)
-#define p02AF	reg[8]
-#define p03AF	reg[9]
-#define p04AF	reg[10]
-#define p05AF	reg[11]
-//#define p21AF	reg[12]
 #define regMADR	reg[16]		// 15AF[0..3] = MapAddr
 #define dmaLen	reg[17]
 #define dmaCnt	reg[18]
@@ -1012,10 +1007,6 @@ xPortDsc zx_port_tab_ts[] = {
 	{0x7ffd, REG_BYTE, offsetof(Computer, p7FFD)},
 	{0xeff7, REG_BYTE, offsetof(Computer, pEFF7)},
 	{0x01af, REG_BYTE, offsetof(Computer, p01AF)},
-//	{0x02af, REG_BYTE, offsetof(Computer, p02AF)},
-//	{0x03af, REG_BYTE, offsetof(Computer, p03AF)},
-//	{0x04af, REG_BYTE, offsetof(Computer, p04AF)},
-//	{0x05af, REG_BYTE, offsetof(Computer, p05AF)},
 	{0x21af, REG_BYTE, offsetof(Computer, tsconf.p21af)},
 	{-1, 0, 0}
 };

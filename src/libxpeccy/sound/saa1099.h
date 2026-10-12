@@ -67,6 +67,5 @@ void saaDestroy(saaChip*);
 void saaReset(saaChip*);
 int saaWrite(saaChip*, int, int);
 void saaSync(saaChip*, int);
-sndPair saaGetVolume(saaChip*);
 // void saaFlush(saaChip*);
 sndPair saaVolume(saaChip*);

@@ -61,8 +61,6 @@ enum {
 #define KFL_CTRL	(1<<1)
 #define KFL_ALT		(1<<2)
 #define KFL_CAPS	(1<<4)
-#define KFL_NUMLOCK	(1<<5)
-#define KFL_SCRLOCK	(1<<6)
 #define KFL_RUS		(1<<7)
 #define KFL_RSHIFT	KFL_SHIFT
 

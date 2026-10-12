@@ -119,10 +119,6 @@ typedef struct {
 
 #define PWATCH_MAX	16		// ports the debugger can watch at once
 
-// scale of comp->tickPerNsFixed. Separate from NS_FIXED_BITS: it is a
-// reciprocal, and needs the extra bits to stay accurate for short tick periods
-#define TICK_FIXED_BITS 32
-
 // how many turbo steps a board may declare
 #define TURBO_STEP_MAX 8
 
