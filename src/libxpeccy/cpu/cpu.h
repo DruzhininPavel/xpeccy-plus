@@ -137,12 +137,9 @@ struct CPU {
 	int type;			// cpu type id
 	unsigned short intrq;		// interrupts request. each bit for each INT type, 1 = requested
 	unsigned short inten;		// interrupts enabled mask
-	int intvec;			// interrupt vector (internal/external)
-	int errcod;			// error code (-1 if not present)
 	int adr;			// address bus for using from outside
 	int busmask;			// mask for address bus
 	int t;				// ticks counter
-	unsigned short oldpc;		// address of current instruction
 	// if cpu is from external lib
 	unsigned lib:1;			// cpu core from exernal lib
 	char* libname;			// name of lib inside libs folder
@@ -171,9 +168,7 @@ struct CPU {
 	unsigned char tmp;
 	unsigned char tmpb;
 	reg16(tmpw,htw,ltw);
-	reg16(twrd,hwr,lwr);
 	int tmpi;
-//	jmp_buf jbuf;			// for throws
 };
 
 struct cpuCore {

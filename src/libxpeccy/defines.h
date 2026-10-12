@@ -94,7 +94,6 @@ enum {
 typedef void(*cbirq)(int, void*);
 // external data ports rd/wr
 typedef int(*cbxrd)(int, void*);
-typedef void(*cbxwr)(int, int, void*);
 
 // breakpoint type
 

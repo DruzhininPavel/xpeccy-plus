@@ -134,21 +134,8 @@ typedef struct {
 } xKbdCore;
 
 struct Keyboard {
-//	unsigned reset:1;		// RES signal to CPU
-	unsigned used:1;
-	unsigned caps:1;
-	unsigned shift:1;
-	unsigned ar2:1;
-	unsigned lang:1;
-
-	unsigned inten:1;		// interrupt enabled
-	unsigned kpress:1;		// key pressed
-	unsigned drq:1;			// keyboard buffer have data
-
 	unsigned char port;		// high byte of xxFE port
 	unsigned char scanmask;	// zx: half-rows the rom has read one by one. 0xff = a full KEY-SCAN
-	int mode;
-	int flag;
 
 	xKbdCore* core;
 	// callbacks
@@ -157,7 +144,6 @@ struct Keyboard {
 	// i8031 block (TODO: move it into ATM2)
 	unsigned wcom:1;		// i8031 waiting for command
 	unsigned warg:1;		// i8031 waiting for argument
-//	int submode;			// i8031 mode
 	int com;
 	int arg;
 	unsigned char keycode;		// current pressed key code
@@ -165,8 +151,6 @@ struct Keyboard {
 	unsigned char flag1;		// [7] rus.scrlock.numlock.caps.0.alt.ctrl.shift [0]
 	unsigned char flag2;		// [7] 0.0.0.0.0.0.0.rshift [0]
 	// key matrix
-	int row;
-	int mask;
 	int matrix[16][16];
 	int map[8];			// ZX keyboard half-row bits (0-5)
 	int extkey;			// profi: keys holding EXT (D5) down
@@ -191,7 +175,6 @@ typedef struct {
 	unsigned extbuttons:1;
 	int type;
 	int state;
-	int shiftreg;
 } Joystick;
 
 typedef struct {

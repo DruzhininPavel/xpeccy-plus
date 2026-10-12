@@ -101,7 +101,6 @@ static const szxField fld_cpu[] = {
 	FLD(CPU, flags),
 	FLD(CPU, intrq),
 	FLD(CPU, inten),
-	FLD(CPU, intvec),
 	FLDEND
 };
 static const int cpu_state_flags[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 58, 59, 60, 62, -1};
@@ -147,19 +146,14 @@ static const szxField fld_vid[] = {
 	FLD(Video, brdcol),
 	FLD(Video, nextbrd),
 	FLD(Video, inten),
-	FLD(Video, intrq),
-	FLD(Video, intbf),
-	FLD(Video, paln),
 	FLD(Video, vmode),
 	FLD(Video, fcnt),
-	FLD(Video, lcnt),
 	FLD(Video, atrbyte),
 	FLD(Video, fntbyte),
 	FLD(Video, snowLow),
 	FLD(Video, snowBank),
 	FLD(Video, intp),
 	FLD(Video, intsize),
-	FLD(Video, sc),
 	FLD(Video, scrsize),
 	FLD(Video, inth),
 	FLD(Video, intf),
@@ -645,7 +639,6 @@ static void ext_cpu_into(CPU* cpu, const unsigned char* p, size_t n) {
 		cpu->flags[cpu_state_flags[i]] = tmp_.flags[cpu_state_flags[i]];
 	cpu->intrq = tmp_.intrq;
 	cpu->inten = tmp_.inten;
-	cpu->intvec = tmp_.intvec;
 }
 
 static void ext_comp(Computer* comp, const unsigned char* p, size_t n) {
@@ -700,18 +693,13 @@ static void ext_vid(Computer* comp, const unsigned char* p, size_t n) {
 	vid->brdcol = tmp_.brdcol;
 	vid->nextbrd = tmp_.nextbrd;
 	vid->inten = tmp_.inten;
-	vid->intrq = tmp_.intrq;
-	vid->intbf = tmp_.intbf;
-	vid->paln = tmp_.paln;
 	vid->fcnt = tmp_.fcnt;
-	vid->lcnt = tmp_.lcnt;
 	vid->atrbyte = tmp_.atrbyte;
 	vid->fntbyte = tmp_.fntbyte;
 	vid->snowLow = tmp_.snowLow;
 	vid->snowBank = tmp_.snowBank;
 	vid->intp = tmp_.intp;
 	vid->intsize = tmp_.intsize;
-	vid->sc = tmp_.sc;
 	vid->scrsize = tmp_.scrsize;
 	vid->inth = tmp_.inth;
 	vid->intf = tmp_.intf;

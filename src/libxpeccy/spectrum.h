@@ -204,12 +204,10 @@ typedef struct Computer {
 	double nsPerTick;	// real ns/T, kept precise: truncating this to int was the
 				// root cause of a systemic ~0.3-0.9% emulation speed error
 				// (see nsPerSampleFixed-driven pacing in ethread.cpp)
-	// nsPerTick in 16.16, and its inverse in 32.32. The per-instruction sync
-	// paths run on these: they sit on every memory access, and llround() is an
-	// out-of-line CRT call with gcc at -O2. Both derived by
-	// comp_update_timings(), never set by hand.
+	// nsPerTick in 16.16. The per-instruction sync paths run on it: it sits on
+	// every memory access, and llround() is an out-of-line CRT call with gcc
+	// at -O2. Derived by comp_update_timings(), never set by hand.
 	long long nsPerTickFixed;
-	long long tickPerNsFixed;
 
 	unsigned char verblk[16];	// what the machine says it is (comp_set_identity)
 	bool flag[128];			// each machine have its own flags

@@ -164,12 +164,11 @@ void vidDestroy(Video* vid) {
 	free(vid);
 }
 
-// The one place the dot period is set. nsPerDot is the whole-ns value other
-// code reads; nsPerDotFixed keeps the fraction, and is what the ray steps by.
+// The one place the dot period is set. nsPerDotFixed keeps the fraction, and
+// is what the ray steps by.
 void vid_set_dot_ns(Video* vid, double nspd) {
 	vid_unlazy(vid);			// dots counted so far are of the old length
 	vid->nsPerDotExact = nspd;
-	vid->nsPerDot = (int)llround(nspd);
 	vid->nsPerDotFixed = NSD_TO_FIXED(nspd);
 	if (vid->nsPerDotFixed < 1)
 		vid->nsPerDotFixed = 1;		// never let vid_sync_fixed spin forever
@@ -177,12 +176,10 @@ void vid_set_dot_ns(Video* vid, double nspd) {
 }
 
 void vid_upd_timings(Video* vid, double nspd) {
-	// nsPerLine/nsPerFrame are each rounded once from the precise nspd, not
-	// multiplied up from the rounded nsPerDot, so they don't inherit its error.
-	double nsLine = nspd * vid->full.x;
+	// nsPerFrame is rounded once from the precise nspd, not multiplied up
+	// from a rounded dot period, so it does not inherit its error.
 	vid_set_dot_ns(vid, nspd);
-	vid->nsPerLine = (int)llround(nsLine);
-	vid->nsPerFrame = (int)llround(nsLine * vid->full.y);
+	vid->nsPerFrame = (int)llround(nspd * vid->full.x * vid->full.y);
 }
 
 // TODO: for zx only?
@@ -340,7 +337,6 @@ void vid_set_layout(Video* vid, vLayout* lay) {
 	vid->scrn = lay->scr;
 	vid->intp = lay->intpos;
 	vid->intsize = lay->intSize;
-	vid->frmsz = lay->full.x * lay->full.y;
 	vid_upd_layout(vid);
 }
 

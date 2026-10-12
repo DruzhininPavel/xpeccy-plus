@@ -119,12 +119,9 @@ struct Video {
 	unsigned vbrd:1;	// border.V
 
 	int nsPerFrame;
-	int nsPerLine;
 	long long nsPerDotFixed;	// the dot period, 16.16, and what the ray steps by
 	double nsPerDotExact;	// same value as a double, for vid_upd_layout() to
-				// re-derive nsPerLine/nsPerFrame from
-	int nsPerDot;		// whole-ns form. Nothing here reads it any more; it is
-				// kept because upstream's Video struct has it
+				// re-derive nsPerFrame from
 	long long nsDrawFixed;	// time handed in but not yet drawn, 16.16
 	long long nsOwedFixed;	// fraction of a ns owed to vid->time, carried not dropped
 	long long nsCalmFixed;	// nsDrawFixed may grow up to this with no dot drawn (vid_sync_lazy)
@@ -142,10 +139,6 @@ struct Video {
 	unsigned char nextbrd;
 
 	unsigned char inten;	// interrupts enable (8 bits = 8 signals)
-	unsigned char intrq;	// interrupt output signals (8 bits)
-	unsigned char intbf;	// buffered int (last int signals)
-
-	unsigned char paln;	// high bits = palete number
 	uint32_t pal[256];	// ABGR inside int, R = LSB, A = FF
 	uint32_t gpal[256];	// greyscale copy of pal
 	uint32_t bpal[256];	// base palette (loaded preset)
@@ -155,18 +148,15 @@ struct Video {
 	cbvid cbCount;		// call when busy count down to 0
 
 	cbxrd mrd;		// external memory reading
-	cbxwr mwr;		// external memory writing
 	cbirq xirq;		// interrupt
 	void* xptr;
 
 	int fcnt;
-	int lcnt;
 	unsigned char atrbyte;
 	unsigned char fntbyte;			// font byte the text mode is showing: ZX Evo reads it back
 	int snowLow;				// ULA snow: address bits 6-0 the refresh cycle forced on this burst (-1 = none)
 	int snowBank;				// ULA snow: the bank that burst reads instead of the screen one
 	unsigned snowDup:1;			// ULA snow: this burst is lost, the ULA shows the previous one again
-	size_t frmsz;
 	vRay ray;
 	vCoord full;
 	vCoord blank;
@@ -186,7 +176,6 @@ struct Video {
 	int idx;
 
 	vCoord scrsize;		// << tsconf.xSize, tsconf.ySize
-	vCoord sc;		// screen scroll registers
 	int inth;		// interrupts
 	int intf;
 
@@ -282,7 +271,7 @@ static inline void vid_settle(Video* vid) {
 		vid_settle_slow(vid);
 }
 // sets the dot period alone. vid_upd_timings() is the complete one - it also
-// re-derives nsPerLine/nsPerFrame, which the frame timer in emulwin.cpp reads
+// re-derives nsPerFrame, which the frame timer in emulwin.cpp reads
 void vid_set_dot_ns(Video*,double);
 // void vid_irq(Video*, int);
 void vid_set_mode(Video*,int);

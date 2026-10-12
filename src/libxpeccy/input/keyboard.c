@@ -19,8 +19,6 @@ void key_press(Keyboard* kbd, keyScan* tab, int* mtrx, unsigned char ch) {
 //	printf("kbd_press_key %c\n", ch);
 	keyScan key = findKey(tab, ch & 0x7f);
 	key.row &= 0x0f;
-	kbd->row = key.row;
-	kbd->mask = key.mask;
 	mtrx[key.row] &= ~key.mask;
 	// if (key.mask) printf("row %i : %X\n",key.row, mtrx[key.row]);
 	if (ch & 0x80)			// profi EXT, see kbdScanProfi
@@ -337,10 +335,8 @@ void kbdReleaseAll(Keyboard* kbd) {
 	memset(kbd->prfsh, 0, sizeof(kbd->prfsh));
 	kbd->keycode = 0;
 	kbd->lastkey = 0;
-//	kbd->flag = 0;
 	if (kbd->per > 0) {
 		kbd_release(kbd, &kbd->kent);
-//		xt_release(kbd, kbd->kent);
 	}
 	kbd->per = 0;
 }
