@@ -242,7 +242,7 @@ typedef struct {
 		void watchClock();
 		void watchPads();
 		void fillPadMenu();
-		void padGameEdited();
+		bool padGameEdited();
 		int padK8 = -1;		// the machine's Kempston had 8 buttons, as last seen
 		void showMedia(const QString&, int src);
 		std::string wantedShader();

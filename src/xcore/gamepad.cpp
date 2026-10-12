@@ -1920,6 +1920,7 @@ bool xGamepadController::gameImage(const QString& image) {
 	scratch.loadFile(pad);
 	gameLines = scratch.confLines();
 	gameOwn = own;
+	gameStart = gpada->confLines();
 	gameFile = pad;
 	gameEdit = GE_ASK;
 	return true;
@@ -1932,9 +1933,18 @@ bool xGamepadController::gameRevert() {
 	return true;
 }
 
+bool xGamepadController::gameChanged() {
+	return !gameFile.isEmpty() && (gpada->confLines() != gameStart);
+}
+
+void xGamepadController::gameUndo() {
+	if (!gameFile.isEmpty()) gpada->setConfLines(gameStart);
+}
+
 void xGamepadController::gameKeep() {
 	gameOwn.clear();
 	gameLines.clear();
+	gameStart.clear();
 	gameFile.clear();
 }
 

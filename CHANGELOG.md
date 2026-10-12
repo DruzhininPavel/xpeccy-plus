@@ -82,6 +82,9 @@ before that point is upstream's history and is not repeated here.
 
 - **A `.pad` file with a non-Latin name** loads and saves on Windows.
 
+- **Closing the question about a game's gamepad bindings** cancels the change: the title
+  bar's X, Esc and the new Cancel button leave the game's bindings as they were.
+
 - **TZX pulse levels** follow the TZX 1.20 rules, and a run of pulse blocks ended by a pause
   block, a "stop if 48K" or the end of the tape loads too; Basil the Great Mouse Detective
   and Moonlighter load.

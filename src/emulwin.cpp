@@ -2758,11 +2758,13 @@ void MainWin::padGame(const QString& image) {
 
 // Player 1's table changed while a game's .pad is in effect: the first change
 // asks where changes go, and from then on they go there until the next image.
-void MainWin::padGameEdited() {
+// Cancel (or the box closed) takes the change back: false then.
+bool MainWin::padGameEdited() {
 	xGamepadController* c = conf.gpctrl;
-	if (c->gameFile.isEmpty()) return;
+	if (c->gameFile.isEmpty()) return true;
 	QString name = QFileInfo(c->gameFile).fileName();
 	if (c->gameEdit == GE_ASK) {
+		if (!c->gameChanged()) return true;	// a control set back after a cancel
 		QMessageBox box(QMessageBox::Question, "Gamepads",
 			QString("You changed player 1's bindings, the ones from %0.\nWhere should the change go?").arg(name),
 			QMessageBox::NoButton, QApplication::activeWindow());
@@ -2771,22 +2773,36 @@ void MainWin::padGameEdited() {
 			"Temporary: until the next image.").arg(name));
 		QPushButton* btFile = box.addButton("Game config", QMessageBox::AcceptRole);
 		QPushButton* btAll = box.addButton("User config", QMessageBox::AcceptRole);
-		box.addButton("Temporary", QMessageBox::RejectRole);
+		QPushButton* btNow = box.addButton("Temporary", QMessageBox::AcceptRole);
+		QPushButton* btNo = box.addButton(QMessageBox::Cancel);
+		btNo->setIcon(QIcon(":/images/cancel.png"));
 		box.setDefaultButton(btFile);
+		box.setEscapeButton(btNo);
 		// a style sheet's padding is not in a message box button's width
 		foreach(QAbstractButton* bt, box.buttons())
-			bt->setMinimumWidth(bt->fontMetrics().horizontalAdvance(bt->text()) + 32);
+			bt->setMinimumWidth(bt->fontMetrics().horizontalAdvance(bt->text()) + 32
+				+ (bt->icon().isNull() ? 0 : bt->iconSize().width()));
 		box.exec();
 		if (box.clickedButton() == btAll) {
 			c->gameKeep();		// the table is the player's own from now on
 			padWin->sync();
 			saveConfig();
-			return;
+			return true;
 		}
-		c->gameEdit = (box.clickedButton() == btFile) ? GE_FILE : GE_NOW;
+		if (box.clickedButton() == btFile) {
+			c->gameEdit = GE_FILE;
+		} else if (box.clickedButton() == btNow) {
+			c->gameEdit = GE_NOW;
+		} else {
+			c->gameUndo();		// and the next change asks again
+			padWin->sync();
+			setMessage(" gamepad: change cancelled ");
+			return false;
+		}
 	}
 	if ((c->gameEdit == GE_FILE) && !c->gameSave(c->gameFile))
 		setMessage(QString(" can't write %0 ").arg(name));
+	return true;
 }
 
 // Gamepads: Manage opens the window, and the first player's joystick can be
@@ -2813,7 +2829,7 @@ void MainWin::fillPadMenu() {
 	// a change from here: the window shows it, a game's table asks where it goes
 	auto done = [this](const QString& msg) {
 		padWin->sync();
-		padGameEdited();
+		if (!padGameEdited()) return;
 		saveConfig();
 		setMessage(QString(" %0 ").arg(msg));
 	};
