@@ -29,6 +29,15 @@ before that point is upstream's history and is not repeated here.
 - **The breakpoint editor** takes a label, page:offset or a CPU address for a memory cell,
   shows how it read the address, and has Cancel and tooltips.
 
+- **A ZX Evo panel in the debugger**: on TSConf, the registers decoded with what waits for
+  the next line, the sprites, the tiles and tile maps, the DMA transfers of the last frame and
+  the palette rows each layer uses; on BaseConf, the pager, the ports and the palette. Like
+  the Sound and Screen panels, it can be detached into a window of its own.
+
+- **TSConf layers can be hidden** from the picture - the three sprite layers, the two tile
+  layers and the bitmap - without changing the machine's timing. With the machine stopped in
+  the debugger, the picture is redrawn at once.
+
 - **The Disk Manager shows +3DOS disks**: each file's type, address, length and size, with
   Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
   which the +3 reads too, show as well.
