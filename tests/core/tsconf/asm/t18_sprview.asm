@@ -1,5 +1,5 @@
 ; The debugger's sprite decode against the TSU (video_ts.v, video_ts_render.v): four
-; sprites with no layer under them but the border (NOGFX), each colour of palette rows
+; sprites with no layer under them but the border (NOGFX), each color of palette rows
 ; 1 and 2 and the border a CRAM entry of its own. The bench (SPRCHK=1) draws every
 ; active sprite the debugger's way and compares it dot for dot with the frame.
 ;   0: 16x16 at 10,20, tile 0, pal 1
@@ -29,7 +29,7 @@ cr:	ld a, e
 	inc hl
 	inc e
 	djnz cr
-	ld hl, #7C1F			; border colour #3F: one no sprite colour has
+	ld hl, #7C1F			; border color #3F: one no sprite color has
 	ld (#C000 + #3F * 2), hl
 	; SFILE at #C200
 	ld hl, spr

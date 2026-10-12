@@ -122,6 +122,17 @@ int main(int argc, char** argv) {
 		for (int j = 0; j < 16; j++) printf(" %06X", comp->vid->pal[j] & 0xffffff);
 		printf("\n");
 	}
+	if (getenv("EVOREGS")) {		// the debugger's view (evo_get_regs)
+		evoRegs r;
+		evo_get_regs(comp, &r);
+		printf("EVO  : 7FFD %02X EFF7 %02X BF %02X 77 %02X dos %d vdos %d vnmi %d clock %d trap %04X border %X virt %X\n",
+			r.p7ffd, r.peff7, r.pbf, r.p77, r.dos, r.vdos, r.vnmi, r.clock, r.trap, r.border, r.virt);
+		printf("EVO  : pager set %d:", r.pgset);
+		for (int j = 0; j < 8; j++) printf(" %02X/%02X", r.pg[j], r.pgflag[j]);
+		printf("\nEVO  : palette:");
+		for (int j = 0; j < 16; j++) printf(" %02X", r.pal[j]);
+		printf("\n");
+	}
 	const char* dump = getenv("DUMP");
 	if (dump) dump_ppm(comp, dump);
 	compDestroy(comp);

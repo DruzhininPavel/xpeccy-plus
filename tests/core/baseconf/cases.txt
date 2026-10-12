@@ -69,3 +69,8 @@ run t19_timing_m0    t19_timing_m0.bin    5   TICKS=1
 run t19_timing_m1    t19_timing_m1.bin    5   TICKS=1
 run t19_timing_m2    t19_timing_m2.bin    5   TICKS=1
 run t19_timing_m3    t19_timing_m3.bin    5   TICKS=1
+
+# The debugger's view of the BaseConf state (evo_get_regs)
+run e01_regs_pager   t15_pager.bin        3   EVOREGS=1
+run e02_regs_palette t13_palette.bin      3   EVOREGS=1
+run e03_regs_77      t01_vmode_7_21.bin   3   EVOREGS=1

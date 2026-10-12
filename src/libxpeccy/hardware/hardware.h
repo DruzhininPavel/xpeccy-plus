@@ -214,6 +214,24 @@ typedef struct {
 } tsRegs;
 void ts_get_regs(Computer*, tsRegs*);
 
+// The ZX Evolution BaseConf state, for the debugger: what the #xxBE/BD readback block
+// gives, taken from the same places
+typedef struct {
+	int p7ffd, peff7, pbf;
+	int p77;		// a14.a9.a8.0.d3..d0 of the last write to #xx77
+	int dos, vdos, vnmi;
+	int clock;		// 0 3.5, 1 7, 2 14 MHz
+	int pg[8];		// the pager's eight entries, (ROM bit of 7FFD) * 4 + window:
+	int pgflag[8];		// b7 7FFD/DOS mixed in, b6 RAM, b5 write protect
+	int pgset;		// 0 or 4: the four entries in use now
+	int trap;		// the breakpoint address of #BF b4
+	int pal[16];		// as last written through #FF
+	int border;		// the palette cell the border is
+	int virt;		// virtual drives, b3..0
+	int ext[4];		// #2F #4F #6F #8F
+} evoRegs;
+void evo_get_regs(Computer*, evoRegs*);
+
 #ifdef __cplusplus
 }
 #endif

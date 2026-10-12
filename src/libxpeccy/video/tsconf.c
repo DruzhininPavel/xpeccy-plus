@@ -83,7 +83,7 @@ static inline int ts_cell_line_adr(int page, int entry, int line) {
 	return (entry & 0x8000) ? (fa ^ 0x0700) : fa;
 }
 
-// the colour's high nibble a map entry gets: PalSel b7..6 for the layer, b5..4 its own
+// the color's high nibble a map entry gets: PalSel b7..6 for the layer, b5..4 its own
 static inline int ts_cell_pal(int entry, int palhi) {
 	return palhi | ((entry >> 8) & 0x30);
 }

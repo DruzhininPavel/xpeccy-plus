@@ -96,6 +96,16 @@ class xTsTilePage : public QWidget {
 		void hover_info();
 };
 
+// BaseConf
+class xEvoPortsPage : public QWidget {
+	Q_OBJECT
+	public:
+		xEvoPortsPage(QWidget* = nullptr);
+		void draw();
+	private:
+		xEvoList* list;
+};
+
 class xTsDmaPage : public QWidget {
 	Q_OBJECT
 	public:
@@ -130,6 +140,7 @@ class xEvoPanel : public QWidget {
 		xTsSprPage* tsSpr;
 		xTsTilePage* tsTile;
 		xTsDmaPage* tsDma;
+		xEvoPortsPage* evoPorts;
 		QLabel* noMachine;
 		int hw;				// the machine the tab row was built for
 		bool hold;

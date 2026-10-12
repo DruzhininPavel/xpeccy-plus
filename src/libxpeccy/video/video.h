@@ -364,7 +364,7 @@ typedef struct {
 void tsl_get_sprite(Video*, int idx, tsSprite*);
 // w*h dots as the TSU puts them out: pal << 4 | dot, 0 where transparent
 void tsl_sprite_dots(Video*, int idx, unsigned char* out);
-// 8x8 dots of a tile of a graphics page, palhi the colour's high nibble
+// 8x8 dots of a tile of a graphics page, palhi the color's high nibble
 void tsl_tile_dots(Video*, int page, int tile, int palhi, unsigned char* out);
 // the tile map entry of layer 0/1 at row, col (0..63), from TMPage
 int tsl_map_entry(Video*, int lay, int row, int col);

@@ -823,6 +823,33 @@ static int evo_ack(Computer* comp) {
 	return zx_ack(comp);
 }
 
+void evo_get_regs(Computer* comp, evoRegs* r) {
+	r->p7ffd = comp->p7FFD;
+	r->peff7 = comp->pEFF7;
+	r->pbf = comp->regBF & 0x3f;
+	r->p77 = comp->prt2;
+	r->dos = comp->flgDOS;
+	r->vdos = comp->flgVDOS;
+	r->vnmi = comp->flgVNMI;
+	r->clock = (comp->hwMul >= 4) ? 2 : (comp->hwMul >= 2) ? 1 : 0;
+	for (int i = 0; i < 8; i++) {
+		r->pg[i] = comp->memPage(i) ^ 0xff;		// kept inverted, as evoSetBank takes it
+		r->pgflag[i] = comp->memFlag(i) & 0xe0;
+	}
+	r->pgset = comp->flgROM ? 4 : 0;
+	r->trap = comp->xregBRKA.w;
+	for (int i = 0; i < 16; i++)
+		r->pal[i] = comp->regPal(i);
+	r->border = comp->vid->nextbrd & 0x0f;
+	r->virt = 0;
+	for (int i = 0; i < 4; i++)
+		if (comp->dif->flp[i]->virt) r->virt |= 1 << i;
+	r->ext[0] = comp->reg2F;
+	r->ext[1] = comp->reg4F;
+	r->ext[2] = comp->reg6F;
+	r->ext[3] = comp->reg8F;
+}
+
 xPortDsc evo_port_tab[] = {
 	{0x7ffd, REG_BYTE, offsetof(Computer, p7FFD)},
 	{0xeff7, REG_BYTE, offsetof(Computer, pEFF7)},

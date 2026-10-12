@@ -70,7 +70,7 @@ static void evo_fit_column(QTreeWidget* view, int col, QStringList samples) {
 		view->setColumnWidth(col, w);
 }
 
-// group rows are coloured as the debugger's panel headers are
+// group rows are colored as the debugger's panel headers are
 static void evo_header_colors(QTreeWidgetItem* it, const QFont& base) {
 	QFont fnt = base;
 	fnt.setBold(true);
@@ -552,7 +552,7 @@ void xTsSprPage::draw() {
 	draw_pick();
 }
 
-// the picked sprite as the TSU draws it, through the colours as they are now;
+// the picked sprite as the TSU draws it, through the colors as they are now;
 // a transparent dot shows as a checker
 void xTsSprPage::draw_pick() {
 	Computer* comp = conf.zx;
@@ -581,13 +581,13 @@ void xTsSprPage::draw_pick() {
 	int zoom = qMax(1, qMin(qMin(labPic->width(), SPR_PIC) / s.w, qMin(labPic->height(), SPR_PIC) / s.h));
 	labPic->setPixmap(QPixmap::fromImage(img.scaled(s.w * zoom, s.h * zoom)));
 	int sg = vid->tsconf.SGPage;
-	labInfo->setText(QString("Sprite %0, %1x%2 at %3,%4\nTile %5: row %6, column %7 of page %8\nPalette %9 (colours %10..%11)")
+	labInfo->setText(QString("Sprite %0, %1x%2 at %3,%4\nTile %5: row %6, column %7 of page %8\nPalette %9 (colors %10..%11)")
 		.arg(sel).arg(s.w).arg(s.h).arg(s.x).arg(s.y)
 		.arg(s.tile).arg(s.tile >> 6).arg(s.tile & 63).arg(hex2(sg))
 		.arg(s.pal).arg(hex2(s.pal << 4)).arg(hex2((s.pal << 4) | 15)));
 }
 
-// a TSConf colour as the picture shows it; 0 (a hole) as a checker
+// a TSConf color as the picture shows it; 0 (a hole) as a checker
 static QRgb ts_rgb(Video* vid, int idx, int x, int y) {
 	if (!idx) return ((x ^ y) & 4) ? qRgb(0x60, 0x60, 0x60) : qRgb(0x40, 0x40, 0x40);
 	uint32_t c = vid->pal[idx & 0xff];
@@ -766,10 +766,112 @@ void xTsTilePage::hover_info() {
 	if (e & 0x4000) fl << "XF";
 	if (e & 0x8000) fl << "YF";
 	bool hole = !(e & 0xfff) && !(vid->tsconf.tconfig & (mode ? 8 : 4));
-	labInfo->setText(QString("Cell %0,%1 at %2:%3 = %4: tile %5 (row %6, column %7), colours %8..%9%10%11")
+	labInfo->setText(QString("Cell %0,%1 at %2:%3 = %4: tile %5 (row %6, column %7), colors %8..%9%10%11")
 		.arg(tx).arg(ty).arg(hex2(vid->tsconf.TMPage)).arg(QString::number(ofs, 16).toUpper().rightJustified(4, '0'))
 		.arg(QString::number(e, 16).toUpper().rightJustified(4, '0')).arg(e & 0xfff).arg((e & 0xfff) >> 6).arg(e & 63)
 		.arg(hex2(palhi)).arg(hex2(palhi | 15)).arg(fl.isEmpty() ? "" : " " + fl.join(" ")).arg(hole ? ", a hole (tile 0)" : ""));
+}
+
+// BASECONF PORTS PAGE
+
+xEvoPortsPage::xEvoPortsPage(QWidget* p):QWidget(p) {
+	QVBoxLayout* lay = new QVBoxLayout(this);
+	lay->setContentsMargins(0, 0, 0, 0);
+	list = new xEvoList({"Port", "Register", "Value", "Means"});
+	list->onStyle = [this]() {draw();};
+	lay->addWidget(list, 1);
+}
+
+// the set bits of v by name, b0 first; nullptr for a bit with no name
+static QStringList bit_names(int v, const char* const* names) {
+	QStringList s;
+	for (int i = 0; i < 8; i++)
+		if ((v & (1 << i)) && names[i]) s << names[i];
+	return s;
+}
+
+static QString hex4(int v) {return QString::number(v & 0xffff, 16).toUpper().rightJustified(4, '0');}
+
+void xEvoPortsPage::draw() {
+	Computer* comp = conf.zx;
+	if (!comp || (comp->hw->id != HW_PENTEVO)) return;
+	evoRegs r;
+	evo_get_regs(comp, &r);
+	bool nm = fieldNames();
+
+	QString g = "Ports";
+	static const char* const p7N[8] = {0, 0, 0, "SCR", "ROM", "LOCK", 0, 0};
+	list->put(g, "7ffd", {"7FFD", "7FFD", hex2(r.p7ffd), nm
+		? QString("PG=%0 %1").arg(r.p7ffd & 7).arg(bit_names(r.p7ffd, p7N).join(" "))
+		: QString("RAM page %0 at #C000, screen %1, ROM %2%3").arg(r.p7ffd & 7).arg((r.p7ffd & 8) ? 7 : 5)
+			.arg((r.p7ffd >> 4) & 1).arg((r.p7ffd & 0x20) ? ", locked" : "")});
+	static const char* const effN[8] = {"P16C", 0, "BLOCK1M", "RAM0_0", "TURBOOFF", "HWMC", 0, "GLUCLOCK"};
+	static const char* const effW[8] = {"16 colors", 0, "7FFD as 128K", "RAM 0 at #0000", "turbo off", "multicolor", 0, "clock chip ports"};
+	QStringList ew = bit_names(r.peff7, nm ? effN : effW);
+	list->put(g, "eff7", {"EFF7", "EFF7", hex2(r.peff7), ew.isEmpty() ? "-" : ew.join(nm ? " " : ", ")});
+	static const char* atmModes[8] = {"EGA", "?", "hardware multicolor", "ZX", "?", "?", "text", "Evo text"};
+	bool pager = r.p77 & 0x20;
+	list->put(g, "77", {"xx77", "77", hex2(r.p77), nm
+		? QString("RG=%0%1 PEN=%2 CPM_N=%3 PEN2=%4").arg(r.p77 & 7).arg((r.p77 & 8) ? " TURBO" : "")
+			.arg(pager ? 0 : 1).arg((r.p77 >> 6) & 1).arg((r.p77 & 0x80) ? 0 : 1)
+		: QString("mode %0 (%1)%2, pager %3%4, palette %5").arg(r.p77 & 7).arg(atmModes[r.p77 & 7])
+			.arg((r.p77 & 8) ? ", turbo" : "").arg(pager ? "on" : "off").arg((r.p77 & 0x40) ? "" : ", DOS held on")
+			.arg((r.p77 & 0x80) ? "closed" : "open")});
+	static const char* const bfN[8] = {"SHADOW_EN", "ROMRW_EN", "FNTW_EN", "SET_NMI", "BRK_ENA", "PAL444_ENA", 0, 0};
+	static const char* const bfW[8] = {"shadow ports", "ROM writable", "font writable", "NMI", "trap on", "4-4-4 palette", 0, 0};
+	QStringList bw = bit_names(r.pbf, nm ? bfN : bfW);
+	list->put(g, "bf", {"xxBF", "BF", hex2(r.pbf), bw.isEmpty() ? "-" : bw.join(nm ? " " : ", ")});
+
+	g = "Windows";
+	for (int i = 0; i < 4; i++) {
+		MemPage* pg = &comp->mem->map[i << 6];
+		list->put(g, QString("w%0").arg(i), {"", QString("#%0").arg(hex4(i << 14)), hex2(pg->num >> 6),
+			QString("%0 page %1").arg((pg->type == MEM_RAM) ? "RAM" : "ROM").arg(hex2(pg->num >> 6))});
+	}
+
+	g = "Pager";
+	for (int i = 0; i < 8; i++) {
+		int f = r.pgflag[i];
+		QStringList m;
+		if (nm) {
+			m << ((f & 0x40) ? "RAM" : "ROM");
+			if (f & 0x80) m << "MIX";
+			if (f & 0x20) m << "WP";
+		} else {
+			m << ((f & 0x40) ? "RAM" : "ROM");
+			if (f & 0x80) m << ((f & 0x40) ? "7FFD bits mixed in" : "DOS bit mixed in");
+			if (f & 0x20) m << "write protected";
+		}
+		bool live = ((i & 4) == r.pgset);
+		list->put(g, QString("p%0").arg(i), {QString("%0FF7").arg((i & 3) << 2, 1, 16).toUpper(),
+			QString("W%0 ROM=%1%2").arg(i & 3).arg(i >> 2).arg(live ? " *" : ""), hex2(r.pg[i]), m.join(nm ? " " : ", ")});
+	}
+
+	g = "System";
+	QStringList st;
+	if (r.dos) st << "DOS";
+	if (r.vdos) st << (nm ? "VDOS" : "TR-DOS emulation");
+	if (r.vnmi) st << (nm ? "VNMI" : "in NMI");
+	static const char* clk[3] = {"3.5 MHz", "7 MHz", "14 MHz"};
+	list->put(g, "state", {"", "State", "", st.isEmpty() ? "-" : st.join(", ")});
+	list->put(g, "clock", {"", "Clock", "", clk[r.clock]});
+	list->put(g, "trap", {"00/01BD", "Trap", hex4(r.trap), (r.pbf & 0x10) ? "on" : "off"});
+	list->put(g, "brd", {"", "Border", QString::number(r.border, 16).toUpper(), "palette cell"});
+	QStringList vd;
+	for (int i = 0; i < 4; i++)
+		if (r.virt & (1 << i)) vd << QString(QChar('A' + i));
+	list->put(g, "virt", {"13BD", "Virtual", QString::number(r.virt, 16).toUpper(), vd.isEmpty() ? "-" : vd.join(" ")});
+	list->put(g, "ext", {"2F..8F", "2F 4F 6F 8F", "", QString("%0 %1 %2 %3").arg(hex2(r.ext[0])).arg(hex2(r.ext[1]))
+		.arg(hex2(r.ext[2])).arg(hex2(r.ext[3]))});
+
+	g = "Palette";
+	for (int h = 0; h < 2; h++) {
+		QStringList cells;
+		for (int i = 0; i < 8; i++) cells << hex2(r.pal[h * 8 + i]);
+		list->put(g, QString("pal%0").arg(h), {"FF", QString("Cells %0..%1").arg(h * 8).arg(h * 8 + 7), "", cells.join(" ")});
+	}
+	list->finish();
+	list->restyle();
 }
 
 // DMA PAGE
@@ -859,12 +961,14 @@ xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 	tsSpr = new xTsSprPage;
 	tsTile = new xTsTilePage;
 	tsDma = new xTsDmaPage;
+	evoPorts = new xEvoPortsPage;
 	noMachine = new QLabel("Nothing to show on this machine");
 	noMachine->setAlignment(Qt::AlignCenter);
 	stack->addWidget(tsRegs);
 	stack->addWidget(tsSpr);
 	stack->addWidget(tsTile);
 	stack->addWidget(tsDma);
+	stack->addWidget(evoPorts);
 	stack->addWidget(noMachine);
 	lay->addWidget(stack, 1);
 
@@ -886,6 +990,8 @@ void xEvoPanel::build_tabs() {
 		tabs->setTabData(tabs->addTab("Sprites"), QVariant::fromValue((void*)tsSpr));
 		tabs->setTabData(tabs->addTab("Tiles"), QVariant::fromValue((void*)tsTile));
 		tabs->setTabData(tabs->addTab("DMA"), QVariant::fromValue((void*)tsDma));
+	} else if (hw == HW_PENTEVO) {
+		tabs->setTabData(tabs->addTab("Ports"), QVariant::fromValue((void*)evoPorts));
 	}
 	tabs->setVisible(tabs->count() > 0);
 	int idx = qBound(0, conf.dbg.evotab, qMax(0, tabs->count() - 1));
@@ -917,6 +1023,7 @@ void xEvoPanel::draw() {
 	if (cur == tsSpr) tsSpr->draw();
 	if (cur == tsTile) tsTile->draw();
 	if (cur == tsDma) tsDma->draw();
+	if (cur == evoPorts) evoPorts->draw();
 }
 
 // DOCK

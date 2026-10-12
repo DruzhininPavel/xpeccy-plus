@@ -6,7 +6,7 @@
 ;   T1: page #28, offsets X #1F3, Y #1FA (the map wraps), half its cells tile 0 (holes),
 ;       palette bits from PalSel 10
 ;   entries: tiles 0..63, all four palettes, XFlip and YFlip in a pattern
-; Each colour 40..BF is a CRAM entry of its own (the word is the index), the border 7C00.
+; Each color 40..BF is a CRAM entry of its own (the word is the index), the border 7C00.
 	include "common.inc"
 T0XL	equ #40AF
 T0YL	equ #42AF
