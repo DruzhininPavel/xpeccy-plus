@@ -29,10 +29,18 @@ before that point is upstream's history and is not repeated here.
 - **The breakpoint editor** takes a label, page:offset or a CPU address for a memory cell,
   shows how it read the address, and has Cancel and tooltips.
 
+- **The Disk Manager shows +3DOS disks**: each file's type, address, length and size, with
+  Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
+  which the +3 reads too, show as well.
+
 ### Fixed
 
 - **720K disks on the +3** load again: the second side of a double-sided disk read as an
   error, and the +3 fell back to the tape loader.
+
+- **A TR-DOS program copied to tape** keeps its variables and its autostart line, and one
+  whose last bytes run into another sector is no longer refused as joined. Saved as RAW, it
+  keeps its variables too.
 
 - **Starting from a folder of thousands of files** no longer freezes the window for seconds,
   and the places list in the file dialog shows its names whole.
