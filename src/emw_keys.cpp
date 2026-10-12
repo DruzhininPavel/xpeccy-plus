@@ -56,8 +56,8 @@ void MainWin::releaseChord(QKeyEvent* ev, bool down) {
 	if (pckAct->isChecked()) pckAct->setChecked(false);
 }
 
-int ev_to_keyid(QKeyEvent* ev, bool kgrab) {
-	int keyid = hotkey_for(hotkey_key(ev), ev->modifiers(), kgrab);
+int ev_to_keyid(QKeyEvent* ev, bool kgrab, bool* fallback = nullptr) {
+	int keyid = hotkey_for(hotkey_key(ev), ev->modifiers(), kgrab, fallback);
 	if (keyid < 0) {
 #if defined(__linux) || defined(__BSD)
 			keyid = ev->nativeScanCode();
@@ -109,7 +109,8 @@ void MainWin::keyPressEvent(QKeyEvent* ev) {
 		}
 	} else {
 //		qDebug() << ev->key();
-		keyid = ev_to_keyid(ev, false);
+		bool fellback = false;
+		keyid = ev_to_keyid(ev, false, &fellback);
 		kent = getKeyEntry(keyid);
 		if (ev->isAutoRepeat()) {
 			if (keyid < 0x10000) {		// not a shortcut
@@ -125,8 +126,9 @@ void MainWin::keyPressEvent(QKeyEvent* ev) {
 			}
 		} else {
 			// a hotkey's own Shift or Ctrl is not the machine's Caps or Symbol Shift:
-			// they are let go there before the hotkey acts, a reset or an NMI included
-			if ((keyid >= 0x10000) && (ev->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier))) {
+			// they are let go there before the hotkey acts, a reset or an NMI included.
+			// Not on a fallback match: that modifier was pressed for the machine
+			if ((keyid >= 0x10000) && !fellback && (ev->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier))) {
 				static const int mods[] = {XKEY_LSHIFT, XKEY_RSHIFT, XKEY_LCTRL, XKEY_RCTRL};
 				for (int m : mods) xkey_release(m);
 			}

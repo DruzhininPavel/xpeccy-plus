@@ -538,7 +538,7 @@ QString shortcut_key(int);		// as the menus write it; empty when it has none
 xShortcut* find_shortcut_name(const char*);
 xShortcut* shortcut_tab();
 int shortcut_find(int, int, Qt::KeyboardModifiers);
-int hotkey_for(int, Qt::KeyboardModifiers, bool);
+int hotkey_for(int, Qt::KeyboardModifiers, bool, bool* = nullptr);
 int hotkey_key(QKeyEvent*);
 int shortcut_event(int, QKeyEvent*);
 Qt::KeyboardModifiers xNativeMods(Qt::KeyboardModifiers);
