@@ -509,6 +509,7 @@ void ideDestroy(IDE* ide) {
 	ideCloseFiles(ide);
 	ataDestroy(ide->master);
 	ataDestroy(ide->slave);
+	nvDestroy(ide->smuc.nv);
 	free(ide);
 }
 

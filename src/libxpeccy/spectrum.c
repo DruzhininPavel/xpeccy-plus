@@ -607,6 +607,7 @@ void compDestroy(Computer* comp) {
 	tape_destroy(comp->tape);
 	difDestroy(comp->dif);
 	ideDestroy(comp->ide);
+	sdcDestroy(comp->sdc);
 	tsDestroy(comp->ts);
 	gsDestroy(comp->gs);
 	sdrvDestroy(comp->sdrv);
