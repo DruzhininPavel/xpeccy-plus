@@ -241,7 +241,6 @@ int loadWAV(Computer* comp, const char* name, int drv) {
 	int ssz = wf.bits >> 3;					// bytes per sample
 	int fsz = ssz * wf.chans;				// bytes per frame
 	long long frames = wf.size / fsz;
-	long long nsPerSec = (long long)wf.rate * TAPTICKNS;
 	unsigned char* rbuf = (unsigned char*)malloc(WAV_FRAMES * fsz);
 	int pmax = WAV_PULSE_STEP;
 	int* plen = (int*)malloc(pmax * sizeof(int));
@@ -270,7 +269,7 @@ int loadWAV(Computer* comp, const char* name, int drv) {
 			if (!tape_edge_step(&det, amp)) continue;
 			// the tick a sample sits at is counted from its number, not added
 			// up per sample: a sample is not a whole number of ticks
-			tick = pos * 1000000000LL / nsPerSec;
+			tick = pos * TAPTPS / wf.rate;
 			if (pcnt >= pmax) {
 				pmax *= 2;
 				plen = (int*)realloc(plen, pmax * sizeof(int));
@@ -328,7 +327,7 @@ static int wav_pick_rate(Tape* tap) {
 		}
 	}
 	if (!least) return wav_rates[0];
-	double need = (double)WAV_EXP_SMP * TAPE_STD_TPS / least;
+	double need = (double)WAV_EXP_SMP * TAPTPS / least;
 	for (i = 0; wav_rates[i]; i++) {
 		if (wav_rates[i] >= need) return wav_rates[i];
 	}
@@ -411,7 +410,7 @@ int saveWAVopt(Computer* comp, const char* name, wavExport* opt) {
 	int amp = ((o.bits == 8) ? 127 : 32767) * o.level / 100;
 	wavPattern* wp = (wavPattern*)malloc(sizeof(wavPattern));
 	wav_fill(wp, amp, o.bits);
-	double spt = (double)o.rate / TAPE_STD_TPS;	// samples in one tape tick
+	double spt = (double)o.rate / TAPTPS;	// samples in one tape tick
 	long long done = 0;			// samples written so far
 	int i, j, n;
 

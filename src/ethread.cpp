@@ -250,6 +250,11 @@ void xThread::tap_catch_load(Computer* comp, int atStart, int base, int dir) {
 	}
 }
 
+// F after AND/OR/XOR leaves a: S, Z, the two undocumented bits, P/V as parity
+static int tap_logic_f(unsigned char a) {
+	return (a & 0xa8) | (a ? 0 : 0x40) | (parity(a) ? 0x04 : 0);
+}
+
 // The block goes into memory as LD-BYTES would have read it, and the cpu leaves
 // LD-BYTES the way it would have after that.
 void xThread::tap_hand_over(Computer* comp, int blk, int base, int dir) {
@@ -259,91 +264,125 @@ void xThread::tap_hand_over(Computer* comp, int blk, int base, int dir) {
 	unsigned short ix = comp->cpu->regIX;
 	// read before the block lands: it may cover the stack
 	int ldret = (cpu_peek_word(tap_peek, comp, comp->cpu->regSP) == tap_ld_ret(comp, base));
-	TapeBlockInfo inf = tapGetBlockInfo(tap,blk);
-	unsigned char* blkData = (unsigned char*)malloc(inf.size + 2);
-	tapGetBlockData(tap,blk,blkData, inf.size + 2);
-#if 1
-	unsigned char data = 0x01;
-	unsigned char crc = blkData[0];
-	bool overdata = (inf.size < de);
-	int len = overdata ? inf.size : de;
-	int i;
-	// LD-BYTES leaves on a flag byte other than the one asked for (A'), having
-	// loaded nothing, and the tape plays the rest of the block to no one: how a
-	// loader passes over the blocks it does not want (Popeye 3's levels)
-	bool other = (blkData[0] != (comp->cpu->regAa & 0xff));
-	if (other) {
-		data = blkData[0];
-		crc = 0xff;
-		len = 0;
-		overdata = false;
-	}
-	for (i = 0; i < len; i++) {
-		data = blkData[i + 1];		// 1st data byte is type, not data
-		crc ^= data;
-		memWr(comp->mem, ix, data);
-		ix += dir;
-		de--;
-	}
-	if (other) {
-		// out through LD-BYTES' tail with H not 0: NC, NZ, as its RET NZ leaves
-	} else if (!overdata) {
-		crc ^= blkData[i + 1];		// xor with tape crc (next byte after de|inf.size bytes)
-	} else if (copy) {
-		// Asked for more than the block holds, LD-BYTES reads its checksum
-		// as data and times out in the pause after it, H telling whether
-		// the block was whole: how a copy loads a block of unknown length
-		// (The Balrog and the Cat).
-		data = blkData[i + 1];
-		crc ^= data;
-		memWr(comp->mem, ix, data);
-		ix += dir;
-		de--;
-	}
-	comp->cpu->regL = data;			// last readed byte
-	comp->cpu->regH = crc;			// all bytes xored (0 if no errors)
-	comp->cpu->regIX = ix;			// next address
-	comp->cpu->regDE = de;			// remaining size (0 if all is good)
-#else
-	if (inf.size >= de) {
-		for (int i = 0; i < de; i++) {
-			memWr(comp->mem,ix,blkData[i + 1]);
-			ix++;
-		}
-		comp->cpu->regIX = ix;
-		comp->cpu->regDE = 0x0000;	// remaining len
-		comp->cpu->regHL = 0x0000;	// h = calculated_crc ^ tape_crc (=0 if no errors), l = last readed byte
+	TapeBlock* tb = &tap->blkData[blk];
+	int bytes = tap_block_bytes(tb);
+	unsigned char* blkData = (unsigned char*)malloc(bytes + 2);
+	tapGetBlockData(tap,blk,blkData, bytes + 2);
+	// Every way out of LD-BYTES (#05A9..#05E2) as its code leaves it: the flag
+	// byte, DE bytes, the parity; H is the XOR of all, L the last, B #B0 after
+	// each. Where it leaves sets PC.
+	CPU* cpu = comp->cpu;
+	int load = cpu->regFa & 1;		// carry in F': LOAD, else VERIFY
+	unsigned char flag = blkData[0];
+	unsigned char h = flag;
+	unsigned char l = flag;
+	int avail = bytes - 1;			// after the flag, the parity among them
+	int n = 0;
+	int exitPc = LDC_TAIL;			// LD A,H / CP 1 / RET
+	int fl = -1;				// else A and F as they come out, through the RET
+	unsigned char a = 0;
+	cpu->regB = 0xb0;
+	if (de == 0) {
+		// asked for nothing: it reads the flag byte, never compares it, and
+		// leaves with A = H = the flag (the rom's zero-length bug)
+	} else if (flag != (cpu->regAa & 0xff)) {
+		// LD-FLAG RL C / XOR L / RET NZ: A is the difference, AF' what the
+		// loop's EX AF,AF' left there - LD A,D / OR E. Nothing is loaded, and
+		// the tape plays the rest of the block to no one: how a loader passes
+		// over the blocks it does not want (Popeye 3's levels)
+		a = (cpu->regAa & 0xff) ^ flag;
+		fl = tap_logic_f(a);
+		unsigned char de8 = (de >> 8) | (de & 0xff);
+		cpu->regAa = de8;
+		cpu->regFa = tap_logic_f(de8);
+		exitPc = LDC_TAIL + 3;
 	} else {
-		comp->cpu->regHL = 0xff00;		// error
+		// LD-FLAG's RL C / XOR L / LD A,C / RRA / LD C,A leaves C as the edge
+		// loop had it after the flag byte, bit 7 dropped, and EX AF,AF' keeps
+		// that A with the flags of XOR and RRA to the end. Every edge CPLs C,
+		// so its bit 5 is the ear level then, the one the first data pulse
+		// starts on.
+		if (tb->dataPos >= 0) {
+			int idx = tb->dataPos + 16;
+			int lev = (idx < tb->sigCount) ? TAP_VOL_LEV(tb->data[idx].vol) : !TAP_VOL_LEV(tb->data[idx - 1].vol);
+			unsigned char c = cpu->regC ^ tap_peek((base + LDC_SYNC_XOR) & 0xffff, comp);
+			if (!!(c & 0x20) != lev) c = ~c;
+			c &= 0x7f;
+			cpu->regC = c;
+			cpu->regAa = c;
+			cpu->regFa = 0x44 | (c & 0x28) | load;
+		}
+		// The loop: a byte is read and XORed into H, then stored - or, when
+		// verifying, LD A,(IX+0) / XOR L / RET NZ.
+		while ((de > 0) && (n < avail)) {
+			unsigned char byte = blkData[n + 1];
+			h ^= byte;
+			l = byte;
+			if (!load) {
+				unsigned char mem = memRd(comp->mem, ix);
+				if (mem != byte) {
+					a = mem ^ byte;
+					fl = tap_logic_f(a);
+					exitPc = LDC_TAIL + 3;
+					break;
+				}
+			} else {
+				memWr(comp->mem, ix, byte);
+			}
+			ix += dir;
+			de--;
+			n++;
+		}
+		if (fl >= 0) {
+			// a byte that does not verify
+		} else if (de == 0 && n < avail) {
+			// the next byte is read as the parity
+			l = blkData[n + 1];
+			h ^= l;
+		} else if (de > 0) {
+			// asked for more than the block holds: the parity went in as data
+			// and the edge loop times out in the pause - INC B to 0, A = 0, Z
+			// and H set, NC (The Balrog and the Cat loads a block of unknown
+			// length so)
+			cpu->regB = 0;
+			l = 1;
+			a = 0;
+			fl = 0x50;
+			exitPc = LDC_BITS_RET;
+		}
 	}
-#endif
+	cpu->regL = l;
+	cpu->regH = h;
+	cpu->regIX = ix;
+	cpu->regDE = de;
+	if (fl >= 0) {
+		cpu->regA = a;
+		cpu_set_flag(cpu, fl);
+	}
 	// the block is in memory and the tape never moved for it, so a loader of
 	// its own that reads the next one is handed the tape when it asks - one
 	// the trap reads waits for the rom (Fuse leaves it at the block's pause)
 	int nxt = blk + 1;
 	int arm = (nxt < tap->blkCount) && !tap_block_rom(&tap->blkData[nxt]);
-	// A block with no pause after it runs straight into the next one, and a
-	// loader that reads that one is timing it from here: play it now, with
-	// no lead-in, from the level the handed-over block ended on.
-	TapeBlock* cur = &tap->blkData[blk];
-	int last = cur->sigCount ? cur->data[cur->sigCount - 1].vol : 0x80;
+	// A block with no pause after it, or one too short to end a block, runs
+	// on into the next as on a deck: a loader reading that one times it from
+	// here. It plays now, after that pause, from the level the block ended on.
+	int last = tb->sigCount ? tb->data[tb->sigCount - 1].vol : 0x80;
+	int gap = 0;
+	for (int i = tb->sigCount - 1; (i >= 0) && TAP_VOL_PAUSE(tb->data[i].vol); i--)
+		gap += tb->data[i].size;
 	tapNextBlock(tap);
 	fastload_forget();
-	if (!TAP_VOL_PAUSE(last) && (tap->block < tap->blkCount)) {
+	if ((tap->block < tap->blkCount) && (!TAP_VOL_PAUSE(last) || (arm && (gap < TAPE_PAUSE_TICKS)))) {
 		tap_play_on(tap, last);
+		tap->sigLen = gap;
 	} else if (arm) {
 		tapArmPlay(tap);
 	}
 	if (copy)
 		xlog(XLG_TAPE, XLL_INFO, "block %i handed to the copy of LD-BYTES at %04X, the tape %s at block %i",
 			blk, base, tap->on ? "plays on" : "stands", tap->block);
-	if (overdata && copy) {
-		// out through LD-8-BITS' RET NC, as a timeout leaves: NC, Z
-		cpu_set_pc(comp->cpu, (base + LDC_BITS_RET) & 0xffff);
-		cpu_set_flag(comp->cpu, (cpu_get_flag(comp->cpu) & ~0x01) | 0x40);
-	} else {
-		cpu_set_pc(comp->cpu, (base + LDC_TAIL) & 0xffff);
-	}
+	cpu_set_pc(comp->cpu, (base + exitPc) & 0xffff);
 	// A loader that enters LD-BYTES past its PUSH of SA/LD-RET (JP #0562)
 	// keeps the border the edge loop left: blue, the data phase's colour
 	// for a tape back at the level it started on, not the lead-in's. A

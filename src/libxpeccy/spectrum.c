@@ -780,9 +780,6 @@ void comp_snap_reset(Computer* comp, int res) {
 
 void comp_update_timings(Computer* comp) {
 	comp->nsPerTick = 1e3 / comp->cpuFrq;
-	// the tape runs off the base clock, not the turbo one: a cassette does not
-	// know the cpu has been sped up
-	tape_set_tick_ns(comp->tape, comp->nsPerTick);
 	if (comp->hw->init)
 		comp->hw->init(comp);
 	comp->nsPerTick /= comp->frqMul * comp->hwMul;

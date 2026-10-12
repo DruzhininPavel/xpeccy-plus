@@ -8,6 +8,7 @@
 #define LDC_START	0x16	// LD_START, #056C
 #define LDC_SYNC1_RET	0x3e	// after LD-SYNC's first edge call, #0594
 #define LDC_SYNC2_RET	0x48	// after its second, #059E
+#define LDC_SYNC_XOR	0x4b	// the operand of LD-SYNC's XOR #03 (the data's border), #05A1
 #define LDC_INCIX	0x6d	// the second byte of INC IX, #05C3
 #define LDC_BITS_RET	0x77	// after LD-8-BITS' call, #05CD
 #define LDC_TAIL	0x89	// LD A,H / CP 1 / RET, #05DF

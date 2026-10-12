@@ -6,7 +6,7 @@ techted         zx48      auto  16000 300     "tape/Technician Ted.tzx"
 techted_edge    zx48      auto  16000 300     "tape/Technician Ted.tzx"             --bench-loops 2
 dizzy1_full     zx48      auto  1500  300     "tape/Dizzy1-TheUltimateCartoonAdventure(48K).tzx" cfg:TAPE.fast=yes --bench-full
 zexdoc          zx48      auto  3000  300     "tape/Z80 Documented Instruction Set Exerciser for Spectrum (2018)(Harston, Jonathan Graham)[!].tap"
-knighttyme      zx128     auto  20000 300     tape/KnightTyme_ZX0_DeciLoad16k8.tzx
+knighttyme      zx128     auto  20000 300     tape/KnightTyme_ZX0_DeciLoad12k8.tzx
 rodland_fast    zx128     auto  2000  300     "tape/Rod-Land - Re-Imagined (2012)(Miazga, Rafal)(128K)(PL)(en)[h Miazga, Rafal, 2012-08][Colour mod].tap" cfg:TAPE.fast=yes
 chromatron_fast zx128     auto  2500  300     "tape/Chromatrons Attack (2013)(R-Tape)(128K).tzx" cfg:TAPE.fast=yes cfg:TAPE.autoplay=no
 influence_full  zx128     auto  1500  300     tape/INFLUENC.TAP                     cfg:TAPE.fast=yes --bench-full

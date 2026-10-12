@@ -17,7 +17,6 @@ Tape* tape_create(cbirq cb, void* p) {
 	tap->xirq = cb;
 	tap->xptr = p;
 	tap->volPlay = 0x80;
-	tape_set_tick_ns(tap, TAPTICKNS);
 	tap->speed = 100;
 	tap->autorew = 1;
 	tap->ldBase = -1;
@@ -31,18 +30,6 @@ void tape_destroy(Tape* tap) {
 	if (tap->tmpBlock.data)
 		free(tap->tmpBlock.data);
 	free(tap);
-}
-
-// The machine's own tick period: tzx/tap times are T states, and this is what
-// one of them lasts. A fixed 284ns tick (3.52MHz) made every pulse .6% short
-// of what a 3.5MHz loader measures, which is enough for a loader that checks
-// its pilot against a fixed length to reject the tape outright.
-// Kept as its reciprocal: tapSync runs once per opcode, and a divide by a
-// variable there is an idiv the compiler cannot fold away.
-void tape_set_tick_ns(Tape* tap, double ns) {
-	if (!tap || (ns <= 0)) return;
-	tape_settle(tap);		// the ns counted so far are of the old length
-	tap->ticksPerNsFixed = llround((double)(1LL << TAPE_RATE_BITS) / ns);
 }
 
 // A loader names the tape once its blocks are in, and a save once they are out,
@@ -107,6 +94,9 @@ void blkClear(TapeBlock *blk) {
 	blk->isHeader = 0;
 	blk->hasBytes = 0;
 	blk->pend14 = 0;
+	blk->data14 = 0;
+	blk->ownLev = 0;
+	blk->levSet = 0;
 	blk->sigCount = 0;
 	blk->dataPos = -1;
 	blk->text[0] = 0;
@@ -143,7 +133,7 @@ void blkAddPulseLev(TapeBlock* blk, int len, int lev) {
 	blkAddPulse(blk, len, lev ? 0xb0 : 0x50);
 }
 
-// add pause. duration in mks
+// add pause. duration in ticks
 // A pause is silence on the tape, not a level held: the centre puts no dc step in
 // the mix. Bit 7 is the ear bit and still flips, so a loader sees no change.
 void blkAddPause(TapeBlock* blk, int len) {
@@ -168,12 +158,15 @@ void blkAddByte(TapeBlock* blk, unsigned char data, int b0len, int b1len) {
 	}
 }
 
+// bytes in the block, flag and parity among them; none in a pure signal
+int tap_block_bytes(TapeBlock* block) {
+	return (block->dataPos >= 0) ? ((block->sigCount - block->dataPos) >> 4) : 0;
+}
+
+// the bytes between the flag and the parity
 int tapGetBlockSize(TapeBlock* block) {
-	int res = 0;
-	if (block->dataPos >= 0)			// < 0: pure signal, no bytes to count
-		res = ((block->sigCount - block->dataPos) >> 4) - 2;
-	if (res < 0) res = 0;
-	return res;
+	int res = tap_block_bytes(block) - 2;
+	return (res < 0) ? 0 : res;
 }
 
 unsigned char tapGetBlockByte(TapeBlock* block, int bytePos) {
@@ -545,7 +538,9 @@ void tapArmPlay(Tape* tap) {
 // between blocks, or unpacking what it has read (DeciLoad with ZX0), reads
 // nothing, and is waited for. Basic between two LOADs does stop it, as in Fuse:
 // the pilot is kept for a loader that sits out the rom's second of LD-WAIT
-// (Saigon Combat Unit's).
+// (Saigon Combat Unit's). Nor does a key scan stop it in a pause: a deck plays
+// the whole gap, and a loader may time it. Once the next pulses come and only
+// the keys are read, the loader has gone.
 void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int kind, int fromRam) {
 	int tickDiff = tick - tap->detectLastTick;
 	int bDiff = (regs[1] - tap->detectRegs[1]) & 0xff;
@@ -573,6 +568,8 @@ void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int
 			tap->alien = 0;
 			tap->loaderReads++;		// fast loading's too: where the loader left
 		} else if (!tap->detectOn) {
+			return;
+		} else if ((kind == TAPE_RD_KEYS) && TAP_VOL_PAUSE(tap->volPlay)) {
 			return;
 		} else if (!tap->alien) {
 			tap->alien = 1;
@@ -666,7 +663,7 @@ static int tap_stops_after(Tape* tap) {
 // The ns tapSync() only counted: at speed 100, where each call would have made
 // them into ticks with no rounding, so the sum makes the same ticks
 static void tap_take_lazy(Tape* tap) {
-	tap->tickAcc += (long long)tap->nsLazy * tap->ticksPerNsFixed;
+	tap->tickAcc += (long long)tap->nsLazy * TAPE_TICKS_PER_NS;
 	tap->nsLazy = 0;
 }
 
@@ -674,7 +671,7 @@ static void tap_take_lazy(Tape* tap) {
 // tapSync() would only count. Not while recording, nor at any other speed,
 // where each call rounds on its own.
 static void tap_calm(Tape* tap) {
-	long long tpn = tap->ticksPerNsFixed;
+	long long tpn = TAPE_TICKS_PER_NS;
 	int sig = (tap->sigLen < (1 << 28)) ? tap->sigLen : (1 << 28);
 	tap->nsCalm = 0;
 	if (tap->rec || (tap->speed != 100) || (tpn <= 0) || (sig < 1)) return;
@@ -693,7 +690,7 @@ void tape_settle(Tape* tap) {
 
 // sigLen as it would stand with the counted ns played, without playing them
 int tape_sig_len(Tape* tap) {
-	return tap->sigLen - (int)((tap->tickAcc + (long long)tap->nsLazy * tap->ticksPerNsFixed) >> TAPE_RATE_BITS);
+	return tap->sigLen - (int)((tap->tickAcc + (long long)tap->nsLazy * TAPE_TICKS_PER_NS) >> TAPE_RATE_BITS);
 }
 
 TapePos tape_pos(Tape* tap) {
@@ -720,10 +717,16 @@ void tape_set_speed(Tape* tap, int speed) {
 	tap->speed = speed;
 }
 
+// the automatics play what the rom trap cannot read and stop before a block it
+// reads: it reads that one when asked (Fuse)
+static int tap_trap_stops(Tape* tap, int blk) {
+	return tap->autoPlay && tap->flash && (blk < tap->blkCount) && tap_block_rom(&tap->blkData[blk]);
+}
+
 void tap_sync_slow(Tape* tap, int ns) {
 	tap_take_lazy(tap);
-	tap->tickAcc += (long long)ns * tap->speed * tap->ticksPerNsFixed / 100;
-	int mks = (int)(tap->tickAcc >> TAPE_RATE_BITS);
+	tap->tickAcc += (long long)ns * tap->speed * TAPE_TICKS_PER_NS / 100;
+	int ticks = (int)(tap->tickAcc >> TAPE_RATE_BITS);
 	int sig;
 	tap->tickAcc &= (1LL << TAPE_RATE_BITS) - 1;
 	if (tap->on) {
@@ -737,9 +740,9 @@ void tap_sync_slow(Tape* tap, int ns) {
 			} else {
 				if (tap->oldRec != tap->levRec) {
 					tap->oldRec = tap->levRec;
-					blkAddPulse(&tap->tmpBlock,mks,-1);
+					blkAddPulse(&tap->tmpBlock,ticks,-1);
 				} else if (tap->tmpBlock.sigCount > 0) {
-					tap->tmpBlock.data[tap->tmpBlock.sigCount - 1].size += mks;
+					tap->tmpBlock.data[tap->tmpBlock.sigCount - 1].size += ticks;
 					if (tap->tmpBlock.data[tap->tmpBlock.sigCount - 1].size > TAPE_PAUSE_TICKS) {
 						tap->tmpBlock.sigCount--;
 						tapStoreBlock(tap);
@@ -747,15 +750,22 @@ void tap_sync_slow(Tape* tap, int ns) {
 				}
 			}
 		} else if (tap->blkCount > 0) {
-			tap->sigLen -= mks;
+			tap->sigLen -= ticks;
 			while ((tap->sigLen < 1) && tap->on) {
 				if (tap->pos >= (int)tap->blkData[tap->block].sigCount) {
-					if (tap_stops_after(tap) && !tap->tail) {
+					// the automatics stop short of a block the rom trap reads
+					// (below); one that follows a pulse with no pause stops
+					// after the run-out too: a stopped tape is not heard, so
+					// the edge would hang on the last pulse's level (AGAS)
+					int romNext = tap_trap_stops(tap, tap->block + 1) && !TAP_VOL_PAUSE(tap->volPlay);
+					if ((tap_stops_after(tap) || romNext) && !tap->tail) {
 						// A pulse is a level held, so the one the last pulse ends
 						// on is a level change of its own - and a loader reading
 						// the last byte of a block is waiting for exactly that.
 						// Stopping on the pulse swallowed it, so run the tape out
 						// at the new level the way it would past the recording.
+						if (romNext)
+							xlog(XLG_TAPE, XLL_INFO, "auto stop after the run-out: block %i is the rom trap's", tap->block + 1);
 						tap->tail = 1;
 						tap->volPlay = (tap->volPlay & 0x80) ? 0x7f : 0x80;	// silence, the way a pause is written
 						tap->sigLen += TAPE_TAIL_TICKS;
@@ -766,10 +776,7 @@ void tap_sync_slow(Tape* tap, int ns) {
 						if (tap->tail) {
 							tap->tail = 0;
 							tapStop(tap);
-						} else if (tap->autoPlay && tap->flash && (tap->block < tap->blkCount)
-								&& tap_block_rom(&tap->blkData[tap->block])) {
-							// the automatics play what the rom trap cannot
-							// read, and it reads this one when asked (Fuse)
+						} else if (tap_trap_stops(tap, tap->block)) {
 							xlog(XLG_TAPE, XLL_INFO, "auto stop: block %i is the rom trap's", tap->block);
 							tapStop(tap);
 						}
@@ -786,7 +793,7 @@ void tap_sync_slow(Tape* tap, int ns) {
 				}
 			}
 		} else {
-			tap->sigLen -= mks;
+			tap->sigLen -= ticks;
 			while (tap->sigLen < 1) {
 				tap->volPlay = 0x7f;
 				// tap->volPlay = (tap->volPlay & 0x80) ? 0x7f : 0x81;
@@ -795,7 +802,7 @@ void tap_sync_slow(Tape* tap, int ns) {
 		}
 	} else {
 		// tape stoped
-		tap->sigLen -= mks;
+		tap->sigLen -= ticks;
 		while (tap->sigLen < 1) {
 			tap->volPlay = 0x81;
 			// tap->volPlay = (tap->volPlay & 0x80) ? 0x7f : 0x81;

@@ -9,14 +9,14 @@ xTapeWidget::xTapeWidget(QString i, QString t, QWidget* p):xDockWidget(i,t,p) {
 	setObjectName("TAPEWIDGET");
 }
 
-#define XTDSTEP 20	// mks/dot
+#define XTDSTEP 20	// ticks/dot
 
 void xTapeWidget::draw() {
 	Computer* comp = conf.zx;
 	Tape* tape = comp->tape;
 	drawHBar(ui.labTapein, tape->volPlay, 256);
 	drawHBar(ui.labTapeout, tape->levRec, 1);
-	ui.labSigLen->setText(tape->on ? QString("%0 mks").arg(tape_sig_len(tape)) : "");
+	ui.labSigLen->setText(tape->on ? QString("%0 T").arg(tape_sig_len(tape)) : "");
 	ui.labTapeState->setText(tape->on ? (tape->rec ? "rec" : "play") : "stop");
 	ui.labTapePos->setText(tape->on ? QString::number(tape->pos - 1) : "--");
 	// draw tape diagram
