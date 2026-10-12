@@ -188,7 +188,12 @@ void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, e
 		} else {
 			pg.data = NULL;
 		}
-		mem->map[page] = pg;
+		// mapMem rewrites every window on every paging port write; a page
+		// that already holds this mapping is left untouched
+		MemPage* dst = &mem->map[page];
+		if ((dst->type != pg.type) || (dst->num != pg.num) || (dst->data != pg.data)
+				|| (dst->rd != pg.rd) || (dst->wr != pg.wr))
+			*dst = pg;
 		page++;
 		pg.num++;
 		cnt--;

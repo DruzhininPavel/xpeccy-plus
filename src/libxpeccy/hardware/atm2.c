@@ -247,7 +247,9 @@ int atm2In(Computer* comp, int port) {
 }
 
 void atm2_sync(Computer* comp, int ns) {
-	if (!comp->flgZ_I)
+	// Z_I off masks the frame INT; the call costs an unlazy, so only when a
+	// pulse is actually up. intlen is read nowhere while intFRAME is 0.
+	if (!comp->flgZ_I && comp->vid->intFRAME)
 		vid_set_int_frame(comp->vid, 0);
 	zx_sync(comp, ns);
 }

@@ -807,6 +807,7 @@ void comp_update_timings(Computer* comp) {
 	} else {
 		comp->nsPerTickFixed = NSD_TO_FIXED(comp->nsPerTick);
 	}
+	comp->earTpt = (1e9 / 3.5e6) / comp->nsPerTick;	// machine ticks in a 3.5 MHz T, for zx_ear_edge
 	comp_set_cont(comp, comp->flgCNTM);	// a turbo arbiter follows hwMul
 }
 

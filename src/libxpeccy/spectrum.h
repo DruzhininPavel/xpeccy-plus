@@ -213,6 +213,7 @@ typedef struct Computer {
 	long long contDotFixed;
 	long long contTickFixed;
 	int contTicks[16];
+	double earTpt;		// ticks in a 3.5 MHz T (comp_update_timings), zx_ear_edge's scale
 
 	unsigned char verblk[16];	// what the machine says it is (comp_set_identity)
 	bool flag[128];			// each machine have its own flags

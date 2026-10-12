@@ -355,7 +355,7 @@ static const struct earRC {
 // and on a drop work out the tick bit 6 falls back to 0 at (earDead).
 static void zx_ear_edge(Computer* comp, int lev, int mic) {
 	const struct earRC* rc = &earRCTab[(comp->earback == EAR_ISSUE2) ? 0 : 1];
-	const double tpt = (1e9 / 3.5e6) / comp->nsPerTick;	// machine ticks in a 3.5 MHz T
+	const double tpt = comp->earTpt;			// machine ticks in a 3.5 MHz T
 	int now = comp->tickCount + comp->cpu->t;
 	double dt = (double)(unsigned)(now - comp->earTick) / tpt;
 	if (comp->beep->lev) {

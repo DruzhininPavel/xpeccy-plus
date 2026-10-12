@@ -660,8 +660,18 @@ static void ts_dma_run(Computer* comp, int ns) {
 	int ramc = tsDmaDram[comp->tsconf.dma.dev] * 448;
 	int devc = tsDmaDots[comp->tsconf.dma.dev];
 	long long f = ((long long)ns << NS_FIXED_BITS) + comp->tsconf.dma.frac;
-	int dots = (int)(f / comp->vid->nsPerDotFixed);
-	comp->tsconf.dma.frac = f % comp->vid->nsPerDotFixed;
+	const long long p = comp->vid->nsPerDotFixed;
+	int dots = 0;
+	if (f < (p << 4)) {		// a short span: count the dots off
+		while (f >= p) {
+			f -= p;
+			dots++;
+		}
+		comp->tsconf.dma.frac = f;
+	} else {
+		dots = (int)(f / p);
+		comp->tsconf.dma.frac = f % p;
+	}
 	comp->tsconf.dma.free += (long long)dots * (448 - comp->vid->tsconf.dramLoad) - comp->tsconf.cpuDram * 448;
 	if (comp->tsconf.dma.free < 0) comp->tsconf.dma.free = 0;
 	comp->tsconf.dma.time += dots;
