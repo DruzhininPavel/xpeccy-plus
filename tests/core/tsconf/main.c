@@ -127,6 +127,24 @@ int main(int argc, char** argv) {
 
 	const char* hide = getenv("HIDE");
 	if (hide) comp->vid->tsconf.hide = (unsigned char)strtol(hide, NULL, 0);
+	// DMAAT="frames,t,...": stop at T t of a frame (after the whole ones) and print
+	// where the transfer stands, as the debugger sees it; each pair a stop further on
+	const char* dmaat = getenv("DMAAT");
+	if (dmaat) {
+		int f, t, k, fstart = comp->vid->fcnt;
+		while (sscanf(dmaat, "%d,%d%n", &f, &t, &k) == 2) {
+			while (comp->vid->fcnt - fstart < f) compExec(comp);
+			while (comp->frmtCount < t) compExec(comp);
+			tsRegs r;
+			ts_get_regs(comp, &r);
+			printf("DMAAT: %d,%d act %d src %06X dst %06X burst %d/%d word %d/%d regs %06X %06X\n", f, t, r.dmaact,
+				r.dmaCurSrc & 0xffffff, r.dmaCurDst & 0xffffff, r.dmaBurst, r.dmaBursts, r.dmaWord, r.dmaWords, r.dmasrc, r.dmadst);
+			dmaat += k;
+			while (*dmaat == ' ') dmaat++;
+		}
+		compDestroy(comp);
+		return 0;
+	}
 	const char* redraw = getenv("REDRAW");
 	if (redraw) {
 		redraw_test(comp, redraw);

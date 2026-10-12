@@ -893,6 +893,17 @@ void ts_get_regs(Computer* comp, tsRegs* r) {
 	unsigned n = comp->tsconf.dmalog.count;
 	r->dmactrl = n ? comp->tsconf.dmalog.rec[(n - 1) % TS_DMALOG].ctrl : -1;
 	r->dmaact = comp->tsconf.dma.act;
+	r->dmaCurSrc = r->dmaCurDst = -1;
+	r->dmaBurst = r->dmaBursts = r->dmaWord = r->dmaWords = 0;
+	tsDmaRec* run = ts_dma_rec_running(comp);
+	if (comp->tsconf.dma.act && run) {
+		r->dmaCurSrc = ts_dma_adr(&comp->tsconf.dma.s) << 1;
+		r->dmaCurDst = ts_dma_adr(&comp->tsconf.dma.d) << 1;
+		r->dmaBursts = run->num;		// as started: DMANum may have been written since
+		r->dmaBurst = run->num - comp->tsconf.dma.bursts + 1;
+		r->dmaWords = comp->tsconf.dma.len;
+		r->dmaWord = comp->tsconf.dma.word;
+	}
 	unsigned short m = vid->tsconf.lat.mask;
 	r->lat = m;
 	r->latVconf = vid->tsconf.lat.vconf;

@@ -1,4 +1,6 @@
+#include <QCursor>
 #include <QHBoxLayout>
+#include <QMenu>
 #include <QHeaderView>
 #include <QTreeWidgetItemIterator>
 #include <QPushButton>
@@ -22,6 +24,25 @@ xEvoList::xEvoList(QStringList head, QWidget* p):QTreeWidget(p) {
 	header()->setStretchLastSection(true);
 	header()->setSectionsMovable(false);
 	header()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	header()->setToolTip("Right click: in words or by field names");
+	// the last column in plain words or as the docs name the fields, for both lists
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	header()->setContextMenuPolicy(Qt::CustomContextMenu);
+	auto menu = [this](const QPoint&) {
+		QMenu mnu;
+		QAction* words = mnu.addAction("In words");
+		QAction* names = mnu.addAction("Field names");
+		words->setCheckable(true);
+		names->setCheckable(true);
+		words->setChecked(!conf.dbg.evonames);
+		names->setChecked(conf.dbg.evonames);
+		QAction* got = mnu.exec(QCursor::pos());
+		if (!got) return;
+		conf.dbg.evonames = (got == names) ? 1 : 0;
+		if (onStyle) onStyle();
+	};
+	connect(this, &QWidget::customContextMenuRequested, this, menu);
+	connect(header(), &QWidget::customContextMenuRequested, this, menu);
 }
 
 // A column as wide as the widest of its samples, and never narrower than it has
@@ -110,6 +131,8 @@ void xEvoList::finish() {
 }
 
 void xEvoList::restyle() {
+	if (columnCount() > 3)
+		headerItem()->setText(3, conf.dbg.evonames ? "Fields" : "Means");
 	foreach (QTreeWidgetItem* it, groups)
 		evo_header_colors(it, font());
 	for (int i = 0; i < columnCount() - 1; i++)
@@ -185,21 +208,58 @@ static const char* ts_dev_name(int ctrl) {
 	return "?";
 }
 
+// the Means column in plain words, or in the names the docs and tsconfig.asm give the fields
+static bool fieldNames() {return conf.dbg.evonames;}
+
+// DDEV with W/R as tsconfig.asm names it (DMA_ dropped); 6 is not in it
+static QString ts_ddev_name(int ctrl) {
+	switch (((ctrl & 0x80) >> 4) | (ctrl & 7)) {
+		case 0x1: return "RAM";
+		case 0x9: return "BLT";
+		case 0x2: return "SPI_RAM";
+		case 0xa: return "RAM_SPI";
+		case 0x3: return "IDE_RAM";
+		case 0xb: return "RAM_IDE";
+		case 0x4: return "FILL";
+		case 0xc: return "RAM_CRAM";
+		case 0xd: return "RAM_SFILE";
+	}
+	return QString("%0:%1").arg((ctrl >> 7) & 1).arg(ctrl & 7);
+}
+
+static QString plural(int n, const char* one, const char* many) {
+	return QString("%0 %1").arg(n).arg((n == 1) ? one : many);
+}
+
 static void dma_regs(xEvoList* l, const tsRegs& r) {
 	const QString g("DMA");
+	bool nm = fieldNames();
 	l->put(g, "src", {"1A..1CAF", "DMASAddr", ts_adr(r.dmasrc), ""});
 	l->put(g, "dst", {"1D..1FAF", "DMADAddr", ts_adr(r.dmadst), ""});
-	l->put(g, "len", {"26AF", "DMALen", hex2(r.dmalen), QString((r.dmalen ? "%0 words a burst" : "%0 word a burst")).arg(r.dmalen + 1)});
-	l->put(g, "num", {"28AF", "DMANum", hex2(r.dmanum), QString((r.dmanum ? "%0 bursts" : "%0 burst")).arg(r.dmanum + 1)});
-	QString ctl = "nothing started yet";
-	if (r.dmactrl >= 0) {
+	l->put(g, "len", {"26AF", "DMALen", hex2(r.dmalen), plural(r.dmalen + 1, "word a burst", "words a burst")});
+	l->put(g, "num", {"28AF", "DMANum", hex2(r.dmanum), plural(r.dmanum + 1, "burst", "bursts")});
+	QString ctl = nm ? "-" : "nothing started yet";
+	if ((r.dmactrl >= 0) && nm) {
+		QStringList f("DDEV=" + ts_ddev_name(r.dmactrl));
+		if (r.dmactrl & 0x20) f << "S_ALGN";
+		if (r.dmactrl & 0x10) f << "D_ALGN";
+		if (r.dmactrl & 0x08) f << "A_SZ";
+		if (r.dmactrl & 0x40) f << "OPT";
+		ctl = f.join(" ");
+	} else if (r.dmactrl >= 0) {
 		ctl = ts_dev_name(r.dmactrl);
 		if (r.dmactrl & 0x20) ctl += QString(", src align %0").arg((r.dmactrl & 8) ? 512 : 256);
 		if (r.dmactrl & 0x10) ctl += QString(", dst align %0").arg((r.dmactrl & 8) ? 512 : 256);
 		if ((r.dmactrl & 0x40) && ((r.dmactrl & 0x87) == 0x06)) ctl += ", saturate";
 	}
 	l->put(g, "ctrl", {"27AF", "DMACtrl", (r.dmactrl < 0) ? "-" : hex2(r.dmactrl), ctl});
-	l->put(g, "status", {"27AF", "DMAStatus", r.dmaact ? "80" : "00", r.dmaact ? "running" : "idle"});
+	l->put(g, "status", {"27AF", "DMAStatus", r.dmaact ? "80" : "00", r.dmaact ? (nm ? "DMA_ACT" : "running") : (nm ? "-" : "idle")});
+	// where a running transfer is: the address registers are put back only at its end
+	bool run = (r.dmaCurSrc >= 0);
+	l->put(g, "nsrc", {"", "Source now", run ? ts_adr(r.dmaCurSrc) : "-", ""});
+	l->put(g, "ndst", {"", "Dest now", run ? ts_adr(r.dmaCurDst) : "-", ""});
+	l->put(g, "prog", {"", "Done", run ? QString("%0/%1").arg(r.dmaBurst).arg(r.dmaBursts) : "-",
+		run ? QString("burst %0 of %1, word %2 of %3").arg(r.dmaBurst).arg(r.dmaBursts).arg(r.dmaWord).arg(r.dmaWords) : ""});
 }
 
 // REGISTERS PAGE
@@ -230,6 +290,7 @@ xTsRegsPage::xTsRegsPage(QWidget* p):QWidget(p) {
 	labNote->hide();
 	lay->addWidget(labNote);
 	list = new xEvoList({"Port", "Register", "Value", "Means"});
+	list->onStyle = [this]() {draw();};
 	lay->addWidget(list, 1);
 }
 
@@ -245,6 +306,15 @@ void xTsRegsPage::layer_toggled() {
 static QString vconf_means(int v) {
 	static const char* modes[4] = {"ZX", "16c", "256c", "text"};
 	static const char* res[4] = {"256x192", "320x200", "320x240", "360x288"};
+	if (fieldNames()) {
+		QStringList f;
+		f << QString("VM=%0").arg(modes[v & 3]) << QString("RRES=%0").arg(res[(v >> 6) & 3]);
+		if (v & 0x20) f << "NOGFX";
+		if (v & 0x10) f << "NOTSU";
+		if (v & 0x08) f << "GFXOVR";
+		if (v & 0x04) f << "FT_EN";
+		return f.join(" ");
+	}
 	QString s = QString("%0 %1").arg(modes[v & 3]).arg(res[(v >> 6) & 3]);
 	if (v & 0x20) s += ", no bitmap";
 	if (v & 0x10) s += ", no tiles or sprites";
@@ -254,6 +324,16 @@ static QString vconf_means(int v) {
 }
 
 static QString tsconf_means(int v) {
+	if (fieldNames()) {
+		QStringList f;
+		if (v & 0x80) f << "S_EN";
+		if (v & 0x40) f << "T1_EN";
+		if (v & 0x20) f << "T0_EN";
+		if (v & 0x08) f << "T1Z_EN";
+		if (v & 0x04) f << "T0Z_EN";
+		if (v & 0x01) f << "TS_EXT";
+		return f.isEmpty() ? "-" : f.join(" ");
+	}
 	QStringList on;
 	if (v & 0x80) on << "sprites";
 	if (v & 0x20) on << ((v & 0x04) ? "tiles 0 (with tile 0)" : "tiles 0");
@@ -265,7 +345,16 @@ static QString tsconf_means(int v) {
 
 static QString memconf_means(int v) {
 	static const char* lck[4] = {"7FFD 512K", "7FFD 128K", "7FFD auto", "7FFD 1024K"};
+	static const char* lckf[4] = {"512", "128", "AUTO", "1024"};
 	QStringList s;
+	if (fieldNames()) {
+		s << QString("LCK=%0").arg(lckf[(v >> 6) & 3]);
+		if (v & 8) s << "W0_RAM";
+		if (v & 4) s << "!W0_MAP";
+		if (v & 2) s << "W0_WE";
+		if (v & 1) s << "ROM128";
+		return s.join(" ");
+	}
 	s << ((v & 8) ? "window 0 RAM" : "window 0 ROM");
 	if (v & 2) s << "writable";
 	s << ((v & 4) ? "Page0 as is" : ((v & 1) ? "mapped, ROM 48" : "mapped, ROM 128"));
@@ -301,9 +390,10 @@ void xTsRegsPage::draw() {
 		QString::number((r.lat & (TSL_LAT_GXL | TSL_LAT_GXH)) ? r.latGx : r.gxoffs)});
 	list->put(g, "gy", {"04/05AF", "GYOffs", pending(r.gyoffs, r.latGy, r.lat & (TSL_LAT_GYL | TSL_LAT_GYH), hex3),
 		QString::number((r.lat & (TSL_LAT_GYL | TSL_LAT_GYH)) ? r.latGy : r.gyoffs)});
+	bool nm = fieldNames();
 	int pal = (r.lat & TSL_LAT_PAL) ? r.latPal : r.palsel;
 	list->put(g, "pal", {"07AF", "PalSel", pending(r.palsel, r.latPal, r.lat & TSL_LAT_PAL, hex2),
-		QString("bitmap %0, tiles 0 %1, tiles 1 %2").arg(pal & 15).arg((pal >> 4) & 3).arg((pal >> 6) & 3)});
+		QString(nm ? "GPAL=%0 T0PAL=%1 T1PAL=%2" : "bitmap %0, tiles 0 %1, tiles 1 %2").arg(pal & 15).arg((pal >> 4) & 3).arg((pal >> 6) & 3)});
 	list->put(g, "brd", {"0FAF", "Border", hex2(r.border), ""});
 
 	g = "Tiles and sprites";
@@ -330,27 +420,36 @@ void xTsRegsPage::draw() {
 			QString("Page%0").arg(i), hex2(r.page[i]), means});
 	}
 	list->put(g, "memconf", {"21AF", "MemConfig", hex2(r.memconf), memconf_means(r.memconf)});
-	list->put(g, "fm", {"15AF", "FMAddr", hex2(r.fmaddr | (r.fmen ? 0x10 : 0)),
-		r.fmen ? QString("CRAM and SFILE at #%0000").arg(QString::number(r.fmaddr, 16).toUpper()) : "off"});
+	QString fmat = QString("#%0000").arg(QString::number(r.fmaddr, 16).toUpper());
+	list->put(g, "fm", {"15AF", "FMAddr", hex2(r.fmaddr | (r.fmen ? 0x10 : 0)), nm ? QString("FM_EN=%0 FM_ADDR=%1").arg(r.fmen).arg(fmat)
+		: (r.fmen ? QString("CRAM and SFILE at %0").arg(fmat) : "off")});
 	QStringList cw;
 	for (int i = 0; i < 4; i++)
-		if (r.cacheconf & (1 << i)) cw << QString("#%0").arg(QString::number(i << 14, 16).toUpper().rightJustified(4, '0'));
-	list->put(g, "cache", {"2BAF", "CacheConfig", hex2(r.cacheconf), cw.isEmpty() ? "off" : cw.join(" ")});
+		if (r.cacheconf & (1 << i)) cw << QString(nm ? "EN_%0" : "#%0").arg(QString::number(i << 14, 16).toUpper().rightJustified(4, '0'));
+	list->put(g, "cache", {"2BAF", "CacheConfig", hex2(r.cacheconf), cw.isEmpty() ? (nm ? "-" : "off") : cw.join(" ")});
 	QStringList fd;
 	for (int i = 0; i < 4; i++)
-		if (r.fddvirt & (1 << i)) fd << QString(QChar('A' + i));
-	QString fds = fd.isEmpty() ? "none virtual" : fd.join(" ") + " virtual";
-	if (r.fddvirt & 0x80) fds += ", ports open outside DOS";
+		if (r.fddvirt & (1 << i)) fd << QString(nm ? "VIRT_%0" : "%0").arg(QChar('A' + i));
+	QString fds;
+	if (nm) {
+		if (r.fddvirt & 0x80) fd << "OPEN_VG";
+		fds = fd.isEmpty() ? "-" : fd.join(" ");
+	} else {
+		fds = fd.isEmpty() ? "none virtual" : fd.join(" ") + " virtual";
+		if (r.fddvirt & 0x80) fds += ", ports open outside DOS";
+	}
 	list->put(g, "fdd", {"29AF", "FDDVirt", hex2(r.fddvirt), fds});
 
 	g = "System";
 	static const char* clk[3] = {"3.5 MHz", "7 MHz", "14 MHz"};
-	list->put(g, "sys", {"20AF", "SysConfig", "-", QString("%0, cache %1").arg(clk[r.clock]).arg(r.cacheconf ? "on" : "off")});
+	static const char* clkf[3] = {"3.5", "7", "14"};
+	list->put(g, "sys", {"20AF", "SysConfig", "-", nm ? QString("ZCLK=%0").arg(clkf[r.clock])
+		: QString("%0, cache %1").arg(clk[r.clock]).arg(r.cacheconf ? "on" : "off")});
 	QStringList ints;
-	if (r.intmask & 1) ints << "frame";
-	if (r.intmask & 2) ints << "line";
+	if (r.intmask & 1) ints << (nm ? "FRAME" : "frame");
+	if (r.intmask & 2) ints << (nm ? "LINE" : "line");
 	if (r.intmask & 4) ints << "DMA";
-	list->put(g, "intmask", {"2AAF", "INTMask", hex2(r.intmask), ints.isEmpty() ? "none" : ints.join(", ")});
+	list->put(g, "intmask", {"2AAF", "INTMask", hex2(r.intmask), ints.isEmpty() ? (nm ? "-" : "none") : ints.join(nm ? " " : ", ")});
 	list->put(g, "hsint", {"22AF", "HSINT", hex2(r.hsint), QString("dot %0 of the line").arg(r.hsint * 2)});
 	list->put(g, "vsint", {"23/24AF", "VSINT", hex3(r.vsint), r.vsinc ? QString("line %0, then %1 lines on").arg(r.vsint).arg(r.vsinc)
 		: QString("line %0").arg(r.vsint)});
@@ -368,6 +467,7 @@ xTsDmaPage::xTsDmaPage(QWidget* p):QWidget(p) {
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
 	regs = new xEvoList({"Port", "Register", "Value", "Means"});
+	regs->onStyle = [this]() {draw();};
 	lay->addWidget(regs, 0);
 	lay->addWidget(new QLabel("Started this frame and the last"));
 	log = new QTreeWidget;

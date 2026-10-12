@@ -205,6 +205,9 @@ typedef struct {
 	int dmalen, dmanum;	// as written, one less than the count
 	int dmactrl;		// the last DMACtrl that started one, -1 none yet
 	int dmaact;
+	// a transfer running: where it is at, the burst it is in (from 1) of how many,
+	// and the words of it done
+	int dmaCurSrc, dmaCurDst, dmaBurst, dmaBursts, dmaWord, dmaWords;
 	// written, waiting for the next line start (TSL_LAT_*), and what they will be
 	unsigned short lat;
 	int latVconf, latVpage, latGx, latGy, latPal, latT0x, latT1x, latT0g, latT1g;

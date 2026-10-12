@@ -9,6 +9,7 @@
 #include <QTabBar>
 #include <QToolButton>
 #include <QTreeWidget>
+#include <functional>
 
 #include "../classes.h"
 #include "../../xcore/xcore.h"
@@ -23,6 +24,7 @@ class xEvoList : public QTreeWidget {
 		void finish();			// rows not put since the last finish() go
 		void restyle();
 		void fitHeight();
+		std::function<void()> onStyle;	// words or field names was picked
 	private:
 		QMap<QString, QTreeWidgetItem*> rows;
 		QMap<QString, QTreeWidgetItem*> groups;

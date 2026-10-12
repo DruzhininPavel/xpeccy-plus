@@ -85,3 +85,4 @@ run r03_poke         t10_layers_m0.bin    0   REDRAW=3,30000,0x01,1,0,0,1
 run d01_dmalog       t04_dma.bin          5   DMALOG=1
 run d02_dmalog_time  t13_dmatime_c6.bin   10  DMALOG=1
 run d03_dmalog_reg   t14_dmareg.bin       5   DMALOG=1
+run d04_dma_progress t13_dmatime_c6.bin   0   "DMAAT=0,6000 0,10000 0,14000 0,18000 0,22000 0,26000"

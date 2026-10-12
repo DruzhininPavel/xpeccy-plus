@@ -385,6 +385,7 @@ void saveConfig() {
 	fprintf(cfile, "snd.window = %i:%i:%i:%i\n",conf.dbg.sndpos.x(),conf.dbg.sndpos.y(),conf.dbg.sndsiz.width(),conf.dbg.sndsiz.height());
 	fprintf(cfile, "evo.tab = %i\n", conf.dbg.evotab);
 	fprintf(cfile, "evo.detached = %s\n", YESNO(conf.dbg.evodetach));
+	fprintf(cfile, "evo.fieldnames = %s\n", YESNO(conf.dbg.evonames));
 	fprintf(cfile, "evo.window = %i:%i:%i:%i\n",conf.dbg.evopos.x(),conf.dbg.evopos.y(),conf.dbg.evosiz.width(),conf.dbg.evosiz.height());
 	fprintf(cfile, "regs.layout = %i\n", conf.dbg.reglayout);
 	fprintf(cfile, "regs.split = %s\n", YESNO(conf.dbg.regsplit));
@@ -822,6 +823,7 @@ void loadConfig() {
 	conf.dbg.sndsiz = QSize(560, 380);
 	conf.dbg.evotab = 0;
 	conf.dbg.evodetach = 0;
+	conf.dbg.evonames = 0;
 	conf.dbg.evopos = QPoint(-1, -1);
 	conf.dbg.evosiz = QSize(560, 480);
 	conf.dbg.reglayout = DBG_REGS_AUTO;
@@ -956,6 +958,7 @@ void loadConfig() {
 					}
 					if ((pnam == "evo.tab") && (arg.i >= 0)) conf.dbg.evotab = arg.i;
 					if (pnam == "evo.detached") conf.dbg.evodetach = arg.b;
+					if (pnam == "evo.fieldnames") conf.dbg.evonames = arg.b;
 					if (pnam == "evo.window") {
 						vect = splitstr(pval,":");
 						if (vect.size() > 3) {

@@ -948,6 +948,7 @@ struct xConfig {
 		unsigned sndfit:1;	// sound panel: the scope centres and scales itself
 		unsigned sndlog:1;	// sound panel: the scope draws on a log curve
 		unsigned evodetach:1;	// ZX Evolution panel: shown in a window of its own
+		unsigned evonames:1;	// ZX Evolution panel: fields by their names in the docs, not in words
 		unsigned imglabels:1;	// an image's .labels comes with it
 		QFont font;
 		int dbsize;
