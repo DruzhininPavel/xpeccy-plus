@@ -510,54 +510,6 @@ void comp_irq(int t, void* ptr) {
 	if (comp->hw->irq) comp->hw->irq(comp, t);
 }
 
-// new (for future use)
-
-/*
-int comp_rom_rd(Computer* comp, int adr) {
-	adr &= comp->mem->romMask;
-	if (comp->brkRomMap[adr] & MEM_BRK_RD)
-		comp->brk = 1;
-	return comp->mem->romData[adr] & 0xff;
-}
-
-void comp_rom_wr(Computer* comp, int adr, int val) {
-	adr &= comp->mem->romMask;
-	if (comp->brkRomMap[adr] & MEM_BRK_WR)
-		comp->brk = 1;
-	comp->mem->romData[adr] = val & 0xff;
-}
-
-int comp_ram_rd(Computer* comp, int adr) {
-	adr &= comp->mem->ramMask;
-	if (comp->brkRamMap[adr] & MEM_BRK_RD)
-		comp->brk = 1;
-	return comp->mem->ramData[adr] & 0xff;
-}
-
-void comp_ram_wr(Computer* comp, int adr, int val) {
-	adr &= comp->mem->ramMask;
-	if (comp->brkRamMap[adr] & MEM_BRK_WR)
-		comp->brk = 1;
-	comp->mem->ramData[adr] = val & 0xff;
-}
-
-int comp_slt_rd(Computer* comp, int adr) {
-	if (!comp->slot->data) return 0xff;
-	adr &= comp->slot->memMask;
-	if (comp->slot->brkMap[adr] & MEM_BRK_RD)
-		comp->brk = 1;
-	return comp->slot->data[adr] & 0xff;
-}
-
-void comp_slt_wr(Computer* comp, int adr, int val) {
-	if (!comp->slot->data) return;
-	adr &= comp->slot->memMask;
-	if (comp->slot->brkMap[adr] & MEM_BRK_WR)
-		comp->brk = 1;
-	comp->slot->data[adr] = val & 0xff;
-}
-*/
-
 // rzx
 
 unsigned rzx_playing = 0;

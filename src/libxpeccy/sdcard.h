@@ -28,18 +28,6 @@ enum {
 #define	R1_ERASE_SEQ	(1<<4)
 #define	R1_ADDRESS_ERR	(1<<5)
 #define	R1_PARAM_ERR	(1<<6)
-// capacity
-#define	SDC_32M		32
-#define	SDC_64M		64
-#define	SDC_128M	128
-#define	SDC_256M	256
-#define	SDC_512M	512
-#define	SDC_1G		1024
-#define	SDC_2G		2048
-#define	SDC_4G		4096
-#define	SDC_8G		8192
-#define	SDC_DEFAULT	SDC_128M
-
 typedef struct {
 	unsigned on:1;
 	unsigned cs:1;
@@ -83,7 +71,6 @@ void sdcWrite(SDCard*, int);
 void sdcSetImage(SDCard*,const char*);
 void sdcSetFolder(SDCard*,const char*,vFat*);
 void sdcSetLock(SDCard*,int);
-void sdcSetCapacity(SDCard*,int);
 
 void sdcOpenFile(SDCard*);
 void sdcCloseFile(SDCard*);

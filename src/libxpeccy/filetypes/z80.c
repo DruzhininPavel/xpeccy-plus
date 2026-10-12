@@ -18,14 +18,6 @@ typedef struct {
 
 #pragma pack (pop)
 
-/*
-unsigned short fgetwLE(FILE* file) {		// get WORD little endian (low-hi)
-	unsigned short res = fgetc(file);
-	res |= (fgetc(file) << 8);
-	return res;
-}
-*/
-
 void fputwLE(FILE* file, unsigned short wrd) {
 	fputc(wrd & 0xff, file);
 	fputc((wrd & 0xff00) >> 8, file);

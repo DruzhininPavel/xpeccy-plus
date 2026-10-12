@@ -161,22 +161,6 @@ int cpuSetType(CPU* cpu, int type) {
 	return core ? 1 : 0;
 }
 
-/*
-int cpuSetLib(CPU* cpu, const char* dir, const char* fname) {
-	int res = 0;
-	if (cpu_open_lib(cpu, dir, fname)) {
-		cpuCore*(*foo)();
-		foo = dlsym(cpu->libhnd, "getCore");
-		cpuCore* tab = foo();
-		cpuSetCore(cpu, &tab[0]);
-		res = 1;
-	} else {
-		xlog(XLG_APP, XLL_ERROR, "cpu plugin: %s",dlerror());
-	}
-	return res;
-}
-*/
-
 CPU* cpuCreate(int type, cbmr fmr, cbmw fmw, cbir fir, cbiw fiw, cbiack frq, cbirq xirq, void* dt) {
 	CPU* cpu = (CPU*)malloc(sizeof(CPU));
 	memset(cpu, 0x00, sizeof(CPU));

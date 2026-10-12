@@ -805,17 +805,12 @@ void utrkfrm02(FDC* fdc) {		// recieve cnt (4 * spt) bytes from cpu = sectors he
 }
 
 void utrkfrm03(FDC* fdc) {		// emulate whole track writing
-#if 0
-	// immediate next step
-	fdc->pos++;
-#else
 	// wait for next index
 	if (flpNext(fdc->flp, fdc->side)) {
 		fdc->pos++;
 	} else {
 		fdc->wait += fdc->bytedelay;
 	}
-#endif
 }
 
 static fdcCall uFormat[] = {&uwargs,&utrkfrm00,&utrkfrm01,&utrkfrm02,&utrkfrm03,&ureadRS,&uTerm};

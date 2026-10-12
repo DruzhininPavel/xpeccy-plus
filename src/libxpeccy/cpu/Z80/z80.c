@@ -542,47 +542,6 @@ xRegDsc z80RegTab[] = {
 	{REG_EOT, "SZ5H3PNC", 0, 0, NULL, NULL}				// name of REG_EOT element is flag names
 };
 
-/*
-void z80_get_regs(CPU* cpu, xRegBunch* bunch) {
-	int bidx = 0;
-	xRegister reg;
-	xRegDsc* itm = z80RegTab;
-	while(itm->id != REG_EOT) {
-		reg.id = itm->id;
-		reg.name = itm->name;
-		reg.type = itm->size;
-		reg.flag = itm->flag;
-		reg.value = itm->get ? itm->get(cpu) : -1;
-		if (reg.id != REG_EMPTY) {
-			bunch->regs[bidx] = reg;
-			bidx++;
-		}
-		itm++;
-	}
-	bunch->regs[bidx].id = REG_EOT;
-	bunch->flags = z80Flags;
-}
-
-void z80_set_regs(CPU* cpu, xRegBunch bunch) {
-	xRegister* rd = bunch.regs;
-	xRegDsc* p;
-	int idx = 0;
-	while((idx < 32) && (rd->id != REG_EOT)) {
-		p = cpu->core->rdsctab;
-		while (p->id != REG_EOT) {
-			if (p->id == rd->id) {
-				if (p->set) {
-					p->set(cpu, rd->value);
-				}
-			}
-			p++;
-		}
-		rd++;
-		idx++;
-	}
-}
-*/
-
 // test (for external lib):
 // {id, family_id, generation, name, regtab, adr.size, data.size, @init, @reset, @exec, @txt2code, @disasm}
 // last entry must me with id=CPU_NONE

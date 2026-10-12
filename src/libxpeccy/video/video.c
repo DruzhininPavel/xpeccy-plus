@@ -183,9 +183,6 @@ void vid_upd_timings(Video* vid, double nspd) {
 	vid_set_dot_ns(vid, nspd);
 	vid->nsPerLine = (int)llround(nsLine);
 	vid->nsPerFrame = (int)llround(nsLine * vid->full.y);
-#ifdef ISDEBUG
-	// printf("%i / %i / %i\n", vid->nsPerDot, vid->nsPerLine, vid->nsPerFrame);
-#endif
 }
 
 // TODO: for zx only?

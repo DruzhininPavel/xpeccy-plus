@@ -144,19 +144,6 @@ void pdosReset(DiskIF* dif) {
 // TODO: interrupt on flp ready signal changed (on a disk change)
 void pdosSync(DiskIF* dif, int ns) {
 	dhwSync(dif, ns);
-/*
-	if (dif->fdc->flp->dwait > 0) {
-		dif->fdc->flp->dwait -= ns;
-		if (dif->fdc->flp->dwait < 0) {
-			dif->fdc->flp->dwait = 0;
-			if (dif->fdc->flp->door != dif->fdc->flp->insert) {
-				dhw_irq(IRQ_FDD_RDY, dif);
-				dif->fdc->flp->door = dif->fdc->flp->insert;
-//				printf("insert:%i\tdoor:%i\n",dif->fdc->flp->insert,dif->fdc->flp->door);
-			}
-		}
-	}
-*/
 }
 
 

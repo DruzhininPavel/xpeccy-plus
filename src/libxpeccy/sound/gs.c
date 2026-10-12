@@ -5,7 +5,6 @@
 #include "gs.h"
 #include "../cpu/Z80/z80.h"
 
-#define GS_FLUSH 1
 
 // internal MEMRQ
 int gsmemrd(int adr, int m1, void* ptr) {
@@ -141,8 +140,6 @@ void gsReset(GSound* gs) {
 	cpu_reset(gs->cpu);
 }
 
-#if GS_FLUSH
-
 void gsSync(GSound* gs, int ns) {
 	if (!gs->enable) return;
 	gs->time += ns;
@@ -161,29 +158,6 @@ void gsFlush(GSound* gs) {
 		}
 	}
 }
-
-#else
-
-void gsFlush(GSound* gs) {
-
-}
-
-void gsSync(GSound* gs, int ns) {
-	if (!gs->enable) return;
-	gs->time += ns;
-	int res;
-	while (gs->time > 0) {
-		res = gs->cpu->exec(gs->cpu);
-		gs->time -= res * gs->ns_per_tick;
-		gs->cnt += res;
-		if (gs->cnt > 320) {	// 12MHz CLK, 37.5KHz INT -> int in each 320 ticks
-			gs->cnt -= 320;
-			gs->cpu->intrq |= Z80_INT;
-		}
-	}
-}
-
-#endif
 
 int gsCheck(GSound* gs, int adr) {
 	if (!gs->enable) return 0;
