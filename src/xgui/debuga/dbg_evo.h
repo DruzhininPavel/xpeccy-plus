@@ -96,6 +96,44 @@ class xTsTilePage : public QWidget {
 		void hover_info();
 };
 
+// a grid of palette cells: names of the rows on the left, what uses a row on the right
+class xEvoPalView : public QWidget {
+	public:
+		xEvoPalView(QWidget* = nullptr);
+		int cols, rows;
+		QVector<QRgb> cells;
+		QStringList cellText;		// over each cell, when there is room; may be empty
+		QStringList rowNames;
+		QStringList colNames;
+		QStringList rowTags;
+		int border;			// the cell framed as the border, -1 none
+		int pick;			// the cell framed as picked, -1 none
+		std::function<void(int)> onHover;	// the cell under the pointer, -1 when it left
+		std::function<void(int)> onPick;
+	protected:
+		void paintEvent(QPaintEvent*);
+		void mouseMoveEvent(QMouseEvent*);
+		void mousePressEvent(QMouseEvent*);
+		void leaveEvent(QEvent*);
+	private:
+		int cell;			// a cell's side
+		QRect grid() const;		// the cells, without the names
+		int at(QPoint) const;
+};
+
+// the 256 CRAM colors on TSConf, the 16 cells on BaseConf
+class xEvoPalPage : public QWidget {
+	Q_OBJECT
+	public:
+		xEvoPalPage(QWidget* = nullptr);
+		void draw();
+	private:
+		xEvoPalView* view;
+		QLabel* labInfo;
+		int hov;			// the cell under the pointer, -1 none
+		void info();
+};
+
 // BaseConf
 class xEvoPortsPage : public QWidget {
 	Q_OBJECT
@@ -141,6 +179,7 @@ class xEvoPanel : public QWidget {
 		xTsTilePage* tsTile;
 		xTsDmaPage* tsDma;
 		xEvoPortsPage* evoPorts;
+		xEvoPalPage* pal;
 		QLabel* noMachine;
 		int hw;				// the machine the tab row was built for
 		bool hold;

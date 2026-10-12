@@ -370,6 +370,8 @@ void DebugWin::machinePanels() {
 	wid_disk_dump->setVisible(disk);
 	wid_fdd->setVisible(disk);
 	wid_evo->setVisible((hw == HW_TSLAB) || (hw == HW_PENTEVO));
+	// the ZX Evo panel has a palette tab of its own there
+	wid_pal->setVisible((hw != HW_TSLAB) && (hw != HW_PENTEVO));
 	// the redraw a layer switch asks for runs from the last two frames
 	xreplay_on = (hw == HW_TSLAB);
 }

@@ -14,6 +14,21 @@
 
 // LIST
 
+// the right click on any of the panel's descriptions: in words or by field names
+static void evo_style_menu(const std::function<void()>& done) {
+	QMenu mnu;
+	QAction* words = mnu.addAction("In words");
+	QAction* names = mnu.addAction("Field names");
+	words->setCheckable(true);
+	names->setCheckable(true);
+	words->setChecked(!conf.dbg.evonames);
+	names->setChecked(conf.dbg.evonames);
+	QAction* got = mnu.exec(QCursor::pos());
+	if (!got) return;
+	conf.dbg.evonames = (got == names) ? 1 : 0;
+	if (done) done();
+}
+
 xEvoList::xEvoList(QStringList head, QWidget* p):QTreeWidget(p) {
 	setColumnCount(head.size());
 	setHeaderLabels(head);
@@ -31,19 +46,7 @@ xEvoList::xEvoList(QStringList head, QWidget* p):QTreeWidget(p) {
 	// the last column in plain words or as the docs name the fields, for both lists
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	header()->setContextMenuPolicy(Qt::CustomContextMenu);
-	auto menu = [this](const QPoint&) {
-		QMenu mnu;
-		QAction* words = mnu.addAction("In words");
-		QAction* names = mnu.addAction("Field names");
-		words->setCheckable(true);
-		names->setCheckable(true);
-		words->setChecked(!conf.dbg.evonames);
-		names->setChecked(conf.dbg.evonames);
-		QAction* got = mnu.exec(QCursor::pos());
-		if (!got) return;
-		conf.dbg.evonames = (got == names) ? 1 : 0;
-		if (onStyle) onStyle();
-	};
+	auto menu = [this](const QPoint&) {evo_style_menu(onStyle);};
 	connect(this, &QWidget::customContextMenuRequested, this, menu);
 	connect(header(), &QWidget::customContextMenuRequested, this, menu);
 }
@@ -863,15 +866,255 @@ void xEvoPortsPage::draw() {
 	list->put(g, "virt", {"13BD", "Virtual", QString::number(r.virt, 16).toUpper(), vd.isEmpty() ? "-" : vd.join(" ")});
 	list->put(g, "ext", {"2F..8F", "2F 4F 6F 8F", "", QString("%0 %1 %2 %3").arg(hex2(r.ext[0])).arg(hex2(r.ext[1]))
 		.arg(hex2(r.ext[2])).arg(hex2(r.ext[3]))});
-
-	g = "Palette";
-	for (int h = 0; h < 2; h++) {
-		QStringList cells;
-		for (int i = 0; i < 8; i++) cells << hex2(r.pal[h * 8 + i]);
-		list->put(g, QString("pal%0").arg(h), {"FF", QString("Cells %0..%1").arg(h * 8).arg(h * 8 + 7), "", cells.join(" ")});
-	}
 	list->finish();
 	list->restyle();
+}
+
+// PALETTE VIEW
+
+xEvoPalView::xEvoPalView(QWidget* p):QWidget(p) {
+	cols = rows = 0;
+	border = pick = -1;
+	setMouseTracking(true);
+	setMinimumSize(128, 64);
+	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+}
+
+// square cells as big as fit; the room for the tags is the widest they can be, so the
+// grid stays put while they change
+QRect xEvoPalView::grid() const {
+	if (!cols || !rows) return QRect();
+	QFontMetrics fm(font());
+	int gap = fm.averageCharWidth();
+	int lw = 0;
+	foreach (QString s, rowNames) lw = qMax(lw, fm.horizontalAdvance(s));
+	if (lw) lw += gap;
+	int tw = rowTags.isEmpty() ? 0 : fm.horizontalAdvance("B T0 T1 S") + gap;
+	int top = colNames.isEmpty() ? 0 : fm.height();
+	int c = qMin(qMin((width() - lw - tw) / cols, (height() - top) / rows), 48);
+	if (c < 4) return QRect();
+	return QRect(lw, top, c * cols, c * rows);
+}
+
+int xEvoPalView::at(QPoint pos) const {
+	QRect g = grid();
+	if (g.isEmpty() || !g.contains(pos)) return -1;
+	int c = g.width() / cols;
+	int idx = ((pos.y() - g.y()) / c) * cols + (pos.x() - g.x()) / c;
+	return (idx < cells.size()) ? idx : -1;
+}
+
+void xEvoPalView::paintEvent(QPaintEvent*) {
+	QPainter pnt(this);
+	QRect g = grid();
+	if (g.isEmpty()) return;
+	int c = g.width() / cols;
+	QFontMetrics fm(font());
+	int gap = fm.averageCharWidth();
+	pnt.setPen(palette().color(QPalette::WindowText));
+	for (int i = 0; i < colNames.size(); i++)
+		pnt.drawText(QRect(g.x() + i * c, 0, c, g.y()), Qt::AlignCenter, colNames[i]);
+	for (int r = 0; r < rows; r++) {
+		if (r < rowNames.size())
+			pnt.drawText(QRect(0, g.y() + r * c, g.x() - gap, c), Qt::AlignRight | Qt::AlignVCenter, rowNames[r]);
+		if (r < rowTags.size())
+			pnt.drawText(QRect(g.right() + 1 + gap, g.y() + r * c, width(), c), Qt::AlignLeft | Qt::AlignVCenter, rowTags[r]);
+	}
+	for (int i = 0; i < cells.size(); i++) {
+		QRect rc(g.x() + (i % cols) * c, g.y() + (i / cols) * c, c, c);
+		pnt.fillRect(rc.adjusted(0, 0, -1, -1), QColor(cells[i]));
+		if ((i < cellText.size()) && (fm.horizontalAdvance(cellText[i]) < c - 2)) {
+			pnt.setPen((qGray(cells[i]) > 128) ? Qt::black : Qt::white);
+			pnt.drawText(rc, Qt::AlignCenter, cellText[i]);
+		}
+	}
+	pnt.setBrush(Qt::NoBrush);
+	if ((border >= 0) && (border < cells.size())) {
+		QColor col = conf.pal.value("dbg.header.bg");
+		if (!col.isValid()) col = Qt::yellow;
+		pnt.setPen(QPen(col, 2, Qt::DashLine));
+		pnt.drawRect(QRect(g.x() + (border % cols) * c, g.y() + (border / cols) * c, c, c).adjusted(1, 1, -2, -2));
+	}
+	if ((pick >= 0) && (pick < cells.size())) {
+		QRect rc(g.x() + (pick % cols) * c, g.y() + (pick / cols) * c, c - 1, c - 1);
+		pnt.setPen(QPen(Qt::white, 1));
+		pnt.drawRect(rc.adjusted(0, 0, -1, -1));
+		pnt.setPen(QPen(Qt::black, 1));
+		pnt.drawRect(rc.adjusted(1, 1, -2, -2));
+	}
+}
+
+void xEvoPalView::mouseMoveEvent(QMouseEvent* ev) {
+	if (onHover) onHover(at(ev->pos()));
+}
+
+void xEvoPalView::mousePressEvent(QMouseEvent* ev) {
+	if (ev->button() != Qt::LeftButton) return;
+	int idx = at(ev->pos());
+	if ((idx >= 0) && onPick) onPick(idx);
+}
+
+void xEvoPalView::leaveEvent(QEvent*) {
+	if (onHover) onHover(-1);
+}
+
+// PALETTE PAGE
+
+xEvoPalPage::xEvoPalPage(QWidget* p):QWidget(p) {
+	hov = -1;
+	QVBoxLayout* lay = new QVBoxLayout(this);
+	lay->setContentsMargins(0, 0, 0, 0);
+	view = new xEvoPalView;
+	lay->addWidget(view, 1);
+	labInfo = new QLabel;
+	labInfo->setWordWrap(true);
+	labInfo->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	lay->addWidget(labInfo);
+	auto menu = [this](const QPoint&) {evo_style_menu([this]() {info();});};
+	view->setContextMenuPolicy(Qt::CustomContextMenu);
+	labInfo->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(view, &QWidget::customContextMenuRequested, this, menu);
+	connect(labInfo, &QWidget::customContextMenuRequested, this, menu);
+	view->onHover = [this](int idx) {
+		hov = idx;
+		info();
+	};
+	view->onPick = [this](int idx) {
+		view->pick = idx;
+		view->update();
+		info();
+	};
+}
+
+static QRgb evo_rgb(uint32_t c) {return qRgb(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff);}
+
+enum {PAL_B = 1, PAL_T0 = 2, PAL_T1 = 4, PAL_S = 8};
+
+void xEvoPalPage::draw() {
+	Computer* comp = conf.zx;
+	if (!comp) return;
+	Video* vid = comp->vid;
+	int hw = comp->hw->id;
+	view->cells.clear();
+	view->cellText.clear();
+	view->rowNames.clear();
+	view->colNames.clear();
+	view->rowTags.clear();
+	if (hw == HW_TSLAB) {
+		tsRegs r;
+		ts_get_regs(comp, &r);
+		view->cols = view->rows = 16;
+		for (int i = 0; i < 256; i++)
+			view->cells << evo_rgb(vid->pal[i]);
+		for (int i = 0; i < 16; i++) {
+			view->rowNames << hex2(i << 4);
+			view->colNames << QString::number(i, 16).toUpper();
+		}
+		// the rows the layers take their colors from now
+		int use[16] = {0};
+		int mode = r.vconf & 3;
+		int gpal = r.palsel & 15;
+		if (!(r.vconf & 0x20)) {			// NOGFX
+			if (mode == 2) {
+				for (int i = 0; i < 16; i++) use[i] |= PAL_B;	// 256 colors: all of them
+			} else {
+				use[gpal] |= PAL_B;
+			}
+		}
+		for (int k = 0; k < 4; k++) {
+			if (r.tsconf & 0x20) use[(((r.palsel >> 4) & 3) << 2) | k] |= PAL_T0;
+			if (r.tsconf & 0x40) use[(((r.palsel >> 6) & 3) << 2) | k] |= PAL_T1;
+		}
+		if (r.tsconf & 0x80) {
+			int layer = 0;
+			for (int i = 0; (i < TSL_SPRITES) && (layer < 3); i++) {
+				tsSprite s;
+				tsl_get_sprite(vid, i, &s);
+				if (s.act) use[s.pal & 15] |= PAL_S;
+				if (s.leap) layer++;
+			}
+		}
+		// text mode puts out the low nibble only, under GPAL: tiles and sprites as well
+		if (mode == 3) {
+			int all = 0;
+			for (int i = 0; i < 16; i++) {
+				all |= use[i];
+				use[i] = 0;
+			}
+			use[gpal] = all;
+		}
+		for (int i = 0; i < 16; i++) {
+			QStringList t;
+			if (use[i] & PAL_B) t << "B";
+			if (use[i] & PAL_T0) t << "T0";
+			if (use[i] & PAL_T1) t << "T1";
+			if (use[i] & PAL_S) t << "S";
+			view->rowTags << t.join(" ");
+		}
+		view->border = (mode == 3) ? ((gpal << 4) | (r.border & 15)) : (r.border & 0xff);
+	} else if (hw == HW_PENTEVO) {
+		evoRegs r;
+		evo_get_regs(comp, &r);
+		view->cols = 8;
+		view->rows = 2;
+		for (int i = 0; i < 16; i++) {
+			view->cells << evo_rgb(vid->pal[i]);
+			view->cellText << hex2(r.pal[i]);
+		}
+		view->rowNames << "0" << "8";
+		for (int i = 0; i < 8; i++)
+			view->colNames << QString::number(i);
+		view->border = r.border & 15;
+	} else {
+		view->cols = view->rows = 0;
+	}
+	if (view->pick >= view->cells.size()) view->pick = -1;
+	// room for the longest description, so the grid does not move as it changes
+	labInfo->setMinimumHeight(labInfo->fontMetrics().lineSpacing() * 3);
+	view->update();
+	info();
+}
+
+void xEvoPalPage::info() {
+	Computer* comp = conf.zx;
+	if (!comp) return;
+	bool ts = (comp->hw->id == HW_TSLAB);
+	int i = (hov >= 0) ? hov : view->pick;
+	if ((i < 0) || (i >= view->cells.size())) {
+		labInfo->setText(ts ? "Rows the layers use now: B bitmap, T0 and T1 tiles, S sprites. The border's color is framed."
+			: "The border's cell is framed; the cells show the byte written to them.");
+		return;
+	}
+	bool nm = fieldNames();
+	uint32_t c = comp->vid->pal[i];
+	int cr = c & 0xff;
+	int cg = (c >> 8) & 0xff;
+	int cb = (c >> 16) & 0xff;
+	QString rgb = QString("#%0%1%2").arg(hex2(cr)).arg(hex2(cg)).arg(hex2(cb));
+	QStringList use;
+	if (i == view->border) use << (nm ? "border" : "the border");
+	if (ts) {
+		unsigned char* cram = comp->vid->tsconf.cram;
+		int w = cram[i << 1] | (cram[(i << 1) + 1] << 8);
+		foreach (QString t, view->rowTags.value(i >> 4).split(' ', X_SkipEmptyParts))
+			use << ((t == "B") ? "bitmap" : (t == "T0") ? "tiles 0" : (t == "T1") ? "tiles 1" : "sprites");
+		QString s = QString("Color %0, CRAM %1 = %2: ").arg(hex2(i)).arg(QString::number(i << 1, 16).toUpper().rightJustified(3, '0'))
+			.arg(hex4(w));
+		if (nm) {
+			s += QString("R=%0 G=%1 B=%2 VDAC_MODE=%3").arg((w >> 10) & 31).arg((w >> 5) & 31).arg(w & 31).arg((w >> 15) & 1);
+		} else {
+			s += QString("red %0, green %1, blue %2 (%3)").arg((w >> 10) & 31).arg((w >> 5) & 31).arg(w & 31)
+				.arg((w & 0x8000) ? "VDAC, 31 is full" : "PWM, 24 and up is full");
+		}
+		labInfo->setText(s + QString(" = %0").arg(rgb) + (use.isEmpty() ? "" : "; " + use.join(", ")));
+	} else {
+		evoRegs r;
+		evo_get_regs(comp, &r);
+		// the levels are n * 0x11: atm3clev in pentevo.c
+		QString s = nm ? QString("Cell %0: D=%1 R=%2 G=%3 B=%4").arg(i).arg(hex2(r.pal[i])).arg(cr / 17).arg(cg / 17).arg(cb / 17)
+			: QString("Cell %0: written %1, red %2, green %3, blue %4 of 15").arg(i).arg(hex2(r.pal[i])).arg(cr / 17).arg(cg / 17).arg(cb / 17);
+		labInfo->setText(s + QString(" = %0").arg(rgb) + (use.isEmpty() ? "" : "; " + use.join(", ")));
+	}
 }
 
 // DMA PAGE
@@ -962,6 +1205,7 @@ xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 	tsTile = new xTsTilePage;
 	tsDma = new xTsDmaPage;
 	evoPorts = new xEvoPortsPage;
+	pal = new xEvoPalPage;
 	noMachine = new QLabel("Nothing to show on this machine");
 	noMachine->setAlignment(Qt::AlignCenter);
 	stack->addWidget(tsRegs);
@@ -969,6 +1213,7 @@ xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 	stack->addWidget(tsTile);
 	stack->addWidget(tsDma);
 	stack->addWidget(evoPorts);
+	stack->addWidget(pal);
 	stack->addWidget(noMachine);
 	lay->addWidget(stack, 1);
 
@@ -989,9 +1234,11 @@ void xEvoPanel::build_tabs() {
 		tabs->setTabData(tabs->addTab("Registers"), QVariant::fromValue((void*)tsRegs));
 		tabs->setTabData(tabs->addTab("Sprites"), QVariant::fromValue((void*)tsSpr));
 		tabs->setTabData(tabs->addTab("Tiles"), QVariant::fromValue((void*)tsTile));
+		tabs->setTabData(tabs->addTab("Palette"), QVariant::fromValue((void*)pal));
 		tabs->setTabData(tabs->addTab("DMA"), QVariant::fromValue((void*)tsDma));
 	} else if (hw == HW_PENTEVO) {
 		tabs->setTabData(tabs->addTab("Ports"), QVariant::fromValue((void*)evoPorts));
+		tabs->setTabData(tabs->addTab("Palette"), QVariant::fromValue((void*)pal));
 	}
 	tabs->setVisible(tabs->count() > 0);
 	int idx = qBound(0, conf.dbg.evotab, qMax(0, tabs->count() - 1));
@@ -1024,6 +1271,7 @@ void xEvoPanel::draw() {
 	if (cur == tsTile) tsTile->draw();
 	if (cur == tsDma) tsDma->draw();
 	if (cur == evoPorts) evoPorts->draw();
+	if (cur == pal) pal->draw();
 }
 
 // DOCK
