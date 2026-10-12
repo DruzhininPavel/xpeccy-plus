@@ -10,17 +10,6 @@
 char noizes[0x20000];		// here iz noize values 1/0 [generated at start] TODO:obsolete, rewrite parts using it
 
 // ayDACvol/ymDACvol in each own files
-#if 0
-int ayDACvol[32] = {0x0000,0x0000,0x001D,0x003A,0x0052,0x0065,0x007D,0x009A,
-			   0x00C2,0x00F0,0x0122,0x0146,0x0186,0x01D6,0x0226,0x0274,
-			   0x02EA,0x037E,0x041C,0x04B2,0x0594,0x06AF,0x07C8,0x08EB,
-			   0x0AA0,0x0CC4,0x0EE6,0x1108,0x143A,0x1820,0x1C14,0x1FFF};
-#elif 0
-int ayDACvol[32] = {0x0000,0x0000,0x003B,0x0074,0x00A4,0x00CA,0x00FB,0x0134,
-			   0x0184,0x01E0,0x0244,0x028D,0x030C,0x03AD,0x044C,0x04E8,
-			   0x05D4,0x06FD,0x0838,0x0965,0x0B28,0x0D5F,0x0F91,0x11D7,
-			   0x1540,0x1988,0x1DCC,0x2211,0x2874,0x3040,0x3828,0x3FFF};
-#endif
 
 // AY/YM sound chip common
 
@@ -201,46 +190,6 @@ void tsReset(TSound* ts) {
 	ts->r_stat = 0;		// read chip registers, as any AY does. TSFM switches this on itself
 }
 
-void tsSetRomSize(TSound* ts, int sz) {
-	if (sz < 1) {
-		if (ts->rom.data) {
-			free(ts->rom.data);
-			ts->rom.data = NULL;
-			ts->rom.size = 0;
-			ts->rom.mask = 0;
-		}
-	} else {
-		if (sz < MEM_256) {
-			sz = MEM_256;
-		} else if (sz > MEM_128K) {
-			sz = MEM_128K;
-		} else {
-			int s = MEM_256;
-			while (s < sz) {
-				s <<= 1;
-			}
-			sz = s;
-		}
-		ts->rom.data = realloc(ts->rom.data, sz);
-		ts->rom.size = sz;
-		ts->rom.mask = sz - 1;
-	}
-}
-
-void tsLoadRom(TSound* ts, const char* path) {
-	FILE* file = fopen(path, "rb");
-	if (file) {
-		fseek(file, 0, SEEK_END);
-		int sz = ftell(file);
-		rewind(file);
-		tsSetRomSize(ts, sz);
-		fread(ts->rom.data, ts->rom.size, 1, file);
-		fclose(file);
-	} else {
-		tsSetRomSize(ts, 0);
-	}
-}
-
 // fffd (a14 = 1)	wr:reg.num	rd:reg.data
 // bffd (a14 = 0)	wr:reg.data	rd:FF
 
@@ -300,16 +249,6 @@ void tsOut(TSound* ts, int port, int val) {
 	} else {
 		ts->curChip->wr(ts->curChip, port, val);
 	}
-}
-
-int tsReadRom(TSound* ts, int adr) {
-	int r;
-	if (ts->rom.size > adr) {
-		r = ts->rom.data[adr];
-	} else {
-		r = 0x00;
-	}
-	return r;
 }
 
 // overall

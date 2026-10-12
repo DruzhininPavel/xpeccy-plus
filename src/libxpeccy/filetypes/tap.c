@@ -3,9 +3,6 @@
 
 static int zx_std_siglens[] = {PILOTLEN,SYNC1LEN,SYNC2LEN,SIGN0LEN,SIGN1LEN,0,-1};		// 0->SYNC3LEN
 
-void blkFromData(TapeBlock* blk, char* data, int len, int* sigLens) {
-}
-
 TapeBlock tapDataToBlock(char* data,int len,int* sigLens) {
 	TapeBlock blk;
 	blk.data = NULL;

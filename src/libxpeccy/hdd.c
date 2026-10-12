@@ -81,16 +81,6 @@ void ataClearBuf(ATADev* dev) {
 	}
 }
 
-void ataRefresh(ATADev* dev) {
-//	if (dev->hasLBA) {
-//		dev->pass.spt = 64;
-//		dev->pass.hds = 16;
-//	} else {
-//		dev->maxlba = dev->pass.cyls * dev->pass.hds * dev->pass.spt;
-//	}
-//	dev->pass.bpt = dev->pass.bps * dev->pass.spt;
-}
-
 void ataSetSector(ATADev* dev, int nr) {
 	dev->lba = nr;
 	if (dev->hasLBA && (dev->reg.head & HDF_LBA)) {
@@ -519,6 +509,7 @@ void ideDestroy(IDE* ide) {
 	ideCloseFiles(ide);
 	ataDestroy(ide->master);
 	ataDestroy(ide->slave);
+	nvDestroy(ide->smuc.nv);
 	free(ide);
 }
 
@@ -652,11 +643,6 @@ ATAPassport ideGetPassport(IDE* ide, int iface) {
 // IDE controller
 
 // SMUC: dos, a0=0,a1=a5=a7=a11=a12=1	xxx1 1xxx 1x1x xx10
-
-// dummy
-
-int ide_dum_rd(IDE* ide, int port, int* val, int dos) {return 0;}
-int ide_dum_wr(IDE* ide, int port, int val, int dos) {return 0;}
 
 int ide_ata_rd(IDE* ide, int adr, int hi) {
 	int res;

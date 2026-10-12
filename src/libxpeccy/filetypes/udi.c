@@ -44,7 +44,6 @@ void loadUDITrack(Floppy* flp, FILE* file, unsigned char tr, int sd) {
 	} else {
 		len = freadLen(file,2);					// track size
 		memset(trackBuf, 0x4e, flp->trklen);
-#if 1
 		if (len > flp->trklen) {
 			fread((char*)trackBuf, flp->trklen, 1, file);	// read only TRACKLEN bytes
 			fseek(file, len - flp->trklen, SEEK_CUR);		// and skip others
@@ -55,19 +54,6 @@ void loadUDITrack(Floppy* flp, FILE* file, unsigned char tr, int sd) {
 		}
 		len = (len >> 3) + (((len & 7) == 0) ? 0 : 1);		// skip bit field
 		fseek(file, len, SEEK_CUR);
-#else
-		if (len > flp->trklen) {
-			xlog(XLG_FILE, XLL_WARN, "TRK %i: too long (%i)",rt,len);
-			fseek(file, len, SEEK_CUR);		// skip track image
-			len = (len >> 3) + (((len & 7) == 0) ? 0 : 1);	// and bit field
-			fseek(file, len, SEEK_CUR);
-		} else {
-			fread((char*)trackBuf, len, 1, file);
-			flpPutTrack(flp,rt,trackBuf,len);
-			len = (len >> 3) + (((len & 7) == 0) ? 0 : 1);	// skip bit field
-			fseek(file, len, SEEK_CUR);
-		}
-#endif
 		free(trackBuf);
 	}
 }

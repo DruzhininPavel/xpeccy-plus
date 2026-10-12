@@ -19,8 +19,6 @@ void key_press(Keyboard* kbd, keyScan* tab, int* mtrx, unsigned char ch) {
 //	printf("kbd_press_key %c\n", ch);
 	keyScan key = findKey(tab, ch & 0x7f);
 	key.row &= 0x0f;
-	kbd->row = key.row;
-	kbd->mask = key.mask;
 	mtrx[key.row] &= ~key.mask;
 	// if (key.mask) printf("row %i : %X\n",key.row, mtrx[key.row]);
 	if (ch & 0x80)			// profi EXT, see kbdScanProfi
@@ -286,11 +284,6 @@ void kbd_set_repeat(Keyboard* kbd, int par) {
 void kbd_reset(Keyboard* kbd) {
 	kbd->com = -1;
 	kbd_set_repeat(kbd, 0x2b);	// ps/2 power-on default until a host says otherwise
-	if (kbd->core) {
-		if (kbd->core->reset) {
-			kbd->core->reset(kbd);
-		}
-	}
 }
 
 Keyboard* kbd_create(cbirq cb, void* p) {
@@ -304,11 +297,6 @@ Keyboard* kbd_create(cbirq cb, void* p) {
 
 void kbd_destroy(Keyboard* keyb) {
 	free(keyb);
-}
-
-// TODO: make this obsolete
-void kbdSetMode(Keyboard* kbd, int mode) {
-	kbd->mode = mode;
 }
 
 // key press/release/trigger
@@ -342,10 +330,8 @@ void kbdReleaseAll(Keyboard* kbd) {
 	memset(kbd->prfsh, 0, sizeof(kbd->prfsh));
 	kbd->keycode = 0;
 	kbd->lastkey = 0;
-//	kbd->flag = 0;
 	if (kbd->per > 0) {
 		kbd_release(kbd, &kbd->kent);
-//		xt_release(kbd, kbd->kent);
 	}
 	kbd->per = 0;
 }
@@ -449,14 +435,6 @@ int kbd_rd(Keyboard* kbd, int port) {
 	return res;
 }
 
-void kbd_wr(Keyboard* kbd, int adr, int val) {
-	if (kbd->core) {
-		if (kbd->core->write) {
-			kbd->core->write(kbd, adr, val);
-		}
-	}
-}
-
 void kbd_sync(Keyboard* kbd, int ns) {
 	if (kbd->core) {
 		if (kbd->core->sync) {
@@ -465,14 +443,14 @@ void kbd_sync(Keyboard* kbd, int ns) {
 	}
 }
 
-// id,flag,cbReset,cbRead,cbWrite,cbPress,cbRelease,cbSync
+// id,cbRead,cbPress,cbRelease,cbSync
 xKbdCore kbdTypeTab[] = {
-	{KBD_SPECTRUM, 0, NULL, kbdScanZX, NULL, kbd_zx_press, kbd_zx_release, xt_rpt_sync},
-	{KBD_PROFI, 0, NULL, kbdScanProfi, NULL, kbd_prf_press, kbd_prf_release, NULL},
-	{KBD_ATM2_CODE, 0, NULL, kbd_atm2code_rd, NULL, kbd_atm2code_press, kbd_atm2code_release, NULL},
-	{KBD_ATM2_CPM, 0, NULL, kbd_atm2cpm_rd, NULL, kbd_atm2code_press, kbd_atm2code_release, NULL},
-	{KBD_ATM2_DIRECT, 0, NULL, NULL, NULL, NULL, NULL, NULL},			// TODO
-	{-1, 0, NULL, NULL, NULL, NULL, NULL}
+	{KBD_SPECTRUM, kbdScanZX, kbd_zx_press, kbd_zx_release, xt_rpt_sync},
+	{KBD_PROFI, kbdScanProfi, kbd_prf_press, kbd_prf_release, NULL},
+	{KBD_ATM2_CODE, kbd_atm2code_rd, kbd_atm2code_press, kbd_atm2code_release, NULL},
+	{KBD_ATM2_CPM, kbd_atm2cpm_rd, kbd_atm2code_press, kbd_atm2code_release, NULL},
+	{KBD_ATM2_DIRECT, NULL, NULL, NULL, NULL},			// TODO
+	{-1, NULL, NULL, NULL, NULL}
 };
 
 void kbd_set_core(Keyboard* kbd, xKbdCore* core) {

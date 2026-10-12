@@ -86,7 +86,6 @@ struct FDC {
 
 	unsigned dma:1;		// not implemented yet
 	unsigned intr:1;	// uPD765 interrupt pending. reset @ com08
-//	unsigned inten:1;	// uPD765 interrupt enabled
 	int hlt;		// head load time (all ns)
 	int hut;		// head unload time
 	int srt;		// step rate time
@@ -112,12 +111,9 @@ typedef struct {
 	int(*in)(struct DiskIF*,int,int*,int);
 	int(*out)(struct DiskIF*,int,int,int);
 	void(*sync)(struct DiskIF*,int);
-	void(*irq)(struct DiskIF*,int);
-	void(*term)(struct DiskIF*);
 } DiskHW;
 
 struct DiskIF {
-	unsigned inten:1;	// uPD765 interrupt enabled
 	unsigned doors:1;	// a drive's door is still closing: difSync has to run
 	int type;
 	int sys;		// the last write to the interface's own port (Beta: #FF)
@@ -133,7 +129,6 @@ void difDestroy(DiskIF*);
 
 void difReset(DiskIF*);
 void difSync(DiskIF*, int);
-void difTerminal(DiskIF*);
 int difOut(DiskIF*, int, int, int);
 int difIn(DiskIF*, int, int*, int);
 

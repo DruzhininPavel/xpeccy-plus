@@ -34,9 +34,6 @@ void dhwSync(DiskIF* dif, int ns) {
 void dhw_irq(int id, void* p) {
 	DiskIF* dif = p; // (DiskIF*)p;
 	if (id == IRQ_FDD_RDY) dif->doors = 1;	// a disk went in or out
-	if (dif->hw->irq && (dif->fdc->dma || dif->inten)) {
-		dif->hw->irq(dif, id);
-	}
 }
 
 void fdc_set_hd(FDC* fdc, int hd) {
@@ -107,16 +104,11 @@ void bdiReset(DiskIF* dif) {
 	bdiOut(dif, 0xff, 0x00, 1);
 }
 
-void bdiSync(DiskIF* dif, int ns) {
-	fdcSync(dif->fdc, ns);
-}
-
 // +3DOS (uPD765)
 
 void uReset(FDC*);
 unsigned char uRead(FDC*, int);
 void uWrite(FDC*, int, unsigned char);
-void uTCount(FDC*);
 
 int pdosGetPort(int p) {
 	int port = -1;
@@ -141,37 +133,22 @@ int pdosOut(DiskIF* dif, int port, int val, int dos) {
 }
 
 void pdosReset(DiskIF* dif) {
-//	dif->inten = 0;
-//	dif->lirq = 0;
 	uReset(dif->fdc);
 }
 
 // TODO: interrupt on flp ready signal changed (on a disk change)
 void pdosSync(DiskIF* dif, int ns) {
 	dhwSync(dif, ns);
-/*
-	if (dif->fdc->flp->dwait > 0) {
-		dif->fdc->flp->dwait -= ns;
-		if (dif->fdc->flp->dwait < 0) {
-			dif->fdc->flp->dwait = 0;
-			if (dif->fdc->flp->door != dif->fdc->flp->insert) {
-				dhw_irq(IRQ_FDD_RDY, dif);
-				dif->fdc->flp->door = dif->fdc->flp->insert;
-//				printf("insert:%i\tdoor:%i\n",dif->fdc->flp->insert,dif->fdc->flp->door);
-			}
-		}
-	}
-*/
 }
 
 
 // common
 
 static DiskHW dhwTab[] = {
-	{DIF_NONE,dumReset,dumIn,dumOut,dumSync,NULL,NULL},
-	{DIF_BDI,bdiReset,bdiIn,bdiOut,dhwSync,NULL,NULL},
-	{DIF_P3DOS,pdosReset,pdosIn,pdosOut,pdosSync,NULL,NULL},		// upd765 (+3dos)
-	{DIF_END,NULL,NULL,NULL,NULL,NULL,NULL}
+	{DIF_NONE,dumReset,dumIn,dumOut,dumSync},
+	{DIF_BDI,bdiReset,bdiIn,bdiOut,dhwSync},
+	{DIF_P3DOS,pdosReset,pdosIn,pdosOut,pdosSync},		// upd765 (+3dos)
+	{DIF_END,NULL,NULL,NULL,NULL}
 };
 
 DiskHW* findDHW(int id) {
@@ -217,13 +194,6 @@ void fdc_set_irqn(FDC* fdc, int in, int irn, int iwn) {
 	fdc->irqn = in;
 	fdc->irqrn = irn;
 	fdc->irqwn = iwn;
-}
-
-void fdc_set_flps(FDC* fdc, Floppy* fa, Floppy* fb, Floppy* fc, Floppy* fd) {
-	fdc->flop[0] = fa;
-	fdc->flop[1] = fb;
-	fdc->flop[2] = fc;
-	fdc->flop[3] = fd;
 }
 
 void dif_align_flps(DiskIF* dif, FDC* fdc, int n0, int n1, int n2, int n3) {
@@ -287,7 +257,6 @@ void difDestroy(DiskIF* dif) {
 }
 
 void difReset(DiskIF* dif) {
-	dif->inten = 1;
 	dif->hw->reset(dif);
 }
 
@@ -310,9 +279,4 @@ int difOut(DiskIF* dif, int port, int val, int dos) {
 
 int difIn(DiskIF* dif, int port, int* res, int dos) {
 	return dif->hw->in(dif,port,res,dos);
-}
-
-void difTerminal(DiskIF* dif) {
-	if (dif->hw->term)
-		dif->hw->term(dif);
 }

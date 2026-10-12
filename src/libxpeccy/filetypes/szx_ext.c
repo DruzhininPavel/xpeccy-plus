@@ -30,7 +30,6 @@ typedef struct {
 } szxField;
 
 #define FLD(type, f)		{#f, offsetof(type, f), sizeof(((type*)0)->f)}
-#define FLDN(key, type, f)	{key, offsetof(type, f), sizeof(((type*)0)->f)}
 #define FLDRAW(key, off, sz)	{key, off, sz}
 #define FLDEND			{NULL, 0, 0}
 
@@ -102,7 +101,6 @@ static const szxField fld_cpu[] = {
 	FLD(CPU, flags),
 	FLD(CPU, intrq),
 	FLD(CPU, inten),
-	FLD(CPU, intvec),
 	FLDEND
 };
 static const int cpu_state_flags[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 58, 59, 60, 62, -1};
@@ -142,28 +140,20 @@ static const szxField fld_vid[] = {
 	FLD(Video, nsOwedFixed),
 	FLD(Video, nsCalmFixed),
 	FLD(Video, time),
-	FLD(Video, busy),
 	FLD(Video, flash),
 	FLD(Video, vidPage),
 	FLD(Video, brdcol),
 	FLD(Video, nextbrd),
 	FLD(Video, inten),
-	FLD(Video, intrq),
-	FLD(Video, intbf),
-	FLD(Video, paln),
 	FLD(Video, vmode),
 	FLD(Video, fcnt),
-	FLD(Video, lcnt),
 	FLD(Video, atrbyte),
 	FLD(Video, fntbyte),
 	FLD(Video, snowLow),
 	FLD(Video, snowBank),
 	FLD(Video, intp),
 	FLD(Video, intsize),
-	FLD(Video, sc),
 	FLD(Video, scrsize),
-	FLD(Video, inth),
-	FLD(Video, intf),
 	FLD(Video, idx),
 	FLD(Video, tsconf),
 	FLD(Video, line),		// the line TSConf's layers are drawn into, half done mid-line
@@ -266,7 +256,7 @@ static const szxField fld_fdc[] = {
 };
 
 static const szxField fld_dif[] = {
-	FLDRAW("bits", 0, 4),		// inten, doors
+	FLDRAW("bits", 0, 4),		// doors
 	FLD(DiskIF, sys),
 	FLDEND
 };
@@ -646,7 +636,6 @@ static void ext_cpu_into(CPU* cpu, const unsigned char* p, size_t n) {
 		cpu->flags[cpu_state_flags[i]] = tmp_.flags[cpu_state_flags[i]];
 	cpu->intrq = tmp_.intrq;
 	cpu->inten = tmp_.inten;
-	cpu->intvec = tmp_.intvec;
 }
 
 static void ext_comp(Computer* comp, const unsigned char* p, size_t n) {
@@ -695,33 +684,26 @@ static void ext_vid(Computer* comp, const unsigned char* p, size_t n) {
 	vid->nsOwedFixed = tmp_.nsOwedFixed;
 	vid->nsCalmFixed = tmp_.nsCalmFixed;
 	vid->time = tmp_.time;
-	vid->busy = tmp_.busy;
 	vid->flash = tmp_.flash;
 	vid->vidPage = tmp_.vidPage;
 	vid->brdcol = tmp_.brdcol;
 	vid->nextbrd = tmp_.nextbrd;
 	vid->inten = tmp_.inten;
-	vid->intrq = tmp_.intrq;
-	vid->intbf = tmp_.intbf;
-	vid->paln = tmp_.paln;
 	vid->fcnt = tmp_.fcnt;
-	vid->lcnt = tmp_.lcnt;
 	vid->atrbyte = tmp_.atrbyte;
 	vid->fntbyte = tmp_.fntbyte;
 	vid->snowLow = tmp_.snowLow;
 	vid->snowBank = tmp_.snowBank;
 	vid->intp = tmp_.intp;
 	vid->intsize = tmp_.intsize;
-	vid->sc = tmp_.sc;
 	vid->scrsize = tmp_.scrsize;
-	vid->inth = tmp_.inth;
-	vid->intf = tmp_.intf;
 	vid->idx = tmp_.idx;
 	memcpy(&vid->tsconf, &tmp_.tsconf, sizeof(vid->tsconf));
 	memcpy(vid->line, tmp_.line, sizeof(vid->line));
 	memcpy(vid->linb, tmp_.linb, sizeof(vid->linb));
 	if (tmp_.vmode != vid->vmode)
 		vid_set_mode(vid, tmp_.vmode);
+	vid->tslKey = -1;	// vmode/nogfx set behind tslUpdatePorts' back
 }
 
 static void ext_chip_load(Computer* comp, int n, const unsigned char* p, size_t len) {
@@ -931,7 +913,6 @@ int szx_ext_load(Computer* comp, const unsigned char* ext, size_t len) {
 			case XR_DIF:
 				if (comp->dif && (comp->dif->type != DIF_NONE)) {
 					EXT_TAKE(DiskIF, comp->dif, fld_dif, p, n)
-					comp->dif->inten = tmp_.inten;
 					comp->dif->sys = tmp_.sys;
 				}
 				break;

@@ -164,12 +164,11 @@ void vidDestroy(Video* vid) {
 	free(vid);
 }
 
-// The one place the dot period is set. nsPerDot is the whole-ns value other
-// code reads; nsPerDotFixed keeps the fraction, and is what the ray steps by.
+// The one place the dot period is set. nsPerDotFixed keeps the fraction, and
+// is what the ray steps by.
 void vid_set_dot_ns(Video* vid, double nspd) {
 	vid_unlazy(vid);			// dots counted so far are of the old length
 	vid->nsPerDotExact = nspd;
-	vid->nsPerDot = (int)llround(nspd);
 	vid->nsPerDotFixed = NSD_TO_FIXED(nspd);
 	if (vid->nsPerDotFixed < 1)
 		vid->nsPerDotFixed = 1;		// never let vid_sync_fixed spin forever
@@ -177,15 +176,10 @@ void vid_set_dot_ns(Video* vid, double nspd) {
 }
 
 void vid_upd_timings(Video* vid, double nspd) {
-	// nsPerLine/nsPerFrame are each rounded once from the precise nspd, not
-	// multiplied up from the rounded nsPerDot, so they don't inherit its error.
-	double nsLine = nspd * vid->full.x;
+	// nsPerFrame is rounded once from the precise nspd, not multiplied up
+	// from a rounded dot period, so it does not inherit its error.
 	vid_set_dot_ns(vid, nspd);
-	vid->nsPerLine = (int)llround(nsLine);
-	vid->nsPerFrame = (int)llround(nsLine * vid->full.y);
-#ifdef ISDEBUG
-	// printf("%i / %i / %i\n", vid->nsPerDot, vid->nsPerLine, vid->nsPerFrame);
-#endif
+	vid->nsPerFrame = (int)llround(nspd * vid->full.x * vid->full.y);
 }
 
 // TODO: for zx only?
@@ -222,10 +216,6 @@ void vid_set_ray(Video* vid, int dots) {
 	int p = vid_wrap(vid, b + (vid->vend.y - 1) * fx + vid->vend.x);
 	vid->ray.y = p / fx;
 	vid->ray.x = p % fx;
-	// xs/ys restart at bord.x on line bord.y
-	int s = vid_wrap(vid, p - vid->bord.y * fx - vid->bord.x);
-	vid->ray.ys = s / fx;
-	vid->ray.xs = s % fx;
 	vid->hblank = (vid->ray.x >= vid->vend.x);
 	vid->vblank = (vid->ray.y >= vid->vend.y);
 	vid->hbrd = (vid->ray.x < vid->bord.x) || (vid->ray.x >= vid->send.x);
@@ -326,6 +316,7 @@ void vid_upd_crop(Video* vid) {
 // [ <--------- full --------> ]
 // ? = brdr = full - bord - scr - blank
 void vid_upd_layout(Video* vid) {
+	vid->tslKey = -1;		// vend moves: tslUpdatePorts re-centers off it
 	vid->vend.x = vid->full.x - vid->blank.x;		// visible right dot
 	vid->vend.y = vid->full.y - vid->blank.y;		// visible bottom line
 	vid->send.x = vid->bord.x + vid->scrn.x;		// screen end column
@@ -343,7 +334,6 @@ void vid_set_layout(Video* vid, vLayout* lay) {
 	vid->scrn = lay->scr;
 	vid->intp = lay->intpos;
 	vid->intsize = lay->intSize;
-	vid->frmsz = lay->full.x * lay->full.y;
 	vid_upd_layout(vid);
 }
 
@@ -658,8 +648,8 @@ int vid_scr_dot(int off, int* x, int* y) {
 // Where the dot at x,y is held: the pixel byte and the attribute byte, counted
 // from the address its page is seen at.
 void vid_scr_adr(int base, int x, int y, int* pix, int* atr) {
-	if (pix) *pix = (base + (((y & 0xc0) << 5) | ((y & 0x38) << 2) | ((y & 7) << 8) | ((x & 0xf8) >> 3))) & 0xffff;
-	if (atr) *atr = (base + 0x1800 + (((y & 0xf8) << 2) | ((x & 0xf8) >> 3))) & 0xffff;
+	if (pix) *pix = (base + zx_pix_adr_xy(x, y)) & 0xffff;
+	if (atr) *atr = (base + zx_atr_adr_xy(x, y)) & 0xffff;
 }
 
 // ula 5c/6c horizontal timings:
@@ -679,6 +669,7 @@ void vid_scr_adr(int base, int x, int y, int* pix, int* atr) {
 // (T14336 here), 4dots pre-wait, 2dots ula read pixels, 2dots ula read attr, (T14340:output starts here), 2 dots ula read next pixels, 2 dots ula read next atr, 4 no-wait dots
 // ^ repeat 16 times each 16 dots in each of 192 screen rows
 
+// The longest wait is 14 dots; contTicks[16] in Computer is sized off that.
 static int contTabA[] = {12,11,10,9,8,7,6,5,4,3,2,1,0,0,0,0};		// 48K 128K +2 (bank 1,3,5,7)
 static int contTabB[] = {2,1,0,0,14,13,12,11,10,9,8,7,6,5,4,3};		// +2A +3 (bank 4,5,6,7)
 
@@ -704,23 +695,16 @@ static int ula_fetch_x(Video* vid, int dotofs) {
 // ula_contention / ula_contention_no_mreq. An i/o cycle reads the same table
 // at the same point, as it does in fuse.
 int vid_wait_dots(Video* vid, int adr, int mreq) {
+	if (!vid_cont_hit(vid, adr, mreq)) return 0;	// pattern/address test, the ray untouched
 	int xscr;
 	int end = vid->scrn.x;
-	int* contTab = NULL;
-	switch (vid->ula->conttype) {
-		case CONT_PATA:
-			adr &= 0x4000;			// pages 1,3,5,7
-			contTab = contTabA;
-			break;
-		case CONT_PATB:				// pages 4,5,6,7
-			if (!mreq) return 0;		// asic contends mreq cycles only
-			adr &= 0x10000;
-			contTab = contTabB;
-			end += 2;			// the gate array holds one tick past the line
-			break;
+	int* contTab;
+	if (vid->ula->conttype == CONT_PATB) {
+		contTab = contTabB;
+		end += 2;			// the gate array holds one tick past the line
+	} else {
+		contTab = contTabA;
 	}
-	if (!contTab) return 0;				// unknown patern
-	if (!adr) return 0;				// address not in contention limits
 	vid_settle(vid);
 	if (vid->vbrd) return 0;			// border (vertical)
 	xscr = ula_fetch_x(vid, 0);
@@ -890,24 +874,6 @@ void vid_set_col(Video* vid, int i, xColor xcol) {
 	vid->gpal[i & 0xff] = uint_to_grey(vid->pal[i & 0xff]);
 }
 
-void vid_set_red(Video* vid, int i, int v) {
-	xColor col = vid_get_col(vid, i);
-	col.r = v & 0xff;
-	vid_set_col(vid, i, col);
-}
-
-void vid_set_green(Video* vid, int i, int v) {
-	xColor col = vid_get_col(vid, i);
-	col.g = v & 0xff;
-	vid_set_col(vid, i, col);
-}
-
-void vid_set_blue(Video* vid, int i, int v) {
-	xColor col = vid_get_col(vid, i);
-	col.b = v & 0xff;
-	vid_set_col(vid, i, col);
-}
-
 // A preset palette only reaches the screen in the modes that show the plain 16
 // zx colors. A machine running a palette of its own keeps it and takes the
 // preset at its next reset.
@@ -936,6 +902,11 @@ void vid_reset_col(Video* vid, int i) {
 
 // video drawing
 
+// the zx border color: ULA+ keeps its bright set while it is on
+static inline int zx_brd_col(Video* vid) {
+	return vid->ula->active ? (vid->brdcol | 8) : vid->brdcol;
+}
+
 void vidDrawBorder(Video* vid) {
 	vid_dot_full(vid, vid->brdcol);
 }
@@ -943,24 +914,22 @@ void vidDrawBorder(Video* vid) {
 // ZX Screen 256 x 192
 void vidDrawNormal(Video* vid) {
 	if (vid->vbrd) {
-		col = vid->brdcol;
-		if (vid->ula->active) col |= 8;
+		col = zx_brd_col(vid);
 		vid->atrbyte = 0xff;
 	} else {
 		xscr = vid->ray.x - vid->bord.x;
 		yscr = vid->ray.y - vid->bord.y;
 		if ((xscr & 7) == 3) {
-			adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+			adr = zx_box_pix_adr(vid->idx);
 			nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		}
 		if (vid->hbrd) {
-			col = vid->brdcol;
-			if (vid->ula->active) col |= 8;
+			col = zx_brd_col(vid);
 			vid->atrbyte = 0xff;
 		} else {
 			if ((xscr & 7) == 0) {
 				scrbyte = nxtbyte;
-				adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+				adr = zx_box_atr_adr(vid->idx);
 				vid->atrbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				if (vid->idx < 0x1b00) vid->idx++;
 				zx_attr_cols(vid, vid->atrbyte, &scrbyte, &ink, &pap, 0);
@@ -977,8 +946,7 @@ static int adr2;		// the odd box's pixel address, taken at the even box's start
 
 void ula_dot(Video* vid) {
 	if (vid->vbrd) {
-		col = vid->brdcol;
-		if (vid->ula->active) col |= 8;
+		col = zx_brd_col(vid);
 		vid->atrbyte = 0xff;
 	} else {
 		xscr = vid->ray.x - vid->bord.x;
@@ -989,11 +957,11 @@ void ula_dot(Video* vid) {
 		int ph = (xscr - (vid->ula->early ? 0 : 2)) & 15;
 		switch (ph) {
 			case 12:
-				adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+				adr = zx_box_pix_adr(vid->idx);
 				nxtbyte = vid->mrd(ula_burst_adr(vid, adr), vid->xptr);
 				break;		// 4dots before each even box: box pix
 			case 14:
-				adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+				adr = zx_box_atr_adr(vid->idx);
 				nxtatr = vid->mrd(ula_burst_adr(vid, adr), vid->xptr);
 				vid->snowLow = -1;	// the burst is over, and with it the address it was given
 				break;		// 2dots before each even box: box atr
@@ -1003,7 +971,7 @@ void ula_dot(Video* vid) {
 				scrbyte = nxtbyte;
 				vid->atrbyte = nxtatr;
 				vid->idx++;		// lame (idx is still not updated, but we need address of next box)
-				adr2 = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+				adr2 = zx_box_pix_adr(vid->idx);
 				vid->idx--;
 				break;		// start of even box
 			case 8:
@@ -1021,13 +989,12 @@ void ula_dot(Video* vid) {
 					vid->snowDup = 0;
 					break;
 				}
-				adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+				adr = zx_box_atr_adr(vid->idx);
 				nxtatr = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				break;		// next (odd) box atr
 		}
 		if (vid->hbrd) {
-			col = vid->brdcol;
-			if (vid->ula->active) col |= 8;
+			col = zx_brd_col(vid);
 			vid->atrbyte = 0xff;
 		} else {
 			if ((xscr & 7) == 0) {
@@ -1052,16 +1019,14 @@ static int ula_fill_brd(Video* vid, int k) {
 		while ((i < n) && ((x + i) & vid->brdstep))	// dots before the next latch
 			i++;
 		if (i > 0) {
-			col = vid->brdcol;
-			if (vid->ula->active) col |= 8;
+			col = zx_brd_col(vid);
 			vid_fill_dots(vid, col, i);
 			n -= i;
 		}
 		if (n > 0) vid->brdcol = vid->nextbrd;
 	}
 	if (n > 0) {
-		col = vid->brdcol;
-		if (vid->ula->active) col |= 8;
+		col = zx_brd_col(vid);
 		vid_fill_dots(vid, col, n);
 	}
 	vid->atrbyte = 0xff;
@@ -1129,19 +1094,19 @@ static int ula_run_scr(Video* vid, int k) {
 		vid->atrbyte = nxtatr;
 		if ((xs & 15) == 0) {			// even cell: the odd cell's pixel byte
 			vid->idx++;
-			adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+			adr = zx_box_pix_adr(vid->idx);
 			nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 			vid->idx--;
 		}
 		if (vid->idx < 0x1b00) vid->idx++;
 		zx_attr_cols(vid, vid->atrbyte, &scrbyte, &ink, &pap, 0);
 		if ((xs & 15) == 0) {			// dot 1: that cell's attribute
-			adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+			adr = zx_box_atr_adr(vid->idx);
 			nxtatr = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		} else {				// dots 12 and 14: the next burst
-			adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+			adr = zx_box_pix_adr(vid->idx);
 			nxtbyte = vid->mrd(ula_burst_adr(vid, adr), vid->xptr);
-			adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+			adr = zx_box_atr_adr(vid->idx);
 			nxtatr = vid->mrd(ula_burst_adr(vid, adr), vid->xptr);
 			vid->snowLow = -1;
 		}
@@ -1168,24 +1133,24 @@ static int ula_run_scr_late(Video* vid, int k) {
 	}
 	while (k >= 8) {
 		if ((xs & 15) == 0) {			// dot 0: the first burst's attribute
-			adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+			adr = zx_box_atr_adr(vid->idx);
 			nxtatr = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		}
 		scrbyte = nxtbyte;
 		vid->atrbyte = nxtatr;
 		if ((xs & 15) == 0) {
 			vid->idx++;
-			adr2 = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+			adr2 = zx_box_pix_adr(vid->idx);
 			vid->idx--;
 		}
 		if (vid->idx < 0x1b00) vid->idx++;
 		zx_attr_cols(vid, vid->atrbyte, &scrbyte, &ink, &pap, 0);
 		if ((xs & 15) == 0) {			// dots 2 and 3: the second burst
 			nxtbyte = vid->mrd(MADR(vid->vidPage, adr2), vid->xptr);
-			adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+			adr = zx_box_atr_adr(vid->idx);
 			nxtatr = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		} else {				// dot 14: the next pixel byte
-			adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+			adr = zx_box_pix_adr(vid->idx);
 			nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		}
 		vid_cell_dots(vid);
@@ -1210,11 +1175,11 @@ static int nrm_run_scr(Video* vid, int k) {
 	}
 	while (k >= 8) {
 		scrbyte = nxtbyte;
-		adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+		adr = zx_box_atr_adr(vid->idx);
 		vid->atrbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		if (vid->idx < 0x1b00) vid->idx++;
 		zx_attr_cols(vid, vid->atrbyte, &scrbyte, &ink, &pap, 0);
-		adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+		adr = zx_box_pix_adr(vid->idx);
 		nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);	// dot 3
 		vid_cell_dots(vid);
 		xs += 8;
@@ -1238,12 +1203,12 @@ static int ula_run_hbrd(Video* vid, int k) {
 			int x = (xs + i) & 15;
 			switch ((x - 2) & 15) {
 				case 12:
-					adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+					adr = zx_box_pix_adr(vid->idx);
 					nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 					break;
 				case 14:
 				case 1:
-					adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+					adr = zx_box_atr_adr(vid->idx);
 					nxtatr = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 					break;
 				case 0:
@@ -1253,7 +1218,7 @@ static int ula_run_hbrd(Video* vid, int k) {
 			if (x == 0) {
 				scrbyte = nxtbyte;
 				vid->idx++;
-				adr2 = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+				adr2 = zx_box_pix_adr(vid->idx);
 				vid->idx--;
 			} else if (x == 8) {
 				scrbyte = nxtbyte;
@@ -1264,18 +1229,18 @@ static int ula_run_hbrd(Video* vid, int k) {
 	for (int i = 0; i < k; i++) {
 		switch ((xs + i) & 15) {
 			case 12:
-				adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+				adr = zx_box_pix_adr(vid->idx);
 				nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				break;
 			case 14:
 			case 1:
-				adr = 0x1800 | ((vid->idx & 0x1f00) >> 3) | (vid->idx & 0x1f);
+				adr = zx_box_atr_adr(vid->idx);
 				nxtatr = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				break;
 			case 0:
 				scrbyte = nxtbyte;
 				vid->idx++;
-				adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+				adr = zx_box_pix_adr(vid->idx);
 				nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				vid->idx--;
 				break;
@@ -1300,7 +1265,7 @@ static int nrm_run(Video* vid, int k) {
 		xs = vid->ray.x - vid->bord.x;
 		for (i = 0; i < k; i++) {
 			if (((xs + i) & 7) == 3) {	// the same address every cell out here
-				adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+				adr = zx_box_pix_adr(vid->idx);
 				nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				break;
 			}
@@ -1320,7 +1285,7 @@ void vidDrawAlco(Video* vid) {
 //		if ((xscr < 0) || (xscr > 255)) {
 //			col = vid->brdcol;
 //		} else {
-			adr = ((yscr & 0xc0) << 5) | ((yscr & 7) << 8) | ((yscr & 0x38) << 2) | ((xscr & 0xf8) >> 3);
+			adr = zx_pix_adr_xy(xscr, yscr);
 			switch (xscr & 7) {
 				case 0:
 					scrbyte = vid->mrd(MADR(vid->vidPage ^ 1, adr), vid->xptr);
@@ -1356,7 +1321,7 @@ void vidDrawHwmc(Video* vid) {
 		xscr = vid->ray.x - vid->bord.x;
 		yscr = vid->ray.y - vid->bord.y;
 		if ((xscr & 7) == 4) {
-			adr = ((yscr & 0xc0) << 5) | ((yscr & 7) << 8) | ((yscr & 0x38) << 2) | (((xscr + 4) & 0xf8) >> 3);
+			adr = zx_pix_adr_xy(xscr + 4, yscr);
 			nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		}
 		if (vid->hbrd) {
@@ -1364,7 +1329,7 @@ void vidDrawHwmc(Video* vid) {
 		} else {
 			if ((xscr & 7) == 0) {
 				scrbyte = nxtbyte;
-				adr = ((yscr & 0xc0) << 5) | ((yscr & 7) << 8) | ((yscr & 0x38) << 2) | ((xscr & 0xf8) >> 3);
+				adr = zx_pix_adr_xy(xscr, yscr);
 				adr |= 0x2000;		// the cell's attribute, one per 8x1 (video_addrgen.v addr_phm)
 				vid->atrbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				if ((vid->atrbyte & 0x80) && vid->flash) scrbyte ^= 0xff;
@@ -1516,7 +1481,7 @@ static void vid_profi(Video* vid, int mono) {
 		} else {
 			if ((xscr & 3) == 0) {
 				//adr = scrAdrs[vid->idx & 0x1fff] & 0x1fff;
-				adr = (vid->idx & 0x181f) | ((vid->idx & 0x700) >> 3) | ((vid->idx & 0xe0) << 3);
+				adr = zx_box_pix_adr(vid->idx);
 				if (xscr & 4) {
 					vid->idx++;
 				} else {
@@ -1550,14 +1515,6 @@ void vidDrawTSLNormal(Video*);
 void vidDrawTSLExt(Video*);
 void vidDrawTSLText(Video*);
 void vidDrawEvoText(Video*);
-
-// debug
-
-void vidBreak(Video* vid) {
-	xlog(XLG_VIDEO, XLL_DEBUG, "vid->mode = 0x%.2X",vid->vmode);
-	// assert(0);
-}
-
 
 // weiter
 
@@ -1609,7 +1566,6 @@ void vid_tick(Video* vid) {
 	// move ray to next dot, update counters
 	vid->ray.x++;
 	vid->ray.xb++;
-	vid->ray.xs++;
 	if (vid->ray.x >= vid->full.x) {			// new line
 		vid_line(vid);					// next row of the image buffer
 		vid->hblank = 0;
@@ -1640,11 +1596,6 @@ void vid_tick(Video* vid) {
 			vid->cb->line(vid);
 		vid->vbrd = (vid->ray.y < vid->bord.y) || (vid->ray.y >= vid->send.y);
 	}
-	if (vid->ray.x == vid->bord.x) {
-		vid->ray.xs = 0;
-		vid->ray.ys++;
-		if (vid->ray.y == vid->bord.y) vid->ray.ys = 0;
-	}
 	if (vid->ray.x == vid->vend.x) {			// hblank
 		vid->ray.xb = 0;
 		vid->ray.yb++;
@@ -1665,19 +1616,12 @@ void vid_tick(Video* vid) {
 	} else if ((vid->ray.yb == vid->intp.y) && (vid->ray.xb == vid->intp.x) && (vid->inten & 1)) {		// added: ...and frame int enabled
 		vid->xirq(IRQ_VID_INT, vid->xptr);
 	}
-	if (vid->busy > 0) {
-		vid->busy--;
-		if ((vid->busy == 0) && vid->cbCount)
-			vid->cbCount(vid);
-	}
-	if (vid->inth > 0) vid->inth--;
-	if (vid->intf > 0) vid->intf--;
 }
 
 // How many of the next n dots vid_tick() would do nothing for but draw and
-// count: the run stops short of the line end, the border edges, the blanking,
-// the interrupt edge and the end of a busy count, which are all left to
-// vid_tick() itself. 0 when the very next dot is one of those.
+// count: the run stops short of the line end, the border edges, the blanking
+// and the interrupt edge, which are all left to vid_tick() itself. 0 when the
+// very next dot is one of those.
 static int vid_run_len(Video* vid, int n) {
 	int x = vid->ray.x;
 	int k = n;
@@ -1690,7 +1634,6 @@ static int vid_run_len(Video* vid, int n) {
 	} else if ((vid->inten & 1) && (vid->ray.yb == vid->intp.y) && (vid->intp.x > vid->ray.xb)) {
 		if (vid->intp.x - 1 - vid->ray.xb < k) k = vid->intp.x - 1 - vid->ray.xb;
 	}
-	if ((vid->busy > 0) && (vid->busy - 1 < k)) k = vid->busy - 1;
 	return k;
 }
 
@@ -1732,11 +1675,7 @@ static void vid_run(Video* vid, int k) {
 	vid->hbrd = (end < vid->bord.x) || (end >= vid->send.x);
 	vid->ray.x = end;
 	vid->ray.xb += k;
-	vid->ray.xs += k;
 	if (vid->intFRAME > 0) vid->intFRAME -= k;
-	if (vid->busy > 0) vid->busy -= k;
-	vid->inth = (vid->inth > k) ? vid->inth - k : 0;
-	vid->intf = (vid->intf > k) ? vid->intf - k : 0;
 }
 
 // Draws the whole dots that nsDrawFixed holds. The ray steps in fixed point ns.
@@ -1745,9 +1684,10 @@ static void vid_run(Video* vid, int k) {
 // dropped once per call.
 static inline void vid_take_dots(Video* vid) {
 	if (vid->nsDrawFixed >= vid->nsPerDotFixed) {
-		int n = (int)(vid->nsDrawFixed / vid->nsPerDotFixed);
-		vid->nsDrawFixed -= n * vid->nsPerDotFixed;
-		vid->nsOwedFixed += n * vid->nsPerDotFixed;
+		long long left;
+		int n = vid_count_dots(vid->nsDrawFixed, vid->nsPerDotFixed, &left);
+		vid->nsOwedFixed += vid->nsDrawFixed - left;
+		vid->nsDrawFixed = left;
 		while (n > 0) {
 			int k = vid_run_len(vid, n);
 			if (k > 0) {
@@ -1814,6 +1754,3 @@ void vid_settle_slow(Video* vid) {
 	vid->nsCalmFixed = calm - (d - vid->nsDrawFixed);
 }
 
-void vid_sync(Video* vid, int ns) {
-	vid_sync_fixed(vid, NS_TO_FIXED(ns));
-}

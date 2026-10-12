@@ -325,13 +325,6 @@ TRFile diskGetCatalogEntry(Floppy* flp, int num) {
 		}
 		i++;
 	}
-/*
-	if (num > 127) return res;
-	sec = ((num & 0xf0) >> 4);	// sector
-	pos = ((num & 0x0f) << 4);	// file number inside sector
-	if (!diskGetSectorData(flp,0,sec + 1,fbuf,256)) return res;
-	memcpy((char*)&res,fbuf + pos,16);
-*/
 	return res;
 }
 
@@ -388,31 +381,9 @@ int diskGetTRCatalog(Floppy *flp, TRFile *dst) {
 }
 
 unsigned char* diskGetSectorDataPtr(Floppy* flp, unsigned char tr, unsigned char sc) {
-#if 1
 	int pos = flp->data[tr].map[sc];	// input nr 1+, tab nr 0+
 	if (pos == 0) return NULL;
 	return flp->data[tr].byte + pos;
-#else
-	int tpos = 0;
-	int fnd;
-	if (!flp->insert) return NULL;
-	while (1) {
-		while (flp->data[tr].field[tpos] != 1) {
-			if (++tpos >= TRACKLEN) return NULL;
-		}
-		fnd = (flp->data[tr].byte[tpos+2] == sc) ? 1 : 0;
-		tpos += 6;
-		while ((flp->data[tr].field[tpos] != 2) && (flp->data[tr].field[tpos] != 3)) {
-			if (++tpos >= TRACKLEN) return NULL;
-		}
-		if (fnd) {
-			// printf("%i\n",tpos);	// 3190
-			return flp->data[tr].byte + tpos;
-		}
-		tpos += 0x102;
-		if (tpos >= TRACKLEN) return NULL;
-	}
-#endif
 }
 
 int diskPutSectorData(Floppy* flp, unsigned char tr,unsigned char sc,unsigned char* buf,int len) {

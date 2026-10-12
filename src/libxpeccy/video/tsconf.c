@@ -127,12 +127,11 @@ int vidTSLRenderTiles(Video* vid, int ln, int lay, unsigned short yoffs, unsigne
 			if (tile & 0x4000) {							// XFlip
 				xscr += 8;
 				for (j = 0; j < 4; j++) {
-					col &= 0xf0;
-					col |= (vid->mrd(fadr, vid->xptr) & 0xf0) >> 4;		// left pixel
+					int b = vid->mrd(fadr, vid->xptr);	// both pixels of the byte
+					col = (col & 0xf0) | ((b & 0xf0) >> 4);			// left pixel
 					xscr--;
 					if (col & 0x0f) tsl[xscr & 0x1ff] = col;
-					col &= 0xf0;
-					col |= vid->mrd(fadr, vid->xptr) & 0x0f;			// right pixel
+					col = (col & 0xf0) | (b & 0x0f);				// right pixel
 					xscr--;
 					if (col & 0x0f) tsl[xscr & 0x1ff] = col;
 					fadr++;
@@ -140,14 +139,13 @@ int vidTSLRenderTiles(Video* vid, int ln, int lay, unsigned short yoffs, unsigne
 				xscr += 8;
 			} else {								// no XFlip
 				for (j = 0; j < 4; j++) {
-					col &= 0xf0;
-					col |= (vid->mrd(fadr, vid->xptr) & 0xf0) >> 4;				// left pixel
+					int b = vid->mrd(fadr, vid->xptr);	// both pixels of the byte
+					col = (col & 0xf0) | ((b & 0xf0) >> 4);					// left pixel
 					if (col & 0x0f) {
 						tsl[xscr & 0x1ff] = col;
 					}
 					xscr++;
-					col &= 0xf0;
-					col |= vid->mrd(fadr, vid->xptr) & 0x0f;					// right pixel
+					col = (col & 0xf0) | (b & 0x0f);						// right pixel
 					if (col & 0x0f) {
 						tsl[xscr & 0x1ff] = col;
 					}
@@ -226,12 +224,11 @@ int vidTSLRenderSprites(Video* vid, int ln) {
 				adr = spr.x;			// xpos
 				if (spr.xf) adr += xadr - 1;	// xpos of right pixel (xflip)
 				for (xscr = xadr; xscr > 0; xscr -= 2) {
-					col &= 0xf0;
-					col |= ((vid->mrd(fadr, vid->xptr) & 0xf0) >> 4);		// left pixel;
+					int b = vid->mrd(fadr, vid->xptr);	// both pixels of the byte
+					col = (col & 0xf0) | ((b & 0xf0) >> 4);			// left pixel
 					if (col & 0x0f) tsl[adr & 0x1ff] = col;
 					if (spr.xf) adr--; else adr++;
-					col &= 0xf0;
-					col |= (vid->mrd(fadr, vid->xptr) & 0x0f);		// right pixel
+					col = (col & 0xf0) | (b & 0x0f);				// right pixel
 					if (col & 0x0f) tsl[adr & 0x1ff] = col;
 					if (spr.xf) adr--; else adr++;
 					fadr = ts_spr_next(fadr);
@@ -457,9 +454,19 @@ int vidTSRender(Video* vid) {
 
 static const int tslXRes[4] = {256,320,320,360};
 static const int tslYRes[4] = {192,200,240,288};
+static const int tslModeTab[4] = {VID_TSL_NORMAL, VID_TSL_16, VID_TSL_256, VID_TSL_TEXT};
 
+// Everything below derives from these ports and the layout alone, so a line
+// where none of them moved skips the whole recompute (vid_set_mode's search
+// and unlazy among it). The guard checks the derived side too - a snapshot or
+// an spg loader pokes nogfx/vmode directly, and the next line puts them back
+// the way the ports say, as the unconditional rerun used to.
 void tslUpdatePorts(Video* vid) {
 	unsigned char val = vid->tsconf.p00af;
+	int key = val | (vid->tsconf.p07af << 8) | (vid->tsconf.tconfig << 16);
+	if (key == vid->tslKey)
+		return;
+	vid->tslKey = key;
 	vid->scrsize.x = tslXRes[(val >> 6) & 3];
 	vid->scrsize.y = tslYRes[(val >> 6) & 3];
 	vid->tsconf.xPos = (vid->vend.x - vid->scrsize.x) / 2;
@@ -469,12 +476,7 @@ void tslUpdatePorts(Video* vid) {
 	vid->tsconf.tsSize.y = tslYRes[m];
 	vid->tsconf.tsXPos = (vid->vend.x - vid->tsconf.tsSize.x) / 2;
 	vid->tsconf.tsYPos = (vid->vend.y - vid->tsconf.tsSize.y) / 2;
-	switch(val & 3) {
-		case 0: vid_set_mode(vid,VID_TSL_NORMAL); break;
-		case 1: vid_set_mode(vid,VID_TSL_16); break;
-		case 2: vid_set_mode(vid,VID_TSL_256); break;
-		case 3: vid_set_mode(vid,VID_TSL_TEXT); break;
-	}
+	vid_set_mode(vid, tslModeTab[val & 3]);
 	vid->nogfx = !!(val & 0x20);
 	val = vid->tsconf.p07af;
 	vid->tsconf.scrPal = (val << 4) & 0xf0;
@@ -549,13 +551,13 @@ void vidDrawTSLNormal(Video* vid) {
 	yscr = vid->ray.y - vid->bord.y;
 	if ((yscr >= 0) && (yscr < vid->scrn.y) && !vid->nogfx) {
 		if ((xscr & 7) == 4) {
-			adr = ((yscr & 0xc0) << 5) | ((yscr & 7) << 8) | ((yscr & 0x38) << 2) | (((xscr + 4) & 0xf8) >> 3);
+			adr = zx_pix_adr_xy(xscr + 4, yscr);
 			nxtbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 		}
 		if ((xscr >= 0) && (xscr < vid->scrn.x)) {
 			if ((xscr & 7) == 0) {
 				scrbyte = nxtbyte;
-				adr = 0x1800 | ((yscr & 0xc0) << 2) | ((yscr & 0x38) << 2) | (((xscr + 4) & 0xf8) >> 3);
+				adr = zx_atr_adr_xy(xscr + 4, yscr);
 				vid->atrbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
 				if ((vid->atrbyte & 0x80) && vid->flash) scrbyte ^= 0xff;
 				ink = (vid->atrbyte & 0x07) | ((vid->atrbyte & 0x40) >> 3);

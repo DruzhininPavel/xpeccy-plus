@@ -79,7 +79,6 @@ void vid_dot_half(Video*, unsigned char);
 //typedef int(*vcbmrd)(int, void*);
 //typedef void(*vcbmwr)(int, int, void*);
 typedef void(*cbvid)(Video*);
-typedef void(*vcbptr)(void*);
 
 typedef struct {
 	int id;
@@ -102,7 +101,8 @@ struct Video {
 	unsigned nogfx:1;	// tsl : nogfx flag, pc98xx:disable display
 	unsigned newFrame:1;	// set @ start of VBlank
 	int intFRAME;		// aka INT
-	int intlen;		// dots the pulse in intFRAME started with
+	int intlen;		// dots the pulse in intFRAME started with; keeps its
+				// value while intFRAME is 0 - a snapshot saves it
 	unsigned intLINE:1;	// for TSConf
 	unsigned intDMA:1;	// for TSConf
 //	unsigned noScreen:1;
@@ -120,17 +120,13 @@ struct Video {
 	unsigned vbrd:1;	// border.V
 
 	int nsPerFrame;
-	int nsPerLine;
 	long long nsPerDotFixed;	// the dot period, 16.16, and what the ray steps by
 	double nsPerDotExact;	// same value as a double, for vid_upd_layout() to
-				// re-derive nsPerLine/nsPerFrame from
-	int nsPerDot;		// whole-ns form. Nothing here reads it any more; it is
-				// kept because upstream's Video struct has it
+				// re-derive nsPerFrame from
 	long long nsDrawFixed;	// time handed in but not yet drawn, 16.16
 	long long nsOwedFixed;	// fraction of a ns owed to vid->time, carried not dropped
 	long long nsCalmFixed;	// nsDrawFixed may grow up to this with no dot drawn (vid_sync_lazy)
 	int time;		// whole ns drawn since the step began
-	int busy;		// (cycles) to emulate busy period
 	int dotPerFrame;
 
 	int flash;
@@ -143,31 +139,23 @@ struct Video {
 	unsigned char nextbrd;
 
 	unsigned char inten;	// interrupts enable (8 bits = 8 signals)
-	unsigned char intrq;	// interrupt output signals (8 bits)
-	unsigned char intbf;	// buffered int (last int signals)
-
-	unsigned char paln;	// high bits = palete number
 	uint32_t pal[256];	// ABGR inside int, R = LSB, A = FF
 	uint32_t gpal[256];	// greyscale copy of pal
 	uint32_t bpal[256];	// base palette (loaded preset)
 
 	int vmode;
 	xVideoMode* cb;
-	cbvid cbCount;		// call when busy count down to 0
 
 	cbxrd mrd;		// external memory reading
-	cbxwr mwr;		// external memory writing
 	cbirq xirq;		// interrupt
 	void* xptr;
 
 	int fcnt;
-	int lcnt;
 	unsigned char atrbyte;
 	unsigned char fntbyte;			// font byte the text mode is showing: ZX Evo reads it back
 	int snowLow;				// ULA snow: address bits 6-0 the refresh cycle forced on this burst (-1 = none)
 	int snowBank;				// ULA snow: the bank that burst reads instead of the screen one
 	unsigned snowDup:1;			// ULA snow: this burst is lost, the ULA shows the previous one again
-	size_t frmsz;
 	vRay ray;
 	vCoord full;
 	vCoord blank;
@@ -187,9 +175,11 @@ struct Video {
 	int idx;
 
 	vCoord scrsize;		// << tsconf.xSize, tsconf.ySize
-	vCoord sc;		// screen scroll registers
-	int inth;		// interrupts
-	int intf;
+	// what tslUpdatePorts() last derived from; -1 forces the next call to
+	// recompute. vid_upd_layout() and whatever changes vmode/nogfx behind
+	// tslUpdatePorts' back (reset, snapshot loaders) reset it. xstate copies
+	// the whole Video, so a rollback keeps the key and the ports in step.
+	int tslKey;		// p00af | p07af<<8 | tconfig<<16
 
 	struct {
 		int xPos;			// position of screen @ monitor [32|12] x [44|24|0]
@@ -252,7 +242,6 @@ Video* vidCreate(cbxrd, cbirq, void*);
 void vidDestroy(Video*);
 
 void vid_reset(Video*);
-void vid_sync(Video*,int);		// whole-ns entry point, for callers outside the ZX paths
 void vid_sync_fixed(Video*,long long);
 void vid_sync_lazy_slow(Video*,long long);
 void vid_unlazy_slow(Video*);
@@ -266,9 +255,11 @@ static inline void vid_unlazy(Video* vid) {
 }
 // The ray as vid_sync_fixed() would move it, but the dots of an undrawn blind
 // frame that pass no event are only counted, and walked when something looks:
-// vid_settle(), which every reader of the ray inside an instruction calls, or
-// the next vid_sync_fixed(). Only for the cpu's own bus cycles - the code that
-// runs between two of them must not change the video.
+// vid_settle() or the next vid_sync_fixed(). A reader of the ray inside an
+// instruction settles AFTER walking the video up to the cpu's t - on a
+// contended machine the time handed in may lag it (see res4 in spectrum.h).
+// Only for the cpu's own bus cycles - the code that runs between two of them
+// must not change the video.
 static inline void vid_sync_lazy(Video* vid, long long nsFixed) {
 	long long d = vid->nsDrawFixed + nsFixed;
 	if ((nsFixed >= 0) && (d < vid->nsCalmFixed)) {
@@ -283,8 +274,26 @@ static inline void vid_settle(Video* vid) {
 	if ((vid->nsDrawFixed >= vid->nsPerDotFixed) && (vid->nsCalmFixed > vid->nsPerDotFixed))
 		vid_settle_slow(vid);
 }
+// Whole dots in f at period p (both 16.16 ns), the remainder left in *rem.
+// A span is nearly always a few dots, so they are counted off; the 64-bit
+// division only runs for a long stretch, where it is paid once per many dots.
+// Exact only for f >= 0.
+static inline int vid_count_dots(long long f, long long p, long long* rem) {
+	int n = 0;
+	if (f < (p << 4)) {
+		while (f >= p) {
+			f -= p;
+			n++;
+		}
+	} else {
+		n = (int)(f / p);
+		f -= (long long)n * p;
+	}
+	*rem = f;
+	return n;
+}
 // sets the dot period alone. vid_upd_timings() is the complete one - it also
-// re-derives nsPerLine/nsPerFrame, which the frame timer in emulwin.cpp reads
+// re-derives nsPerFrame, which the frame timer in emulwin.cpp reads
 void vid_set_dot_ns(Video*,double);
 // void vid_irq(Video*, int);
 void vid_set_mode(Video*,int);
@@ -294,6 +303,24 @@ void vid_set_ray(Video*, int);
 int vid_ray_dots(Video*);
 
 int vid_wait_dots(Video*, int, int);		// contention wait in dots, not ns
+// An internal cycle only parks an address on the bus, no MREQ; the Ferranti
+// ULA contends it all the same, the +2A/+3 asic leaves it alone. The one
+// place that rule lives.
+static inline int vid_cont_internal(Video* vid, int mreq) {
+	return mreq || (vid->ula->conttype == CONT_PATA);
+}
+// Can this physical address be contended at all - the pattern/address test of
+// vid_wait_dots() alone, with the ray left untouched. A miss here means
+// vid_wait_dots() would return 0 without looking at the ray, so the caller may
+// skip the video sync the ray read would have needed.
+static inline int vid_cont_hit(Video* vid, int adr, int mreq) {
+	if (!vid_cont_internal(vid, mreq)) return 0;
+	switch (vid->ula->conttype) {
+		case CONT_PATA: return adr & 0x4000;		// pages 1,3,5,7
+		case CONT_PATB: return adr & 0x10000;		// pages 4,5,6,7
+	}
+	return 0;
+}
 int vid_snow(Video*, int, int);			// cpu refresh cycle: disturb the ULA if it is fetching now
 int vid_float_bus(Video*, int*);		// the byte the ULA has on the bus now, -1 if none
 int vid_atrbyte(Video*);			// the attribute the ULA last fetched, 0xff on the border
@@ -334,15 +361,27 @@ void vid_get_screen(Video*, unsigned char*, int, int, int, const unsigned char*)
 xColor vid_brd_col(Video*);
 int vid_scr_base(int);
 void vid_scr_adr(int, int, int, int*, int*);
+// pixel and attribute address of the character box vid->idx counts (y * 32 + x)
+static inline int zx_box_pix_adr(int idx) {
+	return (idx & 0x181f) | ((idx & 0x700) >> 3) | ((idx & 0xe0) << 3);
+}
+static inline int zx_box_atr_adr(int idx) {
+	return 0x1800 | ((idx & 0x1f00) >> 3) | (idx & 0x1f);
+}
+// the same pixel address from screen coordinates
+static inline int zx_pix_adr_xy(int x, int y) {
+	return ((y & 0xc0) << 5) | ((y & 7) << 8) | ((y & 0x38) << 2) | ((x & 0xf8) >> 3);
+}
+// ...and the attribute address of the cell those coordinates land in
+static inline int zx_atr_adr_xy(int x, int y) {
+	return 0x1800 | ((y & 0xf8) << 2) | ((x & 0xf8) >> 3);
+}
 int vid_scr_dot(int, int*, int*);
 int vid_scr_bit(int);
 
 void vid_set_grey(int);
 xColor vid_get_col(Video*, int);
 void vid_set_col(Video*, int, xColor);
-void vid_set_red(Video*, int, int);
-void vid_set_green(Video*, int, int);
-void vid_set_blue(Video*, int, int);
 int vid_zx_palette(Video*);
 void vid_set_bcol(Video*, int, xColor);
 void vid_reset_col(Video*, int);

@@ -119,10 +119,6 @@ typedef struct {
 
 #define PWATCH_MAX	16		// ports the debugger can watch at once
 
-// scale of comp->tickPerNsFixed. Separate from NS_FIXED_BITS: it is a
-// reciprocal, and needs the extra bits to stay accurate for short tick periods
-#define TICK_FIXED_BITS 32
-
 // how many turbo steps a board may declare
 #define TURBO_STEP_MAX 8
 
@@ -208,12 +204,15 @@ typedef struct Computer {
 	double nsPerTick;	// real ns/T, kept precise: truncating this to int was the
 				// root cause of a systemic ~0.3-0.9% emulation speed error
 				// (see nsPerSampleFixed-driven pacing in ethread.cpp)
-	// nsPerTick in 16.16, and its inverse in 32.32. The per-instruction sync
-	// paths run on these: they sit on every memory access, and llround() is an
-	// out-of-line CRT call with gcc at -O2. Both derived by
-	// comp_update_timings(), never set by hand.
+	// nsPerTick in 16.16. The per-instruction sync paths run on it: it sits on
+	// every memory access, and llround() is an out-of-line CRT call with gcc
+	// at -O2. Derived by comp_update_timings(), never set by hand.
 	long long nsPerTickFixed;
-	long long tickPerNsFixed;
+	// contention wait, dots -> ticks, derived by comp_update_timings() off the
+	// two periods. vid_wait_dots() tops out at 14, so 16 entries cover it.
+	// xstate copies it with the rest of the head: same periods, same table.
+	int contTicks[16];
+	double earTpt;		// ticks in a 3.5 MHz T (comp_update_timings), zx_ear_edge's scale
 
 	unsigned char verblk[16];	// what the machine says it is (comp_set_identity)
 	bool flag[128];			// each machine have its own flags
@@ -315,6 +314,27 @@ static inline long long ticks_to_ns_fixed(Computer* comp, int t) {
 // tick come off the same crystal, so the quotient is whole on every zx.
 static inline int ns_fixed_to_ticks_up(Computer* comp, long long ns_fixed) {
 	return (int)((ns_fixed + comp->nsPerTickFixed - 1) / comp->nsPerTickFixed);
+}
+
+// Walk the video up to the cpu's t. res4 tracks the t the video stands at, so
+// a second call in the same place costs nothing. On a contended machine the
+// miss path of comp_cont leaves res4 lagging cpu->t mid-instruction: whatever
+// reads the ray inside an instruction walks the video first (comp_vid_to_t),
+// vid_settle() alone does not cover the lag.
+extern int res4;
+
+static inline void comp_vid_to(Computer* comp, int t) {		// dots drawn through
+	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, t - res4));
+	res4 = t;
+}
+
+static inline void comp_vid_to_t(Computer* comp) {		// counting allowed
+	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
+	res4 = comp->cpu->t;
+}
+
+static inline void comp_vid_to_t_full(Computer* comp) {
+	comp_vid_to(comp, comp->cpu->t);
 }
 
 // A board that drops its turbo for a while owes the next bus cycle what a step

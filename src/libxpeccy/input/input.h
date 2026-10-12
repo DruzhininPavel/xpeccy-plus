@@ -61,8 +61,6 @@ enum {
 #define KFL_CTRL	(1<<1)
 #define KFL_ALT		(1<<2)
 #define KFL_CAPS	(1<<4)
-#define KFL_NUMLOCK	(1<<5)
-#define KFL_SCRLOCK	(1<<6)
 #define KFL_RUS		(1<<7)
 #define KFL_RSHIFT	KFL_SHIFT
 
@@ -101,22 +99,6 @@ typedef struct {
 } Mouse;
 
 typedef struct {
-	int key;
-	const char seq[8];
-} xKeySeq;
-
-typedef struct {
-	char key;
-	unsigned char row;
-	unsigned char mask;
-} xKeyMtrx;
-
-typedef struct {
-	int pos;
-	unsigned char data[16];
-} xKeyBuf;
-
-typedef struct {
 	unsigned char cpmCode;
 	unsigned char rowScan;
 } atmKey;
@@ -138,35 +120,17 @@ typedef struct {
 
 typedef struct Keyboard Keyboard;
 
-#define KF_AUTORPT	1
-
 typedef struct {
 	int id;
-	int flag;
-	void(*reset)(Keyboard*);
 	int(*read)(Keyboard*, int);		// address
-	void(*write)(Keyboard*, int, int);	// address, data
 	void(*press)(Keyboard*, keyEntry*);
 	void(*release)(Keyboard*, keyEntry*);
 	void(*sync)(Keyboard*, int);		// ns
 } xKbdCore;
 
 struct Keyboard {
-//	unsigned reset:1;		// RES signal to CPU
-	unsigned used:1;
-	unsigned caps:1;
-	unsigned shift:1;
-	unsigned ar2:1;
-	unsigned lang:1;
-
-	unsigned inten:1;		// interrupt enabled
-	unsigned kpress:1;		// key pressed
-	unsigned drq:1;			// keyboard buffer have data
-
 	unsigned char port;		// high byte of xxFE port
 	unsigned char scanmask;	// zx: half-rows the rom has read one by one. 0xff = a full KEY-SCAN
-	int mode;
-	int flag;
 
 	xKbdCore* core;
 	// callbacks
@@ -175,7 +139,6 @@ struct Keyboard {
 	// i8031 block (TODO: move it into ATM2)
 	unsigned wcom:1;		// i8031 waiting for command
 	unsigned warg:1;		// i8031 waiting for argument
-//	int submode;			// i8031 mode
 	int com;
 	int arg;
 	unsigned char keycode;		// current pressed key code
@@ -183,8 +146,6 @@ struct Keyboard {
 	unsigned char flag1;		// [7] rus.scrlock.numlock.caps.0.alt.ctrl.shift [0]
 	unsigned char flag2;		// [7] 0.0.0.0.0.0.0.rshift [0]
 	// key matrix
-	int row;
-	int mask;
 	int matrix[16][16];
 	int map[8];			// ZX keyboard half-row bits (0-5)
 	int extkey;			// profi: keys holding EXT (D5) down
@@ -209,7 +170,6 @@ typedef struct {
 	unsigned extbuttons:1;
 	int type;
 	int state;
-	int shiftreg;
 } Joystick;
 
 typedef struct {
@@ -222,7 +182,6 @@ Keyboard* kbd_create(cbirq, void*);
 void kbd_destroy(Keyboard*);
 void kbd_set_type(Keyboard*, int);
 void kbd_set_core(Keyboard*, xKbdCore*);
-// void kbdSetMode(Keyboard*, int);
 void kbd_press(Keyboard*, keyEntry*);
 void kbd_release(Keyboard*, keyEntry*);
 void kbdTrigger(Keyboard*, keyEntry*);
@@ -231,17 +190,8 @@ void kbd_reset(Keyboard*);
 void kbd_sync(Keyboard*, int);
 void kbd_set_repeat(Keyboard*, int);
 int kbd_rd(Keyboard*, int);
-void kbd_wr(Keyboard*, int, int);
-// TODO: terminate this:
-//void key_press_seq(Keyboard* kbd, keyScan* tab, int* mtrx, unsigned char* xk);
-//void key_release_seq(Keyboard* kbd, keyScan* tab, int* mtrx, unsigned char* xk);
-//void xt_press(Keyboard*, keyEntry*);
-//void xt_release(Keyboard*, keyEntry*);
 int xt_read(Keyboard*);
 void xt_log_clear(Keyboard*);
-// void kbd_nec_write(Keyboard*, int, int);
-//void xt_sync(Keyboard*, int);
-// end of TODO
 
 Mouse* mouseCreate(cbirq, void*);
 void mouseDestroy(Mouse*);

@@ -7,29 +7,6 @@
 
 int compflags = 0;
 
-// debug
-
-int brkIn(Computer* comp, int port) {
-	xlog(XLG_HW, XLL_ERROR, "IN %.4X (dos:rom:cpm = %i:%i:%i)",port,comp->flgDOS,comp->flgROM,comp->flgCPM);
-	assert(0);
-	//comp->brk = 1;
-	return -1;
-}
-
-void brkOut(Computer* comp, int port, int val) {
-	xlog(XLG_HW, XLL_ERROR, "OUT %.4X,%.2X (dos:rom:cpm = %i:%i:%i)",port,val,comp->flgDOS,comp->flgROM,comp->flgCPM);
-	assert(0);
-	//comp->brk = 1;
-}
-
-int dummyIn(Computer* comp, int port) {
-	return -1;
-}
-
-void dummyOut(Computer* comp, int port, int val) {
-
-}
-
 // mem
 
 // The 128K memory map, which the Pentagon inherits: the ROM pair at 0x0000
@@ -70,23 +47,19 @@ void zx_sync(Computer* comp, int ns) {
 	}
 }
 
-extern int res4;
 
 // Memory contention. The delay for a bus cycle is read from the ULA table at
 // the tick the cycle starts on and added whole, the way fuse does it. The
 // older "step a tick at a time until the window frees" loop agrees with this
 // for the Ferranti pattern, which counts down to zero, but not for the +2A/+3
 // one (1,0,7,6,5,4,3,2), whose last slots reach past the end of the window.
-// Video is already synced to cpu->t by comp_irq before we get here.
-void zx_contend(Computer* comp, int mreq) {
-	if (!comp->flgCNTM) return;
-	MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
-	if (pg->type != MEM_RAM) return;
-	int wdots = vid_wait_dots(comp->vid, pg->num << comp->mem->pgshift, mreq);
+
+// The address passed the pattern test and the video stands at cpu->t.
+void zx_contend_adr(Computer* comp, int adr, int mreq) {
+	int wdots = vid_wait_dots(comp->vid, adr, mreq);
 	if (!wdots) return;
-	comp->cpu->t += ns_fixed_to_ticks_up(comp, (long long)wdots * comp->vid->nsPerDotFixed);
-	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
+	comp->cpu->t += comp->contTicks[wdots];
+	comp_vid_to_t(comp);
 }
 
 // The cpu is at T4 of an opcode fetch, with the refresh address on the bus.
@@ -160,12 +133,6 @@ void zx_irq(Computer* comp, int t) {
 		case IRQ_NMI:				// zx_sync takes it from here
 			comp->flgNMIRQ = 1;
 			break;
-		case IRQ_CPU_CONT:			// memory cycle: contend it
-			zx_contend(comp, 1);
-			break;
-		case IRQ_CPU_CONTNM:			// internal cycle, address on the bus
-			zx_contend(comp, 0);
-			break;
 		case IRQ_CPU_ACK: {
 			// an instruction that ends in an i/o cycle leaves the video at its
 			// end, a tick past the one the cpu samples INT in: a pulse that
@@ -173,8 +140,7 @@ void zx_irq(Computer* comp, int t) {
 			int ahead = res4 - comp->cpu->t;
 			// lazy: dots still counted cross no event, so they leave intFRAME
 			// zero or not as it is, and a step back (ahead) walks them first
-			vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-			res4 = comp->cpu->t;
+			comp_vid_to_t(comp);
 			int act = comp->vid->intFRAME;
 			if (act && (ahead > 0) && (comp->vid->intlen - act < ahead * comp->nsPerTickFixed / comp->vid->nsPerDotFixed))
 				act = 0;
@@ -362,7 +328,7 @@ static const struct earRC {
 // and on a drop work out the tick bit 6 falls back to 0 at (earDead).
 static void zx_ear_edge(Computer* comp, int lev, int mic) {
 	const struct earRC* rc = &earRCTab[(comp->earback == EAR_ISSUE2) ? 0 : 1];
-	const double tpt = (1e9 / 3.5e6) / comp->nsPerTick;	// machine ticks in a 3.5 MHz T
+	const double tpt = comp->earTpt;			// machine ticks in a 3.5 MHz T
 	int now = comp->tickCount + comp->cpu->t;
 	double dt = (double)(unsigned)(now - comp->earTick) / tpt;
 	if (comp->beep->lev) {

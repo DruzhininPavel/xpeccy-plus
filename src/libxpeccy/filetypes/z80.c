@@ -18,14 +18,6 @@ typedef struct {
 
 #pragma pack (pop)
 
-/*
-unsigned short fgetwLE(FILE* file) {		// get WORD little endian (low-hi)
-	unsigned short res = fgetc(file);
-	res |= (fgetc(file) << 8);
-	return res;
-}
-*/
-
 void fputwLE(FILE* file, unsigned short wrd) {
 	fputc(wrd & 0xff, file);
 	fputc((wrd & 0xff00) >> 8, file);
@@ -405,10 +397,6 @@ static void z80_write_page(FILE* file, unsigned char* src, int num) {
 	fputw(raw ? 0xffff : len, file);
 	fputc(num, file);
 	fwrite(raw ? src : buf, raw ? MEM_16K : len, 1, file);
-}
-
-int z80CanSave(Computer* comp) {
-	return z80_snap_hw(comp->hw->id) != SNAP_HW_UNKNOWN;
 }
 
 int saveZ80(Computer* comp, const char* name, int drv) {

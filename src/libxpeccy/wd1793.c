@@ -318,10 +318,6 @@ static fdcCall vgStep[] = {&vgseek00,&vgstep,&vgchk};
 // ============
 // read sectors
 
-void vgrdsDBG(FDC* fdc) {
-	fdc->pos++;
-}
-
 // prepare
 void vgrds00(FDC* fdc) {
 //	if ((fdc->com & 0xe1) == 0x80) printf("RDSec(%.2X)...T:%.2X S:%.2X H:%i (FT:%.2X)\n",fdc->com, fdc->trk, fdc->sec, fdc->side, fdc->flp->trk);

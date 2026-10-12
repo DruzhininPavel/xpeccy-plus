@@ -5,12 +5,12 @@
 #include "gs.h"
 #include "../cpu/Z80/z80.h"
 
-#define GS_FLUSH 1
 
 // internal MEMRQ
 int gsmemrd(int adr, int m1, void* ptr) {
 	GSound* gs = (GSound*)ptr;
-	unsigned char res = memRd(gs->mem, adr & 0xffff) & 0xff;
+	adr &= 0xffff;
+	unsigned char res = mem_rd_fast(gs->mem, adr) & 0xff;
 	switch (adr & 0xe300) {
 		case 0x6000:
 			gs->ch1 = res;
@@ -30,7 +30,8 @@ int gsmemrd(int adr, int m1, void* ptr) {
 
 void gsmemwr(int adr, int val, void* ptr) {
 	GSound* gs = (GSound*)ptr;
-	memWr(gs->mem, adr & 0xffff, val & 0xff);
+	adr &= 0xffff;
+	mem_wr_fast(gs->mem, adr, val & 0xff);
 }
 
 // internal IORQ
@@ -104,14 +105,12 @@ int gsintrq(void* ptr) {
 	return 0xff;
 }
 
-void gs_xirq(int t, void* p) {}
-
 // EXTERNAL
 
 GSound* gsCreate() {
 	GSound* res = (GSound*)malloc(sizeof(GSound));
 	memset(res,0x00,sizeof(GSound));
-	res->cpu = cpuCreate(CPU_Z80, gsmemrd, gsmemwr, gsiord, gsiowr, gsintrq, gs_xirq, res);
+	res->cpu = cpuCreate(CPU_Z80, gsmemrd, gsmemwr, gsiord, gsiowr, gsintrq, NULL, res);
 	res->cpu->inten = 0;
 	res->cpu->flgACK = 1;
 	res->mem = memCreate();
@@ -141,8 +140,6 @@ void gsReset(GSound* gs) {
 	cpu_reset(gs->cpu);
 }
 
-#if GS_FLUSH
-
 void gsSync(GSound* gs, int ns) {
 	if (!gs->enable) return;
 	gs->time += ns;
@@ -161,29 +158,6 @@ void gsFlush(GSound* gs) {
 		}
 	}
 }
-
-#else
-
-void gsFlush(GSound* gs) {
-
-}
-
-void gsSync(GSound* gs, int ns) {
-	if (!gs->enable) return;
-	gs->time += ns;
-	int res;
-	while (gs->time > 0) {
-		res = gs->cpu->exec(gs->cpu);
-		gs->time -= res * gs->ns_per_tick;
-		gs->cnt += res;
-		if (gs->cnt > 320) {	// 12MHz CLK, 37.5KHz INT -> int in each 320 ticks
-			gs->cnt -= 320;
-			gs->cpu->intrq |= Z80_INT;
-		}
-	}
-}
-
-#endif
 
 int gsCheck(GSound* gs, int adr) {
 	if (!gs->enable) return 0;

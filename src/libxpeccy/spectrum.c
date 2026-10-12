@@ -158,7 +158,7 @@ void memwr(int adr, int val, void* ptr) {
 	// nothing watches the write: stdMWr() without the two calls
 	if (!comp_mem_watched(comp)) {
 		if (comp->hw->mwr == stdMWr)
-			mem_page_wr(mem_get_page(comp->mem, adr), adr, val);
+			mem_wr_fast(comp->mem, adr, val);
 		else
 			comp->hw->mwr(comp, adr, val);
 		return;
@@ -201,9 +201,9 @@ static void memwr_watched(Computer* comp, int adr, int val) {
 // "a contended page" - the caller has already looked at the port itself.
 
 void zx_cont_delay(Computer* comp) {
-	long long wns = vid_wait_dots(comp->vid, 5 << 14, 0) * (long long)comp->vid->nsPerDotFixed;	// video is already at end of wait cycle
+	int wdots = vid_wait_dots(comp->vid, 5 << 14, 0);	// video is already at end of wait cycle
 	int t0 = comp->cpu->t;
-	comp->cpu->t += ns_fixed_to_ticks_up(comp, wns);
+	comp->cpu->t += comp->contTicks[wdots];
 	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - t0));
 	res4 = comp->cpu->t;
 }
@@ -370,14 +370,12 @@ int iord(int port, void* ptr) {
 	if (comp->flgCNTI) {
 		// fuse reads the port after both halves of the i/o cycle have
 		// been contended (periph.c readport), so do the waiting first
-		vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-		res4 = comp->cpu->t;
+		comp_vid_to_t_full(comp);
 		zx_cont_t1(comp, port);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;		// z80_iord puts the four back
 	} else {
-		vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t + 3 - res4));
-		res4 = comp->cpu->t + 3;
+		comp_vid_to(comp, comp->cpu->t + 3);
 	}
 // play rzx
 	int res = 0xff;
@@ -420,17 +418,15 @@ int iord(int port, void* ptr) {
 void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp->flgBDI = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? 1 : 0;
-	// sync video to current T
-	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
 	if (comp->flgCNTI) {
+		comp_vid_to_t_full(comp);	// sync video to current T
 		zx_cont_t1(comp, port);
 		comp->hw->out(comp, port, val);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;
 	} else {
-		vid_sync_fixed(comp->vid, comp->nsPerTickFixed);
-		res4++;
+		// the ray up to T+1 in one step: the OUT reaches the device mid-cycle
+		comp_vid_to(comp, comp->cpu->t + 1);
 		comp->hw->out(comp, port, val);
 	}
 	if (comp->vid->ula->palchan) {
@@ -491,17 +487,10 @@ void comp_irq(int t, void* ptr) {
 			}
 			break;
 		case IRQ_CPU_SYNC:
-			vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-			res4 = comp->cpu->t;
+			comp_vid_to_t(comp);
 			return;			// no machine acts on a plain sync
-		case IRQ_CPU_CONT:
-		case IRQ_CPU_CONTNM:
-			vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-			res4 = comp->cpu->t;
-			break;
 		case IRQ_CPU_RFSH:
-			vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-			res4 = comp->cpu->t;
+			comp_vid_to_t(comp);
 			zx_snow(comp);
 			return;			// not a machine's business
 	}
@@ -509,54 +498,6 @@ void comp_irq(int t, void* ptr) {
 		vid_unlazy(comp->vid);
 	if (comp->hw->irq) comp->hw->irq(comp, t);
 }
-
-// new (for future use)
-
-/*
-int comp_rom_rd(Computer* comp, int adr) {
-	adr &= comp->mem->romMask;
-	if (comp->brkRomMap[adr] & MEM_BRK_RD)
-		comp->brk = 1;
-	return comp->mem->romData[adr] & 0xff;
-}
-
-void comp_rom_wr(Computer* comp, int adr, int val) {
-	adr &= comp->mem->romMask;
-	if (comp->brkRomMap[adr] & MEM_BRK_WR)
-		comp->brk = 1;
-	comp->mem->romData[adr] = val & 0xff;
-}
-
-int comp_ram_rd(Computer* comp, int adr) {
-	adr &= comp->mem->ramMask;
-	if (comp->brkRamMap[adr] & MEM_BRK_RD)
-		comp->brk = 1;
-	return comp->mem->ramData[adr] & 0xff;
-}
-
-void comp_ram_wr(Computer* comp, int adr, int val) {
-	adr &= comp->mem->ramMask;
-	if (comp->brkRamMap[adr] & MEM_BRK_WR)
-		comp->brk = 1;
-	comp->mem->ramData[adr] = val & 0xff;
-}
-
-int comp_slt_rd(Computer* comp, int adr) {
-	if (!comp->slot->data) return 0xff;
-	adr &= comp->slot->memMask;
-	if (comp->slot->brkMap[adr] & MEM_BRK_RD)
-		comp->brk = 1;
-	return comp->slot->data[adr] & 0xff;
-}
-
-void comp_slt_wr(Computer* comp, int adr, int val) {
-	if (!comp->slot->data) return;
-	adr &= comp->slot->memMask;
-	if (comp->slot->brkMap[adr] & MEM_BRK_WR)
-		comp->brk = 1;
-	comp->slot->data[adr] = val & 0xff;
-}
-*/
 
 // rzx
 
@@ -655,6 +596,7 @@ void compDestroy(Computer* comp) {
 	tape_destroy(comp->tape);
 	difDestroy(comp->dif);
 	ideDestroy(comp->ide);
+	sdcDestroy(comp->sdc);
 	tsDestroy(comp->ts);
 	gsDestroy(comp->gs);
 	sdrvDestroy(comp->sdrv);
@@ -696,7 +638,6 @@ void compReset(Computer* comp,int res) {
 
 	vid_reset(comp->vid);
 	// kbdReleaseAll(comp->keyb);
-//	kbdSetMode(comp->keyb, KBD_SPECTRUM);
 	difReset(comp->dif);
 	// a level left high is a dc on the mix, and the ear bit reads it back
 	bcReset(comp->beep);
@@ -860,6 +801,11 @@ void comp_update_timings(Computer* comp) {
 	} else {
 		comp->nsPerTickFixed = NSD_TO_FIXED(comp->nsPerTick);
 	}
+	comp->earTpt = (1e9 / 3.5e6) / comp->nsPerTick;	// machine ticks in a 3.5 MHz T, for zx_ear_edge
+	// contention wait, dots -> ticks: both periods are settled just above, and
+	// nothing moves either without coming back through here
+	for (int i = 0; i < 16; i++)
+		comp->contTicks[i] = ns_fixed_to_ticks_up(comp, (long long)i * comp->vid->nsPerDotFixed);
 	comp_set_cont(comp, comp->flgCNTM);	// a turbo arbiter follows hwMul
 }
 
@@ -898,13 +844,22 @@ void comp_set_layout(Computer* comp, vLayout* lay) {
 // reports the refresh cycle while a machine actually wants it.
 // The start of a bus cycle on a machine that contends one: the ray up to it,
 // then the wait states. Called straight from the cpu rather than through
-// comp_irq and the machine's own irq handler - zx_contend() is what every one
-// of them does with it, and this runs on every memory access.
+// comp_irq and a machine's own irq handler - this is what every one of them
+// would do with it, and it runs on every memory access.
+// The cheap tests come first: an address the pattern cannot touch needs no
+// video sync at all (vid_wait_dots would return 0 before reading the ray),
+// so res4 just lags until something that matters syncs. The ray is walked to
+// cpu->t only for an address that can actually wait.
 static void comp_cont(void* ptr, int mreq) {
 	Computer* comp = (Computer*)ptr;
-	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
-	zx_contend(comp, mreq);
+	// one compare instead of a page lookup per tick of every z80_wait
+	if (!vid_cont_internal(comp->vid, mreq)) return;
+	MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
+	if (pg->type != MEM_RAM) return;
+	int adr = pg->num << comp->mem->pgshift;
+	if (!vid_cont_hit(comp->vid, adr, mreq)) return;
+	comp_vid_to_t(comp);
+	zx_contend_adr(comp, adr, mreq);
 }
 
 // A machine that arbitrates the bus itself (hw->cont). What the last opcode
@@ -915,8 +870,7 @@ static void comp_cont_hw(void* ptr, int mreq) {
 	comp->cpu->t += comp->waitDebt;
 	comp->waitPaid += comp->waitDebt;
 	comp->waitDebt = 0;
-	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - res4));
-	res4 = comp->cpu->t;
+	comp_vid_to_t(comp);
 	comp->hw->cont(comp, mreq);
 }
 
@@ -1078,16 +1032,7 @@ void comp_brk(Computer* comp, int t) {
 static unsigned char dumBrk = 0x00;
 
 unsigned char* getBrkPtr(Computer* comp, int madr) {
-	xAdr xadr = mem_get_xadr(comp->mem, madr);
-	unsigned char* ptr = NULL;
-	switch (xadr.type) {
-		case MEM_RAM: ptr = comp->brkRamMap + (xadr.abs & comp->mem->ramMask); break;
-		case MEM_ROM: ptr = comp->brkRomMap + (xadr.abs & comp->mem->romMask); break;
-		case MEM_SLOT:
-			if (comp->slot->brkMap)
-				ptr = comp->slot->brkMap + (xadr.abs & comp->slot->memMask);
-			break;
-	}
+	unsigned char* ptr = comp_get_memcell_flag_ptr(comp, madr);
 	if (!ptr) {
 		dumBrk = 0;
 		ptr = &dumBrk;

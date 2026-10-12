@@ -198,6 +198,8 @@ file(GLOB_RECURSE SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 )
+# included by lh1_decoder.c, not a translation unit of its own
+list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/libxpeccy/filetypes/unpackers/lh1/bit_stream_reader.c)
 
 # Objective-C++ is not in the glob: it only builds on macOS
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

@@ -168,20 +168,6 @@ void blkAddByte(TapeBlock* blk, unsigned char data, int b0len, int b1len) {
 	}
 }
 
-// current time in block
-// NOTE: not full time of block
-int tapGetBlockTime(Tape* tape, int blk, int pos) {
-	long long totsz = 0;
-	int i;
-	if (pos > tape->blkData[blk].sigCount)
-		pos = tape->blkData[blk].sigCount;
-	else if (pos < 0)
-		pos = tape->blkData[blk].sigCount;
-	for (i = 0; i < tape->blkData[blk].sigCount; i++)
-		totsz += tape->blkData[blk].data[i].size;
-	return (totsz / TAPTPS);			// mks -> sec
-}
-
 int tapGetBlockSize(TapeBlock* block) {
 	int res = 0;
 	if (block->dataPos >= 0)			// < 0: pure signal, no bytes to count
@@ -374,7 +360,6 @@ void tapStoreBlock(Tape* tap) {
 		tblk->len1 = SIGN1LEN;
 	}
 	tblk->dataPos = -1;
-#if 1
 	tapNormSignals(tblk);
 	i = 1;
 	while ((i < tblk->sigCount) && (tblk->data[i].size != tblk->s2len))
@@ -386,7 +371,6 @@ void tapStoreBlock(Tape* tap) {
 			tblk->isHeader = 1;
 		}
 	}
-#endif
 	tap_add_block(tap,tap->tmpBlock);
 	blkClear(tblk);
 	tap->wait = 1;
@@ -720,12 +704,6 @@ TapePos tape_pos(Tape* tap) {
 	p.sigLen = tap->sigLen;
 	p.tickAcc = tap->tickAcc;
 	return p;
-}
-
-// what is left of the pulse the tape stands in, from outside the counting
-void tape_set_sig_len(Tape* tap, int len) {
-	tape_settle(tap);
-	tap->sigLen = len;
 }
 
 // Play from level vol with no lead-in: a block that runs straight on from one

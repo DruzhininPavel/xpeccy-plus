@@ -193,12 +193,6 @@ typedef struct {
 	int type;
 	double frq;		// the clock as set, an AY's in MHz, 0 = Auto (see ts_set_frq)
 
-	struct {
-		unsigned char* data;
-		int size;
-		int mask;
-	} rom;
-
 	aymChip* chipA;
 	aymChip* chipB;
 	aymChip* chipC;
@@ -243,10 +237,6 @@ static inline void tsSync(TSound* ts, int ns) {
 	ts_chip_sync(ts->chipC, ns);
 	ts_chip_sync(ts->chipD, ns);
 }
-void tsSetRomSize(TSound*, int);
-void tsLoadRom(TSound*, const char*);
-int tsReadRom(TSound*, int);
-
 sndPair tsGetVolume(TSound*);
 aymChip* ts_chip(TSound*, int);		// chip 0..3, NULL for anything else
 

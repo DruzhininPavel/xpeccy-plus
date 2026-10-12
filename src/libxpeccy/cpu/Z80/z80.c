@@ -97,7 +97,7 @@ void z80_mwr(CPU *cpu, int adr, int data) {
 	if (cpu->flgCONT)
 		cpu->xcont(cpu->xptr, 1);		// wait states, sampled at T1
 	cpu->t += 2;		// T1, T2
-	cpu->xirq(IRQ_CPU_SYNC, cpu->xptr);	// the ray up to the transfer: a write can change what is drawn next
+	cpu_irq(cpu, IRQ_CPU_SYNC);	// the ray up to the transfer: a write can change what is drawn next
 	cpu->mwr(adr, data, cpu->xptr);
 	cpu->t++;		// T3
 }
@@ -541,47 +541,6 @@ xRegDsc z80RegTab[] = {
 	{Z80_FLG_IFF2, "IFF2", REG_BIT, 0, z80_get_iff2, z80_set_iff2, 0, REG_GRP_CTRL},
 	{REG_EOT, "SZ5H3PNC", 0, 0, NULL, NULL}				// name of REG_EOT element is flag names
 };
-
-/*
-void z80_get_regs(CPU* cpu, xRegBunch* bunch) {
-	int bidx = 0;
-	xRegister reg;
-	xRegDsc* itm = z80RegTab;
-	while(itm->id != REG_EOT) {
-		reg.id = itm->id;
-		reg.name = itm->name;
-		reg.type = itm->size;
-		reg.flag = itm->flag;
-		reg.value = itm->get ? itm->get(cpu) : -1;
-		if (reg.id != REG_EMPTY) {
-			bunch->regs[bidx] = reg;
-			bidx++;
-		}
-		itm++;
-	}
-	bunch->regs[bidx].id = REG_EOT;
-	bunch->flags = z80Flags;
-}
-
-void z80_set_regs(CPU* cpu, xRegBunch bunch) {
-	xRegister* rd = bunch.regs;
-	xRegDsc* p;
-	int idx = 0;
-	while((idx < 32) && (rd->id != REG_EOT)) {
-		p = cpu->core->rdsctab;
-		while (p->id != REG_EOT) {
-			if (p->id == rd->id) {
-				if (p->set) {
-					p->set(cpu, rd->value);
-				}
-			}
-			p++;
-		}
-		rd++;
-		idx++;
-	}
-}
-*/
 
 // test (for external lib):
 // {id, family_id, generation, name, regtab, adr.size, data.size, @init, @reset, @exec, @txt2code, @disasm}

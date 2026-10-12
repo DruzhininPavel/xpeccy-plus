@@ -95,18 +95,12 @@ typedef struct {
 } xPort;
 
 typedef struct {
-	int port;
-	int value;
-} xPortValue;
-
-typedef struct {
 	int id;
 	HardWare* core;
 } tabHwItem;
 
 int hwIn(xPort* ptab, Computer* comp, int port);
 void hwOut(xPort* ptab, Computer* comp, int port, int val, int mult);
-xPortValue* hwGetPorts(Computer*);
 
 // extern HardWare hwTab[];
 
@@ -136,21 +130,13 @@ void stdMWr(Computer*, int, int);
 int asicMRd(Computer*, int, int);	// stdMRd/stdMWr plus the +2A/+3 bus latch
 void asicMWr(Computer*, int, int);
 
-// debug IO
-
-int brkIn(Computer*, int);
-void brkOut(Computer*, int, int);
-
-int dummyIn(Computer*, int);
-void dummyOut(Computer*, int, int);
-
 // common IO
 
 int zx_dev_wr(Computer*, int, int);
 int zx_dev_rd(Computer*, int, int*);
 void zx_irq(Computer*, int);
 void zx_snow(Computer*);
-void zx_contend(Computer*, int);
+void zx_contend_adr(Computer*, int, int);	// address already past vid_cont_hit, video at cpu->t
 int zx_bank_of(Computer*, int);
 int zx_ack(Computer*);
 int zx_ear(Computer*);

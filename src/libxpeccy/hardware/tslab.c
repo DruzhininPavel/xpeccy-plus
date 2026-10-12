@@ -11,11 +11,6 @@
 #define flgDINT	flag[3]		// (same for dma int)
 
 #define p01AF	reg[7]		// move to tsconf.c (what to do with ports tab?)
-#define p02AF	reg[8]
-#define p03AF	reg[9]
-#define p04AF	reg[10]
-#define p05AF	reg[11]
-//#define p21AF	reg[12]
 #define regMADR	reg[16]		// 15AF[0..3] = MapAddr
 #define dmaLen	reg[17]
 #define dmaCnt	reg[18]
@@ -104,6 +99,7 @@ void tslReset(Computer* comp) {
 	memSetBank(comp->mem, 0x40, MEM_RAM, 5, MEM_16K, NULL, NULL, NULL);
 	memSetBank(comp->mem, 0x80, MEM_RAM, 2, MEM_16K, NULL, NULL, NULL);
 	memSetBank(comp->mem, 0xc0, MEM_RAM, 0, MEM_16K, NULL, NULL, NULL);
+	comp->vid->tslKey = -1;		// vmode may have been set behind the ports' back
 	tslUpdatePorts(comp->vid);
 	tslMapMem(comp);
 }
@@ -187,7 +183,7 @@ int tslMRd(Computer* comp, int adr, int m1) {
 		}
 	}
 	ts_cache_rd(comp, adr);
-	return memRd(comp->mem,adr);
+	return mem_rd_fast(comp->mem, adr);
 }
 
 static void tslRegWr(Computer* comp, int reg, int val);
@@ -208,7 +204,7 @@ void tslMWr(Computer* comp, int adr, int val) {
 		}
 	}
 	ts_cache_wr(comp, adr);
-	memWr(comp->mem,adr,val);
+	mem_wr_fast(comp->mem, adr, val);
 }
 
 // VDOS takes the INT line away (zint.v): nothing is acknowledged, what is pending waits,
@@ -664,9 +660,9 @@ static void ts_dma_end(Computer* comp) {
 static void ts_dma_run(Computer* comp, int ns) {
 	int ramc = tsDmaDram[comp->tsconf.dma.dev] * 448;
 	int devc = tsDmaDots[comp->tsconf.dma.dev];
+	// ns >= 0 keeps f in vid_count_dots' exact range
 	long long f = ((long long)ns << NS_FIXED_BITS) + comp->tsconf.dma.frac;
-	int dots = (int)(f / comp->vid->nsPerDotFixed);
-	comp->tsconf.dma.frac = f % comp->vid->nsPerDotFixed;
+	int dots = vid_count_dots(f, comp->vid->nsPerDotFixed, &comp->tsconf.dma.frac);
 	comp->tsconf.dma.free += (long long)dots * (448 - comp->vid->tsconf.dramLoad) - comp->tsconf.cpuDram * 448;
 	if (comp->tsconf.dma.free < 0) comp->tsconf.dma.free = 0;
 	comp->tsconf.dma.time += dots;
@@ -1012,10 +1008,6 @@ xPortDsc zx_port_tab_ts[] = {
 	{0x7ffd, REG_BYTE, offsetof(Computer, p7FFD)},
 	{0xeff7, REG_BYTE, offsetof(Computer, pEFF7)},
 	{0x01af, REG_BYTE, offsetof(Computer, p01AF)},
-//	{0x02af, REG_BYTE, offsetof(Computer, p02AF)},
-//	{0x03af, REG_BYTE, offsetof(Computer, p03AF)},
-//	{0x04af, REG_BYTE, offsetof(Computer, p04AF)},
-//	{0x05af, REG_BYTE, offsetof(Computer, p05AF)},
 	{0x21af, REG_BYTE, offsetof(Computer, tsconf.p21af)},
 	{-1, 0, 0}
 };

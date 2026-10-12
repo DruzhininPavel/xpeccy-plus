@@ -24,7 +24,7 @@ void xFDDWidget::draw() {
 	ui.flpCRC->setText(gethexword(comp->dif->fdc->crc));
 	ui.flpInt->setText(comp->dif->fdc->intr ? "1" : "0");
 	ui.flpDma->setText(comp->dif->fdc->dma ? "1" : "0");
-	ui.flpIntEn->setText(comp->dif->inten ? "1" : "0");
+	ui.flpIntEn->setText("-");	// uPD765 interrupt enable is not modeled
 
 	ui.flpCurL->setText(QString(QChar(('A' + comp->dif->fdc->flp->id) & 0xff)));
 	ui.flpRdyL->setText((comp->dif->fdc->flp->insert && comp->dif->fdc->flp->door) ? "1" : "0");

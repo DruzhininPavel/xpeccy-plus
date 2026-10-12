@@ -59,7 +59,6 @@ SDCard* sdcCreate() {
 	sdc->argCnt = 6;
 	sdc->image = NULL;
 	sdc->blkSize = 512;
-	sdcSetCapacity(sdc,SDC_DEFAULT);
 	sdc->file = NULL;
 	sdc_idle(sdc);
 	return sdc;
@@ -102,15 +101,6 @@ void sdcSetFolder(SDCard* sdc, const char* name, vFat* vf) {
 // write protection: on by request, and always on for a folder
 void sdcSetLock(SDCard* sdc, int lock) {
 	sdc->lock = (lock || sdc->vfat) ? 1 : 0;
-}
-
-void sdcSetCapacity(SDCard* sdc, int cpc) {
-/*
-	if (cpc < SDC_32M) cpc = SDC_32M;
-	if (cpc > SDC_8G) cpc = SDC_8G;
-	sdc->capacity = cpc;
-	sdc->maxlba = cpc * 1024 * 2;	// sec x 2 = 1K x 1024 = 1M
-*/
 }
 
 // file operation

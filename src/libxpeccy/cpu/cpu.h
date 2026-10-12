@@ -7,14 +7,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 
-#include <setjmp.h>		// to implement try-catch
-//#define THROW(__N) longjmp(cpu->jbuf, __N)
-//#define THROW_EC(__N,__C) cpu->errcod = __C; longjmp(cpu->jbuf, __N)
-
 #include "../defines.h"
-
-typedef unsigned char xbyte;
-typedef unsigned short xword;
 
 typedef struct {
 	unsigned cond:1;	// condition present
@@ -99,7 +92,6 @@ typedef int(*cbdmr)(int, void*);
 #define OF_PREFIX	1
 #define OF_SKIPABLE	(1<<1)		// opcode is skipable by f8
 #define OF_RELJUMP	(1<<2)
-#define OF_MBYTE	(1<<3)		// operand is byte from memory
 #define OF_MWORD	(1<<4)		// operand is word from memory
 #define OF_MEMADR	(1<<5)		// operand contains memory address (nn)
 
@@ -128,9 +120,7 @@ enum {
 	CPU_Z80
 };
 
-#define flgTMP flags[63]
 #define flgHALT	flags[62]		// cpu halted, undo on interrput
-#define flgEXC	flags[61]		// exception occured
 #define flgNOINT flags[60]		// Z80: don't handle INT after EI
 #define flgWAIT	flags[59]		// ALL: WAIT signal (dummy 1T)
 #define flgACK	flags[58]		// Z80: acknowledge INT after execution (prevent last-1T INT)
@@ -141,19 +131,15 @@ enum {
 #define flgNMIOK flags[52]		// Z80: ...and an NMI, the same way
 
 #define regCallCnt regs[63].ih
-#define regExcCode regs[63].l		// exception code if flgEXC
 
 struct CPU {
 	// common part
 	int type;			// cpu type id
 	unsigned short intrq;		// interrupts request. each bit for each INT type, 1 = requested
 	unsigned short inten;		// interrupts enabled mask
-	int intvec;			// interrupt vector (internal/external)
-	int errcod;			// error code (-1 if not present)
 	int adr;			// address bus for using from outside
 	int busmask;			// mask for address bus
 	int t;				// ticks counter
-	unsigned short oldpc;		// address of current instruction
 	// if cpu is from external lib
 	unsigned lib:1;			// cpu core from exernal lib
 	char* libname;			// name of lib inside libs folder
@@ -182,9 +168,7 @@ struct CPU {
 	unsigned char tmp;
 	unsigned char tmpb;
 	reg16(tmpw,htw,ltw);
-	reg16(twrd,hwr,lwr);
 	int tmpi;
-//	jmp_buf jbuf;			// for throws
 };
 
 struct cpuCore {
@@ -221,7 +205,6 @@ xAsmScan scanAsmTab(const char*, opCode*);
 unsigned short cpu_peek_word(cbdmr, void*, int);	// little-endian word at adr, wrapping at 0xffff
 
 xRegBunch cpuGetRegs(CPU*);
-xRegister cpuGetReg(CPU*, int);
 void cpuSetRegs(CPU*, xRegBunch);
 xRegDsc* find_reg_type(CPU*, int);
 xRegDsc* find_reg_name(CPU*, const char*);
@@ -236,14 +219,16 @@ void cpu_set_flag(CPU*, int);
 int reg_get_value(CPU*, xRegDsc*);
 int reg_set_value(CPU*, xRegDsc*, int);
 
-int parity(int);
+// 1 when val holds an even number of set bits (the P flag's sense).
+// Callers pass masked, non-negative values only.
+static inline int parity(int val) {
+	return __builtin_parity((unsigned int)val) ^ 1;
+}
 
-int cpu_fetch(CPU*, int);
-int cpu_mrd(CPU*, int);
-void cpu_mwr(CPU*, int, int);
-int cpu_ird(CPU*, int);
-void cpu_iwr(CPU*, int, int);
-static inline void cpu_irq(CPU* cpu, int id) {cpu->xirq(id, cpu->xptr);}
+// never NULL: cpuCreate puts a stub in for a cpu with no machine behind it
+static inline void cpu_irq(CPU* cpu, int id) {
+	cpu->xirq(id, cpu->xptr);
+}
 
 #ifdef __cplusplus
 }

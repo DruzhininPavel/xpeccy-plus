@@ -11,24 +11,6 @@
 // undef redefined flgX after including
 #include "Z80/z80.h"
 
-// common
-
-int parity(int val) {
-	int parity = 1;
-	while (val) {
-		parity ^= val;		// bit 0 is only significant
-		val >>= 1;
-	}
-	return parity & 1;
-}
-
-// TODO: apply cpu adr bus mask here
-int cpu_fetch(CPU* cpu, int adr) {return cpu->mrd(adr, 1, cpu->xptr);}
-int cpu_mrd(CPU* cpu, int adr) {return cpu->mrd(adr, 0, cpu->xptr);}
-void cpu_mwr(CPU* cpu, int adr, int v) {cpu->mwr(adr, v, cpu->xptr);}
-int cpu_ird(CPU* cpu, int adr) {return cpu->ird(adr, cpu->xptr);}
-void cpu_iwr(CPU* cpu, int adr, int v) {cpu->iwr(adr, v, cpu->xptr);}
-
 // no-proc
 
 const char nomnem[] = "undef";
@@ -39,8 +21,6 @@ xRegDsc nil_reg_tab[] = {
 
 void nil_reset(CPU* cpu) {}
 int nil_exec(CPU* cpu) {return 1;}
-int nil_int(CPU* cpu) {return 1;}
-int nil_nmi(CPU* cpu) {return 1;}
 xAsmScan nil_asm(int adr, const char* com, char* buf) {
 	xAsmScan res;
 	res.match = 0;
@@ -54,11 +34,6 @@ xMnem nil_mnem(CPU* cpu, int adr, cbdmr mrd, void* data) {
 	res.cond = 0;
 	return res;
 }
-void nil_get_regs(CPU* cpu, xRegBunch* bunch) {}
-void nil_set_regs(CPU* cpu, xRegBunch bunch) {}
-int nil_get_flag(CPU* cpu) {return 0;}
-void nil_set_flag(CPU* cpu, int v) {}
-
 cpuCore dumCore = {CPU_NONE, "none", nil_reg_tab, 8, NULL, nil_reset, nil_exec, nil_asm, nil_mnem};
 
 extern xRegDsc z80RegTab[];
@@ -175,21 +150,9 @@ int cpuSetType(CPU* cpu, int type) {
 	return core ? 1 : 0;
 }
 
-/*
-int cpuSetLib(CPU* cpu, const char* dir, const char* fname) {
-	int res = 0;
-	if (cpu_open_lib(cpu, dir, fname)) {
-		cpuCore*(*foo)();
-		foo = dlsym(cpu->libhnd, "getCore");
-		cpuCore* tab = foo();
-		cpuSetCore(cpu, &tab[0]);
-		res = 1;
-	} else {
-		xlog(XLG_APP, XLL_ERROR, "cpu plugin: %s",dlerror());
-	}
-	return res;
-}
-*/
+// A cpu with no machine behind it (the GS card's Z80) gets this, so cpu_irq
+// and the direct xirq call in the exec loop never test for NULL.
+static void cpu_dummy_irq(int t, void* ptr) {}
 
 CPU* cpuCreate(int type, cbmr fmr, cbmw fmw, cbir fir, cbiw fiw, cbiack frq, cbirq xirq, void* dt) {
 	CPU* cpu = (CPU*)malloc(sizeof(CPU));
@@ -200,7 +163,7 @@ CPU* cpuCreate(int type, cbmr fmr, cbmw fmw, cbir fir, cbiw fiw, cbiack frq, cbi
 	cpu->ird = fir;
 	cpu->iwr = fiw;
 	cpu->xack = frq;
-	cpu->xirq = xirq;
+	cpu->xirq = xirq ? xirq : cpu_dummy_irq;
 	cpuSetType(cpu, type);
 	return cpu;
 }
@@ -518,19 +481,6 @@ int reg_set_value(CPU* cpu, xRegDsc* dsc, int val) {
 		res = 0;
 	}
 	return res;
-}
-
-xRegister cpuGetReg(CPU* cpu, int id) {
-	xRegister reg;
-	reg.size = REG_EOT;
-	xRegDsc* rd = find_reg_id(cpu, id);
-	if (rd) {
-		reg.size = rd->size;
-		reg.flag = rd->flag;
-		reg.name = rd->name;
-		reg.value = reg_get_value(cpu, rd);
-	}
-	return reg;
 }
 
 // f is pointer to bool variable: false if register doesn't exists

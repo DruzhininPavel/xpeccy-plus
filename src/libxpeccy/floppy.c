@@ -73,11 +73,6 @@ unsigned char flpRd(Floppy* flp, int hd) {
 	return flp->data[(flp->trk << 1) | hd].byte[flp->pos];
 }
 
-int flp_check_marker(Floppy* flp, int hd) {
-	if (!flp->insert || !flp->door) return 0;
-	return !!(flp->data[(flp->trk << 1) | (hd & 1)].field[flp->pos] & 0x80);
-}
-
 // TODO: move disk spinning here (if motor is on)
 void flp_sync(Floppy* flp, int ns) {
 	if (flp->dwait > 0) {

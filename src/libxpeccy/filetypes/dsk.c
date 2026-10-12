@@ -32,19 +32,6 @@ typedef struct {
 
 #pragma pack (pop)
 
-void fgetLine(FILE* file, char* buf, int size, int term) {
-	int ch;
-	do {
-		ch = fgetc(file);
-		if (!feof(file)) {
-			*(buf++) = ch;
-		} else {
-			*buf = 0x00;
-		}
-		size--;
-	} while (!feof(file) && (size > 0) && (ch != term));
-}
-
 //static const char edsksgn[] =	"EXTENDED CPC DSK File\r\n";
 //static const char dsksgn[] =	"MV - CPCEMU Disk-File\r\n";
 static const char edsksgn[] =	"EXTENDED";
