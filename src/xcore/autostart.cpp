@@ -204,6 +204,11 @@ static void autostart_stop() {
 	as_comp = NULL;
 }
 
+void autostart_cancel() {
+	if (as_seq) xlog(XLG_FILE, XLL_INFO, "autostart cancelled");
+	autostart_stop();
+}
+
 // What a machine would do with that media, NULL if it can do nothing: it has
 // no key sequence for it, or no interface to read the image through.
 static const asMachine* as_row(int hwid) {

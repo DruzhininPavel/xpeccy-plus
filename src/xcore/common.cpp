@@ -11,6 +11,8 @@
 #include "xcore.h"
 #include "sound.h"
 #include "pacing.h"
+#include "autostart.h"
+#include "fastload.h"
 
 static const char* hexhalf = "0123456789ABCDEF";
 // static char hexbuf[5] = {'0','0','0','0',0x00};
@@ -44,7 +46,17 @@ std::atomic<int> xUserResets(0);
 
 void x_user_reset(Computer* comp, int res) {
 	xUserResets.fetch_add(1);
+	x_state_replaced();
 	compUserReset(comp, res);
+}
+
+// What was kept for the machine as it stood goes when it is reset, switched or
+// loaded over: the fast-loading wind back would bring the old state back, and
+// autostart would go on typing into whatever came instead. autostart_arm()
+// resets through x_user_reset() too, before it arms, so it does not cancel itself.
+void x_state_replaced() {
+	autostart_cancel();
+	fastload_forget();
 }
 
 QString gethexword(int num) {
