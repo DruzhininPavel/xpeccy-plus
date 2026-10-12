@@ -29,7 +29,7 @@
 //
 // fuse's own coretest applies no contention delay, so the MC/PC lines say only
 // *when* the ULA was given the chance to look at the bus - which is exactly what
-// our IRQ_CPU_CONT / IRQ_CPU_CONTNM hooks report.
+// the cpu's xcont hook reports.
 //
 // Build and run: see run.sh in this folder.
 
@@ -39,20 +39,11 @@
 
 #include "../../src/libxpeccy/cpu/Z80/z80.h"
 
-// The Z80 core reaches for four things that live in cpu.c; pulling that file in
-// would drag every other core along - cpuTab[] names the reset, exec and asm
-// entry points of all six - so they are answered here instead. Two of them are
-// no-ops on paths the tests never reach (cpu_irq is inline in cpu.h now), but
-// parity is a copy and has to stay identical to the one in cpu.c.
-
-int parity(int val) {
-	int p = 1;
-	while (val) {
-		p ^= val;
-		val >>= 1;
-	}
-	return p & 1;
-}
+// The Z80 core reaches for a couple of things that live in cpu.c; pulling that
+// file in would drag every other core along - cpuTab[] names the reset, exec
+// and asm entry points of all of them - so they are answered here instead,
+// as no-ops on paths the tests never reach (cpu_irq and parity are inline in
+// cpu.h now).
 
 unsigned short cpu_peek_word(cbdmr mrd, void* data, int adr) {return 0;}
 xAsmScan scanAsmTab(const char* src, opCode* tab) {xAsmScan r; memset(&r, 0, sizeof(r)); return r;}
