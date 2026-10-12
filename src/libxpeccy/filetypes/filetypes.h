@@ -130,6 +130,7 @@ void diskFormTRDTrack(Floppy*,int,unsigned char*);
 
 int diskGetType(Floppy*);
 
+unsigned char* diskGetSectorDataPtr(Floppy*,unsigned char,unsigned char);
 int diskGetSectorData(Floppy*,unsigned char,unsigned char,unsigned char*,int);
 int diskGetSectorsData(Floppy*,unsigned char,unsigned char,unsigned char*,int);
 int diskPutSectorData(Floppy*,unsigned char,unsigned char,unsigned char*,int);
@@ -139,6 +140,63 @@ int diskCreateFile(Floppy*, TRFile, unsigned char*, int);
 int diskGetTRCatalog(Floppy*,TRFile*);
 TRFile diskGetCatalogEntry(Floppy*, int);
 TRFile diskMakeDescriptor(const char*, char, int, int);
+int trd_file_len(TRFile*, unsigned char*, int*);
+
+// +3DOS: a CP/M 2.2 file system, laid out by the spec in the boot sector or by
+// the Amstrad CPC system and data formats, which +3DOS reads as well
+
+#define P3_MAXBLK	1024
+
+enum {
+	P3_PLUS3 = 0,		// +3 or PCW single sided, the spec's format 0
+	P3_CPC_SYS,
+	P3_CPC_DATA,
+	P3_PCW_DS
+};
+
+enum {
+	P3_SIDES_ONE = 0,
+	P3_SIDES_ALT,		// logical track 2n+h is cylinder n, head h
+	P3_SIDES_SUCC		// side 0 first, then side 1
+};
+
+typedef struct {
+	int format;		// P3_* above
+	int sides;		// P3_SIDES_*
+	int tracks;		// per side
+	int spt;
+	int first;		// the id of the first sector on a track
+	int seclen;
+	int reserved;		// tracks before the directory
+	int blklen;
+	int dirblk;		// blocks of directory, from block 0
+	int blocks;		// in the data area
+} p3Disk;
+
+typedef struct {
+	unsigned char user;
+	char name[9];		// attribute bits stripped, spaces kept
+	char ext[4];
+	int records;		// of 128 bytes
+	int nblk;
+	int used;		// blocks taken, holes not counted
+	unsigned short blk[P3_MAXBLK];
+	int hdr;		// has a valid PLUS3DOS header
+	unsigned char type;	// from it: 0 program, 1 numbers, 2 chars, 3 bytes
+	unsigned short len;
+	unsigned short param1;
+	unsigned short param2;
+} p3File;
+
+int p3_disk(Floppy*, p3Disk*);
+int p3_catalog(Floppy*, p3Disk*, p3File*, int);
+int p3_read(Floppy*, p3Disk*, p3File*, unsigned char*, int);
+int p3_dir_raw(Floppy*, p3Disk*, unsigned char*, int);
+int p3_free_blocks(p3Disk*, p3File*, int);
+int p3_block_track(p3Disk*, int, int*, int*);
+int p3_logical(p3Disk*, int, int);
+int p3_save_raw(Floppy*, p3Disk*, p3File*, const char*);
+int p3_save_hobeta(Floppy*, p3Disk*, p3File*, const char*);
 
 // common
 

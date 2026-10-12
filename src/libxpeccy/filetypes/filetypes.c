@@ -348,6 +348,19 @@ TRFile diskMakeDescriptor(const char* name, char ext, int start, int len) {
 	return dsc;
 }
 
+// The bytes a TR-DOS file holds: a program's start is its length with the
+// variables, which 80 AA and the autostart line may follow; anything else has
+// its length. -1 when the sectors do not match: files joined into one, or cut.
+// line gets the autostart, 0x8000 for none.
+int trd_file_len(TRFile* f, unsigned char* data, int* line) {
+	int start = f->lst | (f->hst << 8);
+	int prog = (f->ext == 'B');
+	int tail = prog && (start < f->slen * 256 - 3) && (data[start] == 0x80) && (data[start + 1] == 0xaa);
+	int size = prog ? start : (f->llen | (f->hlen << 8));
+	if (line) *line = tail ? (data[start + 2] | (data[start + 3] << 8)) : 0x8000;
+	return (f->slen == (size + (tail ? 4 : 0) + 255) / 256) ? size : -1;
+}
+
 int diskGetTRCatalog(Floppy *flp, TRFile *dst) {
 	int cnt = 0;
 	if (diskGetType(flp) == DISK_TYPE_TRD) {

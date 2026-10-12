@@ -254,7 +254,7 @@ void tap_set_text(Tape*,const char*);
 void tapDelBlock(Tape*,int);
 void tapSwapBlocks(Tape*,int,int);
 
-void tapAddFile(Tape*,const char*,int,unsigned short,unsigned short,unsigned short,unsigned char*,int);
+void tapAddFile(Tape*,const char*,int,unsigned short,unsigned short,unsigned short,unsigned char*,int);	// type, length, param 1, param 2
 TapeBlock makeTapeBlock(unsigned char*, int, int);
 
 void blkClear(TapeBlock*);

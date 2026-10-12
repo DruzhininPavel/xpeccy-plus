@@ -320,7 +320,7 @@ int tape_disk_ready(Computer* comp, int drive) {
 		flp->changed = 1;
 		trd_format(flp);
 	} else if (diskGetType(flp) != DISK_TYPE_TRD) {
-		if (!areSure("Not TRDOS disk. Format?<br>All data will be lost")) return 0;
+		if (!areSure("Not a TR-DOS disk. Format?<br>All data will be lost")) return 0;
 		trd_format(flp);
 	}
 	return 1;

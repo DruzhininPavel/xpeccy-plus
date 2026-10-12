@@ -2,30 +2,25 @@
 
 // model
 
-xDiskCatModel::xDiskCatModel(QObject* p):xTableModel(p) {
-	cat.clear();
-}
+xDiskCatModel::xDiskCatModel(QObject* p):xTableModel(p) {}
 
 int xDiskCatModel::rowCount(const QModelIndex&) const {
-	return cat.size();
+	return rows.size();
 }
 
 int xDiskCatModel::columnCount(const QModelIndex&) const {
-	return 7;
+	return heads.size();
 }
-
-static QVariant dchNames[] = {"Name","Ext","Start","Length","SecLen","Trk","Sec"};
 
 QVariant xDiskCatModel::headerData(int sect, Qt::Orientation ori, int role) const {
 	QVariant res;
 	if (ori != Qt::Horizontal) return res;
 	// a figure's heading stands over it
-	if ((role == Qt::TextAlignmentRole) && (sect > 1))
+	if ((role == Qt::TextAlignmentRole) && (sect >= ntext))
 		return int(Qt::AlignRight | Qt::AlignVCenter);
 	if (role != Qt::DisplayRole) return res;
-	if ((sect < 0) || (sect > 6)) return res;
-	res = dchNames[sect];
-	return res;
+	if ((sect < 0) || (sect >= heads.size())) return res;
+	return heads[sect];
 }
 
 QVariant xDiskCatModel::data(const QModelIndex& idx, int role) const {
@@ -37,33 +32,22 @@ QVariant xDiskCatModel::data(const QModelIndex& idx, int role) const {
 	if (col >= columnCount()) return res;
 	// the figures line up on their last digit
 	if (role == Qt::TextAlignmentRole)
-		return (col > 1) ? int(Qt::AlignRight | Qt::AlignVCenter) : int(Qt::AlignLeft | Qt::AlignVCenter);
+		return (col >= ntext) ? int(Qt::AlignRight | Qt::AlignVCenter) : int(Qt::AlignLeft | Qt::AlignVCenter);
 	if (role == Qt::FontRole)
 		return (row == live) ? QVariant(liveFont) : res;
 	if (role != Qt::DisplayRole) return res;
-	TRFile dsc = cat[row];
-	switch(col) {
-		case 0: res = QString(QByteArray((char*)dsc.name, 8)); break;
-		case 1: res = QChar(dsc.ext); break;
-		case 2: res = dsc.lst + (dsc.hst << 8); break;
-		case 3: res = dsc.llen + (dsc.hlen << 8); break;
-		case 4: res = dsc.slen; break;
-		case 5: res = dsc.trk; break;
-		case 6: res = dsc.sec; break;
-	}
+	if (col < rows[row].size()) res = rows[row][col];
 	return res;
 }
 
-/*
-void xDiskCatModel::update() {
-	emit dataChanged(index(0,0), index(columnCount() - 1, rowCount() - 1));
-}
-*/
-
-void xDiskCatModel::setCatalog(QList<TRFile> c) {
-	cat = c;
+// the headings, how many of the columns are text, and a row of values each
+void xDiskCatModel::setRows(QStringList h, int text, QList<QVariantList> r) {
+	beginResetModel();
+	heads = h;
+	ntext = text;
+	rows = r;
 	live = -1;
-	emit endResetModel();
+	endResetModel();
 }
 
 void xDiskCatModel::setLive(int row, QFont fnt) {
@@ -80,16 +64,10 @@ void xDiskCatModel::setLive(int row, QFont fnt) {
 xDiskCatTable::xDiskCatTable(QWidget* p):QTableView(p) {
 	model = new xDiskCatModel();
 	setModel(model);
-	setColumnWidth(0,100);
-	setColumnWidth(1,30);
-	setColumnWidth(2,70);
-	setColumnWidth(3,70);
-	setColumnWidth(4,50);
-	setColumnWidth(5,50);
 }
 
-void xDiskCatTable::setCatalog(QList<TRFile> cat) {
-	model->setCatalog(cat);
+void xDiskCatTable::setRows(QStringList heads, int text, QList<QVariantList> rows) {
+	model->setRows(heads, text, rows);
 }
 
 // the file the head is over, in bold; -1 for none
