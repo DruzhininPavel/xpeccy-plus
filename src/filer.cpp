@@ -127,7 +127,7 @@ static xFileTypeInfo ft_tab[] = {
 	{FL_IMA, 1, ".ima", "*.ima", load_ima, NULL, "1.44 FDD image"},
 	{FL_PCIMG, 1, ".img", "*.img", load_ima, NULL, "1.44 FDD image"},
 	{FL_RZX, 0, ".rzx", "*.rzx", loadRZX, NULL, "RZX playback"},
-	{FL_RAW, 0, NULL, "*", loadRaw, NULL, "RAW file to TRDOS disk"},			// * for all files; *.* for all files that have extension
+	{FL_RAW, 0, NULL, "*", loadRaw, NULL, "RAW file to TR-DOS disk"},			// * for all files; *.* for all files that have extension
 	{0, 0, NULL, NULL, NULL, NULL, NULL}
 };
 
@@ -146,7 +146,7 @@ static xFileGroupInfo fg_tab[] = {
 	{FG_DISK_B, ".trd", 1, "Disk B", NULL, {FL_SCL, FL_TRD, FL_TD0, FL_FDI, FL_UDI, FL_DSK, FL_IMA, FL_PCIMG, FL_HOBETA, 0}},
 	{FG_DISK_C, ".trd", 2, "Disk C", NULL, {FL_SCL, FL_TRD, FL_TD0, FL_FDI, FL_UDI, FL_DSK, FL_IMA, FL_PCIMG, FL_HOBETA, 0}},
 	{FG_DISK_D, ".trd", 3, "Disk D", NULL, {FL_SCL, FL_TRD, FL_TD0, FL_FDI, FL_UDI, FL_DSK, FL_IMA, FL_PCIMG, FL_HOBETA, 0}},
-	{FG_RAW, "", 0, "Raw file to disk", &ft_raw, {FL_RAW, 0}},
+	{FG_RAW, "", 0, "RAW file to disk", &ft_raw, {FL_RAW, 0}},
 	{FG_IF2_ROM, "", -1, "Cartridge image", &ft_sltraw, {FL_SLT_ROM, FL_SLT_BIN, 0}},
 	{FG_RZX, "", -1, "RZX playback", NULL, {FL_RZX, 0}},
 	{0, "", -1, NULL, NULL, {0}}
@@ -354,7 +354,7 @@ static xFilerError err_tab[] = {
 	{ERR_TZX_SIGN, "Wrong TZX signature"},
 	{ERR_TZX_UNKNOWN, "Unknown TZX block"},
 	{ERR_TRD_LEN, "Incorrect TRD size"},
-	{ERR_TRD_SIGN, "Not TRDOS disk"},
+	{ERR_TRD_SIGN, "Not a TR-DOS disk"},
 	{ERR_UDI_SIGN, "Wrong UDI signature"},
 	{ERR_FDI_SIGN, "Wrong FDI signature"},
 	{ERR_FDI_HEAD, "Wrong FDI heads count"},
@@ -374,7 +374,7 @@ static xFilerError err_tab[] = {
 	{ERR_SPG_VERSION, "Unsupported SPG version"},
 	{ERR_SZX_SIGN, "Wrong SZX signature"},
 	{ERR_SZX_HW, "SZX snapshot: a machine this emulator does not have"},
-	{ERR_SZX_DATA, "SZX snapshot: no cpu or memory in it"},
+	{ERR_SZX_DATA, "SZX snapshot: no CPU or memory in it"},
 	{ERR_TAP_DATA, "This tape has blocks TAP cannot hold: export it to WAV"},
 	{ERR_TAP_EMPTY, "The tape is empty"},
 	{ERR_NOTRD, "Not a TR-DOS disk"},
