@@ -300,9 +300,23 @@ void xThread::tap_hand_over(Computer* comp, int blk, int base, int dir) {
 		cpu->regFa = tap_logic_f(de8);
 		exitPc = LDC_TAIL + 3;
 	} else {
+		// LD-FLAG's RL C / XOR L / LD A,C / RRA / LD C,A leaves C as the edge
+		// loop had it after the flag byte, bit 7 dropped, and EX AF,AF' keeps
+		// that A with the flags of XOR and RRA to the end. Every edge CPLs C,
+		// so its bit 5 is the ear level then, the one the first data pulse
+		// starts on.
+		if (tb->dataPos >= 0) {
+			int idx = tb->dataPos + 16;
+			int lev = (idx < tb->sigCount) ? TAP_VOL_LEV(tb->data[idx].vol) : !TAP_VOL_LEV(tb->data[idx - 1].vol);
+			unsigned char c = cpu->regC ^ tap_peek((base + LDC_SYNC_XOR) & 0xffff, comp);
+			if (!!(c & 0x20) != lev) c = ~c;
+			c &= 0x7f;
+			cpu->regC = c;
+			cpu->regAa = c;
+			cpu->regFa = 0x44 | (c & 0x28) | load;
+		}
 		// The loop: a byte is read and XORed into H, then stored - or, when
-		// verifying, LD A,(IX+0) / XOR L / RET NZ. AF' is left as the flag
-		// check made it, from C at that moment, which is not known here.
+		// verifying, LD A,(IX+0) / XOR L / RET NZ.
 		while ((de > 0) && (n < avail)) {
 			unsigned char byte = blkData[n + 1];
 			h ^= byte;
