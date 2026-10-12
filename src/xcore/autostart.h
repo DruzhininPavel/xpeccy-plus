@@ -16,6 +16,8 @@ int autostart_arm(Computer*, int kind);
 // could a machine of that core and disk interface (DIF_*) start it
 int autostart_can(int hwid, int dif, int kind);
 void autostart_frame(Computer*);
+// the machine it was typing into is gone: switched, reset, another file in
+void autostart_cancel();
 // the machine is being driven to the media: nothing of it is to be shown
 int autostart_busy();
 // press or let go of keys named as a keymap names them ("E", "Sp"...)

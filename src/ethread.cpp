@@ -1,7 +1,9 @@
 // emulation thread (non-GUI)
 
 #include <QWaitCondition>
+#include <QThread>
 #include <QTime>
+#include <atomic>
 #include <vector>
 
 #include "ethread.h"
@@ -40,8 +42,16 @@ static QRecursiveMutex emuGuard;
 static QMutex emuGuard(QMutex::Recursive);
 #endif
 
+// Threads waiting for the lock. The emulation thread takes it back the moment it
+// lets go, and in fast mode it never sleeps in between, so a waiter it does not
+// step aside for gets it only when fast mode ends.
+static std::atomic<int> emuWaiters(0);
+
 void emu_lock() {
+	if (emuGuard.tryLock()) return;
+	emuWaiters.fetch_add(1);
 	emuGuard.lock();
+	emuWaiters.fetch_sub(1);
 }
 
 void emu_unlock() {
@@ -706,14 +716,19 @@ void xThread::run() {
 			}
 		}
 		emu_unlock();
+		while (emuWaiters.load() && !finish)
+			QThread::yieldCurrentThread();
+		// paused, fast mode is still set by whoever holds it: the next frame
+		// sets it again, so it cannot stand for "run on" here
+		bool idle = !conf.emu.fast || conf.emu.pause;
 #if USEMUTEX
-		if (!conf.emu.fast && !finish) {
+		if (idle && !finish) {
 			emutex.lock();
 			qwc.wait(&emutex);
 			emutex.unlock();
 		}
 #else
-		while (!conf.emu.fast && sleepy && !finish)
+		while (idle && sleepy && !finish)
 			usleep(10);
 #endif
 	} while (!finish);

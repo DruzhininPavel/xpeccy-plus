@@ -1588,6 +1588,7 @@ void MainWin::openMedia(const QString& path, int id, int drv, int run, bool pinn
 		QByteArray loc = fpath.toLocal8Bit();
 		// the pause does not wait for the cycle, and a snapshot resets the machine
 		emu_lock();
+		x_state_replaced();		// a run arms again below
 		int err = load_file(comp, loc.data(), id, drv);
 		emu_unlock();
 		if (err == ERR_OK) {
@@ -2667,6 +2668,9 @@ void MainWin::renderFrame() {
 
 void MainWin::onPrfChange() {
 	Computer* comp = conf.zx;
+	emu_lock();		// Options comes here without the lock
+	x_state_replaced();
+	emu_unlock();
 	tape_apply_options(comp->tape);
 	if (comp->flgFRN) {
 		// loadPalette();		// already loaded for each profile
