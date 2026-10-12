@@ -16,6 +16,7 @@ extern "C" {
 #define TAPE_PAUSE_TICKS (TAPTPS / 5)	// a gap this long is the end of a block
 #define TAPE_TAIL_TICKS  (TAPTPS / 10)	// run-out played after the last pulse
 #define TAPE_RATE_BITS	32		// fraction bits of ticksPerNsFixed
+#define TAPE_CLOCK_HZ	3500000		// what a tape tick is: a T state of the 48K's clock (TZX, TAP)
 #define TAPE_GONE_TICKS	69888		// a frame of the port read, and never as a loader: it has gone
 
 // ZX spectrum signal timings
