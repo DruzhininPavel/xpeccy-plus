@@ -100,12 +100,8 @@ int saveRawFile(Floppy* flp, int num, const char* dir) {
 	strncat(path, (char*)&dsc.ext, 1);
 	FILE* file = fopen(path, "wb");
 	if (!file) return ERR_CANT_OPEN;
-	int len;
-	if (dsc.slen == (dsc.hlen + ((dsc.llen == 0) ? 0 : 1))) {
-		len = (dsc.hlen << 8) + dsc.llen;
-	} else {
-		len = (dsc.slen << 8);
-	}
+	int len = trd_file_len(&dsc, buf, NULL);
+	if (len < 0) len = dsc.slen << 8;		// joined: all of its sectors
 	fwrite((char*)buf, len, 1, file);
 	fclose(file);
 	free(path);

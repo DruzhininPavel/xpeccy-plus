@@ -891,28 +891,24 @@ TapeBlock makeTapeBlock(unsigned char* ptr, int ln, int hd) {
 	return nblk;
 }
 
-// tapeAddFile(tape, filename, type(0,3 = basic,code), start, lenght, autostart, pointer to data, is header)
-void tapAddFile(Tape* tap, const char* nm, int tp, unsigned short st, unsigned short ln, unsigned short as, unsigned char* ptr, int hdr) {
+// A file as a header and a data block. len, p1 and p2 are the header's own
+// words: the data's length, then what the type makes of the other two (a
+// program: autostart line, length without the variables; code: address)
+void tapAddFile(Tape* tap, const char* nm, int tp, unsigned short len, unsigned short p1, unsigned short p2, unsigned char* ptr, int hdr) {
 	TapeBlock block;
 	if (hdr) {
 		unsigned char hdbuf[19];
-		hdbuf[0] = tp & 0xff;						// type (0:basic, 3:code)
+		hdbuf[0] = tp & 0xff;
 		memset(hdbuf + 1,' ',10);
 		memcpy(hdbuf + 1, nm, (strlen(nm) < 10) ? strlen(nm) : 10);
-		if (tp == 0) {
-			hdbuf[11] = st & 0xff; hdbuf[12] = ((st & 0xff00) >> 8);
-			hdbuf[13] = as & 0xff; hdbuf[14] = ((as & 0xff00) >> 8);
-			hdbuf[15] = ln & 0xff; hdbuf[16] = ((ln & 0xff00) >> 8);
-		} else {
-			hdbuf[11] = ln & 0xff; hdbuf[12] = ((ln & 0xff00) >> 8);
-			hdbuf[13] = st & 0xff; hdbuf[14] = ((st & 0xff00) >> 8);
-			hdbuf[15] = as & 0xff; hdbuf[16] = ((as & 0xff00) >> 8);
-		}
+		hdbuf[11] = len & 0xff; hdbuf[12] = ((len & 0xff00) >> 8);
+		hdbuf[13] = p1 & 0xff; hdbuf[14] = ((p1 & 0xff00) >> 8);
+		hdbuf[15] = p2 & 0xff; hdbuf[16] = ((p2 & 0xff00) >> 8);
 		block = makeTapeBlock(hdbuf,17,1);
 		tap_add_block(tap,block);
 		blkClear(&block);
 	}
-	block = makeTapeBlock(ptr,ln,0);
+	block = makeTapeBlock(ptr, len, 0);
 	tap_add_block(tap,block);
 	blkClear(&block);
 }

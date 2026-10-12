@@ -8,11 +8,13 @@ class xDiskCatModel : public xTableModel {
 	Q_OBJECT
 	public:
 		xDiskCatModel(QObject* p = NULL);
-		// void update();
-		void setCatalog(QList<TRFile>);
+		void setRows(QStringList, int, QList<QVariantList>);
 		void setLive(int, QFont);
+		int textColumns() const {return ntext;}
 	private:
-		QList<TRFile> cat;
+		QStringList heads;
+		int ntext = 0;			// the columns before the figures, left aligned
+		QList<QVariantList> rows;
 		int live = -1;			// the row under the head, drawn in liveFont
 		QFont liveFont;
 
@@ -26,7 +28,8 @@ class xDiskCatTable : public QTableView {
 	Q_OBJECT
 	public:
 		xDiskCatTable(QWidget* p = NULL);
-		void setCatalog(QList<TRFile>);
+		void setRows(QStringList, int, QList<QVariantList>);
+		int textColumns() const {return model->textColumns();}
 		void setLive(int);
 	private:
 		xDiskCatModel* model;
