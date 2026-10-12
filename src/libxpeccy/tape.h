@@ -105,7 +105,7 @@ typedef struct {
 	unsigned oldRec:1;	// previous rec signal
 	unsigned char speed;	// 95 to 105
 
-	unsigned armed:1;	// after a flash hand-over: the gap is played out, a stopped tape plays when a loader outside the rom asks
+	unsigned armed:1;	// play as soon as a loader outside the rom asks for the tape
 	unsigned tail:1;	// playing out the level change the last pulse ends on
 	unsigned is48:1;	// the machine is a 48K, for stop48
 	unsigned mute:1;	// a playing tape is not heard (fast loading has it)
