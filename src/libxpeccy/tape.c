@@ -753,12 +753,20 @@ void tap_sync_slow(Tape* tap, int ns) {
 			tap->sigLen -= mks;
 			while ((tap->sigLen < 1) && tap->on) {
 				if (tap->pos >= (int)tap->blkData[tap->block].sigCount) {
-					if (tap_stops_after(tap) && !tap->tail) {
+					// the automatics stop short of a block the rom trap reads
+					// (below); one that follows a pulse with no pause stops
+					// after the run-out too: a stopped tape is not heard, so
+					// the edge would hang on the last pulse's level (AGAS)
+					int romNext = tap->autoPlay && tap->flash && ((tap->block + 1) < tap->blkCount)
+						&& tap_block_rom(&tap->blkData[tap->block + 1]) && !TAP_VOL_PAUSE(tap->volPlay);
+					if ((tap_stops_after(tap) || romNext) && !tap->tail) {
 						// A pulse is a level held, so the one the last pulse ends
 						// on is a level change of its own - and a loader reading
 						// the last byte of a block is waiting for exactly that.
 						// Stopping on the pulse swallowed it, so run the tape out
 						// at the new level the way it would past the recording.
+						if (romNext)
+							xlog(XLG_TAPE, XLL_INFO, "auto stop after the run-out: block %i is the rom trap's", tap->block + 1);
 						tap->tail = 1;
 						tap->volPlay = (tap->volPlay & 0x80) ? 0x7f : 0x80;	// silence, the way a pause is written
 						tap->sigLen += TAPE_TAIL_TICKS;
