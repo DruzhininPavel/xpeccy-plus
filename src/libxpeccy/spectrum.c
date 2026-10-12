@@ -419,16 +419,16 @@ int iord(int port, void* ptr) {
 void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp->flgBDI = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? 1 : 0;
-	// sync video to current T
-	comp_vid_to_t_full(comp);
 	if (comp->flgCNTI) {
+		comp_vid_to_t_full(comp);	// sync video to current T
 		zx_cont_t1(comp, port);
 		comp->hw->out(comp, port, val);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;
 	} else {
-		vid_sync_fixed(comp->vid, comp->nsPerTickFixed);
-		res4++;
+		// the ray up to T+1 in one step: the OUT reaches the device mid-cycle
+		vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t + 1 - res4));
+		res4 = comp->cpu->t + 1;
 		comp->hw->out(comp, port, val);
 	}
 	if (comp->vid->ula->palchan) {

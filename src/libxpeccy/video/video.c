@@ -1689,9 +1689,24 @@ static void vid_run(Video* vid, int k) {
 // dropped once per call.
 static inline void vid_take_dots(Video* vid) {
 	if (vid->nsDrawFixed >= vid->nsPerDotFixed) {
-		int n = (int)(vid->nsDrawFixed / vid->nsPerDotFixed);
-		vid->nsDrawFixed -= n * vid->nsPerDotFixed;
-		vid->nsOwedFixed += n * vid->nsPerDotFixed;
+		// the whole dots in nsDrawFixed. A sync spans a few dots nearly
+		// always, so they are counted off; the 64-bit division only runs
+		// for a long stretch, where it is paid once per many dots.
+		const long long p = vid->nsPerDotFixed;
+		long long left = vid->nsDrawFixed - p;
+		int n = 1;
+		if (left < (p << 4)) {
+			while (left >= p) {
+				left -= p;
+				n++;
+			}
+		} else {
+			int m = (int)(left / p);
+			n += m;
+			left -= (long long)m * p;
+		}
+		vid->nsOwedFixed += vid->nsDrawFixed - left;
+		vid->nsDrawFixed = left;
 		while (n > 0) {
 			int k = vid_run_len(vid, n);
 			if (k > 0) {
