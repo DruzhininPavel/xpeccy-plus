@@ -847,10 +847,21 @@ void comp_set_layout(Computer* comp, vLayout* lay) {
 // then the wait states. Called straight from the cpu rather than through
 // comp_irq and the machine's own irq handler - zx_contend() is what every one
 // of them does with it, and this runs on every memory access.
+// The cheap tests come first: an address the pattern cannot touch needs no
+// video sync at all (vid_wait_dots would return 0 before reading the ray),
+// so res4 just lags until something that matters syncs. The ray is walked to
+// cpu->t only for an address that can actually wait.
 static void comp_cont(void* ptr, int mreq) {
 	Computer* comp = (Computer*)ptr;
+	// the +2A/+3 asic leaves internal cycles alone: one compare instead of a
+	// page lookup per tick of every z80_wait
+	if (!mreq && (comp->vid->ula->conttype != CONT_PATA)) return;
+	MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
+	if (pg->type != MEM_RAM) return;
+	int adr = pg->num << comp->mem->pgshift;
+	if (!vid_cont_hit(comp->vid, adr, mreq)) return;
 	comp_vid_to_t(comp);
-	zx_contend(comp, mreq);
+	zx_contend_adr(comp, adr, mreq);
 }
 
 // A machine that arbitrates the bus itself (hw->cont). What the last opcode

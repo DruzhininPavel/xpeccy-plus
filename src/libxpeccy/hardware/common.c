@@ -53,15 +53,34 @@ void zx_sync(Computer* comp, int ns) {
 // older "step a tick at a time until the window frees" loop agrees with this
 // for the Ferranti pattern, which counts down to zero, but not for the +2A/+3
 // one (1,0,7,6,5,4,3,2), whose last slots reach past the end of the window.
+
+// wdots-to-ticks, precomputed: the division is exact but sat on every
+// contended access. Rebuilt whenever either period moved (turbo, machine).
+static void zx_cont_ticks_update(Computer* comp) {
+	comp->contDotFixed = comp->vid->nsPerDotFixed;
+	comp->contTickFixed = comp->nsPerTickFixed;
+	for (int i = 0; i < 16; i++)
+		comp->contTicks[i] = ns_fixed_to_ticks_up(comp, (long long)i * comp->vid->nsPerDotFixed);
+}
+
+// The address passed the pattern test and the video stands at cpu->t.
+void zx_contend_adr(Computer* comp, int adr, int mreq) {
+	int wdots = vid_wait_dots(comp->vid, adr, mreq);
+	if (!wdots) return;
+	if ((comp->contDotFixed != comp->vid->nsPerDotFixed) || (comp->contTickFixed != comp->nsPerTickFixed))
+		zx_cont_ticks_update(comp);
+	comp->cpu->t += comp->contTicks[wdots & 15];
+	comp_vid_to_t(comp);
+}
+
 // Video is already synced to cpu->t by comp_irq before we get here.
 void zx_contend(Computer* comp, int mreq) {
 	if (!comp->flgCNTM) return;
 	MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
 	if (pg->type != MEM_RAM) return;
-	int wdots = vid_wait_dots(comp->vid, pg->num << comp->mem->pgshift, mreq);
-	if (!wdots) return;
-	comp->cpu->t += ns_fixed_to_ticks_up(comp, (long long)wdots * comp->vid->nsPerDotFixed);
-	comp_vid_to_t(comp);
+	int adr = pg->num << comp->mem->pgshift;
+	if (!vid_cont_hit(comp->vid, adr, mreq)) return;
+	zx_contend_adr(comp, adr, mreq);
 }
 
 // The cpu is at T4 of an opcode fetch, with the refresh address on the bus.

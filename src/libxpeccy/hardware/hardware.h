@@ -137,6 +137,7 @@ int zx_dev_rd(Computer*, int, int*);
 void zx_irq(Computer*, int);
 void zx_snow(Computer*);
 void zx_contend(Computer*, int);
+void zx_contend_adr(Computer*, int, int);	// address already past vid_cont_hit, video at cpu->t
 int zx_bank_of(Computer*, int);
 int zx_ack(Computer*);
 int zx_ear(Computer*);

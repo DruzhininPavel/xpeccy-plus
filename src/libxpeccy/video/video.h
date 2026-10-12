@@ -277,6 +277,17 @@ void vid_set_ray(Video*, int);
 int vid_ray_dots(Video*);
 
 int vid_wait_dots(Video*, int, int);		// contention wait in dots, not ns
+// Can this physical address be contended at all - the pattern/address test of
+// vid_wait_dots() alone, with the ray left untouched. A miss here means
+// vid_wait_dots() would return 0 without looking at the ray, so the caller may
+// skip the video sync the ray read would have needed.
+static inline int vid_cont_hit(Video* vid, int adr, int mreq) {
+	switch (vid->ula->conttype) {
+		case CONT_PATA: return adr & 0x4000;			// pages 1,3,5,7
+		case CONT_PATB: return mreq ? (adr & 0x10000) : 0;	// pages 4,5,6,7; mreq only
+	}
+	return 0;
+}
 int vid_snow(Video*, int, int);			// cpu refresh cycle: disturb the ULA if it is fetching now
 int vid_float_bus(Video*, int*);		// the byte the ULA has on the bus now, -1 if none
 int vid_atrbyte(Video*);			// the attribute the ULA last fetched, 0xff on the border

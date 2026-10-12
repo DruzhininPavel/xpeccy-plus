@@ -208,6 +208,11 @@ typedef struct Computer {
 	// every memory access, and llround() is an out-of-line CRT call with gcc
 	// at -O2. Derived by comp_update_timings(), never set by hand.
 	long long nsPerTickFixed;
+	// contention wait, dots -> ticks, cached off the two periods above
+	// (zx_cont_ticks_update); never snapshotted, rebuilt on first use
+	long long contDotFixed;
+	long long contTickFixed;
+	int contTicks[16];
 
 	unsigned char verblk[16];	// what the machine says it is (comp_set_identity)
 	bool flag[128];			// each machine have its own flags
