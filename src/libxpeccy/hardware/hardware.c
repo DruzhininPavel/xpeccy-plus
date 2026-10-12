@@ -124,7 +124,7 @@ int stdMRd(Computer* comp, int adr, int m1) {
 }
 
 void stdMWr(Computer *comp, int adr, int val) {
-	mem_page_wr(mem_get_page(comp->mem, adr), adr, val);
+	mem_wr_fast(comp->mem, adr, val);
 }
 
 // io

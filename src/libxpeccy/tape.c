@@ -722,12 +722,7 @@ void tape_set_speed(Tape* tap, int speed) {
 
 void tap_sync_slow(Tape* tap, int ns) {
 	tap_take_lazy(tap);
-	// at the plain speed the *speed/100 cancels; exact unless the scaled
-	// product overflowed, which a sane ns span cannot
-	if (tap->speed == 100)
-		tap->tickAcc += (long long)ns * tap->ticksPerNsFixed;
-	else
-		tap->tickAcc += (long long)ns * tap->speed * tap->ticksPerNsFixed / 100;
+	tap->tickAcc += (long long)ns * tap->speed * tap->ticksPerNsFixed / 100;
 	int mks = (int)(tap->tickAcc >> TAPE_RATE_BITS);
 	int sig;
 	tap->tickAcc &= (1LL << TAPE_RATE_BITS) - 1;

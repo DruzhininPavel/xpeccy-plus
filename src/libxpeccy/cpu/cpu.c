@@ -150,6 +150,10 @@ int cpuSetType(CPU* cpu, int type) {
 	return core ? 1 : 0;
 }
 
+// A cpu with no machine behind it (the GS card's Z80) gets this, so cpu_irq
+// and the direct xirq call in the exec loop never test for NULL.
+static void cpu_dummy_irq(int t, void* ptr) {}
+
 CPU* cpuCreate(int type, cbmr fmr, cbmw fmw, cbir fir, cbiw fiw, cbiack frq, cbirq xirq, void* dt) {
 	CPU* cpu = (CPU*)malloc(sizeof(CPU));
 	memset(cpu, 0x00, sizeof(CPU));
@@ -159,7 +163,7 @@ CPU* cpuCreate(int type, cbmr fmr, cbmw fmw, cbir fir, cbiw fiw, cbiack frq, cbi
 	cpu->ird = fir;
 	cpu->iwr = fiw;
 	cpu->xack = frq;
-	cpu->xirq = xirq;
+	cpu->xirq = xirq ? xirq : cpu_dummy_irq;
 	cpuSetType(cpu, type);
 	return cpu;
 }

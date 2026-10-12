@@ -78,6 +78,14 @@ static inline void mem_page_wr(MemPage* pg, int adr, int val) {
 	else if (pg->wr)
 		pg->wr(adr, val, pg->data);
 }
+// Both calls in one: for the machines that bypass memRd/memWr - these have no
+// -1 answer and no bus mask of their own, which is where the two differ.
+static inline int mem_rd_fast(Memory* mem, int adr) {
+	return mem_page_rd(mem_get_page(mem, adr), adr);
+}
+static inline void mem_wr_fast(Memory* mem, int adr, int val) {
+	mem_page_wr(mem_get_page(mem, adr), adr, val);
+}
 
 void memSetSize(Memory*, int, int);
 // How much of ramData a machine can reach. Not ramSize: memSetBank puts a page

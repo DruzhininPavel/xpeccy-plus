@@ -256,7 +256,7 @@ static const szxField fld_fdc[] = {
 };
 
 static const szxField fld_dif[] = {
-	FLDRAW("bits", 0, 4),		// inten, doors
+	FLDRAW("bits", 0, 4),		// doors
 	FLD(DiskIF, sys),
 	FLDEND
 };
@@ -913,7 +913,6 @@ int szx_ext_load(Computer* comp, const unsigned char* ext, size_t len) {
 			case XR_DIF:
 				if (comp->dif && (comp->dif->type != DIF_NONE)) {
 					EXT_TAKE(DiskIF, comp->dif, fld_dif, p, n)
-					comp->dif->inten = tmp_.inten;
 					comp->dif->sys = tmp_.sys;
 				}
 				break;

@@ -133,8 +133,6 @@ int pdosOut(DiskIF* dif, int port, int val, int dos) {
 }
 
 void pdosReset(DiskIF* dif) {
-//	dif->inten = 0;
-//	dif->lirq = 0;
 	uReset(dif->fdc);
 }
 
@@ -259,7 +257,6 @@ void difDestroy(DiskIF* dif) {
 }
 
 void difReset(DiskIF* dif) {
-	dif->inten = 1;
 	dif->hw->reset(dif);
 }
 

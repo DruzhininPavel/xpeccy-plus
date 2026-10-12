@@ -158,7 +158,7 @@ void memwr(int adr, int val, void* ptr) {
 	// nothing watches the write: stdMWr() without the two calls
 	if (!comp_mem_watched(comp)) {
 		if (comp->hw->mwr == stdMWr)
-			mem_page_wr(mem_get_page(comp->mem, adr), adr, val);
+			mem_wr_fast(comp->mem, adr, val);
 		else
 			comp->hw->mwr(comp, adr, val);
 		return;
