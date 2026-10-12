@@ -133,6 +133,7 @@ Video* vidCreate(cbxrd cb, cbirq ci, void* dptr) {
 	vid->snowLow = -1;
 	vid->res.x = -1;
 	vid->res.y = -1;
+	vid->tslVendX = -1;		// first tslUpdatePorts() always runs
 	vid_set_mode(vid, VID_UNKNOWN);
 	vLayout vlay = {{448,320},{74,48},{64,32},{256,192},{0,0},64};
 	vid_set_layout(vid, &vlay);

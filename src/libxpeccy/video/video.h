@@ -174,6 +174,10 @@ struct Video {
 	int idx;
 
 	vCoord scrsize;		// << tsconf.xSize, tsconf.ySize
+	// what tslUpdatePorts() last derived from; never snapshotted
+	int tslKey;		// p00af | p07af<<8 | tconfig<<16
+	int tslVendX;
+	int tslVendY;
 
 	struct {
 		int xPos;			// position of screen @ monitor [32|12] x [44|24|0]
