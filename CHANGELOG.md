@@ -51,6 +51,9 @@ before that point is upstream's history and is not repeated here.
 - **Faster emulation** of the Sinclair machines: about a quarter faster on the 48K, a fifth
   on the 128K and two fifths on the +2A/+3, with every machine running exactly as before.
 
+- **A tape plays at its real speed on the 128K, +2, +2A and +3**: their tape ran 1.3% fast,
+  as it was timed off their CPU clock rather than the 3.5 MHz of a ZX tape.
+
 ### Fixed
 
 - **720K disks on the +3** load again: the second side of a double-sided disk read as an
@@ -78,6 +81,14 @@ before that point is upstream's history and is not repeated here.
   TR-DOS, and a file of an unknown type is reported and kept out of the recent list.
 
 - **A `.pad` file with a non-Latin name** loads and saves on Windows.
+
+- **TZX pulse levels** follow the TZX 1.20 rules, and a run of pulse blocks ended by a pause
+  block, a "stop if 48K" or the end of the tape loads too; Basil the Great Mouse Detective
+  and Moonlighter load.
+
+- **Flash loading** leaves the registers as the ROM's loader does and keeps the tape playing
+  through a short gap after the block, so Action Force 2 and Rick Dangerous load. A keyboard
+  scan during a pause no longer stops the tape.
 
 - **Apply with another model** in Options keeps what was changed on the other pages.
 
