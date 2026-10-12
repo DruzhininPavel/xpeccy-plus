@@ -219,7 +219,11 @@ void cpu_set_flag(CPU*, int);
 int reg_get_value(CPU*, xRegDsc*);
 int reg_set_value(CPU*, xRegDsc*, int);
 
-int parity(int);
+// 1 when val holds an even number of set bits (the P flag's sense).
+// Callers pass masked, non-negative values only.
+static inline int parity(int val) {
+	return __builtin_parity((unsigned int)val) ^ 1;
+}
 
 static inline void cpu_irq(CPU* cpu, int id) {cpu->xirq(id, cpu->xptr);}
 

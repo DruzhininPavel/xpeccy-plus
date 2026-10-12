@@ -11,17 +11,6 @@
 // undef redefined flgX after including
 #include "Z80/z80.h"
 
-// common
-
-int parity(int val) {
-	int parity = 1;
-	while (val) {
-		parity ^= val;		// bit 0 is only significant
-		val >>= 1;
-	}
-	return parity & 1;
-}
-
 // no-proc
 
 const char nomnem[] = "undef";
