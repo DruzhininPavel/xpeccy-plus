@@ -15,7 +15,10 @@ void p3Out1FFD(Computer* comp, int port, int val) {
 	// the 7FFD lock holds this port too
 	if (comp->p7FFD & 0x20) return;
 	comp->p1FFD = val & 0xff;
-	comp->dif->fdc->flp->motor = (val & 8) ? 1 : 0;
+	// one motor line for every drive on the cable: the uPD765 has no motor
+	// outputs, and the drive it selects later is already turning
+	for (int i = 0; i < 4; i++)
+		comp->dif->flp[i]->motor = (val & 8) ? 1 : 0;
 	pl2MapMem(comp);
 }
 

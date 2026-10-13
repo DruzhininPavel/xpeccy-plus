@@ -137,6 +137,7 @@ void difSetDrives(DiskIF*, int);	// how many drives are on the cable, from A
 // the plan in progress as a number a snapshot can keep, -1: one not known
 int dif_plan_id(DiskIF*);
 void dif_plan_set(DiskIF*, int);
+int dif_quiet(DiskIF*);		// its time may come in any pieces
 void dif_align_flps(DiskIF*, FDC*, int, int, int, int);
 
 void add_crc_16(FDC*, unsigned char);

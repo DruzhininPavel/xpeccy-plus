@@ -247,6 +247,16 @@ void dif_plan_set(DiskIF* dif, int id) {
 	dif->fdc->plan = (id > 0) && tab[i] ? tab[i] : NULL;
 }
 
+int uParked(FDC*);		// upd765.c
+
+// The controller takes its time in any pieces alike, so a run of steps can hand
+// it over at once: no command and no door closing, or the upd765 parked
+int dif_quiet(DiskIF* dif) {
+	if (dif->doors) return 0;
+	if (!dif->fdc->plan) return 1;
+	return (dif->type == DIF_P3DOS) && uParked(dif->fdc);
+}
+
 void difDestroy(DiskIF* dif) {
 	flpDestroy(dif->flp[0]);
 	flpDestroy(dif->flp[1]);

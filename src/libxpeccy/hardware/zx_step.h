@@ -58,7 +58,7 @@ static inline void atm2_step_in(Computer* comp) {
 // each takes it in any pieces alike as it stands now, beside its own sync below.
 // Nothing but an i/o access changes that (comp_run_io ends a run, or checks again).
 static inline int comp_devs_summable(Computer* comp) {
-	if (comp->dif->fdc->plan || comp->dif->doors) return 0;	// difSync: the FDC reads its own time
+	if (!dif_quiet(comp->dif)) return 0;			// difSync: a command reads its own time
 	if (comp->gs->enable) return 0;				// gsSync: its own cpu steps by it
 	// saaSync, tsSync: they count the time, linearly
 	// tapSync: at the normal speed; any other rounds per call
