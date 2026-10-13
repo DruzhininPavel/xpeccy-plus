@@ -300,6 +300,7 @@ void vid_set_dot_ns(Video*,double);
 void vid_set_mode(Video*,int);
 void vid_set_nodraw(Video*,int);
 void vid_set_nodraw_next(Video*,int);		// the same from the next frame start on
+void vid_sweep(Video*);				// the memory now as a whole frame, into bufimg
 void vid_set_int_frame(Video*, int);		// dots left of the frame INT pulse, 0: none
 void vid_set_ray(Video*, int);
 int vid_ray_dots(Video*);

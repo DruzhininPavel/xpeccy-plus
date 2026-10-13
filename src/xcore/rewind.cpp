@@ -278,7 +278,9 @@ static void rw_play_stop() {
 
 // the picture of snapshot back: 1 when there is one to show
 static int rw_show(Computer* comp, int back, long long* phase) {
-	return rewind_load(comp, back, phase) && xstate_run_frame(comp);
+	if (!rewind_load(comp, back, phase)) return 0;
+	vid_set_nodraw(comp->vid, 0);		// fast mode may have left it off
+	return xstate_run_frame(comp);
 }
 
 static void rw_let_go(Computer* comp, long long* phase) {

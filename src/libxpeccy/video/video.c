@@ -1765,3 +1765,46 @@ void vid_settle_slow(Video* vid) {
 	vid->nsCalmFixed = calm - (d - vid->nsDrawFixed);
 }
 
+
+// A whole frame drawn from the memory as it stands, at once, and swapped into
+// bufimg: fast mode's picture when its frames are not drawn. A copy of the video
+// runs it with its interrupts cut off, so the machine sees nothing of it; the
+// border is one colour and there is no multicolour - nothing the cpu does
+// meanwhile is in it.
+static void vid_sweep_irq(int t, void* ptr) {
+	(void)t;
+	(void)ptr;
+}
+
+void vid_sweep(Video* vid) {
+	static Video v;
+	unsigned char* scr = scrimg;
+	v = *vid;
+	v.xirq = vid_sweep_irq;
+	v.nodraw = 0;
+	v.nodrawNext = -1;
+	v.debug = 0;
+	v.inten = 0;
+	v.intFRAME = 0;
+	v.ray.x = 0;
+	v.ray.y = 0;
+	v.ray.lptr = scrimg;
+	v.ray.ptr = scrimg;
+	v.idx = 0;
+	v.snowLow = -1;
+	v.snowDup = 0;
+	v.tail = 0;
+	v.hblank = 0;
+	v.vblank = 0;
+	v.vbrd = (v.bord.y > 0) || (v.send.y <= 0);
+	v.hbrd = (v.bord.x > 0) || (v.send.x <= 0);
+	v.nsOwedFixed = 0;
+	v.nsCalmFixed = v.nsPerDotFixed;
+	if (v.cb->frm) v.cb->frm(&v);
+	if (v.cb->line) v.cb->line(&v);
+	v.nsDrawFixed = (long long)v.dotPerFrame * v.nsPerDotFixed;
+	vid_take_dots(&v);			// its last dot ends the frame: vid_frame() swaps
+	// the machine's own ray goes on in whichever buffer is the one drawn into now
+	vid->ray.lptr = scrimg + (vid->ray.lptr - scr);
+	vid->ray.ptr = scrimg + (vid->ray.ptr - scr);
+}

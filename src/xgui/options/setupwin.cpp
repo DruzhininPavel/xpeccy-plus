@@ -22,6 +22,7 @@
 #include <QStylePainter>
 #include <QStyleOptionComboBox>
 #include <QLineEdit>
+#include <QIntValidator>
 #include <QTextEdit>
 #include <QAbstractTextDocumentLayout>
 #include <QFontDatabase>
@@ -519,6 +520,14 @@ SetupWin::SetupWin(QWidget* par):QDialog(par) {
 		ui.cbSlowmo->addItem(QString("1/%0").arg(f), f);
 		ui.cbFfwd->addItem(QString::fromUtf8("\u00d7%0").arg(f), f);
 	}
+	for (int f : {15, 30, 50, 60})
+		ui.cbFastFps->addItem(QString::number(f), f);
+	ui.cbFastFps->setValidator(new QIntValidator(1, 100, ui.cbFastFps));
+	ui.cbFastFps->setInsertPolicy(QComboBox::NoInsert);
+	ui.cbFastPic->addItem("Raster", FPIC_RASTER);
+	ui.cbFastPic->setItemData(0, "Drawn as the machine runs, multicolor and all", Qt::ToolTipRole);
+	ui.cbFastPic->addItem("Whole frame", FPIC_WHOLE);
+	ui.cbFastPic->setItemData(1, "The memory at a frame end, drawn at once", Qt::ToolTipRole);
 	for (QComboBox* box : {ui.cbSlowmoKey, ui.cbFfwdKey, ui.cbFastKey}) {
 		box->addItem("Toggle", XHOLD_TOGGLE);
 		box->addItem("Hold", XHOLD_HOLD);
@@ -956,6 +965,8 @@ void SetupWin::start() {
 	setRFIndex(ui.cbSlowmoKey, conf.emu.slowHold, XHOLD_HYBRID);
 	setRFIndex(ui.cbFfwdKey, conf.emu.ffHold, XHOLD_HYBRID);
 	setRFIndex(ui.cbFastKey, conf.emu.fastHold, XHOLD_HYBRID);
+	ui.cbFastFps->setEditText(QString::number(conf.emu.fastFps));
+	setRFIndex(ui.cbFastPic, conf.emu.fastPic, FPIC_RASTER);
 	ui.cbRewind->setChecked(conf.emu.rewind.on);
 	for (QWidget* w : {(QWidget*)ui.sbRewStep, (QWidget*)ui.labRewStep, (QWidget*)ui.sbRewSecs, (QWidget*)ui.labRewSecs})
 		w->setEnabled(conf.emu.rewind.on);
@@ -969,9 +980,15 @@ void SetupWin::start() {
 	// Measure them here, not in the .ui: a style or a font would outgrow a
 	// number set there.
 	int ctlw = qMax(comboFitWidth(ui.cbRunAhead), qMax(comboFitWidth(ui.cbSlowmo), comboFitWidth(ui.cbFfwd)));
+	ctlw = qMax(ctlw, comboFitWidth(ui.cbFastFps));
 	ui.cbRunAhead->setFixedWidth(ctlw);
 	ui.cbSlowmo->setFixedWidth(ctlw);
 	ui.cbFfwd->setFixedWidth(ctlw);
+	ui.cbFastFps->setFixedWidth(ctlw);
+	// the picture's mode in the keys' column, as wide as they are
+	int keyw = qMax(comboFitWidth(ui.cbFastKey), comboFitWidth(ui.cbFastPic));
+	for (QComboBox* box : {ui.cbSlowmoKey, ui.cbFfwdKey, ui.cbFastKey, ui.cbFastPic})
+		box->setFixedWidth(keyw);
 	ui.cbStyleSheet->setFixedWidth(comboFitWidth(ui.cbStyleSheet));
 	QGridLayout* emugrid[4] = {ui.gridLayout_lat, ui.gridLayout_rew, ui.gridLayout_look, ui.gridLayout_23};
 	for (int col = 0; col < 2; col++) {
@@ -1302,6 +1319,9 @@ void SetupWin::applyGlobal() {
 	conf.emu.slowHold = getRFIData(ui.cbSlowmoKey);
 	conf.emu.ffHold = getRFIData(ui.cbFfwdKey);
 	conf.emu.fastHold = getRFIData(ui.cbFastKey);
+	int fps = ui.cbFastFps->currentText().toInt();
+	conf.emu.fastFps = (fps > 0) ? qMin(fps, 100) : 30;
+	conf.emu.fastPic = getRFIData(ui.cbFastPic);
 	conf.emu.rewind.on = ui.cbRewind->isChecked() ? 1 : 0;
 	conf.emu.rewind.step = ui.sbRewStep->value();
 	conf.emu.rewind.secs = ui.sbRewSecs->value();

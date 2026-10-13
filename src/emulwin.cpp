@@ -150,16 +150,25 @@ bool MainWin::saveChanged(bool tape) {
 }
 
 void MainWin::pause(bool p, int msk) {
-	conf.emu.fast = 0;
+	// fast mode leaves most frames undrawn: a pause of the user's own waits for
+	// the machine to draw one whole (fast_picture_frame), the others stop it now
+	if (p && (msk & PR_PAUSE) && conf.emu.fast && !conf.emu.pause && fast_picture_busy()) {
+		conf.emu.pauseReq |= PR_PAUSE;
+		msk &= ~PR_PAUSE;
+	} else {
+		conf.emu.fast = 0;
+	}
 	if (p) {
 		conf.emu.pause |= msk;
 	} else {
 		conf.emu.pause &= ~msk;
+		conf.emu.pauseReq &= ~msk;
 	}
-	if (!grabMice || (conf.emu.pause && grabMice)) {
+	int paused = conf.emu.pause || conf.emu.pauseReq;
+	if (!grabMice || (paused && grabMice)) {
 		releaseMouse();
 	}
-	if (!conf.emu.pause) {
+	if (!paused) {
 		if (grabMice) {
 			grabMouse(QCursor(Qt::BlankCursor));
 			mouseRecenter();	// the pointer went its own way while paused
@@ -537,6 +546,7 @@ void MainWin::timerEvent(QTimerEvent* ev) {
 		if (conf.emu.fast != fpsFast) {
 			fpsFast = conf.emu.fast;
 			fpsmem.clear();
+			updateHead();		// the thread ends it too: a pause asked for in it
 		}
 		if (!conf.emu.pause && conf.vid.fctime) {
 			FpsSample cur = {conf.vid.fcount, conf.vid.fctime};

@@ -300,8 +300,7 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 				pckAct->setChecked(!pckAct->isChecked());	// its message comes with the switch
 				break;
 			case XCUT_PAUSE:
-				conf.emu.pause ^= PR_PAUSE;
-				pause(true,0);
+				pause(!((conf.emu.pause | conf.emu.pauseReq) & PR_PAUSE), PR_PAUSE);
 				break;
 			case XCUT_DEBUG:
 				conf.emu.fast = 0;

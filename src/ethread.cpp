@@ -663,6 +663,7 @@ void xThread::emuCycle(Computer* comp) {
 			rzxr_frame(comp);
 			rewind_frame(comp, &sndNsFixed);
 			rewinding = rewind_active();
+			fast_picture_frame(comp);
 			brk_trace_flush();
 			// before run-ahead: the debugger's screen view wants the machine as
 			// it really stands, not the frame it is about to guess at
@@ -937,8 +938,10 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 	setOutput("NULL");
 	pacingClose();		// the budget is handed out here, not by the timer
 	conf.emu.pause = 0;
-	// the bench picks its mode itself: fast loading would switch it under a tape
+	// the bench picks its mode itself: fast loading would switch it under a tape,
+	// and it draws the frames fast mode would leave out
 	fastload_hold(1);
+	fast_picture_hold(1);
 	int rwOn = conf.emu.rewind.on;
 	conf.emu.rewind.on = (rw > 0);
 	rzx_begin(comp);
@@ -1019,6 +1022,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 		fflush(stdout);
 		conf.emu.rewind.on = rwOn;
 		fastload_hold(0);
+		fast_picture_hold(0);
 		return 0;
 	}
 	// A recording's frame N, to compare with another player stopped there: the
@@ -1038,6 +1042,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 		fflush(stdout);
 		conf.emu.rewind.on = rwOn;
 		fastload_hold(0);
+		fast_picture_hold(0);
 		return 0;
 	}
 	// warm up: a tape or disk being started, a demo getting to its part. In
@@ -1206,6 +1211,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 	conf.emu.rewind.on = rwOn;
 	fflush(stdout);
 	fastload_hold(0);
+	fast_picture_hold(0);
 	return done;
 }
 
