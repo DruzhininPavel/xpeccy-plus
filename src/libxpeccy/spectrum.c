@@ -1111,7 +1111,7 @@ int comp_halt_skip(Computer* comp, int* ns) {
 	} else if ((sync != zx_sync) && (sync != atm2_sync) && (sync != scoSync) && (sync != alf_sync)) {
 		return 0;
 	}
-	if (!comp_fetch_quiet(comp, cpu->regPC)) return 0;
+	if (!comp_fetch_quiet(comp, (cpu->regPC + 1) & 0xffff)) return 0;	// a halted M1 is at the byte after
 	Video* vid = comp->vid;
 	vid_settle(vid);
 	if (vid->nsDrawFixed < 0) return 0;

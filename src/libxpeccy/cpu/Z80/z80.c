@@ -202,6 +202,22 @@ static inline __attribute__((always_inline)) int z80_exec_in(CPU* cpu, int* end)
 		cpu->opTab = npTab;
 		cpu->flgQ = cpu->flgFW;		// what the instruction before did
 		cpu->flgFW = 0;
+		if (cpu->flgHALT) {
+			// Halted, the cpu runs M1 cycles that execute nothing, and their
+			// address is the byte after the HALT - pc stays on the HALT here,
+			// to be stepped past when an interrupt ends it. A HALT on the last
+			// byte of contended memory is fetched there but halts outside it
+			// (Woodmass's HALT2INT, against a real 48K and 128K).
+			z80_mrdx(cpu, (cpu->regPC + 1) & 0xffff, 1);
+			cpu->com = 0x76;
+			cpu->op = &npTab[0x76];
+			cpu->regR++;
+			if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI]))
+				cpu->xirq(IRQ_CPU_RFSH, cpu->xptr);
+			cpu->t++;				// T4
+			*end = 1;
+			return cpu->t;
+		}
 		do {
 			cpu->com = z80_fetch(cpu); // cpu->mrd(cpu->pc++,1,cpu->xptr);
 			cpu->op = &cpu->opTab[cpu->com];
