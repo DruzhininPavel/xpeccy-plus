@@ -1111,7 +1111,7 @@ void loadConfig() {
 					if (pnam=="ffwd.hold") conf.emu.ffHold = hold_mode(pval);
 					if (pnam=="fast.hold") conf.emu.fastHold = hold_mode(pval);
 					if (pnam=="fast.picture") conf.emu.fastPic = (pval == "whole") ? FPIC_WHOLE : FPIC_RASTER;
-					if (pnam=="fast.fps") conf.emu.fastFps = getRanged(arg.s, 1, 100);
+					if (pnam=="fast.fps") conf.emu.fastFps = fast_fps_valid(atoi(arg.s));
 					if (pnam=="rewind") conf.emu.rewind.on = arg.b;
 					if (pnam=="rewind.step") conf.emu.rewind.step = getRanged(arg.s, 1, 50);
 					if (pnam=="rewind.secs") conf.emu.rewind.secs = getRanged(arg.s, 5, 300);

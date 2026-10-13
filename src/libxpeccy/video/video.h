@@ -92,9 +92,8 @@ typedef struct {
 	// each (a border line is one colour). Takes the dots it wants and returns
 	// how many it drew; 0 leaves the whole run to the dot callback.
 	int (*run)(Video*, int);
-	// Its dots leave nothing the machine can see but the border latch and
-	// what latch says, so an undrawn frame skips them (vid_skips()).
-	int blind;
+	// The dots leave nothing the machine can see but the border latch and what
+	// latch says, so an undrawn frame skips them (vid_skips()) - in every mode.
 	int latch;		// VL_*: a byte of the drawing the machine reads back
 } xVideoMode;
 
@@ -265,14 +264,13 @@ void vid_reset(Video*);
 // into ns once, at the step's end: the video stands at the step's end then and
 // has never been past it, so the dots it completes are the same whichever way
 // it was handed in.
-void vid_clock_slow(Video*, long long);
-static inline void vid_clock(Video* vid, long long nsFixed) {
+// The whole ns back.
+int vid_clock_slow(Video*, long long);
+static inline int vid_clock(Video* vid, long long nsFixed) {
 	long long p = vid->nsPerDotFixed;
 	long long c = vid->clkFixed;
-	if ((nsFixed < 0) || (c < 0) || (c >= p)) {
-		vid_clock_slow(vid, nsFixed);
-		return;
-	}
+	if ((nsFixed < 0) || (c < 0) || (c >= p))
+		return vid_clock_slow(vid, nsFixed);
 	if (vid->tickWhole) {
 		vid->nsOwedFixed += nsFixed;	// all of it whole dots, the fraction left as it was
 	} else if (nsFixed < (p << 3)) {	// a few dots: counted off (a tick of half a dot, 14 MHz)
@@ -283,19 +281,19 @@ static inline void vid_clock(Video* vid, long long nsFixed) {
 		}
 		vid->clkFixed = f;
 	} else {
-		vid_clock_slow(vid, nsFixed);
-		return;
+		return vid_clock_slow(vid, nsFixed);
 	}
 	long long whole = FIXED_TO_NS(vid->nsOwedFixed);
 	vid->nsOwedFixed -= NS_TO_FIXED(whole);
-	vid->time += (int)whole;
+	return (int)whole;
 }
-// the step's ns, and the next step starts from nothing
+// the step's ns, and the next step starts from nothing; vid->time keeps them for
+// the snapshot, which has always had the field
 static inline int vid_step_ns(Video* vid) {
-	vid->time = 0;
-	vid_clock(vid, vid->stepFixed);
+	int ns = vid_clock(vid, vid->stepFixed);
 	vid->stepFixed = 0;
-	return vid->time;
+	vid->time = ns;
+	return ns;
 }
 void vid_sync_fixed(Video*,long long);
 void vid_sync_lazy_slow(Video*,long long);

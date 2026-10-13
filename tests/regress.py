@@ -246,6 +246,28 @@ def execute(args, cases):
     return results
 
 
+def compare(cases, results, ref_of):
+    """A line for each case that fails or differs from ref_of(case) (None: no reference yet);
+    the counts (same, changed, new, failed)"""
+    same = changed = new = failed = 0
+    for c in cases:
+        r, ref = results[c.key], ref_of(c)
+        err = r.get("error") or (ref or {}).get("error")
+        if err:
+            failed += 1
+            print(f"FAIL     {c.key:28} {err}")
+        elif ref is None:
+            new += 1
+            print(f"NEW      {c.key:28} no reference yet")
+        elif all(r[f] == ref.get(f) for f in FIELDS):
+            same += 1
+        else:
+            changed += 1
+            which = ", ".join(f for f in FIELDS if r[f] != ref.get(f))
+            print(f"DIFFERS  {c.key:28} {which}")
+    return same, changed, new, failed
+
+
 def cmd_run(args):
     cases = pick(args)
     golden = env_path(args.golden, "XPECCY_GOLDEN", "golden")
@@ -256,21 +278,7 @@ def cmd_run(args):
             if r != results[k] and "error" not in r:
                 results[k] = {"error": "not deterministic: two runs differ"}
     refs = {s: load_golden(golden, s) for s in {c.suite for c in cases}}
-    same = changed = new = failed = 0
-    for c in cases:
-        r, ref = results[c.key], refs[c.suite].get(c.name)
-        if "error" in r:
-            failed += 1
-            print(f"FAIL     {c.key:28} {r['error']}")
-        elif ref is None:
-            new += 1
-            print(f"NEW      {c.key:28} no reference yet")
-        elif all(r[f] == ref.get(f) for f in FIELDS):
-            same += 1
-        else:
-            changed += 1
-            which = ", ".join(f for f in FIELDS if r[f] != ref.get(f))
-            print(f"DIFFERS  {c.key:28} {which}")
+    same, changed, new, failed = compare(cases, results, lambda c: refs[c.suite].get(c.name))
     print(f"\n{same} same, {changed} differ, {new} new, {failed} failed")
     if args.json:
         Path(args.json).write_text(json.dumps(results, indent=1), encoding="utf-8")
@@ -313,18 +321,7 @@ def cmd_drawcheck(args):
         return out
     drawn = execute(args, variant("--bench-hash-every"))
     sparse = execute(args, variant("--bench-draw-every"))
-    same = changed = failed = 0
-    for c in cases:
-        a, b = drawn[c.key], sparse[c.key]
-        if "error" in a or "error" in b:
-            failed += 1
-            print(f"FAIL     {c.key:28} {a.get('error') or b.get('error')}")
-        elif a == b:
-            same += 1
-        else:
-            changed += 1
-            which = ", ".join(f for f in FIELDS if a[f] != b[f])
-            print(f"DIFFERS  {c.key:28} {which}")
+    same, changed, _, failed = compare(cases, sparse, lambda c: drawn[c.key])
     print(f"\n{same} same, {changed} differ, {failed} failed (every {n})")
     return 1 if changed or failed else 0
 

@@ -1029,4 +1029,6 @@ extern xConfig conf;
 
 // Flash loading and edge detection are refinements of fast loading, on only with it
 static inline int tape_flash() { return conf.tape.fast && conf.tape.flash; }
+// what conf.emu.fastFps may be: 1..100 pictures a second, 30 for anything not a number
+static inline int fast_fps_valid(int fps) { return (fps < 1) ? 30 : ((fps > 100) ? 100 : fps); }
 static inline int tape_edge() { return conf.tape.fast && conf.tape.edge; }

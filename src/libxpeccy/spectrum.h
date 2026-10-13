@@ -341,10 +341,6 @@ static inline void comp_vid_to_t(Computer* comp) {		// counting allowed
 	res4 = comp->cpu->t;
 }
 
-static inline void comp_vid_to_t_full(Computer* comp) {
-	comp_vid_to(comp, comp->cpu->t);
-}
-
 // the same as comp_vid_to(), the dots only counted where a frame is not drawn:
 // for what reads the ray through vid_settle() or vid_lazy_dots() alone
 static inline void comp_vid_to_lazy(Computer* comp, int t) {

@@ -824,9 +824,10 @@ int vid_float_bus(Video* vid, int* age) {
 	return vid->mrd(MADR(vid->vidPage, atr), vid->xptr) & 0xff;
 }
 
-// An undrawn frame of a mode marked blind moves the ray and nothing else
+// An undrawn frame moves the ray and nothing else: every mode's dots leave the
+// machine nothing but the border latch and what its latch kind says (VL_*)
 static inline int vid_skips(Video* vid) {
-	return vid->nodraw && vid->cb && vid->cb->blind;
+	return vid->nodraw && vid->cb;
 }
 
 // The dot the ray passed last, and the frame it was in: back 1 is the one before
@@ -865,6 +866,20 @@ static int vid_atr_skipped(Video* vid) {
 
 // VL_FNT_*: the font byte the text modes fetch at the start of every 4 dots of
 // their 320x200 window (vidDrawATMtext, vidDrawEvoText), kept outside it
+// The font byte a text mode shows at gx,gy of its 320x200 window: the character
+// code of the cell, in the even byte at #1C0 + its row (ATM: the odd half at ^#2000;
+// ZX Evo: page+3, the odd half at +#1000), through the font - the drawers' and
+// vid_fnt_skipped()'s one copy
+static int vid_text_fnt(Video* vid, int evo, int gx, int gy) {
+	int a = 0x1c0 + ((gy & 0xf8) << 3) + (gx >> 3);
+	int code;
+	if (evo)
+		code = vid->mrd(MADR(vid->vidPage + 3, (gx & 7) ? a + 0x1000 : a), vid->xptr);
+	else
+		code = vid->mrd(MADR(vid->vidPage, (gx & 7) ? a ^ 0x2000 : a), vid->xptr);
+	return vid_fnt_rd(vid, ((code & 0xff) << 3) | (gy & 7)) & 0xff;
+}
+
 static int vid_fnt_skipped(Video* vid) {
 	int x, y, back;
 	vid_last_dot(vid, &x, &y, &back);
@@ -884,14 +899,7 @@ static int vid_fnt_skipped(Video* vid) {
 	}
 	gx = (gx >= 320) ? 316 : (gx & ~3);
 	if (vid_latched_since(vid, back, gx - 32 + vid->bord.x, gy - 4 + vid->bord.y)) return vid->fntbyte;
-	int adr = 0x1c0 + ((gy & 0xf8) << 3) + (gx >> 3);
-	int code;
-	if (vid->cb->latch == VL_FNT_EVO) {
-		code = vid->mrd(MADR(vid->vidPage + 3, (gx & 7) ? adr + 0x1000 : adr), vid->xptr);
-	} else {
-		code = vid->mrd(MADR(vid->vidPage, (gx & 7) ? adr ^ 0x2000 : adr), vid->xptr);
-	}
-	return vid_fnt_rd(vid, ((code & 0xff) << 3) | (gy & 7)) & 0xff;
+	return vid_text_fnt(vid, vid->cb->latch == VL_FNT_EVO, gx, gy);
 }
 
 static void vid_latch_mark(Video* vid) {
@@ -1552,15 +1560,12 @@ void vidDrawATMtext(Video* vid) {
 	} else {
 		adr = 0x1c0 + ((yscr & 0xf8) << 3) + (xscr >> 3);
 		if ((xscr & 3) == 0) {
-			if ((xscr & 7) == 0) {
-				scrbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr) & 0xff;
+			if ((xscr & 7) == 0)
 				col = vid->mrd(MADR(vid->vidPage ^ 4, adr ^ 0x2000), vid->xptr) & 0xff;
-			} else {
-				scrbyte = vid->mrd(MADR(vid->vidPage, adr ^ 0x2000), vid->xptr) & 0xff;
+			else
 				col = vid->mrd(MADR(vid->vidPage ^ 4, adr + 1), vid->xptr) & 0xff;
-			}
-			scrbyte = vid_fnt_rd(vid, (scrbyte << 3) | (yscr & 7));	// vid->font[(scrbyte << 3) | (yscr & 7)];
-			vid->fntbyte = scrbyte & 0xff;
+			scrbyte = vid_text_fnt(vid, 0, xscr, yscr);
+			vid->fntbyte = scrbyte;
 			vidATMDoubleDot(vid,col);
 		}
 	}
@@ -1597,15 +1602,12 @@ void vidDrawEvoText(Video* vid) {
 	} else {
 		if ((xscr & 3) == 0) {
 			adr = 0x1c0 + ((yscr & 0xf8) << 3) + (xscr >> 3);
-			if ((xscr & 7) == 0) {
-				scrbyte = vid->mrd(MADR(vid->vidPage + 3, adr), vid->xptr);
+			if ((xscr & 7) == 0)
 				col = vid->mrd(MADR(vid->vidPage + 3, adr + 0x3000), vid->xptr);
-			} else {
-				scrbyte = vid->mrd(MADR(vid->vidPage + 3, adr + 0x1000), vid->xptr);
+			else
 				col = vid->mrd(MADR(vid->vidPage + 3, adr + 0x2001), vid->xptr);
-			}
-			scrbyte = vid_fnt_rd(vid, (scrbyte << 3) | (yscr & 7)); // vid->font[(scrbyte << 3) | (yscr & 7)];
-			vid->fntbyte = scrbyte & 0xff;
+			scrbyte = vid_text_fnt(vid, 1, xscr, yscr);
+			vid->fntbyte = scrbyte;
 			vidATMDoubleDot(vid,col);
 		}
 	}
@@ -1668,23 +1670,23 @@ void vidDrawEvoText(Video*);
 // it back (ZX Evo has no floating bus); the TSConf line work runs undrawn as well,
 // what it fetches is counted (vidTSRender)
 static xVideoMode vidModeTab[] = {
-	{VID_NORMAL, NULL, vidDrawNormal, NULL, NULL, NULL, NULL, nrm_run, 1, VL_ATR_ZX},
-	{VID_ULA_SCR, NULL, ula_dot, NULL, NULL, NULL, NULL, ula_run, 1, VL_ATR_ZX},
-	{VID_ALCO, NULL, vidDrawAlco, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
-	{VID_HWMC, NULL, vidDrawHwmc, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
-	{VID_ATM_EGA, NULL, vidDrawATMega, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
-	{VID_ATM_TEXT, NULL, vidDrawATMtext, NULL, NULL, NULL, NULL, NULL, 1, VL_FNT_ATM},
-	{VID_ATM_HWM, NULL, vidDrawATMhwmc, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
-	{VID_EVO_TEXT, NULL, vidDrawEvoText, NULL, NULL, NULL, NULL, NULL, 1, VL_FNT_EVO},
-	{VID_TSL_NORMAL, NULL, vidDrawTSLNormal, vts_hblk, vts_line, NULL, vts_frame, NULL, 1, VL_NONE},
-	{VID_TSL_16, NULL, vidDrawTSLExt, vts_hblk, vts_line, NULL, vts_frame, NULL, 1, VL_NONE},		// vidDrawTSL16
-	{VID_TSL_256, NULL, vidDrawTSLExt, vts_hblk, vts_line, NULL, vts_frame, NULL, 1, VL_NONE},	// vidDrawTSL256
-	{VID_TSL_TEXT, NULL, vidDrawTSLText, vts_hblk, vts_line, NULL, vts_frame, NULL, 1, VL_NONE},
-	{VID_PRF_MC, NULL, vidProfiScr, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
-	{VID_PRF_MONO, NULL, vidProfiMono, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
+	{VID_NORMAL, NULL, vidDrawNormal, NULL, NULL, NULL, NULL, nrm_run, VL_ATR_ZX},
+	{VID_ULA_SCR, NULL, ula_dot, NULL, NULL, NULL, NULL, ula_run, VL_ATR_ZX},
+	{VID_ALCO, NULL, vidDrawAlco, NULL, NULL, NULL, NULL, NULL, VL_NONE},
+	{VID_HWMC, NULL, vidDrawHwmc, NULL, NULL, NULL, NULL, NULL, VL_NONE},
+	{VID_ATM_EGA, NULL, vidDrawATMega, NULL, NULL, NULL, NULL, NULL, VL_NONE},
+	{VID_ATM_TEXT, NULL, vidDrawATMtext, NULL, NULL, NULL, NULL, NULL, VL_FNT_ATM},
+	{VID_ATM_HWM, NULL, vidDrawATMhwmc, NULL, NULL, NULL, NULL, NULL, VL_NONE},
+	{VID_EVO_TEXT, NULL, vidDrawEvoText, NULL, NULL, NULL, NULL, NULL, VL_FNT_EVO},
+	{VID_TSL_NORMAL, NULL, vidDrawTSLNormal, vts_hblk, vts_line, NULL, vts_frame, NULL, VL_NONE},
+	{VID_TSL_16, NULL, vidDrawTSLExt, vts_hblk, vts_line, NULL, vts_frame, NULL, VL_NONE},		// vidDrawTSL16
+	{VID_TSL_256, NULL, vidDrawTSLExt, vts_hblk, vts_line, NULL, vts_frame, NULL, VL_NONE},	// vidDrawTSL256
+	{VID_TSL_TEXT, NULL, vidDrawTSLText, vts_hblk, vts_line, NULL, vts_frame, NULL, VL_NONE},
+	{VID_PRF_MC, NULL, vidProfiScr, NULL, NULL, NULL, NULL, NULL, VL_NONE},
+	{VID_PRF_MONO, NULL, vidProfiMono, NULL, NULL, NULL, NULL, NULL, VL_NONE},
 
 
-	{VID_UNKNOWN, NULL, vidDrawBorder, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE}
+	{VID_UNKNOWN, NULL, vidDrawBorder, NULL, NULL, NULL, NULL, NULL, VL_NONE}
 };
 
 void vid_set_core(Video* vid, xVideoMode* xvm) {
@@ -1859,7 +1861,7 @@ static inline void vid_take_dots(Video* vid) {
 // in whole ns for everything downstream (sound pacing among others), the fraction
 // they are owed riding along in nsOwedFixed rather than dropped once per call.
 // The walk takes the same dots as these, the same way, only later.
-void vid_clock_slow(Video* vid, long long nsFixed) {
+int vid_clock_slow(Video* vid, long long nsFixed) {
 	long long f = vid->clkFixed + nsFixed;
 	if (f >= vid->nsPerDotFixed) {
 		long long left;
@@ -1870,7 +1872,7 @@ void vid_clock_slow(Video* vid, long long nsFixed) {
 	vid->clkFixed = f;
 	long long whole = FIXED_TO_NS(vid->nsOwedFixed);
 	vid->nsOwedFixed -= NS_TO_FIXED(whole);
-	vid->time += (int)whole;
+	return (int)whole;
 }
 
 // The same, out of line: the copy inlined in vid_sync_lazy_slow() is the hot one

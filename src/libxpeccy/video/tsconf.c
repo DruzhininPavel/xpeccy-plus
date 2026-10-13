@@ -246,11 +246,13 @@ int vidTSLRenderSprites(Video* vid, int ln) {
 static int ts_tiles_count(Video* vid, int ln, int lay, unsigned short yoffs, unsigned short xoffs) {
 	int ys = (ln & 31) + (yoffs & 7);
 	unsigned short* row = vid->tsconf.tmb[lay][(ys >> 3) & 3];
-	int zen = vid->tsconf.tconfig & (lay ? 8 : 4);
-	int ntiles = (vid->tsconf.tsSize.x >> 3) + 2;
+	int ntiles = (vid->tsconf.tsSize.x >> 3) + 2;	// the cells of the line, from xoffs on
+	if (ntiles > 64) ntiles = 64;
+	if (vid->tsconf.tconfig & (lay ? 8 : 4))	// Z_EN: no cell is a hole
+		return ntiles * 2;
 	int res = 0;
-	for (int a = 0; a < 64; a++)
-		if ((((a - (xoffs >> 3)) & 63) < ntiles) && ((row[a] & 0xfff) || zen))
+	for (int k = 0; k < ntiles; k++)
+		if (!ts_cell_hole(vid, lay, row[((xoffs >> 3) + k) & 63]))
 			res += 2;
 	return res;
 }

@@ -608,8 +608,7 @@ void fast_hold_release(Computer* comp) {
 
 // ns of host time between the pictures fast mode shows
 long long fast_refresh_ns() {
-	int fps = (conf.emu.fastFps > 0) ? conf.emu.fastFps : 30;
-	return 1000000000LL / fps;
+	return 1000000000LL / fast_fps_valid(conf.emu.fastFps);
 }
 
 // Fast mode the user switches on. Its frames are not drawn but for one so often

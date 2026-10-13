@@ -422,6 +422,15 @@ int iord(int port, void* ptr) {
 	return res;
 }
 
+// the OUT reaching the device, the ray where it is: the page or the mode it may
+// change are latched first in an undrawn frame (vid_latch)
+static inline void iowr_out(Computer* comp, int port, int val) {
+	vid_settle(comp->vid);
+	if (comp->vid->nodraw && comp->vid->cb->latch)
+		vid_latch(comp->vid);
+	comp->hw->out(comp, port, val);
+}
+
 void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp_run_io(comp);
@@ -429,19 +438,13 @@ void iowr(int port, int val, void* ptr) {
 	if (comp->flgCNTI) {
 		comp_vid_to_t(comp);		// video to current T
 		zx_cont_t1(comp, port);
-		vid_settle(comp->vid);
-		if (comp->vid->nodraw && comp->vid->cb->latch)
-			vid_latch(comp->vid);		// the page or the mode may change (IRQ_CPU_SYNC)
-		comp->hw->out(comp, port, val);
+		iowr_out(comp, port, val);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;
 	} else {
 		// the ray up to T+1 in one step: the OUT reaches the device mid-cycle
 		comp_vid_to_lazy(comp, comp->cpu->t + 1);
-		vid_settle(comp->vid);
-		if (comp->vid->nodraw && comp->vid->cb->latch)
-			vid_latch(comp->vid);
-		comp->hw->out(comp, port, val);
+		iowr_out(comp, port, val);
 	}
 	if (comp->vid->ula->palchan) {
 		zxSetUlaPalete(comp);
@@ -996,7 +999,6 @@ static int comp_step_end(Computer* comp, int unsynced, int t) {
 }
 
 int compExec(Computer* comp) {
-	comp->vid->time = 0;
 	comp->flgBRKPRE = 0;
 // breakpoints. A run-ahead frame is thrown away, so a break there would fire
 // twice: leave it to the pass that keeps its result
@@ -1102,7 +1104,6 @@ int comp_halt_skip(Computer* comp, int* ns) {
 	cpu->regR = (unsigned char)(cpu->regR + n);
 	cpu->flgQ = 0;			// what the steps before left: HALT writes no flags
 	cpu->flgFW = 0;
-	comp->vid->time = 0;
 	comp->flgBRKPRE = 0;
 	res4 = 0;
 	*ns = comp_step_end(comp, (int)(n * 4), (int)(n * 4));
@@ -1179,11 +1180,7 @@ void comp_run_io_slow(Computer* comp) {
 	Video* vid = comp->vid;
 	comp->runStep = 0;
 	vid->stepFixed -= s;
-	int time = vid->time;
-	vid->time = 0;
-	vid_clock(vid, s);		// the dots s completes: what the steps' ns add up to
-	int ns = vid->time;
-	vid->time = time;
+	int ns = vid_clock(vid, s);		// the dots s completes: what the steps' ns add up to
 	comp->runNs += ns;
 	comp->hw->quiet->devs(comp, ns);
 }
@@ -1258,7 +1255,6 @@ int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 // leaves it. Syncing video and devices in one piece gives what a run of
 // opcodes gives them - every one of them carries its fractions over.
 int comp_skip_ticks(Computer* comp, int t) {
-	comp->vid->time = 0;
 	res4 = 0;
 	return comp_step_end(comp, t, t);
 }

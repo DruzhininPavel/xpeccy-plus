@@ -1319,8 +1319,7 @@ void SetupWin::applyGlobal() {
 	conf.emu.slowHold = getRFIData(ui.cbSlowmoKey);
 	conf.emu.ffHold = getRFIData(ui.cbFfwdKey);
 	conf.emu.fastHold = getRFIData(ui.cbFastKey);
-	int fps = ui.cbFastFps->currentText().toInt();
-	conf.emu.fastFps = (fps > 0) ? qMin(fps, 100) : 30;
+	conf.emu.fastFps = fast_fps_valid(ui.cbFastFps->currentText().toInt());
 	conf.emu.fastPic = getRFIData(ui.cbFastPic);
 	conf.emu.rewind.on = ui.cbRewind->isChecked() ? 1 : 0;
 	conf.emu.rewind.step = ui.sbRewStep->value();
