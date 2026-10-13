@@ -365,6 +365,13 @@ static inline void comp_owe(Computer* comp, int ns, int owe) {
 
 // Something of the debugger's looks at every memory access: the map, the heat
 // map, a condition or a memory breakpoint
+// Nothing looks between the steps: no breakpoint, condition or debugger, no run-ahead
+// pass, no recording made or played - what fast mode's quiet loop and its run on need
+static inline int comp_unwatched(Computer* comp) {
+	return !comp->flgCOND && !comp->flgDBG && !comp->flgBRKMEM && !comp->flgIBRK && !x_runahead
+		&& !comp->rzx.play && !comp->rzx.rec.on;
+}
+
 static inline int comp_mem_watched(Computer* comp) {
 	return comp->flgMAP | comp->flgHEAT | comp->flgCOND | comp->flgBRKMEM;
 }

@@ -61,6 +61,25 @@ typedef struct {
 	int (*get)(Computer*);
 } xPortDsc;
 
+// Fast mode puts a machine's steps together (comp_halt_skip, comp_run_quiet): the
+// devices are handed the time of many steps at once and the per-step part of its
+// sync runs on its own. What a machine's step end is made of, for that: anything its
+// sync or its INT acknowledge does at every step has to be named here, or a run on
+// skips it. A machine with none is stepped one at a time.
+enum {
+	HWQ_ACK_NONE = 0,	// no INT sample at the end of an instruction
+	HWQ_ACK_ZX,		// zx_irq_ack_in() - zx_irq and the handlers that ack as it does
+	HWQ_ACK_TS		// ts_irq_ack_in() - the line and dma INTs held until acked
+};
+typedef struct {
+	int ack;			// HWQ_ACK_*, also what comp_end() does for the core
+	int (*ok)(Computer*);		// steps may go together now (no board turbo, no dma); NULL: always
+	void (*step)(Computer*);	// the sync's own per-step work beside the devices; NULL: none
+	void (*devs)(Computer*, int);	// the sync's devices, given the summed time (comp_run_io)
+	int (*fetch)(Computer*, int);	// an M1 at adr changes nothing (the HALT run-on); NULL: no run-on
+	int lineInt;			// a line INT bounds the HALT run-on as the frame INT does (TSConf)
+} hwQuiet;
+
 struct HardWare {
 	int id;			// id
 	const char* name;	// name used in conf file
@@ -73,6 +92,8 @@ struct HardWare {
 	cbhwcomp mapMem;	// map memory
 	cbHwIwr out;		// io wr
 	cbHwIrd in;		// io rd
+	// mem rd/wr. A memory-mapped port behind them (TSConf's FM window) calls
+	// comp_run_io() first, as iord/iowr do: a quiet run owes the devices time
 	cbHwMrd mrd;		// mem rd
 	cbHwMwr mwr;		// mem wr
 	cbHwIrq irq;		// int rq
@@ -84,6 +105,7 @@ struct HardWare {
 	cbHwVol vol;		// read volume
 	cbhwcomp snapmap;	// stand where a snapshot expects the machine (NULL: nothing to do)
 	cbHwIrq cont;		// a bus cycle starts in turbo, the ray synced to it (NULL: the ULA's contention)
+	const hwQuiet* quiet;	// its step end, for fast mode's run on (NULL: none)
 };
 typedef struct HardWare HardWare;
 
@@ -125,8 +147,7 @@ int hw_reset_bank(int hw, int res);
 // A fetch on a Beta Disk machine that pages TR-DOS: out, from ram while it is
 // in; in, from #3Dxx of the basic rom while it is out
 static inline int bdi_fetch_pages(Computer* comp, MemPage* pg, int adr) {
-	return comp->flgDOS ? (pg->type == MEM_RAM)
-		: (((adr & 0x3f00) == 0x3d00) && comp->flgROM && (pg->type == MEM_ROM));
+	return comp->flgDOS ? mem_m1_dos_out(pg) : (comp->flgROM && mem_m1_dos_in(pg, (adr >> 8) & 0xff));
 }
 int stdMRd(Computer*, int, int);
 void stdMWr(Computer*, int, int);
@@ -138,7 +159,6 @@ void asicMWr(Computer*, int, int);
 int zx_dev_wr(Computer*, int, int);
 int zx_dev_rd(Computer*, int, int*);
 void zx_irq(Computer*, int);
-void zx_irq_ack(Computer*);		// zx_irq(IRQ_CPU_ACK) itself
 void zx_snow(Computer*);
 void zx_contend_adr(Computer*, int, int);	// address already past vid_cont_hit, video at cpu->t
 int zx_bank_of(Computer*, int);
@@ -176,19 +196,13 @@ void zx_set_vmode(Computer*);	// pick the screen drawer for this ula
 void zx_keyp(Computer*, keyEntry*);
 void zx_keyr(Computer*, keyEntry*);
 void zx_sync(Computer*, int);
-// the machines' own syncs and reads, for comp_halt_skip() to know them by
-void ts_sync(Computer*, int);
-void ts_irq(Computer*, int);
-void evo_irq(Computer*, int);
-void prfSync(Computer*, int);
-void scoSync(Computer*, int);
-void scoTpSync(Computer*, int);
-void atm2_sync(Computer*, int);
-void alf_sync(Computer*, int);
-int tslMRd(Computer*, int, int);
-int ts_fetch_quiet(Computer*, int);	// an M1 at adr pages nothing, stalls nothing, costs no time
-int evoMRd(Computer*, int, int);
-int evo_fetch_quiet(Computer*, int);
+// the step ends of the plain ZX machines (hwQuiet): zx_sync's devices, and an M1
+// that changes nothing (stdMRd/asicMRd, the ULA's contention)
+extern const hwQuiet hwq_zx;		// with the HALT run-on
+extern const hwQuiet hwq_zx_nohalt;	// a read of its own (scoMRd, alf_mrd): steps run on, HALT is stepped
+void zx_devs_sync(Computer*, int);
+int zx_fetch_quiet(Computer*, int);
+int hwq_no_turbo(Computer*);		// ok() of a board turbo: a run only at 3.5 MHz
 sndPair zx_vol(Computer*, sndVolume*);
 void zx_set_pal(Computer*);	// todo: called from zx_reset only
 

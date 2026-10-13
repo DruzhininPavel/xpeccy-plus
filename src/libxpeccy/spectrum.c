@@ -481,16 +481,10 @@ static void comp_wr_sync(CPU* cpu) {
 	}
 }
 
-// The end of an instruction: what comp_irq() does with IRQ_CPU_ACK, the
-// common handler called straight
+// The end of an instruction (CPU.xend): the machine's INT sample (hwQuiet.ack)
 static void comp_end(CPU* cpu) {
 	Computer* comp = (Computer*)cpu->xptr;
-	if ((comp->hw->irq == zx_irq) || (comp->hw->irq == evo_irq))	// evo_irq acks as zx_irq
-		zx_irq_ack_in(comp);
-	else if (comp->hw->irq == ts_irq)
-		ts_irq_ack_in(comp);
-	else if (comp->hw->irq)
-		comp->hw->irq(comp, IRQ_CPU_ACK);
+	comp_ack_in(comp, comp_ack_kind(comp));
 }
 
 void comp_irq(int t, void* ptr) {
@@ -499,7 +493,6 @@ void comp_irq(int t, void* ptr) {
 	// are drawn first - but not for what no handler needs it for
 	int unlazy = 1;
 	switch (t) {
-		case IRQ_CPU_ACK:		// every instruction: zx_irq() settles what it reads itself
 		case IRQ_TAP_0:			// no handler acts on these, and unlazying would only
 		case IRQ_TAP_1:			// cut short the calm stretch of a loader's edge loop
 		case IRQ_TAP_BLK:
@@ -525,9 +518,6 @@ void comp_irq(int t, void* ptr) {
 				comp->hCount = comp->fCount;		// if not HALT-ed during frame, count all ticks
 			}
 			break;
-		case IRQ_CPU_SYNC:
-			comp_wr_sync(comp->cpu);
-			return;			// no machine acts on a plain sync
 		case IRQ_CPU_RFSH:
 			comp_vid_to_t(comp);
 			zx_snow(comp);
@@ -923,10 +913,9 @@ static void comp_cont_hw(void* ptr, int mreq) {
 // wants every cycle.
 static void comp_cont_map(Computer* comp) {
 	if (!comp->cpu || !comp->vid) return;
-	int type = comp->vid->ula->conttype;
-	mem_set_cont(comp->mem, (type == CONT_PATA) ? 0x4000 : ((type == CONT_PATB) ? 0x10000 : 0));
-	comp->cpu->contp = ((comp->cpu->xcont == comp_cont) && (comp->mem->pgshift == 8)) ? comp->mem->cont : NULL;
-	comp->cpu->contInt = (type == CONT_PATA);
+	mem_set_cont(comp->mem, vid_cont_bit(comp->vid));
+	comp->cpu->contp = (comp->cpu->xcont == comp_cont) ? comp->mem->cont : NULL;
+	comp->cpu->contInt = vid_cont_internal(comp->vid, 0);
 }
 
 void comp_set_cont(Computer* comp, int on) {
@@ -1059,63 +1048,52 @@ int compExec(Computer* comp) {
 	return comp_step_end(comp, res2 - res4, res2);
 }
 
-// A halted cpu fetches the HALT again every 4 T, and with nothing to wake it up
-// nothing but the time moves. Up to the next thing the machine would see - the
-// INT, the frame end, a line INT - the steps are taken in one go, leaving what
-// they would have left: R counted on, the ticks counted, the video and the
-// devices given the time. The devices that run while it passes are the ones
-// whose sync takes the time in any pieces alike (the AY and the GS only count it,
-// the tape at its normal speed, the SAA steps by the clock); the FDC, a beeper
-// still settling, a held PS/2 key, an NMI waiting and a board's own turbo
-// accounting want every step and keep the cpu stepping. So does anything the
-// fetch itself does: contention, snow from I in a slow bank, a watch, TR-DOS
-// paging, TSConf's cache.
-// Fast mode only: in real time the sound takes samples between the steps.
-// 1 when it went, *ns the time it took.
-static int comp_fetch_quiet(Computer* comp, int adr) {
-	if (comp->hw->mrd == tslMRd) return ts_fetch_quiet(comp, adr);
-	if (comp->hw->mrd == evoMRd) return evo_fetch_quiet(comp, adr);
-	if ((comp->hw->mrd != stdMRd) && (comp->hw->mrd != asicMRd)) return 0;
+// What fast mode asks of any machine before it puts steps together (comp_halt_skip,
+// comp_run_quiet): the core is the Z80's own, ending in comp_end(); nothing looks
+// between the steps (no watch, breakpoint, debugger, run-ahead pass, recording); no
+// NMI or spoiled fetch waits; the devices take their time summed; and the machine's
+// own step end allows it (hwQuiet.ok). NULL: step one at a time.
+static const hwQuiet* comp_quiet_ok(Computer* comp) {
+	const hwQuiet* q = comp->hw->quiet;
+	CPU* cpu = comp->cpu;
+	if (!q || !cpu->core || (cpu->core->exec != z80_exec) || (cpu->xend != comp_end)) return NULL;
+	if (!comp_unwatched(comp) || comp->flgMAP || comp->flgHEAT) return NULL;
+	if (comp->flgNMIRQ || comp->snowBad) return NULL;
+	if (!comp_devs_summable(comp)) return NULL;
+	if (q->ok && !q->ok(comp)) return NULL;
+	return q;
+}
+
+// An M1 at adr does nothing but fetch, on a machine reading through stdMRd/asicMRd
+// (hwq_zx's fetch): it pages no TR-DOS and the ULA does not contend it
+int zx_fetch_quiet(Computer* comp, int adr) {
 	MemPage* pg = mem_get_page(comp->mem, adr);
 	if ((comp->dif->type == DIF_BDI) && bdi_fetch_pages(comp, pg, adr)) return 0;
 	if (!comp->cpu->flgCONT) return 1;
 	if (comp->cpu->xcont != comp_cont) return 0;
-	return (pg->type != MEM_RAM) || !vid_cont_hit(comp->vid, pg->num << comp->mem->pgshift, 1);
+	return !comp->mem->cont[(adr >> 8) & 0xff];		// the pages vid_cont_hit() hits (comp_cont_map)
 }
 
-// The devices whose sync takes the time in any pieces alike, all of them as they
-// stand: the AY and the GS only count it, the tape at its normal speed, the SAA
-// steps by the clock. The FDC, a beeper still settling, a held PS/2 key want
-// every step.
-static int comp_devs_summable(Computer* comp) {
-	if (comp->dif->fdc->plan || comp->dif->doors || comp->gs->enable || comp->keyb->per) return 0;
-	bitChan* bc = comp->beep;
-	if ((bc->val != (bc->lev ? bc->hi : bc->lo)) || (bc->perH && bc->perL)) return 0;
-	if (comp->tape->on && (comp->tape->speed != 100)) return 0;
-	return 1;
-}
-
+// A halted cpu runs an M1 every 4 T at the byte after the HALT, and with nothing to
+// wake it up nothing but the time moves. Up to the next thing the machine would see
+// - the INT, the frame end, a line INT - the steps are taken in one go, leaving what
+// they would have left: R counted on, the ticks counted, the video and the devices
+// given the time (comp_quiet_ok). Not where the fetch itself does anything
+// (hwQuiet.fetch: contention, TR-DOS paging, a cache it changes), nor with the
+// refresh snowing from a slow bank.
+// Fast mode only: in real time the sound takes samples between the steps.
+// 1 when it went, *ns the time it took.
 int comp_halt_skip(Computer* comp, int* ns) {
 	CPU* cpu = comp->cpu;
-	if ((cpu->type != CPU_Z80) || !cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
-	if (comp_mem_watched(comp) || comp->flgIBRK || comp->flgDBG || x_runahead) return 0;
-	if (comp->rzx.play || comp->rzx.rec.on || comp->flgNMIRQ || comp->snowBad) return 0;
-	// the refresh disturbs the ULA only from a slow bank (zx_snow)
-	if (cpu->flgRFSH && (zx_bank_of(comp, cpu->regI << 8) & 1)) return 0;
-	if (!comp_devs_summable(comp)) return 0;
-	cbHwSnc sync = comp->hw->sync;
-	if (sync == ts_sync) {
-		if (comp->tsconf.dma.act) return 0;
-	} else if ((sync == prfSync) || (sync == scoTpSync)) {
-		if (comp->hwMul > 1) return 0;
-	} else if ((sync != zx_sync) && (sync != atm2_sync) && (sync != scoSync) && (sync != alf_sync)) {
-		return 0;
-	}
-	if (!comp_fetch_quiet(comp, (cpu->regPC + 1) & 0xffff)) return 0;	// a halted M1 is at the byte after
+	if (!cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
+	const hwQuiet* q = comp_quiet_ok(comp);
+	if (!q || !q->fetch) return 0;
+	if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI])) return 0;	// zx_snow's banks
+	if (!q->fetch(comp, (cpu->regPC + 1) & 0xffff)) return 0;
 	Video* vid = comp->vid;
 	vid_settle(vid);
 	if (vid->nsDrawFixed < 0) return 0;
-	long long d = vid_quiet_dots(vid, (sync == ts_sync) && (vid->inten & 2));
+	long long d = vid_quiet_dots(vid, q->lineInt && (vid->inten & 2));
 	long long step = 4 * comp->nsPerTickFixed;
 	if (step <= 0) return 0;
 	long long n = (d * vid->nsPerDotFixed - vid->nsDrawFixed - 1) / step;
@@ -1147,6 +1125,13 @@ static inline unsigned char* const* comp_m1_tab(Computer* comp) {
 	return (comp->flgDOS && bdi) ? mem->m1dos : mem->m1p;
 }
 
+// The rule for the tables: they are picked from hw->mrd/mwr, the watch flags, snowBad,
+// the rzx state, the bus mask, and flgDOS with a Beta disk. The pages they point to
+// follow every remap by themselves (memSetBank keeps them), so only those inputs
+// matter, and inside a step only two can move under them: stdMRd() paging TR-DOS
+// (drops m1p) and zx_snow() setting snowBad (drops rdp, m1p). Anything else that sets
+// them - an OUT that pages TR-DOS, a debugger flag - comes between steps, where the
+// tables are picked again; a quiet run re-picks m1p after a drop and ends at i/o.
 static inline void comp_mem_direct(Computer* comp) {
 	CPU* cpu = comp->cpu;
 	int rd = (comp->hw->mrd == stdMRd);
@@ -1170,22 +1155,10 @@ int comp_exec_quiet(Computer* comp) {
 	res4 = 0;
 	comp_mem_direct(comp);
 	CPU* cpu = comp->cpu;
-	cbHwIrq irq = comp->hw->irq;
-	if (cpu->core && (cpu->core->exec == z80_exec) && (cpu->xend == comp_end) && ((irq == zx_irq) || (irq == ts_irq) || (irq == evo_irq))) {
-		// comp_end() inline
-		int end;
-		res2 = z80_exec_open(cpu, &end);
-		if (end) {
-			cpu->t--;
-			if (irq == ts_irq)
-				ts_irq_ack_in(comp);
-			else
-				zx_irq_ack_in(comp);
-			cpu->t++;
-		}
-	} else {
+	if (cpu->core && (cpu->core->exec == z80_exec) && (cpu->xend == comp_end))
+		res2 = comp_exec_z80_in(comp, comp_ack_kind(comp));		// comp_end() inline
+	else
 		res2 = cpu_exec(cpu);
-	}
 	comp->cpu->rdp = NULL;
 	comp->cpu->m1p = NULL;
 	comp->cpu->wrp = NULL;
@@ -1212,10 +1185,7 @@ void comp_run_io_slow(Computer* comp) {
 	int ns = vid->time;
 	vid->time = time;
 	comp->runNs += ns;
-	if (comp->hw->sync == alf_sync)
-		alf_sync(comp, ns);		// all its devices take the time in pieces alike
-	else
-		zx_devs_sync_in(comp, ns);
+	comp->hw->quiet->devs(comp, ns);
 }
 
 // Fast mode: steps run on in one go while nothing but the instructions happens.
@@ -1228,26 +1198,14 @@ void comp_run_io_slow(Computer* comp) {
 // 0 when the machine is not one to run on (the caller steps), else 1 and *ns.
 int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 	CPU* cpu = comp->cpu;
-	cbHwIrq irq = comp->hw->irq;
-	cbHwSnc sync = comp->hw->sync;
-	if (!cpu->core || (cpu->core->exec != z80_exec) || (cpu->xend != comp_end)) return 0;
-	if ((irq != zx_irq) && (irq != ts_irq) && (irq != evo_irq)) return 0;
-	// the machine's own part of a step end, which the run does after every step:
-	// the dma idle on TSConf (its DRAM count starts again), Z_I on ATM. Scorpion's
-	// is the NMI, Profi's and Turbo+'s the board turbo, none of them there.
-	int ts = (sync == ts_sync);
-	int atm = (sync == atm2_sync);
-	if (ts) {
-		if (comp->tsconf.dma.act) return 0;
-	} else if ((sync == prfSync) || (sync == scoTpSync)) {
-		if (comp->hwMul > 1) return 0;
-	} else if (!atm && (sync != zx_sync) && (sync != scoSync) && (sync != alf_sync)) {
-		return 0;
-	}
 	if (cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
-	if (comp_mem_watched(comp) || comp->flgIBRK || comp->flgDBG || x_runahead) return 0;
-	if (comp->rzx.play || comp->rzx.rec.on || comp->flgNMIRQ || comp->snowBad) return 0;
-	if (!comp_devs_summable(comp)) return 0;
+	const hwQuiet* q = comp_quiet_ok(comp);
+	if (!q) return 0;
+	// the machine's own part of a step end, done after every step but the last,
+	// whose step end is the real one (hwQuiet.step)
+	void (*step)(Computer*) = q->step;
+	int ack = q->ack;
+	cbHwSnc sync = comp->hw->sync;
 	Video* vid = comp->vid;
 	comp->flgBRKPRE = 0;
 	comp->runOn = 1;
@@ -1257,30 +1215,20 @@ int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 	comp_mem_direct(comp);
 	int direct = (cpu->m1p != NULL);
 	for (;;) {
-		int end;
 		res4 = 0;
-		int t = z80_exec_open(cpu, &end);
-		if (end) {		// comp_end() inline
-			cpu->t--;
-			if (irq == ts_irq)
-				ts_irq_ack_in(comp);
-			else
-				zx_irq_ack_in(comp);
-			cpu->t++;
-		}
+		int t = comp_exec_z80_in(comp, ack);
 		// comp_step_end() but for the ns and the devices
 		vid_sync_lazy(vid, ticks_to_ns_fixed(comp, t - res4));
 		comp->tickCount += t;
 		comp->tickTotal += t;
 		comp->frmtCount += t;
 		if (vid->newFrame || comp->runIO || comp->flgBRK || cpu->flgHALT || (cpu->intrq & cpu->inten) || comp->snowBad) break;
-		if (stops && zx_rom_active(comp)) {
+		if (stops && (cpu->regPC < 0x4000) && zx_rom_active(comp)) {
 			int i;
 			for (i = 0; (i < nstops) && (cpu->regPC != stops[i]); i++);
 			if (i < nstops) break;
 		}
-		if (ts) comp->tsconf.cpuDram = 0;		// ts_sync() for this one, the dma idle
-		if (atm) atm2_step_in(comp);
+		if (step) step(comp);
 		comp->runStep = vid->stepFixed;
 		if (direct && !cpu->m1p)		// stdMRd() paged TR-DOS
 			cpu->m1p = comp_m1_tab(comp);

@@ -65,7 +65,7 @@ int zx_bank_of(Computer* comp, int adr) {
 
 void zx_snow(Computer* comp) {
 	int bank = zx_bank_of(comp, comp->cpu->regI << 8);
-	if (!(bank & 1)) return;		// not a contended bank
+	if (!mem_bank_slow(bank)) return;		// not a contended bank
 	if (!vid_snow(comp->vid, z80_get_r(comp->cpu),
 			(bank & 4) | (comp->vid->vidPage & 2) | 1)) return;
 	// Some 128K machines hang or reset under snow and others take it without a
@@ -120,15 +120,19 @@ void zx_irq(Computer* comp, int t) {
 		case IRQ_NMI:				// zx_sync takes it from here
 			comp->flgNMIRQ = 1;
 			break;
-		case IRQ_CPU_ACK:
-			zx_irq_ack(comp);
-			break;
 	}
 }
 
-void zx_irq_ack(Computer* comp) {
-	zx_irq_ack_in(comp);
+void zx_devs_sync(Computer* comp, int ns) {
+	zx_devs_sync_in(comp, ns);
 }
+
+int hwq_no_turbo(Computer* comp) {
+	return comp->hwMul < 2;
+}
+
+const hwQuiet hwq_zx = {HWQ_ACK_ZX, NULL, NULL, zx_devs_sync, zx_fetch_quiet, 0};
+const hwQuiet hwq_zx_nohalt = {HWQ_ACK_ZX, NULL, NULL, zx_devs_sync, NULL, 0};
 
 int zx_ack(Computer* comp) {
 	return comp->intVector & 0xff;
@@ -271,10 +275,9 @@ int zx_in_float(Computer* comp, int port) {
 
 // The bus a +2A/+3 hands back between those fetches can be the last byte that
 // went to or came from contended memory, so those two machines watch their own
-// accesses for it. `zx_bank_of() & 4` is banks 4-7, the set their gate array
-// contends.
+// accesses for it: banks 4-7, the set their gate array contends (mem_bank_asic).
 static void asic_latch(Computer* comp, int adr, int val) {
-	if (!(zx_bank_of(comp, adr) & 4)) return;
+	if (!mem_bank_asic(zx_bank_of(comp, adr))) return;
 	comp->fbusLast = val & 0xff;
 	comp->fbusTick = comp->tickCount + comp->cpu->t;
 }

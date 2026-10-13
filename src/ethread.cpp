@@ -560,6 +560,19 @@ static const uint32_t* af_look_ahead(Computer* comp, int wound, int finish) {
 	return (got == AF_AHEAD) ? afFrames.data() : NULL;
 }
 
+// The rom's tape entry points the hooks act on, with the rom in: LD-BYTES from its
+// start and from its edge loop, and SA-BYTES. Fast mode's run on stops on them.
+enum {TAPE_HOOK_LOAD, TAPE_HOOK_EDGE, TAPE_HOOK_SAVE, TAPE_HOOKS};
+static const int tapeHookPc[TAPE_HOOKS] = {LD_ROM_BASE + LDC_START, LD_ROM_BASE + LDC_EDGE1, 0x4d0};
+
+static int tape_hook_at(Computer* comp) {
+	if (!zx_rom_active(comp)) return -1;
+	int pc = comp->cpu->regPC;
+	for (int i = 0; i < TAPE_HOOKS; i++)
+		if (pc == tapeHookPc[i]) return i;
+	return -1;
+}
+
 void xThread::emuCycle(Computer* comp) {
 	int tm;
 	int brkskip = 0;
@@ -598,9 +611,8 @@ void xThread::emuCycle(Computer* comp) {
 				tm = compExec(comp);
 				comp->flgDBG = brkskip;
 				brkskip = 0;
-			} else if (conf.emu.fast && !comp->gs->enable && !brk_cond_n && !comp->flgCOND
-					&& !comp->flgDBG && !comp->flgBRKMEM && !comp->flgIBRK && !x_runahead
-					&& !comp->rzx.play && !comp->rzx.rec.on && !vrecWatch.load(std::memory_order_relaxed)) {
+			} else if (conf.emu.fast && !comp->gs->enable && !brk_cond_n && comp_unwatched(comp)
+					&& !vrecWatch.load(std::memory_order_relaxed)) {
 				// Fast mode with nothing to look at between the steps: run them on
 				// until one ends a frame, breaks, or leaves the cpu where a tape hook
 				// below has something to do; the hooks then see that last one, as
@@ -610,19 +622,17 @@ void xThread::emuCycle(Computer* comp) {
 				// Between those, the steps run on in one go (comp_run_quiet) up to
 				// the rom's tape entry points the hooks below look for.
 				Tape* tap = comp->tape;
-				static const int stops[] = {LD_ROM_BASE + LDC_START, LD_ROM_BASE + LDC_EDGE1, 0x4d0};
 				for (;;) {
 					if (fastload_on) {
 						tm = comp_exec_quiet(comp);
-					} else if (!(comp->cpu->flgHALT && comp_halt_skip(comp, &tm))
-							&& !comp_run_quiet(comp, &tm, stops, 3)) {
+					} else if (comp->cpu->flgHALT) {
+						if (!comp_halt_skip(comp, &tm))
+							tm = comp_exec_quiet(comp);
+					} else if (!comp_run_quiet(comp, &tm, tapeHookPc, TAPE_HOOKS)) {
 						tm = comp_exec_quiet(comp);
 					}
 					if (comp->flgFRM || comp->flgBRK || conf.emu.pause) break;
-					if (zx_rom_active(comp)) {
-						int pc = comp->cpu->regPC;
-						if ((pc == LD_ROM_BASE + LDC_START) || (pc == LD_ROM_BASE + LDC_EDGE1) || (pc == 0x4d0)) break;
-					}
+					if (tape_hook_at(comp) >= 0) break;
 					if ((tap->ldBase >= 0) || (tape_flash() && (tap->portReads != ldcReads))) break;
 					sndNsFixed += NS_TO_FIXED(tm);
 					if (fastload_on) {
@@ -648,13 +658,11 @@ void xThread::emuCycle(Computer* comp) {
 				// this runs on every instruction, and the rom is paged in for most
 				// of them: the pc straight from the Z80, not through the cpu's
 				// register table.
-				if (zx_rom_active(comp)) {
-					int pc = comp->cpu->regPC;
-					if ((pc == LD_ROM_BASE + LDC_START) || (pc == LD_ROM_BASE + LDC_EDGE1)) {	// load: ix:addr, de:len
-						tap_catch_load(comp, pc == LD_ROM_BASE + LDC_START);
-					} else if (pc == 0x4d0) {				// save: ix:addr, de:len, a:block type(b7), hl:pilot len (1f80/0c98)?
-						tap_catch_save(comp);
-					}
+				int hook = tape_hook_at(comp);
+				if ((hook == TAPE_HOOK_LOAD) || (hook == TAPE_HOOK_EDGE)) {	// load: ix:addr, de:len
+					tap_catch_load(comp, hook == TAPE_HOOK_LOAD);
+				} else if (hook == TAPE_HOOK_SAVE) {		// save: ix:addr, de:len, a:block type(b7), hl:pilot len (1f80/0c98)?
+					tap_catch_save(comp);
 				}
 				// a copy of LD-BYTES in ram is trapped as the rom's is, once seen
 				if (tape_flash()) {

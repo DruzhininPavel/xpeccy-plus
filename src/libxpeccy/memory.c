@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <assert.h>
 
 long long xhost_time_fixed = 0;
 
@@ -156,20 +157,23 @@ void memStdWr(int adr, int val, void* data) {
 }
 
 // What the cpu and the machine read off a page without looking at it again
+// The tables index a page by A15..A8: 256-byte pages, as memCreate() makes them.
 static void mem_derive_page(Memory* mem, int i) {
+	assert(mem->pgshift == 8);
 	MemPage* pg = &mem->map[i];
 	unsigned char* p = (pg->rd == memStdRd) ? (unsigned char*)pg->data : NULL;
 	int ram = (pg->type == MEM_RAM);
+	int bank = ram ? ((pg->num << mem->pgshift) >> 14) : -1;
+	mem->bank[i] = (short)bank;
 	mem->rdp[i] = p;
 	mem->wrp[i] = (pg->wr == memStdWr) ? (unsigned char*)pg->data : NULL;
-	mem->m1p[i] = ((pg->type == MEM_ROM) && ((i & 0x3f) == 0x3d)) ? NULL : p;
-	mem->m1dos[i] = ram ? NULL : mem->m1p[i];
-	int hi = ram && (((pg->num << mem->pgshift) >> 14) & 4);
-	mem->rdpa[i] = hi ? NULL : p;
-	mem->wrpa[i] = hi ? NULL : mem->wrp[i];
+	mem->m1p[i] = mem_m1_dos_in(pg, i) ? NULL : p;
+	mem->m1dos[i] = mem_m1_dos_out(pg) ? NULL : mem->m1p[i];
+	int asic = ram && mem_bank_asic(bank);
+	mem->rdpa[i] = asic ? NULL : p;
+	mem->wrpa[i] = asic ? NULL : mem->wrp[i];
 	mem->cont[i] = ram && ((pg->num << mem->pgshift) & mem->contBit);
-	mem->slow[i] = ram && ((pg->num << mem->pgshift) & 0x4000);
-	mem->bank[i] = ram ? (short)((pg->num << mem->pgshift) >> 14) : -1;
+	mem->slow[i] = ram && mem_bank_slow(bank);
 }
 
 void mem_derive(Memory* mem) {
@@ -225,8 +229,7 @@ void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, e
 
 void mem_set_cont(Memory* mem, int bit) {
 	mem->contBit = bit;
-	for (int i = 0; i < 256; i++)
-		mem->cont[i] = (mem->map[i].type == MEM_RAM) && ((mem->map[i].num << mem->pgshift) & bit);
+	mem_derive(mem);
 }
 
 // set page data

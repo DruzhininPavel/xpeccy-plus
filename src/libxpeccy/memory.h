@@ -53,6 +53,10 @@ typedef struct {
 	unsigned char* wrpa[256];		// gate array latches what passes (asicMRd)
 	unsigned char slow[256];		// ram pages in an odd 16K bank: where the ULA snows from
 	short bank[256];			// the 16K bank of a ram page, -1 for any other
+	// ram pages the ULA contends: a page whose address has contBit set (mem_set_cont,
+	// the bit vid_cont_bit() gives); the cpu reports a bus cycle only there (CPU.contp)
+	unsigned char cont[256];
+	int contBit;
 	unsigned char ramData[MEM_4M];		// 4M
 	unsigned char romData[MEM_512K];	// 512K
 	int ramSize;
@@ -63,12 +67,17 @@ typedef struct {
 	int pgmask;	// number of LSBits in address = page offset (FF or FFFF)
 	int pgshift;	// = log2(page size), 8 for 256-pages, 16 for 64K-pages
 	int busmask;	// cpu addr bus mask (todo: move to CPU)
-	// map[] pages in the ram the ULA contends: a ram page whose address has
-	// contBit set (mem_set_cont). Kept by memSetBank(); the cpu only reports a
-	// bus cycle to the machine where one of these is on the bus (CPU.contp).
-	unsigned char cont[256];
-	int contBit;
 } Memory;
+
+// The rules the tables above are made by, each the one copy its users share:
+// a slow 16K bank - the ULA's, which it snows from (zx_snow)
+static inline int mem_bank_slow(int bank) {return bank & 1;}
+// a bank the +2A/+3 gate array latches what passes in (asic_latch)
+static inline int mem_bank_asic(int bank) {return bank & 4;}
+// a page an opcode fetch pages TR-DOS in from: the rom at #3Dxx (bdi_fetch_pages),
+// and one it pages it out from: ram
+static inline int mem_m1_dos_in(const MemPage* pg, int page) {return (pg->type == MEM_ROM) && ((page & 0x3f) == 0x3d);}
+static inline int mem_m1_dos_out(const MemPage* pg) {return pg->type == MEM_RAM;}
 
 Memory* memCreate(void);
 void memDestroy(Memory*);

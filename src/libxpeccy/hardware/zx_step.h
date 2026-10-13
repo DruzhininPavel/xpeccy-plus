@@ -1,7 +1,7 @@
 #pragma once
 
 // What every instruction of a ZX ends in, inline: for the quiet step, which calls
-// them straight, and for the handlers that keep their names (zx_sync, zx_irq_ack).
+// them straight, and for the handlers that keep their names (zx_sync).
 
 #include "hardware.h"
 #include "../cpu/Z80/z80.h"
@@ -54,6 +54,22 @@ static inline void atm2_step_in(Computer* comp) {
 		vid_set_int_frame(comp->vid, 0);
 }
 
+// The devices whose time can be put off and handed in at once (fast mode's run on):
+// each takes it in any pieces alike as it stands now, beside its own sync below.
+// Nothing but an i/o access changes that (comp_run_io ends a run, or checks again).
+static inline int comp_devs_summable(Computer* comp) {
+	if (comp->dif->fdc->plan || comp->dif->doors) return 0;	// difSync: the FDC reads its own time
+	if (comp->gs->enable) return 0;				// gsSync: its own cpu steps by it
+	// saaSync, tsSync: they count the time, linearly
+	// tapSync: at the normal speed; any other rounds per call
+	if (comp->tape->on && (comp->tape->speed != 100)) return 0;
+	// bcSync: settled where the port put it and no wave made; a transient rounds per call
+	bitChan* bc = comp->beep;
+	if ((bc->val != (bc->lev ? bc->hi : bc->lo)) || (bc->perH && bc->perL)) return 0;
+	if (comp->keyb->per) return 0;				// kbd_sync: ps/2 repeat per step
+	return 1;
+}
+
 static inline void zx_devs_sync_in(Computer* comp, int ns) {
 	// devices. This runs once per instruction, so the ones that are idle or
 	// not there at all are asked by the flag they check first, not by a call
@@ -69,6 +85,12 @@ static inline void zx_devs_sync_in(Computer* comp, int ns) {
 	if (comp->keyb->per) kbd_sync(comp->keyb, ns);		// a key is held: ps/2 auto-repeat
 }
 
+// what alf_sync() hands the time to: the beeper and the chips (comp_devs_summable's)
+static inline void alf_devs_sync_in(Computer* comp, int ns) {
+	bcSync(comp->beep, ns);
+	tsSync(comp->ts, ns);
+}
+
 static inline void zx_sync_in(Computer* comp, int ns) {
 	zx_devs_sync_in(comp, ns);
 	// nmi
@@ -78,4 +100,30 @@ static inline void zx_sync_in(Computer* comp, int ns) {
 		comp->flgROM = 1;
 		comp->hw->mapMem(comp);
 	}
+}
+
+// The end of an instruction (CPU.xend), where INT is sampled: the machine's kind of
+// acknowledge (hwQuiet.ack). cpu->t stands one tick back, as z80_exec() leaves it.
+static inline void comp_ack_in(Computer* comp, int ack) {
+	if (ack == HWQ_ACK_ZX)
+		zx_irq_ack_in(comp);
+	else if (ack == HWQ_ACK_TS)
+		ts_irq_ack_in(comp);
+}
+
+static inline int comp_ack_kind(Computer* comp) {
+	return comp->hw->quiet ? comp->hw->quiet->ack : HWQ_ACK_NONE;
+}
+
+// one instruction (or interrupt) by z80_exec_open() and its end, T back
+static inline int comp_exec_z80_in(Computer* comp, int ack) {
+	CPU* cpu = comp->cpu;
+	int end;
+	int t = z80_exec_open(cpu, &end);
+	if (end) {
+		cpu->t--;
+		comp_ack_in(comp, ack);
+		cpu->t++;
+	}
+	return t;
 }

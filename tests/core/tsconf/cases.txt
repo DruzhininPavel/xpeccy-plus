@@ -37,6 +37,8 @@ bin t17_text_m0.bin      t17_text.asm         MODE=0
 bin t17_text_m1.bin      t17_text.asm         MODE=1
 bin t18_sprview.bin      t18_sprview.asm
 bin t19_tileview.bin     t19_tileview.asm
+bin t21_haltodd.bin      t21_haltodd.asm
+bin t21_haltodd7.bin     t21_haltodd.asm      CLK=1
 
 run t01_frameint14   t01_frameint14.bin   300
 run t02_lineint      t02_lineint.bin      300
@@ -95,3 +97,10 @@ run v01_sprview      t18_sprview.bin      20  SPRCHK=1
 
 # The debugger's tile map decode (tsl_map_entry/tsl_map_dots) against the frame the TSU drew
 run v02_tileview     t19_tileview.bin     40  TILECHK=1
+
+
+# A HALT at an odd address, cache on, 3.5 and 7 MHz: fast mode (QUIET=1) leaves the cache as steps do
+run c01_haltodd         t21_haltodd.bin      3   CACHE=1
+run c01_haltodd_q       t21_haltodd.bin      3   CACHE=1 QUIET=1
+run c02_haltodd7        t21_haltodd7.bin     3   CACHE=1
+run c02_haltodd7_q      t21_haltodd7.bin     3   CACHE=1 QUIET=1

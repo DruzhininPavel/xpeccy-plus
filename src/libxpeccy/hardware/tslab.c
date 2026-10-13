@@ -186,17 +186,19 @@ int tslMRd(Computer* comp, int adr, int m1) {
 }
 
 // What tslMRd() does with an M1 at adr, doing it again: nothing, where TR-DOS is
-// neither entered nor left and the cache answers or the cpu is not at 14 MHz (a
-// miss there only counts a DRAM cycle the DMA, not running, would take)
-int ts_fetch_quiet(Computer* comp, int adr) {
+// neither entered nor left and the word is the cache's already (ts_cache_rd). A miss
+// writes the tag at any clock and waits at 14 MHz; one in an uncached window writes the
+// tag it holds again, which changes nothing but there. The DRAM cycle it counts is the
+// DMA's business, and the DMA is not running.
+static int ts_fetch_quiet(Computer* comp, int adr) {
 	if (comp->dif->type == DIF_BDI) {
 		if (comp->flgDOS && (adr >= 0x4000) && !comp->flgVDOS) return 0;
 		if (((adr & 0xff00) == 0x3d00) && comp->flgROM && !(comp->tsconf.p21af & 0x04)) return 0;
 	}
-	if (comp->hwMul != 4) return 1;
 	int tag = ts_cache_tag(comp, adr);
 	if (!tag) return 1;
-	return (comp->tsconf.cache[(adr >> 1) & 0xff] == tag) && (comp->tsconf.cacheConf & (1 << ((adr >> 14) & 3)));
+	if (comp->tsconf.cache[(adr >> 1) & 0xff] != tag) return 0;
+	return (comp->hwMul != 4) || (comp->tsconf.cacheConf & (1 << ((adr >> 14) & 3)));
 }
 
 static void tslRegWr(Computer* comp, int reg, int val);
@@ -944,6 +946,18 @@ void ts_get_regs(Computer* comp, tsRegs* r) {
 	r->latT1g = (m & TSL_LAT_T1G) ? vid->tsconf.lat.t1g : r->t1gpage;
 }
 
+// fast mode's run on (hwQuiet): no dma running, whose time the per-step DRAM count
+// sets; with it idle the count only starts again at every step
+static int ts_quiet_ok(Computer* comp) {
+	return !comp->tsconf.dma.act;
+}
+
+static void ts_quiet_step(Computer* comp) {
+	comp->tsconf.cpuDram = 0;
+}
+
+static const hwQuiet ts_quiet = {HWQ_ACK_TS, ts_quiet_ok, ts_quiet_step, zx_devs_sync, ts_fetch_quiet, 1};
+
 // irq
 
 void ts_irq(Computer* comp, int t) {
@@ -978,9 +992,6 @@ void ts_irq(Computer* comp, int t) {
 			comp->vid->intDMA = 0;		// reset on vector request
 			break;
 		case IRQ_NMI:				// the NMI line is tied off on TSConf (top.v)
-			break;
-		case IRQ_CPU_ACK:
-			ts_irq_ack_in(comp);
 			break;
 		default:
 			zx_irq(comp, t);
@@ -1028,4 +1039,5 @@ xPortDsc zx_port_tab_ts[] = {
 };
 
 HardWare tsl_hw_core = {HW_TSLAB,"TSConf","ZX Evolution (TSConf)",MEM_4M,1.0,NULL,zx_port_tab_ts,
-			zx_init,tslMapMem,tslOut,tslIn,tslMRd,tslMWr,ts_irq,ts_ack,tslReset,ts_sync,ts_keyp,ts_keyr,zx_vol};
+			zx_init,tslMapMem,tslOut,tslIn,tslMRd,tslMWr,ts_irq,ts_ack,tslReset,ts_sync,ts_keyp,ts_keyr,zx_vol,
+			NULL,NULL,&ts_quiet};

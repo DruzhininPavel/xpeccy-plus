@@ -33,6 +33,22 @@ static void state_line(Computer* comp, const char* tag) {
 		comp->cpu->regPC, comp->cpu->regSP, comp->cpu->regAF, comp->tickTotal);
 }
 
+// QUIET=1: steps as fast mode takes them (emuCycle's quiet loop): a HALT run on to the
+// next event, the steps run on in one go, else one quiet step - all of which must leave
+// the machine as compExec() does, one at a time
+static void bench_step(Computer* comp) {
+	static int quiet = -1;
+	int ns;
+	if (quiet < 0) quiet = (getenv("QUIET") != NULL);
+	if (!quiet) {
+		compExec(comp);
+		return;
+	}
+	if (comp->cpu->flgHALT && comp_halt_skip(comp, &ns)) return;
+	if (comp_run_quiet(comp, &ns, NULL, 0)) return;
+	comp_exec_quiet(comp);
+}
+
 // SPRCHK=1: every active sprite as the debugger draws it (tsl_sprite_dots) against
 // the last whole frame, dot for dot: a transparent dot has to show what is under it,
 // which the test programs make the border
@@ -221,7 +237,7 @@ int main(int argc, char** argv) {
 	}
 	int fstart = comp->vid->fcnt;
 	while ((mbox_rd(comp, MBOX) != 0xaa) && (comp->vid->fcnt - fstart < frames))
-		compExec(comp);
+		bench_step(comp);
 	printf("%s: %zu bytes, %s after %d frames, pc=%04X\n", base_name(argv[1]), n,
 		(mbox_rd(comp, MBOX) == 0xaa) ? "done" : "TIMEOUT",
 		comp->vid->fcnt - fstart, comp->cpu->regPC);
@@ -230,6 +246,9 @@ int main(int argc, char** argv) {
 	probe(comp, "PIXH", "PIXH ", 4);
 	printf("BRD  : %02X\n", comp->vid->brdcol);
 	if (getenv("STATE")) state_line(comp, "STATE");
+	if (getenv("CACHE"))		// the cpu's cache, and what the steps count of its DRAM cycles
+		printf("CACHE: tags %08X conf %X dram %d t %lld\n", fnv((unsigned char*)comp->tsconf.cache, sizeof(comp->tsconf.cache)),
+			comp->tsconf.cacheConf, comp->tsconf.cpuDram, comp->tickTotal);
 	if (getenv("SPRCHK")) spr_check(comp);
 	if (getenv("TILECHK")) tile_check(comp);
 	if (getenv("DMALOG")) {

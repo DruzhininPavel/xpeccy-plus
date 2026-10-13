@@ -386,13 +386,17 @@ static inline int vid_cont_internal(Video* vid, int mreq) {
 // vid_wait_dots() alone, with the ray left untouched. A miss here means
 // vid_wait_dots() would return 0 without looking at the ray, so the caller may
 // skip the video sync the ray read would have needed.
-static inline int vid_cont_hit(Video* vid, int adr, int mreq) {
-	if (!vid_cont_internal(vid, mreq)) return 0;
+// The address bit of a contended ram page for the pattern, 0 for none - what memory's
+// cont map is made of (comp_cont_map)
+static inline int vid_cont_bit(Video* vid) {
 	switch (vid->ula->conttype) {
-		case CONT_PATA: return adr & 0x4000;		// pages 1,3,5,7
-		case CONT_PATB: return adr & 0x10000;		// pages 4,5,6,7
+		case CONT_PATA: return 0x4000;		// pages 1,3,5,7
+		case CONT_PATB: return 0x10000;		// pages 4,5,6,7
 	}
 	return 0;
+}
+static inline int vid_cont_hit(Video* vid, int adr, int mreq) {
+	return vid_cont_internal(vid, mreq) && (adr & vid_cont_bit(vid));
 }
 int vid_snow(Video*, int, int);			// cpu refresh cycle: disturb the ULA if it is fetching now
 int vid_float_bus(Video*, int*);		// the byte the ULA has on the bus now, -1 if none
