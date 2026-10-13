@@ -133,26 +133,30 @@ void zx_irq(Computer* comp, int t) {
 		case IRQ_NMI:				// zx_sync takes it from here
 			comp->flgNMIRQ = 1;
 			break;
-		case IRQ_CPU_ACK: {
-			// an instruction that ends in an i/o cycle leaves the video at its
-			// end, a tick past the one the cpu samples INT in: a pulse that
-			// began inside that tick is not there yet
-			int ahead = res4 - comp->cpu->t;
-			// lazy: dots still counted cross no event, so they leave intFRAME
-			// zero or not as it is, and a step back (ahead) walks them first
-			comp_vid_to_t(comp);
-			int act = comp->vid->intFRAME;
-			if (act && (ahead > 0) && (comp->vid->intlen - act < ahead * comp->nsPerTickFixed / comp->vid->nsPerDotFixed))
-				act = 0;
-			comp->cpu->flgACK = !!act && !comp->rzx.play;
-			// INT is a level: taken early in the pulse, it is taken again as soon
-			// as interrupts are back on and the pulse is still there (fuse does
-			// the same from EI). Butler's 128K timing tests count on it.
-			if (act && !comp->rzx.play)
-				comp->cpu->intrq |= Z80_INT;
+		case IRQ_CPU_ACK:
+			zx_irq_ack(comp);
 			break;
-		}
 	}
+}
+
+// INT sampled at the end of every instruction
+void zx_irq_ack(Computer* comp) {
+	// an instruction that ends in an i/o cycle leaves the video at its
+	// end, a tick past the one the cpu samples INT in: a pulse that
+	// began inside that tick is not there yet
+	int ahead = res4 - comp->cpu->t;
+	// lazy: dots still counted cross no event, so they leave intFRAME
+	// zero or not as it is, and a step back (ahead) walks them first
+	comp_vid_to_t(comp);
+	int act = comp->vid->intFRAME;
+	if (act && (ahead > 0) && (comp->vid->intlen - act < ahead * comp->nsPerTickFixed / comp->vid->nsPerDotFixed))
+		act = 0;
+	comp->cpu->flgACK = !!act && !comp->rzx.play;
+	// INT is a level: taken early in the pulse, it is taken again as soon
+	// as interrupts are back on and the pulse is still there (fuse does
+	// the same from EI). Butler's 128K timing tests count on it.
+	if (act && !comp->rzx.play)
+		comp->cpu->intrq |= Z80_INT;
 }
 
 int zx_ack(Computer* comp) {

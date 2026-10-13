@@ -465,6 +465,29 @@ int intrq(void* ptr) {
 	return comp->hw->ack ? comp->hw->ack(comp) : 0xff;
 }
 
+// The ray up to a write: what the write changes may be drawn next. An undrawn
+// frame works out what its dots would have fetched when asked: a write about
+// to change that takes it first.
+static void comp_wr_sync(CPU* cpu) {
+	Computer* comp = (Computer*)cpu->xptr;
+	comp_vid_to_t(comp);
+	if (comp->vid->nodraw && comp->vid->cb->latch) {
+		MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
+		if (vid_latch_hit(comp->vid, (pg->type == MEM_RAM) ? ((pg->num << comp->mem->pgshift) | (comp->cpu->adr & comp->mem->pgmask)) : -1))
+			vid_latch(comp->vid);
+	}
+}
+
+// The end of an instruction: what comp_irq() does with IRQ_CPU_ACK, the
+// common handler called straight
+static void comp_end(CPU* cpu) {
+	Computer* comp = (Computer*)cpu->xptr;
+	if (comp->hw->irq == zx_irq)
+		zx_irq_ack(comp);
+	else if (comp->hw->irq)
+		comp->hw->irq(comp, IRQ_CPU_ACK);
+}
+
 void comp_irq(int t, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	// a machine's own handler may read or move the video, so the dots counted
@@ -498,14 +521,7 @@ void comp_irq(int t, void* ptr) {
 			}
 			break;
 		case IRQ_CPU_SYNC:
-			comp_vid_to_t(comp);
-			// an undrawn frame works out what its dots would have fetched when
-			// asked: a write about to change that takes it first
-			if (comp->vid->nodraw && comp->vid->cb->latch) {
-				MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
-				if (vid_latch_hit(comp->vid, (pg->type == MEM_RAM) ? ((pg->num << comp->mem->pgshift) | (comp->cpu->adr & comp->mem->pgmask)) : -1))
-					vid_latch(comp->vid);
-			}
+			comp_wr_sync(comp->cpu);
 			return;			// no machine acts on a plain sync
 		case IRQ_CPU_RFSH:
 			comp_vid_to_t(comp);
@@ -560,6 +576,8 @@ Computer* compCreate() {
 	comp_brk_newstep(comp);		// vid is still NULL here, the call copes
 
 	comp->cpu = cpuCreate(CPU_Z80,memrd,memwr,iord,iowr,intrq,comp_irq,comp);
+	comp->cpu->xend = comp_end;
+	comp->cpu->xsync = comp_wr_sync;
 	comp->mem = memCreate();
 	comp->vid = vidCreate(vid_mrd_cb, comp_irq, comp);
 	vid_set_mode(comp->vid, VID_NORMAL);

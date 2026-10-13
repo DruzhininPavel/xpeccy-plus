@@ -152,6 +152,10 @@ struct CPU {
 	cbiack xack;			// interrupt vector acknowledge
 	cbirq xirq;			// send signal
 	void (*xcont)(void*, int);	// contend the bus cycle about to start (mreq)
+	// the two signals sent on every instruction, straight to their handlers:
+	// xirq(IRQ_CPU_ACK) and xirq(IRQ_CPU_SYNC) unless the machine says otherwise
+	cbcpu xend;			// the end of an instruction, where INT is sampled
+	cbcpu xsync;			// a write is about to go out
 	void* xptr;			// pointer to external data (almost always Computer*)
 	// core: runtime callbacks (depends on type)
 	struct cpuCore* core;
