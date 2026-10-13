@@ -118,9 +118,6 @@ struct Video {
 //	unsigned noScreen:1;
 	unsigned nodraw:1;	// emulate the raster but put no pixels out; set at a frame start,
 				// since a blind mode's fetch counter stands still meanwhile
-	int nodrawNext;		// nodraw for the next frame, taken as it starts; -1: keep
-	int latchFrm;		// where atrbyte/fntbyte were last taken in an undrawn frame:
-	int latchPos;		// fcnt and the dot (vid_latch)
 	unsigned debug:1;
 	unsigned upd:1;
 	unsigned tail:1;
@@ -131,6 +128,10 @@ struct Video {
 
 	unsigned hbrd:1;	// border.H
 	unsigned vbrd:1;	// border.V
+
+	int nodrawNext;		// nodraw for the next frame, taken as it starts; -1: keep
+	int latchFrm;		// where atrbyte/fntbyte were last taken in an undrawn frame:
+	int latchPos;		// fcnt and the dot (vid_latch)
 
 	int nsPerFrame;
 	long long nsPerDotFixed;	// the dot period, 16.16, and what the ray steps by
