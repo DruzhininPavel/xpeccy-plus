@@ -347,7 +347,7 @@ typedef struct {
 		QToolBar* toolBar;
 		QToolBar* fsTool = nullptr;	// the same buttons over the picture in fullscreen, under fsBar
 		QStatusBar* statusBar;
-		QLabel* sbMachine;
+		QLabel* sbMachine = nullptr;
 		QLabel* sbClock;
 		QLabel* sbTape;
 		QLabel* sbDisk[4];	// "A:" and so on

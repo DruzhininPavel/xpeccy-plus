@@ -60,6 +60,8 @@ before that point is upstream's history and is not repeated here.
 - **A tape plays at its real speed on the 128K, +2, +2A and +3**: their tape ran 1.3% fast,
   as it was timed off their CPU clock rather than the 3.5 MHz of a ZX tape.
 
+- **The machine name in the status bar** opens the Machine menu, with either button.
+
 ### Fixed
 
 - **HALT on the last byte of contended memory**: a halted CPU runs its idle cycles at the
