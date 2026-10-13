@@ -1,0 +1,1196 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Code and labels"
+msgstr "Код і мітки"
+
+msgid ""
+"The **Disasm** panel of the Debugger shows memory as Z80 instructions, "
+"the way the CPU sees it now. You can move through it, change bytes and "
+"instructions, give addresses names and leave comments, and say which "
+"parts of memory are data rather than code."
+msgstr ""
+"Панель **Disasm** у Debugger показує пам'ять як інструкції Z80 — так, як "
+"її зараз бачить CPU. Ви можете переходити нею, змінювати байти та "
+"інструкції, давати адресам імена й залишати коментарі, а також указувати,"
+" які частини пам'яті — дані, а не код."
+
+msgid "The Disasm panel"
+msgstr "Панель Disasm"
+
+msgid "![The Disasm panel](images/dbg-disasm.png)"
+msgstr "![Панель Disasm](images/dbg-disasm.png)"
+
+msgid "**Toolbar** - menus of commands, described in [The toolbar](#the-toolbar)."
+msgstr ""
+"**Панель інструментів** — меню команд, описані в розділі [Панель "
+"інструментів](#the-toolbar)."
+
+msgid ""
+"**Accumulate T** and the T counter - see [The T-state "
+"counter](debugger.md#the-t-state-counter)."
+msgstr ""
+"**Accumulate T** і лічильник T — див. [Лічильник "
+"тактів](debugger.md#the-t-state-counter)."
+
+msgid "**Listing** - one row per instruction or line of data."
+msgstr "**Лістинг** — по рядку на інструкцію чи рядок даних."
+
+msgid "**Scrollbar** - drag it to move through the whole address space."
+msgstr ""
+"**Смуга прокрутки** — перетягуйте її, щоб переходити всім адресним "
+"простором."
+
+msgid "The listing"
+msgstr "Лістинг"
+
+msgid "Each row has four columns:"
+msgstr "Кожен рядок має чотири стовпці:"
+
+msgid "Column"
+msgstr "Стовпець"
+
+msgid "What it shows"
+msgstr "Що показує"
+
+msgid "Address"
+msgstr "Адреса"
+
+msgid "where the row starts in memory"
+msgstr "де рядок починається в пам'яті"
+
+msgid "Bytes"
+msgstr "Байти"
+
+msgid "the bytes of the instruction or data, in hex"
+msgstr "байти інструкції чи даних, у шістнадцятковому вигляді"
+
+msgid "Command"
+msgstr "Команда"
+
+msgid "the instruction, or `DB`, `DW` for data"
+msgstr "інструкція або `DB`, `DW` для даних"
+
+msgid "(last)"
+msgstr "(останній)"
+
+msgid "on the PC row only: the value in memory, or an arrow"
+msgstr "лише в рядку PC: значення в пам'яті або стрілка"
+
+msgid ""
+"Numbers are hex and start with `#`, as in `LD HL,#5C00`. Where an address"
+" has a name, the name is shown instead of the number: `CALL print_score`."
+" An address a few bytes into a named place is shown as the name plus the "
+"offset: `LD A,(table + 2)`."
+msgstr ""
+"Числа шістнадцяткові й починаються з `#`, як у `LD HL,#5C00`. Якщо адреса"
+" має ім'я, замість числа показано ім'я: `CALL print_score`. Адресу за "
+"кілька байтів від названого місця показано як ім'я плюс зміщення: `LD "
+"A,(table + 2)`."
+
+msgid "Some rows are not instructions:"
+msgstr "Деякі рядки не є інструкціями:"
+
+msgid ""
+"a **label** row, in bold on a tinted ground, names the address of the row"
+" under it;"
+msgstr "рядок **мітки**, жирний на тонованому тлі, називає адресу рядка під ним;"
+
+msgid "a **comment** row, in gray, starts with `;`;"
+msgstr "рядок **коментаря**, сірий, починається з `;`;"
+
+msgid ""
+"an `EQU` row follows an instruction when a label points inside it: `NAME`"
+" with `EQU $-2` says the label is two bytes before the next instruction. "
+"Programs that change their own code use such labels;"
+msgstr ""
+"рядок `EQU` іде після інструкції, коли мітка вказує всередину неї: `NAME`"
+" з `EQU $-2` означає, що мітка на два байти перед наступною інструкцією. "
+"Такі мітки використовують програми, що змінюють власний код;"
+
+#, python-brace-format
+msgid ""
+"an empty row follows every return and jump, conditional ones too, to set "
+"the blocks of code apart. **Block separator** in the {icon}`settings` "
+"**Options** menu switches these rows off."
+msgstr ""
+"порожній рядок іде після кожного повернення й переходу, умовних теж, щоб "
+"відокремити блоки коду. **Block separator** у меню {icon}`settings` "
+"**Options** вимикає ці рядки."
+
+msgid ""
+"The row the CPU will run next, at PC, has its own color. Rows with a "
+"breakpoint have their text in the breakpoint color, and a selected block "
+"has its own color too. The colors are set on the **Debugger** page of "
+"**Options**."
+msgstr ""
+"Рядок, який CPU виконає наступним, за адресою PC, має власний колір. "
+"Рядки з точкою зупинки мають текст кольору точки зупинки, а виділений "
+"блок теж має власний колір. Кольори задаються на сторінці **Debugger** "
+"вікна **Options**."
+
+msgid "The last column says more about the instruction at PC:"
+msgstr "Останній стовпець каже більше про інструкцію за адресою PC:"
+
+msgid ""
+"for an instruction that reads or writes memory, such as `LD A,(HL)` or "
+"`LD (#5C3A),HL`, the byte or word at that address now;"
+msgstr ""
+"для інструкції, що читає чи записує пам'ять, як-от `LD A,(HL)` або `LD "
+"(#5C3A),HL`, — байт чи слово, що зараз за цією адресою;"
+
+msgid ""
+"for a conditional jump, call or return whose condition is met, an arrow: "
+"down when it goes to a higher address, up when it goes to a lower one. "
+"The row it goes to, if it is in view, gets an arrow too."
+msgstr ""
+"для умовного переходу, виклику чи повернення, умову якого виконано, — "
+"стрілка: вниз, коли перехід на вищу адресу, вгору, коли на нижчу. Рядок, "
+"куди веде перехід, якщо його видно, теж отримує стрілку."
+
+msgid "Moving around"
+msgstr "Переміщення"
+
+msgid "The listing follows the cursor:"
+msgstr "Лістинг іде за курсором:"
+
+msgid "Key"
+msgstr "Клавіша"
+
+msgid "What it does"
+msgstr "Що робить"
+
+msgid "Up, Down"
+msgstr "Up, Down"
+
+msgid "the cursor one row; at the edge the listing scrolls by one instruction"
+msgstr "курсор на один рядок; на краю лістинг прокручується на одну інструкцію"
+
+msgid "Ctrl+Up, Ctrl+Down"
+msgstr "Ctrl+Up, Ctrl+Down"
+
+msgid "scroll by one byte, to line up instructions that start elsewhere"
+msgstr "прокрутка на один байт, щоб вирівняти інструкції, що починаються деінде"
+
+msgid "PageUp, PageDown"
+msgstr "PageUp, PageDown"
+
+msgid "a page back or on"
+msgstr "на сторінку назад чи вперед"
+
+msgid "mouse wheel"
+msgstr "коліщатко миші"
+
+msgid "scroll by one instruction; with Ctrl, by one byte"
+msgstr "прокрутка на одну інструкцію; із Ctrl — на один байт"
+
+msgid ""
+"These commands have keys of their own, listed in [Debugger "
+"keys](hotkeys.md#debugger-keys):"
+msgstr ""
+"Ці команди мають власні клавіші, перелічені в розділі [Клавіші "
+"Debugger](hotkeys.md#debugger-keys):"
+
+msgid ""
+"**Go to address** - G in both presets. The address cell of the top row "
+"opens for typing: type an address and press Enter."
+msgstr ""
+"**Go to address** — G в обох наборах. Комірка адреси верхнього рядка "
+"відкривається для введення: введіть адресу й натисніть Enter."
+
+msgid "**Jump to PC** - back to the instruction at PC."
+msgstr "**Jump to PC** — назад до інструкції за адресою PC."
+
+msgid ""
+"**Set PC** - PC becomes the address of the cursor row: the CPU goes on "
+"from there."
+msgstr "**Set PC** — PC стає адресою рядка з курсором: CPU продовжить звідти."
+
+msgid ""
+"**Jump to operand** - goes to the address the instruction on the cursor "
+"row refers to: the target of a `JP`, `JR` or `CALL`, or the address in "
+"`LD HL,(#5C3A)`."
+msgstr ""
+"**Jump to operand** — переходить до адреси, на яку посилається інструкція"
+" в рядку з курсором: ціль `JP`, `JR` чи `CALL` або адреса в `LD "
+"HL,(#5C3A)`."
+
+msgid ""
+"**Return** - goes back to where you were before the last jump. It steps "
+"back through every **Jump to operand**, typed address, label picked in "
+"the **Labels List** and register clicked in the **CPU** panel."
+msgstr ""
+"**Return** — повертає туди, де ви були перед останнім переходом. Він крок"
+" за кроком повертається через кожен **Jump to operand**, введену адресу, "
+"мітку, вибрану в **Labels List**, і регістр, клацнутий на панелі **CPU**."
+
+msgid ""
+"**Bookmark 1** to **Bookmark 5** remember the address at the top of the "
+"listing; **Go to bookmark 1** to **Go to bookmark 5** bring it back. "
+"Bookmarks are not kept when the program closes."
+msgstr ""
+"Від **Bookmark 1** до **Bookmark 5** запам'ятовують адресу вгорі "
+"лістингу; від **Go to bookmark 1** до **Go to bookmark 5** повертають до "
+"неї. Закладки не зберігаються після закриття програми."
+
+msgid ""
+"A click on a register's name in the **CPU** panel takes the listing to "
+"the address the register holds. A right-click on the name does the same "
+"for the **DUMP** panel (see [Memory](debugger-memory.md))."
+msgstr ""
+"Клацання на назві регістра на панелі **CPU** переводить лістинг на "
+"адресу, яку містить регістр. Клацання правою кнопкою на назві робить те "
+"саме для панелі **DUMP** (див. [Пам'ять](debugger-memory.md))."
+
+msgid "Typing an address"
+msgstr "Введення адреси"
+
+msgid ""
+"Double-click the address of any row, or select it and press Enter, and "
+"type where to go. The listing scrolls so that the address lands on that "
+"row. An address can be:"
+msgstr ""
+"Двічі клацніть адресу будь-якого рядка або виділіть її й натисніть Enter "
+"і введіть, куди перейти. Лістинг прокрутиться так, щоб адреса опинилася в"
+" цьому рядку. Адресою може бути:"
+
+msgid "You type"
+msgstr "Ви вводите"
+
+msgid "It means"
+msgstr "Що це означає"
+
+msgid "`8000`, `#8000`, `0x8000`"
+msgstr "`8000`, `#8000`, `0x8000`"
+
+msgid "a hex address"
+msgstr "шістнадцяткова адреса"
+
+msgid "`print_score`"
+msgstr "`print_score`"
+
+msgid "the address of a label"
+msgstr "адреса мітки"
+
+msgid "`@print_score`"
+msgstr "`@print_score`"
+
+msgid "the label's address, and never a new label"
+msgstr "адреса мітки, і ніколи не нова мітка"
+
+msgid "`.HL`"
+msgstr "`.HL`"
+
+msgid "the address a register holds: `.PC`, `.SP`, `.IX` and so on"
+msgstr "адреса, яку містить регістр: `.PC`, `.SP`, `.IX` і так далі"
+
+msgid ""
+"A name that is not a label yet makes a new label instead: see [Labels and"
+" comments](#labels-and-comments)."
+msgstr ""
+"Ім'я, яке ще не є міткою, натомість створює нову мітку: див. [Мітки й "
+"коментарі](#labels-and-comments)."
+
+msgid "Editing"
+msgstr "Редагування"
+
+msgid ""
+"Double-click a cell, or select it and press Enter, to change it. Enter "
+"puts the change in, Esc leaves the cell as it was."
+msgstr ""
+"Двічі клацніть комірку або виділіть її й натисніть Enter, щоб змінити її."
+" Enter вносить зміну, Esc залишає комірку як була."
+
+msgid ""
+"**Bytes** - type the new bytes in hex, two digits each, with no spaces: "
+"`3E05` writes `3E` and `05` from the address of the row on."
+msgstr ""
+"**Байти** — введіть нові байти в шістнадцятковому вигляді, по дві цифри, "
+"без пробілів: `3E05` записує `3E` і `05` починаючи з адреси рядка."
+
+msgid ""
+"**Command** - type an instruction, such as `ld a,5` or `call #8010`. It "
+"is assembled and written at the address of the row, and the cursor goes "
+"down to the next row, ready for the next instruction. Write hex numbers "
+"as `#8010` or `0x8010`: a plain number is decimal. Labels can be used in "
+"the instruction, alone or in a sum: `jp loop`, `ld hl,table+2`, `ld "
+"a,(ix+offset)`. An instruction that cannot be assembled writes nothing, "
+"though the cursor still moves down: check the row before you go on."
+msgstr ""
+"**Команда** — введіть інструкцію, як-от `ld a,5` або `call #8010`. Її "
+"буде асембльовано й записано за адресою рядка, а курсор перейде на "
+"наступний рядок, готовий до наступної інструкції. Пишіть шістнадцяткові "
+"числа як `#8010` або `0x8010`: просте число — десяткове. В інструкції "
+"можна використовувати мітки, окремо чи в сумі: `jp loop`, `ld "
+"hl,table+2`, `ld a,(ix+offset)`. Інструкція, яку не вдається асемблювати,"
+" нічого не записує, хоча курсор однаково переходить униз: перевірте "
+"рядок, перш ніж іти далі."
+
+msgid "The command column also takes data:"
+msgstr "Стовпець команди приймає й дані:"
+
+msgid "It writes"
+msgstr "Що записує"
+
+msgid "`db #3F`"
+msgstr "`db #3F`"
+
+msgid "one byte, shown as data"
+msgstr "один байт, показаний як дані"
+
+msgid "`db \"SCORE\"`"
+msgstr "`db \"SCORE\"`"
+
+msgid "the text, shown as text"
+msgstr "текст, показаний як текст"
+
+msgid "`dw #4000`"
+msgstr "`dw #4000`"
+
+msgid "a word, shown as a word"
+msgstr "слово, показане як слово"
+
+msgid "`dw table`"
+msgstr "`dw table`"
+
+msgid "the label's address, shown as an address"
+msgstr "адресу мітки, показану як адреса"
+
+#, python-brace-format
+msgid ""
+"ROM is protected: changes to a ROM address are not written unless **Allow"
+" ROM wr** in the {icon}`settings` **Options** menu is ticked. A cartridge"
+" is never written."
+msgstr ""
+"ROM захищено: зміни за адресою ROM не записуються, якщо в меню "
+"{icon}`settings` **Options** не позначено **Allow ROM wr**. У картридж не"
+" записується ніколи."
+
+msgid "Labels and comments"
+msgstr "Мітки й коментарі"
+
+msgid ""
+"A label is a name for an address. Labels show in the listing on a row of "
+"their own and in place of the addresses in the instructions, and they can"
+" be typed wherever an address is asked for: in the listing, in the "
+"**DUMP** panel, in breakpoints."
+msgstr ""
+"Мітка — це ім'я адреси. Мітки видно в лістингу в окремому рядку й замість"
+" адрес в інструкціях, і їх можна вводити всюди, де запитують адресу: у "
+"лістингу, на панелі **DUMP**, у точках зупинки."
+
+msgid ""
+"To add a label, double-click the address of the row and type the name. A "
+"name starts with a letter or `_`, and has no spaces and no `$`. A row "
+"that already has a label gets the new name instead. A name that reads as "
+"a hex number, such as `FADE` or `C0DE`, is taken as an address: start "
+"such a name with `_`."
+msgstr ""
+"Щоб додати мітку, двічі клацніть адресу рядка й введіть ім'я. Ім'я "
+"починається з літери чи `_` і не має пробілів і `$`. Рядок, що вже має "
+"мітку, натомість отримує нове ім'я. Ім'я, яке читається як шістнадцяткове"
+" число, як-от `FADE` чи `C0DE`, сприймається як адреса: починайте таке "
+"ім'я з `_`."
+
+msgid ""
+"To add a comment, type `;` and the text in the address cell: `; draws the"
+" score`. The comment shows on a gray row above the address."
+msgstr ""
+"Щоб додати коментар, введіть `;` і текст у комірці адреси: `; draws the "
+"score`. Коментар показано в сірому рядку над адресою."
+
+msgid ""
+"To remove a label or a comment, open the address cell of its own row, "
+"clear it and press Enter."
+msgstr ""
+"Щоб прибрати мітку чи коментар, відкрийте комірку адреси в його власному "
+"рядку, очистьте її й натисніть Enter."
+
+#, python-brace-format
+msgid "The {icon}`label` Labels menu of the toolbar has:"
+msgstr "Меню {icon}`label` Labels на панелі інструментів містить:"
+
+msgid ""
+"**Show labels** - the label rows in the listing. The names in the "
+"instructions stay either way. The **Switch labels** key does the same: "
+"Ctrl+L in both presets."
+msgstr ""
+"**Show labels** — рядки міток у лістингу. Імена в інструкціях лишаються в"
+" будь-якому разі. Клавіша **Switch labels** робить те саме: Ctrl+L в обох"
+" наборах."
+
+msgid "**Load labels** - reads a labels file."
+msgstr "**Load labels** — читає файл міток."
+
+msgid "**Save labels** - writes the labels in effect to a file."
+msgstr "**Save labels** — записує чинні мітки у файл."
+
+msgid "**Labels list** - opens the **Labels List**."
+msgstr "**Labels list** — відкриває **Labels List**."
+
+msgid "Labels offered as you type"
+msgstr "Підказка міток під час введення"
+
+msgid ""
+"When you type a name in the address or command column, after the second "
+"letter a list of the labels that contain those letters drops down. Enter "
+"takes the first one, or pick another with the arrow keys or the mouse. "
+"The same list helps in the [Breakpoint Editor](debugger-breakpoints.md)."
+msgstr ""
+"Коли ви вводите ім'я в стовпці адреси чи команди, після другої літери "
+"випадає список міток, що містять ці літери. Enter бере першу, або "
+"виберіть іншу клавішами зі стрілками чи мишею. Той самий список допомагає"
+" в [Breakpoint Editor](debugger-breakpoints.md)."
+
+msgid "Label files"
+msgstr "Файли міток"
+
+msgid ""
+"A labels file holds one label per line: the 16K RAM page, a colon, the "
+"address, and the name:"
+msgstr ""
+"Файл міток містить по мітці в рядку: сторінку RAM по 16K, двокрапку, "
+"адресу та ім'я:"
+
+msgid ""
+"SjASMPlus writes such a file with its `LABELSLIST` directive. Only the "
+"place inside the page counts, so `02:0010` is the same label as "
+"`02:8010`. A line can also leave the page out, as in `:8010 print_score`:"
+" the page is then 5 for an address from 4000 to 7FFF, 2 from 8000 to BFFF"
+" and 0 from C000 to FFFF."
+msgstr ""
+"SjASMPlus записує такий файл своєю директивою `LABELSLIST`. Важить лише "
+"місце всередині сторінки, тож `02:0010` — та сама мітка, що й `02:8010`. "
+"Рядок може й не мати сторінки, як `:8010 print_score`: тоді сторінка — 5 "
+"для адреси від 4000 до 7FFF, 2 — від 8000 до BFFF і 0 — від C000 до FFFF."
+
+msgid ""
+"**Load labels** reads a file into a set of labels named after the file, "
+"and makes that set the one in effect. **Save labels** writes the set in "
+"effect in the same form."
+msgstr ""
+"**Load labels** читає файл у набір міток, названий за файлом, і робить "
+"цей набір чинним. **Save labels** записує чинний набір у тому самому "
+"вигляді."
+
+msgid ""
+"Labels typed in the listing go into the set in effect, or into a new set "
+"called `noname` when there is none."
+msgstr ""
+"Мітки, введені в лістингу, потрапляють у чинний набір або, якщо його "
+"немає, у новий набір `noname`."
+
+msgid ""
+"A program can also come with its labels. With **Auto-load labels** ticked"
+" on the **Debugger** page of **Options**, opening a file loads the "
+"`.labels` file of the same name beside it, until the next file is opened."
+" See [Opening a file](files.md). From the command line, `-l` loads a "
+"labels file (see [Command line](command-line.md#debugging))."
+msgstr ""
+"Програма може мати й власні мітки. Коли на сторінці **Debugger** вікна "
+"**Options** позначено **Auto-load labels**, відкриття файлу завантажує "
+"файл `.labels` із тим самим ім'ям поруч із ним — до відкриття наступного "
+"файлу. Див. [Відкриття файлу](files.md). У командному рядку `-l` "
+"завантажує файл міток (див. [Командний рядок](command-"
+"line.md#debugging))."
+
+msgid "The Labels List"
+msgstr "Labels List"
+
+msgid "![The Labels List](images/dbg-labels-list.png)"
+msgstr "![Labels List](images/dbg-labels-list.png)"
+
+#, python-brace-format
+msgid ""
+"**Labels list** in the {icon}`label` Labels menu, or in the right-click "
+"menu of the listing, opens it."
+msgstr ""
+"Його відкриває **Labels list** у меню {icon}`label` Labels або в меню, що"
+" відкривається клацанням правою кнопкою на лістингу."
+
+#, python-brace-format
+msgid ""
+"**Group** - the set of labels in effect. The buttons beside it: "
+"{icon}`edit` renames the set, {icon}`add` adds a new empty one and "
+"{icon}`cancel` deletes it."
+msgstr ""
+"**Group** — чинний набір міток. Кнопки поруч: {icon}`edit` перейменовує "
+"набір, {icon}`add` додає новий порожній, а {icon}`cancel` видаляє його."
+
+msgid ""
+"The field under it filters the list: only labels that contain what you "
+"type are shown. Upper and lower case count."
+msgstr ""
+"Поле під ним фільтрує список: показано лише мітки, що містять введене. "
+"Великі й малі літери розрізняються."
+
+msgid ""
+"The list shows each label's address and name. Double-click a label, or "
+"select it and press Enter, and the listing goes there."
+msgstr ""
+"Список показує адресу та ім'я кожної мітки. Двічі клацніть мітку або "
+"виділіть її й натисніть Enter, і лістинг перейде туди."
+
+msgid ""
+"**Convert address to CPU address space** - shows where the CPU sees each "
+"label now, as `CPU:8010`. A label in a page that is not paged in keeps "
+"its page and offset."
+msgstr ""
+"**Convert address to CPU address space** — показує, де CPU бачить кожну "
+"мітку зараз, як `CPU:8010`. Мітка на сторінці, яку не підключено, "
+"зберігає свої сторінку й зміщення."
+
+msgid "Selecting a block"
+msgstr "Виділення блоку"
+
+msgid "Many commands work on a block of memory rather than one row:"
+msgstr "Багато команд працюють із блоком пам'яті, а не з одним рядком:"
+
+msgid "drag over the rows with the left button;"
+msgstr "проведіть по рядках, утримуючи ліву кнопку;"
+
+msgid ""
+"Ctrl+click sets the start of the block, Shift+click its end. Set the "
+"start first: a Shift+click alone selects everything from 0000;"
+msgstr ""
+"Ctrl+клацання задає початок блоку, Shift+клацання — його кінець. Спершу "
+"задайте початок: саме лише Shift+клацання виділяє все від 0000;"
+
+msgid "a click with the middle button clears the selection."
+msgstr "клацання середньою кнопкою знімає виділення."
+
+msgid ""
+"A block takes in the rows from the first byte of the first row to the "
+"first byte of the last row. The **DUMP** panel shares the same selection."
+" It is cleared each time the Debugger opens."
+msgstr ""
+"Блок охоплює рядки від першого байта першого рядка до першого байта "
+"останнього рядка. Панель **DUMP** має те саме виділення. Воно знімається "
+"щоразу, коли відкривається Debugger."
+
+msgid "With a block selected:"
+msgstr "Коли блок виділено:"
+
+#, python-brace-format
+msgid ""
+"{icon}`bars` **View** changes every byte of the block, when the cursor "
+"row is inside it;"
+msgstr ""
+"{icon}`bars` **View** змінює кожен байт блоку, якщо рядок із курсором "
+"усередині нього;"
+
+msgid "**Disasm to file** saves just the block;"
+msgstr "**Disasm to file** зберігає лише блок;"
+
+msgid ""
+"Ctrl+C copies the block as assembler text, ready to paste into a source "
+"file. With no block, it copies the cursor row;"
+msgstr ""
+"Ctrl+C копіює блок як текст асемблера, готовий до вставлення у файл "
+"вихідного коду. Без блоку копіює рядок із курсором;"
+
+#, python-brace-format
+msgid ""
+"**Fill...** in the {icon}`other` Tools menu starts with the block's "
+"addresses (see [Memory](debugger-memory.md))."
+msgstr ""
+"**Fill...** у меню {icon}`other` Tools починає з адрес блоку (див. "
+"[Пам'ять](debugger-memory.md))."
+
+msgid "How memory is shown"
+msgstr "Як показано пам'ять"
+
+#, python-brace-format
+msgid ""
+"Each byte of memory can be marked as code or as one kind of data, and the"
+" listing shows it that way. Select a row or a block, then pick from "
+"{icon}`bars` **View** in the toolbar or the right-click menu:"
+msgstr ""
+"Кожен байт пам'яті можна позначити як код або як один із видів даних, і "
+"лістинг показує його саме так. Виділіть рядок чи блок, потім виберіть у "
+"{icon}`bars` **View** на панелі інструментів або в меню правої кнопки:"
+
+msgid "Item"
+msgstr "Пункт"
+
+msgid "Shown as"
+msgstr "Як показано"
+
+msgid "**Opcode**"
+msgstr "**Opcode**"
+
+msgid "instructions"
+msgstr "інструкції"
+
+msgid "**Byte**"
+msgstr "**Byte**"
+
+msgid "`DB #3E,#05,...`"
+msgstr "`DB #3E,#05,...`"
+
+msgid "**ASCII**"
+msgstr "**ASCII**"
+
+msgid "`DB \"TEXT\"`; bytes that are not printable stay `DB #nn`"
+msgstr "`DB \"TEXT\"`; байти, що не друкуються, лишаються `DB #nn`"
+
+msgid "**Word**"
+msgstr "**Word**"
+
+msgid "`DW #4000,...`"
+msgstr "`DW #4000,...`"
+
+msgid "**Address**"
+msgstr "**Address**"
+
+msgid "`DW` with the label of the address, one word a row"
+msgstr "`DW` з міткою адреси, по слову в рядку"
+
+msgid ""
+"Memory not marked yet is shown as instructions. How many bytes go on a "
+"`DB` row, words on a `DW` row and characters on a text row is set by **DB"
+" in row**, **DW in row** and **Max text length** on the **Debugger** page"
+" of **Options**. A label always starts a new row."
+msgstr ""
+"Ще не позначену пам'ять показано як інструкції. Скільки байтів у рядку "
+"`DB`, слів у рядку `DW` і символів у текстовому рядку, задають **DB in "
+"row**, **DW in row** і **Max text length** на сторінці **Debugger** вікна"
+" **Options**. Мітка завжди починає новий рядок."
+
+msgid ""
+"The marks belong to the memory itself, not to an address: a mark on RAM "
+"page 3 moves with the page wherever it is paged in. Labels and comments "
+"belong to the memory the same way."
+msgstr ""
+"Позначки належать самій пам'яті, а не адресі: позначка на сторінці RAM 3 "
+"переходить разом зі сторінкою, куди б її не підключили. Мітки й коментарі"
+" так само належать пам'яті."
+
+#, python-brace-format
+msgid ""
+"**Runtime mapping** in the {icon}`settings` **Options** menu marks memory"
+" as the program runs: every byte the CPU runs as an instruction becomes "
+"**Opcode**, and every byte it reads or writes as data and that has no "
+"mark yet becomes **Byte**. It works while the machine runs, after the "
+"Debugger is closed. Play the program for a while, open the Debugger "
+"again, and the data shows as data. **Clear mapping** takes every mark "
+"away, yours too, after asking."
+msgstr ""
+"**Runtime mapping** у меню {icon}`settings` **Options** позначає пам'ять "
+"під час роботи програми: кожен байт, який CPU виконує як інструкцію, стає"
+" **Opcode**, а кожен байт, який він читає чи записує як дані й який ще не"
+" має позначки, стає **Byte**. Це працює, поки машина працює, після "
+"закриття Debugger. Пограйте в програму якийсь час, знову відкрийте "
+"Debugger, і дані буде показано як дані. **Clear mapping** прибирає всі "
+"позначки, ваші теж, після запитання."
+
+msgid ""
+"The marks, the labels and the comments are kept together in a memory map "
+"file: see [Memory maps](#memory-maps)."
+msgstr ""
+"Позначки, мітки й коментарі зберігаються разом у файлі карти пам'яті: "
+"див. [Карти пам'яті](#memory-maps)."
+
+msgid "The toolbar"
+msgstr "Панель інструментів"
+
+msgid "Button"
+msgstr "Кнопка"
+
+msgid "What is in it"
+msgstr "Що в ній"
+
+#, python-brace-format
+msgid "{icon}`stop` **Breakpoints**"
+msgstr "{icon}`stop` **Breakpoints**"
+
+msgid ""
+"**Fetch break**, **Read break**, **Write break** for the cursor row or "
+"the block. See [Breakpoints and watching](debugger-breakpoints.md)"
+msgstr ""
+"**Fetch break**, **Read break**, **Write break** для рядка з курсором чи "
+"блоку. Див. [Точки зупинки та спостереження](debugger-breakpoints.md)"
+
+#, python-brace-format
+msgid "{icon}`label` **Labels**"
+msgstr "{icon}`label` **Labels**"
+
+msgid "**Show labels**, **Load labels**, **Save labels**, **Labels list**"
+msgstr "**Show labels**, **Load labels**, **Save labels**, **Labels list**"
+
+#, python-brace-format
+msgid "{icon}`bars` **View**"
+msgstr "{icon}`bars` **View**"
+
+msgid "**Opcode**, **Byte**, **ASCII**, **Word**, **Address**"
+msgstr "**Opcode**, **Byte**, **ASCII**, **Word**, **Address**"
+
+#, python-brace-format
+msgid "{icon}`arrGreen` **Trace**"
+msgstr "{icon}`arrGreen` **Trace**"
+
+msgid "running the program step by step, see [The Debugger](debugger.md)"
+msgstr "покрокове виконання програми, див. [Debugger](debugger.md)"
+
+#, python-brace-format
+msgid "{icon}`other` **Tools**"
+msgstr "{icon}`other` **Tools**"
+
+msgid ""
+"**Search**, **Fill...**, **Sprite scanner** (see [Memory](debugger-"
+"memory.md)), **Keyboard**, **Watcher**"
+msgstr ""
+"**Search**, **Fill...**, **Sprite scanner** (див. [Пам'ять](debugger-"
+"memory.md)), **Keyboard**, **Watcher**"
+
+#, python-brace-format
+msgid "{icon}`settings` **Options**"
+msgstr "{icon}`settings` **Options**"
+
+msgid "how the listing looks and works, below"
+msgstr "вигляд і поведінка лістингу, див. нижче"
+
+#, python-brace-format
+msgid "{icon}`refresh` (circular arrows)"
+msgstr "{icon}`refresh` (колові стрілки)"
+
+msgid "**Reload snapshot & labels**"
+msgstr "**Reload snapshot & labels**"
+
+#, python-brace-format
+msgid "{icon}`floppy` (floppy disk)"
+msgstr "{icon}`floppy` (дискета)"
+
+msgid ""
+"**Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save "
+"map**"
+msgstr ""
+"**Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save "
+"map**"
+
+msgid ""
+"A right-click on the listing opens a shorter menu: **Breakpoints**, "
+"**View**, **Labels list**, **Trace and stop here** and **Show labels**."
+msgstr ""
+"Клацання правою кнопкою на лістингу відкриває коротше меню: "
+"**Breakpoints**, **View**, **Labels list**, **Trace and stop here** і "
+"**Show labels**."
+
+msgid "![The right-click menu of the listing](images/dbg-disasm-menu.png)"
+msgstr "![Меню правої кнопки в лістингу](images/dbg-disasm-menu.png)"
+
+msgid "The right-click menu of the listing"
+msgstr "Меню правої кнопки в лістингу"
+
+msgid "The Options menu"
+msgstr "Меню Options"
+
+msgid ""
+"**Dim address** - the addresses in a paler color, so the instructions "
+"stand out."
+msgstr "**Dim address** — адреси блідішим кольором, щоб виділялися інструкції."
+
+msgid "**Dim opcodes** - the bytes in a paler color. On out of the box."
+msgstr "**Dim opcodes** — байти блідішим кольором. Типово ввімкнено."
+
+msgid ""
+"**Syntax colors** - numbers in their own color and labels in bold, inside"
+" the instructions. On out of the box. The color is **Const** on the "
+"**Debugger** page of **Options**."
+msgstr ""
+"**Syntax colors** — числа власним кольором і мітки жирним в інструкціях. "
+"Типово ввімкнено. Колір — **Const** на сторінці **Debugger** вікна "
+"**Options**."
+
+msgid ""
+"**Block separator** - the empty row after each return and jump. On out of"
+" the box."
+msgstr ""
+"**Block separator** — порожній рядок після кожного повернення й переходу."
+" Типово ввімкнено."
+
+msgid ""
+"**Show segment** - addresses as the memory and page they are in: "
+"`RAM:05:0000` is the first byte of RAM page 5, `ROM:00:0038` a byte of "
+"ROM page 0. Off each time the program starts."
+msgstr ""
+"**Show segment** — адреси як пам'ять і сторінка, де вони є: `RAM:05:0000`"
+" — перший байт сторінки RAM 5, `ROM:00:0038` — байт сторінки ROM 0. "
+"Вимикається під час кожного запуску програми."
+
+msgid ""
+"**Allow ROM wr** - lets the listing, the dump, the filler and a loaded "
+"dump write into ROM."
+msgstr ""
+"**Allow ROM wr** — дозволяє лістингу, дампу, заповненню й завантаженому "
+"дампу записувати в ROM."
+
+msgid ""
+"**Runtime mapping**, **Clear mapping** - see [How memory is shown](#how-"
+"memory-is-shown)."
+msgstr ""
+"**Runtime mapping**, **Clear mapping** — див. [Як показано пам'ять](#how-"
+"memory-is-shown)."
+
+msgid ""
+"**Reset panel layout** - see [Arranging the panels](debugger.md"
+"#arranging-the-panels)."
+msgstr ""
+"**Reset panel layout** — див. [Розташування панелей](debugger.md"
+"#arranging-the-panels)."
+
+msgid ""
+"**Dim address**, **Dim opcodes**, **Syntax colors** and **Block "
+"separator** are kept between sessions."
+msgstr ""
+"**Dim address**, **Dim opcodes**, **Syntax colors** і **Block separator**"
+" зберігаються між сеансами."
+
+msgid "Saving the listing"
+msgstr "Збереження лістингу"
+
+#, python-brace-format
+msgid ""
+"**Disasm to file** in the {icon}`floppy` floppy disk menu writes the "
+"listing to a text file you name: the selected block, or all 64K with "
+"nothing selected. The file starts with an `ORG` line; labels are written "
+"as `name:`, comments as they are, instructions after a tab. It can go "
+"back into an assembler."
+msgstr ""
+"**Disasm to file** у меню {icon}`floppy` дискети записує лістинг у "
+"текстовий файл, який ви назвете: виділений блок або всі 64K, якщо нічого "
+"не виділено. Файл починається з рядка `ORG`; мітки записано як `name:`, "
+"коментарі — як є, інструкції — після табуляції. Його можна знову подати "
+"асемблеру."
+
+msgid "Ctrl+C copies the same text for the block, without the first line."
+msgstr "Ctrl+C копіює той самий текст для блоку, без першого рядка."
+
+msgid "Memory maps"
+msgstr "Карти пам'яті"
+
+msgid ""
+"A memory map, a `.xmap` file, keeps what you have worked out about a "
+"program:"
+msgstr "Карта пам'яті, файл `.xmap`, зберігає те, що ви з'ясували про програму:"
+
+msgid "how each byte of RAM, ROM and a cartridge is shown, code or data;"
+msgstr "як показано кожен байт RAM, ROM і картриджа — код чи дані;"
+
+msgid "every set of labels;"
+msgstr "усі набори міток;"
+
+msgid "the comments."
+msgstr "коментарі."
+
+#, python-brace-format
+msgid ""
+"**Save map** and **Load map** in the {icon}`floppy` floppy disk menu "
+"write and read it. Loading a map replaces all label sets and comments. "
+"Comments are only kept in a memory map, never in a labels file, so save a"
+" map when you have written comments. A map does not hold breakpoints: "
+"they have a file of their own (see [Breakpoints and watching](debugger-"
+"breakpoints.md))."
+msgstr ""
+"**Save map** і **Load map** у меню {icon}`floppy` дискети записують і "
+"читають її. Завантаження карти замінює всі набори міток і коментарі. "
+"Коментарі зберігаються лише в карті пам'яті, ніколи у файлі міток, тож "
+"збережіть карту, якщо ви писали коментарі. Карта не містить точок "
+"зупинки: для них є власний файл (див. [Точки зупинки та спостереження"
+"](debugger-breakpoints.md))."
+
+msgid ""
+"From the command line, `--xmap` loads a map at start (see [Command line"
+"](command-line.md#debugging))."
+msgstr ""
+"У командному рядку `--xmap` завантажує карту під час запуску (див. "
+"[Командний рядок](command-line.md#debugging))."
+
+msgid "Reload snapshot & labels"
+msgstr "Reload snapshot & labels"
+
+#, python-brace-format
+msgid ""
+"The {icon}`refresh` button with the circular arrows opens the last file "
+"again, the way it was opened (see [Opening a file](files.md)), and reads "
+"the labels file you loaded again. Then the listing goes to PC. Use it "
+"after building a new version of your program: the new code and its new "
+"labels come in with one click. The **Reload file** key does the same; it "
+"has no key out of the box."
+msgstr ""
+"Кнопка {icon}`refresh` з коловими стрілками знову відкриває останній файл"
+" так, як його було відкрито (див. [Відкриття файлу](files.md)), і знову "
+"читає завантажений вами файл міток. Потім лістинг переходить до PC. "
+"Використовуйте її після збирання нової версії своєї програми: новий код і"
+" його нові мітки приходять одним клацанням. Клавіша **Reload file** "
+"робить те саме; типово вона не призначена."
+
+msgid "Example: label your own routine"
+msgstr "Приклад: позначте міткою власну підпрограму"
+
+msgid "On a 48K, at the BASIC prompt:"
+msgstr "На 48K, у запрошенні BASIC:"
+
+msgid "Open the Debugger: **Debug > Debugger**."
+msgstr "Відкрийте Debugger: **Debug > Debugger**."
+
+msgid "Press G, type `8000` and press Enter. The listing starts at 8000."
+msgstr "Натисніть G, введіть `8000` і натисніть Enter. Лістинг починається з 8000."
+
+msgid ""
+"Double-click the command of the 8000 row, type `call #8010` and press "
+"Enter. The cursor moves to the next row: press Enter, type `ret` and "
+"press Enter again."
+msgstr ""
+"Двічі клацніть команду рядка 8000, введіть `call #8010` і натисніть "
+"Enter. Курсор переходить на наступний рядок: натисніть Enter, введіть "
+"`ret` і знову натисніть Enter."
+
+msgid "Press G, type `8010` and press Enter."
+msgstr "Натисніть G, введіть `8010` і натисніть Enter."
+
+msgid "Double-click the address of the 8010 row, type `beep_it` and press Enter."
+msgstr "Двічі клацніть адресу рядка 8010, введіть `beep_it` і натисніть Enter."
+
+msgid ""
+"A bold `beep_it` row now stands above 8010. Go back to 8000: the row "
+"reads `CALL beep_it`. Put the cursor on it and use **Jump to operand**: "
+"the listing goes to `beep_it`. **Return** brings you back."
+msgstr ""
+"Над 8010 тепер стоїть жирний рядок `beep_it`. Поверніться до 8000: рядок "
+"має вигляд `CALL beep_it`. Поставте на нього курсор і скористайтеся "
+"**Jump to operand**: лістинг перейде до `beep_it`. **Return** поверне вас"
+" назад."
+
+msgid "Example: mark a table as data"
+msgstr "Приклад: позначте таблицю як дані"
+
+msgid ""
+"A table of bytes in the middle of the code shows as nonsense "
+"instructions. To show it as data:"
+msgstr ""
+"Таблиця байтів посеред коду показується як безглузді інструкції. Щоб "
+"показати її як дані:"
+
+msgid "Find the start of the table in the listing."
+msgstr "Знайдіть у лістингу початок таблиці."
+
+msgid "Ctrl+click its first row, then Shift+click the last row of the table."
+msgstr ""
+"Ctrl+клацніть її перший рядок, потім Shift+клацніть останній рядок "
+"таблиці."
+
+msgid "Right-click inside the block and choose **View > Byte**."
+msgstr "Клацніть правою кнопкою всередині блоку й виберіть **View > Byte**."
+
+msgid ""
+"The rows become `DB #nn,#nn,...`, eight bytes a row. If the end of the "
+"table still shows as an instruction, the last row was a longer "
+"instruction that ended past the first byte: select the rows still wrong "
+"and choose **View > Byte** again. A table of addresses reads better as "
+"**View > Address**, and a message as **View > ASCII**."
+msgstr ""
+"Рядки стануть `DB #nn,#nn,...`, по вісім байтів у рядку. Якщо кінець "
+"таблиці досі показано як інструкцію, останній рядок був довшою "
+"інструкцією, що закінчилася за першим байтом: виділіть рядки, що досі "
+"неправильні, і знову виберіть **View > Byte**. Таблицю адрес краще читати"
+" як **View > Address**, а повідомлення — як **View > ASCII**."
+
+msgid "Save a memory map (**Save map**) to keep the marks for the next time."
+msgstr ""
+"Збережіть карту пам'яті (**Save map**), щоб зберегти позначки до "
+"наступного разу."
+
+msgid "Disasm panel"
+msgstr "панель Disasm"
+
+msgid "disassembly"
+msgstr "дизасемблювання"
+
+msgid "disassembler"
+msgstr "дизасемблер"
+
+msgid "listing"
+msgstr "лістинг"
+
+msgid "EQU"
+msgstr "EQU"
+
+msgid "moving around"
+msgstr "переміщення"
+
+msgid "Go to address"
+msgstr "Go to address"
+
+msgid "Jump to PC"
+msgstr "Jump to PC"
+
+msgid "Set PC"
+msgstr "Set PC"
+
+msgid "Jump to operand"
+msgstr "Jump to operand"
+
+msgid "Return"
+msgstr "Return"
+
+msgid "bookmark"
+msgstr "закладка"
+
+msgid "in the listing"
+msgstr "у лістингу"
+
+msgid "address"
+msgstr "адреса"
+
+msgid "typing"
+msgstr "введення"
+
+msgid "editing"
+msgstr "редагування"
+
+msgid "assembler"
+msgstr "асемблер"
+
+msgid "Allow ROM wr"
+msgstr "Allow ROM wr"
+
+msgid "ROM"
+msgstr "ROM"
+
+msgid "writing to"
+msgstr "запис"
+
+msgid "label"
+msgstr "мітка"
+
+msgid "comment"
+msgstr "коментар"
+
+msgid "adding"
+msgstr "додавання"
+
+msgid "Show labels"
+msgstr "Show labels"
+
+msgid "Switch labels"
+msgstr "Switch labels"
+
+msgid "Load labels"
+msgstr "Load labels"
+
+msgid "Save labels"
+msgstr "Save labels"
+
+msgid "completion"
+msgstr "автодоповнення"
+
+msgid "file"
+msgstr "файл"
+
+msgid "SjASMPlus"
+msgstr "SjASMPlus"
+
+msgid "LABELSLIST"
+msgstr "LABELSLIST"
+
+msgid "set"
+msgstr "набір"
+
+msgid "Auto-load labels"
+msgstr "Auto-load labels"
+
+msgid "loading automatically"
+msgstr "автоматичне завантаження"
+
+msgid "Labels List"
+msgstr "Labels List"
+
+msgid "Convert address to CPU address space"
+msgstr "Convert address to CPU address space"
+
+msgid "block"
+msgstr "блок"
+
+msgid "selecting"
+msgstr "виділення"
+
+msgid "copying as text"
+msgstr "копіювання як тексту"
+
+msgid "data"
+msgstr "дані"
+
+msgid "marking memory as"
+msgstr "позначення пам'яті як"
+
+msgid "DB"
+msgstr "DB"
+
+msgid "DW"
+msgstr "DW"
+
+msgid "Runtime mapping"
+msgstr "Runtime mapping"
+
+msgid "Clear mapping"
+msgstr "Clear mapping"
+
+msgid "toolbar"
+msgstr "панель інструментів"
+
+msgid "Dim address"
+msgstr "Dim address"
+
+msgid "Dim opcodes"
+msgstr "Dim opcodes"
+
+msgid "Syntax colors"
+msgstr "Syntax colors"
+
+msgid "Block separator"
+msgstr "Block separator"
+
+msgid "Show segment"
+msgstr "Show segment"
+
+msgid "Disasm to file"
+msgstr "Disasm to file"
+
+msgid "saving"
+msgstr "збереження"
+
+msgid "memory map"
+msgstr "карта пам'яті"
+
+msgid "XMAP"
+msgstr "XMAP"
+
+msgid "Save map"
+msgstr "Save map"
+
+msgid "Load map"
+msgstr "Load map"
+
+msgid "Reload file"
+msgstr "Reload file"
+

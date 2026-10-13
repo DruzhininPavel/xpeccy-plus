@@ -1,0 +1,422 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 19:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "The main window"
+msgstr "Главное окно"
+
+msgid "![The main window](images/main-window.png)"
+msgstr "![Главное окно](images/main-window.png)"
+
+msgid "**Menu bar** - every command, with its key beside it."
+msgstr "**Строка меню** — все команды, рядом с каждой её клавиша."
+
+msgid "**Toolbar** - the commands you use most, one click away."
+msgstr "**Панель инструментов** — самые нужные команды, в один щелчок."
+
+msgid ""
+"**Picture** - the machine's screen. Short messages from the program "
+"appear in its lower left corner and fade away."
+msgstr ""
+"**Изображение** — экран машины. Короткие сообщения программы появляются в"
+" его левом нижнем углу и гаснут."
+
+msgid "**Status bar** - the machine, its tape and drives, speed."
+msgstr "**Строка состояния** — машина, её лента и дисководы, скорость."
+
+msgid "Menu bar"
+msgstr "Строка меню"
+
+msgid "Menu"
+msgstr "Меню"
+
+msgid "What is in it"
+msgstr "Что в нём"
+
+msgid "**File**"
+msgstr "**File**"
+
+msgid "open and save files, recent files, quick save and load, **Options**"
+msgstr ""
+"открыть и сохранить файлы, недавние файлы, быстрое сохранение и загрузка,"
+" **Options**"
+
+msgid "**View**"
+msgstr "**View**"
+
+msgid ""
+"window size, fullscreen, shaders and palette, toolbar and status bar, "
+"virtual keyboard, input overlay"
+msgstr ""
+"размер окна, полноэкранный режим, шейдеры и палитра, панель инструментов "
+"и строка состояния, виртуальная клавиатура, индикация ввода"
+
+msgid "**Favorites**"
+msgstr "**Favorites**"
+
+msgid "files you keep at hand"
+msgstr "файлы, которые всегда под рукой"
+
+msgid "**Machine**"
+msgstr "**Machine**"
+
+msgid ""
+"which machine runs, reset, turbo, pause, fast mode, slow motion, fast "
+"forward, rewind"
+msgstr ""
+"какая машина работает, сброс, турбо, пауза, быстрый режим, замедление, "
+"перемотка вперёд и назад"
+
+msgid "**Input**"
+msgstr "**Input**"
+
+msgid "keyboard and mouse grab, keymaps, gamepads"
+msgstr "захват клавиатуры и мыши, раскладки, геймпады"
+
+msgid "**Media**"
+msgstr "**Media**"
+
+msgid "tape player, disk manager, floppy drives, cartridge, SD card, hard disks"
+msgstr "магнитофон, менеджер дисков, дисководы, картридж, SD-карта, жёсткие диски"
+
+msgid "**Capture**"
+msgstr "**Capture**"
+
+msgid "screenshots, video and sound recording, RZX"
+msgstr "снимки экрана, запись видео и звука, RZX"
+
+msgid "**Debug**"
+msgstr "**Debug**"
+
+msgid "**Debugger** and its windows"
+msgstr "**Debugger** и его окна"
+
+msgid "**Help**"
+msgstr "**Help**"
+
+msgid "this manual, the project page, what is new, reporting a problem"
+msgstr "это руководство, страница проекта, что нового, сообщить о проблеме"
+
+msgid ""
+"A command that has a key shows it in the menu. The keys are set on the "
+"**Hotkeys** page of **Options**."
+msgstr ""
+"Если у команды есть клавиша, она показана в меню. Клавиши настраиваются "
+"на странице **Hotkeys** окна **Options**."
+
+msgid "Toolbar"
+msgstr "Панель инструментов"
+
+#, python-brace-format
+msgid ""
+"Out of the box it has {icon}`fileopen` **Open**, {icon}`save_all` "
+"**Save**, {icon}`shutdown` **Reset**, {icon}`computer` **Machine**, "
+"{icon}`tape` **Tape Player**, {icon}`fdd_disk` **Disk Manager**, "
+"{icon}`fullscreen_icon_16` **Fullscreen**, {icon}`keyboardzx` **Virtual "
+"Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debug**, "
+"{icon}`other` **Options** and {icon}`speaker` **Mute**, and at the right "
+"end {icon}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**, "
+"{icon}`time-pause` **Pause**, {icon}`time-ffwd` **Fast Forward** and "
+"{icon}`time-fast` **Fast Mode**."
+msgstr ""
+"Изначально на ней {icon}`fileopen` **Open**, {icon}`save_all` **Save**, "
+"{icon}`shutdown` **Reset**, {icon}`computer` **Machine**, {icon}`tape` "
+"**Tape Player**, {icon}`fdd_disk` **Disk Manager**, "
+"{icon}`fullscreen_icon_16` **Fullscreen**, {icon}`keyboardzx` **Virtual "
+"Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debug**, "
+"{icon}`other` **Options** и {icon}`speaker` **Mute**, а справа — {icon"
+"}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**, {icon"
+"}`time-pause` **Pause**, {icon}`time-ffwd` **Fast Forward** и {icon"
+"}`time-fast` **Fast Mode**."
+
+msgid "Right-click the toolbar to change it:"
+msgstr "Чтобы изменить панель, щёлкните по ней правой кнопкой:"
+
+msgid ""
+"**Buttons** - every command that can be a button, by group; tick the ones"
+" you want."
+msgstr ""
+"**Buttons** — все команды, которые могут быть кнопками, по группам; "
+"отметьте нужные."
+
+msgid "**Remove** - takes away the button you clicked."
+msgstr "**Remove** — убирает кнопку, по которой вы щёлкнули."
+
+msgid ""
+"**Add Separator Here**, **Add Space Here** - a line or a gap between "
+"groups."
+msgstr ""
+"**Add Separator Here**, **Add Space Here** — черта или промежуток между "
+"группами."
+
+msgid "**Icon Size** - 16 x 16 or 24 x 24."
+msgstr "**Icon Size** — 16 x 16 или 24 x 24."
+
+msgid "**Restore Default Buttons** - back to the set above."
+msgstr "**Restore Default Buttons** — вернуть набор, описанный выше."
+
+msgid "**Hide Toolbar** - **View > Toolbar** brings it back."
+msgstr ""
+"**Hide Toolbar** — скрыть панель; вернуть её можно через **View > "
+"Toolbar**."
+
+msgid "Drag a button to move it."
+msgstr "Кнопки можно перетаскивать."
+
+msgid ""
+"The arrow beside **Mute** opens a volume slider. Alt with the mouse wheel"
+" over the picture changes the volume too."
+msgstr ""
+"Стрелка рядом с **Mute** открывает ползунок громкости. Громкость меняет и"
+" колесо мыши с нажатым Alt над изображением."
+
+msgid "Status bar"
+msgstr "Строка состояния"
+
+msgid "![The status bar](images/status-bar.png)"
+msgstr "![Строка состояния](images/status-bar.png)"
+
+msgid "The status bar"
+msgstr "Строка состояния"
+
+msgid ""
+"the name of the running machine; a click or a right-click on it opens the"
+" list of machines;"
+msgstr ""
+"название работающей машины; щелчок по нему левой или правой кнопкой "
+"открывает список машин;"
+
+#, python-brace-format
+msgid ""
+"{icon}`tapeYellow` **tape** - its light and the block being played, "
+"`3/7`; it shows when a tape is in. Yellow: playing, red: recording, gray:"
+" stopped;"
+msgstr ""
+"{icon}`tapeYellow` **лента** — её индикатор и номер текущего блока, "
+"`3/7`; видна, когда лента вставлена. Жёлтый — воспроизведение, красный — "
+"запись, серый — остановлена;"
+
+#, python-brace-format
+msgid ""
+"{icon}`diskGreen` **A: B: C: D:** - a light for each floppy drive the "
+"machine has. Green: reading, red: writing, blue: a disk is in, gray: "
+"empty;"
+msgstr ""
+"{icon}`diskGreen` **A: B: C: D:** — индикатор каждого дисковода машины. "
+"Зелёный — чтение, красный — запись, синий — диск вставлен, серый — пусто;"
+
+#, python-brace-format
+msgid ""
+"{icon}`joystick` **joystick** and {icon}`mouse` **mouse** - lit while the"
+" program reads them;"
+msgstr ""
+"{icon}`joystick` **джойстик** и {icon}`mouse` **мышь** — горят, пока "
+"программа их опрашивает;"
+
+msgid "the CPU clock in MHz;"
+msgstr "частота CPU в МГц;"
+
+msgid "frames per second, or **paused**."
+msgstr "кадры в секунду или **paused** (пауза)."
+
+msgid ""
+"Hold the mouse over the tape or a drive to see which file is in it. A "
+"click opens the **Tape Player** or the **Disk Manager**; a right-click "
+"opens a short menu of the same commands - play, rewind, open, eject."
+msgstr ""
+"Наведите мышь на ленту или дисковод, чтобы увидеть, какой файл в нём. "
+"Щелчок открывает **Tape Player** или **Disk Manager**; правый щелчок — "
+"короткое меню тех же команд: воспроизвести, перемотать, открыть, извлечь."
+
+msgid "The picture"
+msgstr "Изображение"
+
+msgid "![The menu over the picture](images/menu-picture.png)"
+msgstr "![Меню над изображением](images/menu-picture.png)"
+
+msgid "The menu over the picture"
+msgstr "Меню над изображением"
+
+msgid ""
+"A right-click on the picture opens a menu with the commands needed while "
+"playing: open a file, favorites, machine, turbo, reset, keymap, shaders, "
+"palette, the media windows, grab keyboard, virtual keyboard, gamepads, "
+"**Debugger** and **Options**. Some of its items act on a click as well as"
+" opening their submenu: **Reset** resets the machine, **Debugger** opens "
+"the debugger."
+msgstr ""
+"Правый щелчок по изображению открывает меню с командами, нужными во время"
+" игры: открыть файл, избранное, машина, турбо, сброс, раскладка, шейдеры,"
+" палитра, окна носителей, захват клавиатуры, виртуальная клавиатура, "
+"геймпады, **Debugger** и **Options**. Некоторые пункты срабатывают и по "
+"щелчку, а не только открывают подменю: **Reset** сбрасывает машину, "
+"**Debugger** открывает отладчик."
+
+msgid ""
+"Drop a file onto the picture to open it (see [Run a program](getting-"
+"started.md#run-a-program))."
+msgstr ""
+"Перетащите файл на изображение, чтобы открыть его (см. [Запуск программы"
+"](getting-started.md#run-a-program))."
+
+msgid ""
+"The middle button grabs the mouse for a program that uses one, and lets "
+"it go again."
+msgstr ""
+"Средняя кнопка захватывает мышь для программы, которая с ней работает, и "
+"отпускает её обратно."
+
+msgid "Alt with the mouse wheel changes the volume."
+msgstr "Колесо мыши с нажатым Alt меняет громкость."
+
+msgid "Fullscreen"
+msgstr "Полноэкранный режим"
+
+msgid ""
+"**View > Fullscreen** hides the menu bar, the toolbar and the status bar."
+" Push the pointer to the top edge of the screen and hold it there: the "
+"menu bar comes down, with the toolbar if it is shown. They go away again "
+"when the pointer leaves them. On macOS the menu is in the system menu "
+"bar, as usual."
+msgstr ""
+"**View > Fullscreen** скрывает строку меню, панель инструментов и строку "
+"состояния. Подведите указатель к верхнему краю экрана и задержите его "
+"там: появится строка меню, а с ней и панель инструментов, если она "
+"включена. Они снова скрываются, когда указатель уходит с них. В macOS "
+"меню, как обычно, в системной строке меню."
+
+msgid "main window"
+msgstr "главное окно"
+
+msgid "menu bar"
+msgstr "строка меню"
+
+msgid "toolbar"
+msgstr "панель инструментов"
+
+msgid "customizing"
+msgstr "настройка"
+
+msgid "Restore Default Buttons"
+msgstr "Restore Default Buttons"
+
+msgid "Icon Size"
+msgstr "Icon Size"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "volume"
+msgstr "громкость"
+
+msgid "status bar"
+msgstr "строка состояния"
+
+msgid "tape"
+msgstr "лента"
+
+msgid "drive lights"
+msgstr "индикаторы дисководов"
+
+msgid "right-click menu"
+msgstr "меню правой кнопки"
+
+msgid "context menu"
+msgstr "контекстное меню"
+
+#~ msgid "From left to right:"
+#~ msgstr "Слева направо:"
+
+#~ msgid "the name of the running machine;"
+#~ msgstr "название работающей машины;"
+
+#~ msgid ".. image:: images/main-window.png"
+#~ msgstr ".. image:: images/main-window.png"
+
+#~ msgid ".. image:: ../../images/fileopen.png"
+#~ msgstr ".. image:: images/main-window.png"
+
+#~ msgid ".. image:: ../../images/save_all.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/shutdown.png"
+#~ msgstr ".. image:: images/main-window.png"
+
+#~ msgid ".. image:: ../../images/computer.png"
+#~ msgstr ".. image:: images/menu-picture.png"
+
+#~ msgid ".. image:: ../../images/tape.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/fdd_disk.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/fullscreen_icon_16.png"
+#~ msgstr ".. image:: images/menu-picture.png"
+
+#~ msgid ".. image:: ../../images/keyboardzx.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/gamepad.png"
+#~ msgstr ".. image:: images/main-window.png"
+
+#~ msgid ".. image:: ../../images/bug.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/other.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/speaker.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/time-rewind.png"
+#~ msgstr ".. image:: images/main-window.png"
+
+#~ msgid ".. image:: ../../images/time-slow.png"
+#~ msgstr ".. image:: images/main-window.png"
+
+#~ msgid ".. image:: ../../images/time-pause.png"
+#~ msgstr ".. image:: images/menu-picture.png"
+
+#~ msgid ".. image:: ../../images/time-ffwd.png"
+#~ msgstr ".. image:: images/main-window.png"
+
+#~ msgid ".. image:: ../../images/time-fast.png"
+#~ msgstr ".. image:: images/menu-picture.png"
+
+#~ msgid ".. image:: images/status-bar.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/tapeYellow.png"
+#~ msgstr ".. image:: images/main-window.png"
+
+#~ msgid ".. image:: ../../images/diskGreen.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/joystick.png"
+#~ msgstr ".. image:: images/status-bar.png"
+
+#~ msgid ".. image:: ../../images/mouse.png"
+#~ msgstr ".. image:: images/menu-picture.png"
+
+#~ msgid ".. image:: images/menu-picture.png"
+#~ msgstr ".. image:: images/menu-picture.png"
+

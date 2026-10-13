@@ -1,0 +1,29 @@
+# tools/manual.py check: what a reader would type into the search box, per language.
+# Each line: language, then the words. Every one has to find at least one page.
+en toolbar
+en snapshot
+en fullscreen
+en Options
+en TZX
+en turbo
+en gamepad
+en rewind
+en FFmpeg
+en Hobeta
+en shader
+ru панель
+ru снапшот
+ru полноэкранный
+uk панель
+uk снапшот
+uk стрічка
+es cinta
+es instantánea
+es pantalla completa
+en breakpoint
+en trace
+en heat map
+en labels
+en span
+en bench
+en xbrk

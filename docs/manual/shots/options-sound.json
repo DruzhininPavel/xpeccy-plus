@@ -1,0 +1,36 @@
+{
+  "config": {
+    "GENERAL": {
+      "machine": "zx128"
+    },
+    "SOUND": {
+      "volume.master": "100"
+    }
+  },
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "run-action key.options"
+    ],
+    [
+      "wait",
+      1200
+    ],
+    [
+      "click",
+      "pageList",
+      60,
+      80
+    ],
+    [
+      "wait",
+      800
+    ]
+  ],
+  "frames": [],
+  "note": "Master at 100, as a first start has it: the page shows it; the other shots have it at 0"
+}

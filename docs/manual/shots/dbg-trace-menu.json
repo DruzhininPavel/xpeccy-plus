@@ -1,0 +1,7 @@
+{
+  "steps": [["wait", 3000], ["run", "run-action key.debuger"], ["wait", 1500],
+    ["run", "activate-window Xpeccy+ Debugger"], ["wait", 800],
+    ["click-nowait", "tbTrace", 8, 8], ["wait", 800]],
+  "capture": "menus",
+  "crop": {"menus": true, "pad": 60}
+}

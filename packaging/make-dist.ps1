@@ -3,6 +3,7 @@
 #   .\make-dist.ps1                     # qt5-x64, incremental
 #   .\make-dist.ps1 -Preset qt6-x64     # Qt6 build in its own folder
 #   .\make-dist.ps1 -Clean -Zip         # from scratch + archive
+#   .\make-dist.ps1 -Manual             # with the user manual (docs/manual/README.md)
 #
 # What goes into the folder is defined by the install() rules in CMakeLists.txt and
 # cmake/windeploy.cmake.in; this script only picks a toolchain and drives cmake.
@@ -17,6 +18,7 @@ param(
 	[switch]$Zip,
 	[switch]$Release,
 	[switch]$Full,		# keep everything windeployqt copied, skip the trim step
+	[switch]$Manual,	# build the user manual (tools/manual.py) and put it in the folder
 	[int]$Jobs = 16,
 	# a build agent installs Qt and MinGW wherever it likes, and has cmake in
 	# PATH already; locally the table below is right and none of this is needed
@@ -115,6 +117,15 @@ if ($tc.QtVer -eq 5) {
 } else {
 	$cmakeArgs += "-DCMAKE_PREFIX_PATH=$qtFwd"
 }
+
+# always said, so a build without -Manual does not install one a previous run built
+$manualDir = ''
+if ($Manual) {
+	& python (Join-Path $srcRoot 'tools\manual.py') html
+	if ($LASTEXITCODE -ne 0) { throw 'manual: html failed' }
+	$manualDir = (Join-Path $buildRoot 'manual') -replace '\\', '/'
+}
+$cmakeArgs += "-DMANUAL_DIR=$manualDir"
 
 & cmake @cmakeArgs
 if ($LASTEXITCODE -ne 0) { throw 'configure failed' }

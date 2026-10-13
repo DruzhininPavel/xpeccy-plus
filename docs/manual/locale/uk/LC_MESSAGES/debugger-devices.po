@@ -1,0 +1,2090 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Device panels"
+msgstr "Панелі пристроїв"
+
+msgid ""
+"Besides the CPU and the memory, the Debugger shows the state of the "
+"machine's devices: the screen, the sound chips, the tape, the floppy disk"
+" controller, the clock chip and the palette, and on a ZX Evolution its "
+"video hardware. Each is a panel of its own, on a tab behind "
+"**Breakpoints** or **DUMP** (see [The panels](debugger.md#the-panels)). "
+"Like every panel, they show the state the machine stopped in and change "
+"with each step."
+msgstr ""
+"Крім CPU і пам'яті, Debugger показує стан пристроїв машини: екрана, "
+"звукових мікросхем, стрічки, контролера дисковода, мікросхеми годинника і"
+" палітри, а на ZX Evolution — її відеоапаратури. Кожен пристрій має свою "
+"панель на вкладці за **Breakpoints** або **DUMP** (див. "
+"[Панелі](debugger.md#the-panels)). Як і всі панелі, вони показують стан, "
+"у якому зупинилася машина, і змінюються з кожним кроком."
+
+msgid ""
+"The **Screen** and **Sound Chip** panels can also be windows of their own"
+" that work while the machine runs: see [Screen and Sound Chips windows"
+"](#screen-and-sound-chips-windows). So can the **ZX Evo** panel: see [The"
+" ZX Evolution window](#the-zx-evolution-window)."
+msgstr ""
+"Панелі **Screen** і **Sound Chip** можуть також бути окремими вікнами, що"
+" працюють, поки машина працює: див. [Вікна Screen і Sound Chips](#screen-"
+"and-sound-chips-windows). Так само й панель **ZX Evo**: див. [Вікно ZX "
+"Evolution](#the-zx-evolution-window)."
+
+msgid "Panel"
+msgstr "Панель"
+
+msgid "Shown on"
+msgstr "Де є"
+
+msgid "Use it to"
+msgstr "Для чого"
+
+msgid "**Screen**"
+msgstr "**Screen**"
+
+msgid "every machine"
+msgstr "на кожній машині"
+
+msgid "see a screen in memory and find the address of a dot"
+msgstr "побачити екран у пам'яті й знайти адресу точки"
+
+msgid "**Sound Chip**"
+msgstr "**Sound Chip**"
+
+msgid "read and change the registers of the AY and YM chips"
+msgstr "читати і змінювати регістри мікросхем AY і YM"
+
+msgid "**Tape**"
+msgstr "**Tape**"
+
+msgid "see the tape signal around the current position"
+msgstr "побачити сигнал стрічки довкола поточної позиції"
+
+msgid "**FDC**"
+msgstr "**FDC**"
+
+msgid "a machine with a disk interface"
+msgstr "на машині з дисковим інтерфейсом"
+
+msgid "see the registers of the disk controller and the drive"
+msgstr "побачити регістри контролера дисковода і стан дисковода"
+
+msgid "**FDD**"
+msgstr "**FDD**"
+
+msgid "read the raw bytes of a disk track"
+msgstr "читати сирі байти доріжки диска"
+
+msgid "**CMOS**"
+msgstr "**CMOS**"
+
+msgid "a machine with a clock chip"
+msgstr "на машині з мікросхемою годинника"
+
+msgid "read and change the memory of the clock chip"
+msgstr "читати і змінювати пам'ять мікросхеми годинника"
+
+msgid "**Palette**"
+msgstr "**Palette**"
+
+msgid "every machine but the ZX Evolution"
+msgstr "на кожній машині, крім ZX Evolution"
+
+msgid "see the colors of the machine's palette"
+msgstr "побачити кольори палітри машини"
+
+msgid "**ZX Evo**"
+msgstr "**ZX Evo**"
+
+msgid "a ZX Evolution, with TSConf or BaseConf"
+msgstr "на ZX Evolution, з TSConf або BaseConf"
+
+msgid "see what its video and memory hardware is set to, and hide TSConf layers"
+msgstr ""
+"побачити, як налаштовано її відеоапаратуру й апаратуру пам'яті, і "
+"приховати шари TSConf"
+
+msgid ""
+"**ZX Evo** is the one panel for one machine only. On a ZX Evolution it "
+"takes the place of **Palette**, and has a **Palette** tab of its own."
+msgstr ""
+"**ZX Evo** — єдина панель лише для однієї машини. На ZX Evolution вона "
+"займає місце **Palette** і має власну вкладку **Palette**."
+
+msgid "Screen"
+msgstr "Screen"
+
+msgid "![The Screen panel](images/dbg-screen.png)"
+msgstr "![Панель Screen](images/dbg-screen.png)"
+
+msgid "The Screen panel"
+msgstr "Панель Screen"
+
+msgid ""
+"**Mode** - **Auto**, **Main**, **Shadow**, **Both** or **Custom**: which "
+"screen is drawn."
+msgstr ""
+"**Mode** — **Auto**, **Main**, **Shadow**, **Both** або **Custom**: який "
+"екран малюється."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Screen** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносить панель у вікно "
+"**Screen**."
+
+msgid ""
+"**Picture** - the screen, with a strip of the border color around it and "
+"its name above it."
+msgstr ""
+"**Зображення** — екран зі смугою кольору бордюру довкола і його назвою "
+"згори."
+
+msgid ""
+"**View** - the zoom and four check boxes that change how the picture is "
+"drawn."
+msgstr ""
+"**Вигляд** — масштаб і чотири поля позначок, що змінюють спосіб малювання"
+" зображення."
+
+msgid "**Readout** - where the dot under the mouse is and which bytes hold it."
+msgstr "**Показники** — де розташована точка під мишею і які байти її містять."
+
+msgid "**Page** and **Offset** - only in **Custom** mode: which memory to draw."
+msgstr "**Page** і **Offset** — лише в режимі **Custom**: яку пам'ять малювати."
+
+msgid ""
+"The panel draws a ZX screen of 256 x 192 dots from memory: 6144 bytes of "
+"pixels and 768 bytes of attributes, in the standard layout. It draws that"
+" layout whatever video mode the machine is in, so it always shows what a "
+"ZX screen at that place in memory would look like."
+msgstr ""
+"Панель малює з пам'яті екран ZX розміром 256 x 192 точки: 6144 байти "
+"пікселів і 768 байтів атрибутів у стандартному розміщенні. Вона малює це "
+"розміщення в будь-якому відеорежимі машини, тож завжди показує, який "
+"вигляд мав би екран ZX у цьому місці пам'яті."
+
+msgid "Which screen"
+msgstr "Який екран"
+
+msgid "Button"
+msgstr "Кнопка"
+
+msgid "What it draws"
+msgstr "Що малює"
+
+msgid "**Auto**"
+msgstr "**Auto**"
+
+msgid ""
+"the screen the machine is showing now; it follows a program that flips "
+"between two screens"
+msgstr ""
+"екран, який машина показує зараз; стежить за програмою, що перемикається "
+"між двома екранами"
+
+msgid "**Main**"
+msgstr "**Main**"
+
+msgid "the normal screen, RAM page 5"
+msgstr "звичайний екран, сторінка RAM 5"
+
+msgid "**Shadow**"
+msgstr "**Shadow**"
+
+msgid "the second screen of a 128K, RAM page 7"
+msgstr "другий екран 128K, сторінка RAM 7"
+
+msgid "**Both**"
+msgstr "**Both**"
+
+msgid "page 5 and page 7 side by side, or one above the other in a tall panel"
+msgstr "сторінки 5 і 7 поруч або одна над одною на високій панелі"
+
+msgid "**Custom**"
+msgstr "**Custom**"
+
+msgid "any 16K page, from any offset in it"
+msgstr "будь-яка 16K-сторінка, з будь-якого зміщення в ній"
+
+msgid ""
+"**Shadow** and **Both** are grayed out on a machine with no page 7, such "
+"as the 48K."
+msgstr "**Shadow** і **Both** неактивні на машині без сторінки 7, як-от 48K."
+
+msgid ""
+"The name above a picture says where it comes from: **Main (5)**, **Shadow"
+" (7)**, or **Page** with a number for any other page. In **Custom** mode "
+"it is **Custom** with the page number. The name of the screen the machine"
+" is showing is in the **Header** color of the **Debugger** page of "
+"**Options**; the other one is plain."
+msgstr ""
+"Назва над зображенням вказує, звідки воно: **Main (5)**, **Shadow (7)** "
+"або **Page** з номером для будь-якої іншої сторінки. У режимі **Custom** "
+"це **Custom** з номером сторінки. Назва екрана, який показує машина, має "
+"колір **Header** зі сторінки **Debugger** вікна **Options**; інша — "
+"звичайна."
+
+msgid ""
+"In **Custom** mode, type the page into **Page** and the place in the page"
+" where the screen starts into **Offset**, both in hex. **Offset** goes "
+"from 0000 to 3FFF. Use it to look at a picture a program keeps elsewhere "
+"in memory, for example one it copies to the screen later."
+msgstr ""
+"У режимі **Custom** введіть сторінку в **Page**, а місце в сторінці, де "
+"починається екран, — в **Offset**, обидва в шістнадцятковому вигляді. "
+"**Offset** — від 0000 до 3FFF. Так можна переглянути зображення, яке "
+"програма тримає в іншому місці пам'яті, наприклад таке, що вона потім "
+"копіює на екран."
+
+msgid "How it is drawn"
+msgstr "Як воно малюється"
+
+msgid "Setting"
+msgstr "Параметр"
+
+msgid "What it does"
+msgstr "Що робить"
+
+msgid "**Zoom Fit**"
+msgstr "**Zoom Fit**"
+
+msgid "fills the panel; whole pixels per dot as soon as there is room for them"
+msgstr "заповнює панель; цілі пікселі на точку, щойно для них є місце"
+
+msgid "**Zoom x1** to **Zoom x4**"
+msgstr "від **Zoom x1** до **Zoom x4**"
+
+msgid "a fixed number of pixels per dot"
+msgstr "фіксована кількість пікселів на точку"
+
+msgid "**no pixels**"
+msgstr "**no pixels**"
+
+msgid ""
+"attributes only: each cell is its paper color with a small dot of ink in "
+"the middle"
+msgstr ""
+"лише атрибути: кожне знакомісце має колір свого тла з маленькою точкою "
+"кольору чорнила посередині"
+
+msgid "**no colors**"
+msgstr "**no colors**"
+
+msgid "pixels only, white on black"
+msgstr "лише пікселі, біле на чорному"
+
+msgid "**no flash**"
+msgstr "**no flash**"
+
+msgid "holds flashing cells still; grayed out while ULA+ is in use"
+msgstr "зупиняє мерехтіння знакомісць; неактивний, поки використовується ULA+"
+
+msgid "**show grid**"
+msgstr "**show grid**"
+
+msgid "dims every other 8 x 8 cell, so the character cells can be counted"
+msgstr ""
+"затемнює кожне друге знакомісце 8 x 8, щоб знакомісця можна було "
+"порахувати"
+
+msgid "Finding a dot"
+msgstr "Пошук точки"
+
+msgid "Move the mouse over the picture. The readout shows:"
+msgstr "Наведіть мишу на зображення. Показники містять:"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "What it shows"
+msgstr "Що показує"
+
+msgid "**XY:**"
+msgstr "**XY:**"
+
+msgid ""
+"the dot, in pixels from the top left corner: 0 to 255 across, 0 to 191 "
+"down"
+msgstr ""
+"точку в пікселях від лівого верхнього кута: від 0 до 255 по горизонталі, "
+"від 0 до 191 по вертикалі"
+
+msgid "**Char:**"
+msgstr "**Char:**"
+
+msgid "the character cell, 0 to 31 across, 0 to 23 down"
+msgstr "знакомісце, від 0 до 31 по горизонталі, від 0 до 23 по вертикалі"
+
+msgid "**Screen:**"
+msgstr "**Screen:**"
+
+msgid ""
+"the address of the byte that holds the dot, and after it the bit: `.7` is"
+" the leftmost dot of the byte"
+msgstr ""
+"адресу байта, що містить точку, і після неї біт: `.7` — крайня ліва точка"
+" байта"
+
+msgid "**Attr:**"
+msgstr "**Attr:**"
+
+msgid "the address of the attribute byte that colors the dot's cell"
+msgstr "адресу байта атрибутів, що задає колір знакомісця точки"
+
+msgid ""
+"The addresses are the ones the CPU uses. Page 5 is counted from 4000, the"
+" way it always sits in memory. Any other page is counted from C000, where"
+" a 128K pages it in."
+msgstr ""
+"Це адреси, якими користується CPU. Сторінка 5 відлічується від 4000, де "
+"вона завжди стоїть у пам'яті. Будь-яка інша сторінка відлічується від "
+"C000, куди її підключає 128K."
+
+msgid ""
+"Click the picture to hold the readout on a dot: the cell is marked, and "
+"the numbers stay while you move the mouse away. Click again to let go."
+msgstr ""
+"Клацніть зображення, щоб зафіксувати показники на точці: знакомісце "
+"позначається, а числа лишаються, навіть коли ви відводите мишу. Клацніть "
+"знову, щоб відпустити."
+
+msgid ""
+"Right-click the picture for **Copy screen address** and **Copy attribute "
+"address**. They copy the address of the dot under the mouse, or of the "
+"held dot, as four hex digits."
+msgstr ""
+"Клацніть зображення правою кнопкою, щоб вибрати **Copy screen address** "
+"або **Copy attribute address**. Вони копіюють адресу точки під мишею або "
+"зафіксованої точки як чотири шістнадцяткові цифри."
+
+msgid ""
+"It works the other way too: type an address into **Screen:** or **Attr:**"
+" and the cell it belongs to is marked on the picture. Move the mouse back"
+" over the picture to make the readout follow the mouse again."
+msgstr ""
+"Працює й навпаки: введіть адресу в **Screen:** або **Attr:**, і "
+"знакомісце, якому вона належить, буде позначено на зображенні. Наведіть "
+"мишу знову на зображення, щоб показники знову стежили за мишею."
+
+msgid "Sound Chip"
+msgstr "Sound Chip"
+
+msgid "![The Sound Chip panel](images/dbg-sound.png)"
+msgstr "![Панель Sound Chip](images/dbg-sound.png)"
+
+msgid "The Sound Chip panel"
+msgstr "Панель Sound Chip"
+
+msgid "**Chips** - a tab for each sound chip of the machine."
+msgstr "**Мікросхеми** — по вкладці для кожної звукової мікросхеми машини."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Sound Chips** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносить панель у вікно "
+"**Sound Chips**."
+
+msgid "**Regs** - the 16 registers of the chip."
+msgstr "**Regs** — 16 регістрів мікросхеми."
+
+msgid ""
+"**Channels** - the tone channels A, B and C, the noise N and the envelope"
+" E."
+msgstr "**Канали** — тональні канали A, B і C, шум N та обвідна E."
+
+msgid "**Envelope** - the shape of the envelope."
+msgstr "**Обвідна** — форма обвідної."
+
+msgid ""
+"**Wave** - the peak level, the time span, and the **Fit** and **Log** "
+"check boxes."
+msgstr ""
+"**Wave** — піковий рівень, відрізок часу і поля позначок **Fit** та "
+"**Log**."
+
+msgid "**Beeper** - the level of the beeper."
+msgstr "**Beeper** — рівень біпера."
+
+msgid "**Wave box** - the sound the machine puts out."
+msgstr "**Осцилограма** — звук, який видає машина."
+
+msgid ""
+"In the picture the title tune of Cybernoid (Dave Rogers, Hewson, 1988) "
+"plays."
+msgstr ""
+"На зображенні грає мелодія із заставки Cybernoid (Dave Rogers, Hewson, "
+"1988)."
+
+msgid ""
+"The tabs are named **PSG1**, **PSG2** and so on, one for each AY or YM "
+"chip: a TurboSound machine has two. A chip with an FM part, as in "
+"TurboSound FM, has an **FM** tab beside its **PSG** tab. A machine with "
+"no sound chip has no tabs."
+msgstr ""
+"Вкладки називаються **PSG1**, **PSG2** і так далі, по одній на кожну "
+"мікросхему AY або YM: машина з TurboSound має дві. Мікросхема з "
+"FM-частиною, як у TurboSound FM, має вкладку **FM** поруч зі своєю "
+"вкладкою **PSG**. Машина без звукової мікросхеми не має вкладок."
+
+msgid "The PSG page"
+msgstr "Сторінка PSG"
+
+msgid ""
+"**Regs** shows the 16 registers in two rows: `#00` holds registers 0 to "
+"7, `#08` holds registers 8 to 15. Click a register and type a new value "
+"in hex. It goes to the chip the way an OUT to the chip's port would, so "
+"the rest of the page changes with it."
+msgstr ""
+"**Regs** показує 16 регістрів у два рядки: `#00` містить регістри від 0 "
+"до 7, `#08` — регістри від 8 до 15. Клацніть регістр і введіть нове "
+"значення в шістнадцятковому вигляді. Воно потрапляє в мікросхему так, як "
+"потрапила б інструкція OUT у порт мікросхеми, тож решта сторінки "
+"змінюється разом із ним."
+
+msgid "The table below it shows the same registers by channel:"
+msgstr "Таблиця під ним показує ті самі регістри за каналами:"
+
+msgid "Column"
+msgstr "Стовпець"
+
+msgid "**Period**"
+msgstr "**Period**"
+
+msgid ""
+"the tone period of A, B and C (up to FFF), the noise period of N (up to "
+"1F), the envelope period of E (up to FFFF)"
+msgstr ""
+"період тону A, B і C (до FFF), період шуму N (до 1F), період обвідної E "
+"(до FFFF)"
+
+msgid "**Vol**"
+msgstr "**Vol**"
+
+msgid ""
+"the volume of A, B and C, 0 to F; on the E row, the level the envelope is"
+" at now"
+msgstr "гучність A, B і C, від 0 до F; у рядку E — поточний рівень обвідної"
+
+msgid "**Mixer**"
+msgstr "**Mixer**"
+
+msgid ""
+"what the channel mixes: `T` tone, `N` noise, `E` the envelope in place of"
+" the volume; `-` for off"
+msgstr ""
+"що змішує канал: `T` — тон, `N` — шум, `E` — обвідна замість гучності; "
+"`-` — вимкнено"
+
+msgid "**Lev**"
+msgstr "**Lev**"
+
+msgid "how loud the channel is, as a bar"
+msgstr "наскільки гучний канал, у вигляді смуги"
+
+msgid "**State**"
+msgstr "**State**"
+
+msgid "the output of the tone or noise generator, 0 or 1"
+msgstr "вихід генератора тону або шуму, 0 або 1"
+
+msgid "**Mute**"
+msgstr "**Mute**"
+
+msgid "tick to silence the channel"
+msgstr "позначте, щоб заглушити канал"
+
+msgid ""
+"**Period** and **Vol** can be changed as the registers can: click and "
+"type in hex."
+msgstr ""
+"**Period** і **Vol** можна змінювати так само, як регістри: клацніть і "
+"введіть шістнадцяткове значення."
+
+msgid ""
+"**Lev** is green, amber near the top and red at the end. While the "
+"machine runs, the bar shows the loudest the channel was since the last "
+"refresh. While it stands still, the bar and the number on it show exactly"
+" what the channel puts out at that moment."
+msgstr ""
+"**Lev** зелена, бурштинова біля верху і червона наприкінці. Поки машина "
+"працює, смуга показує найбільшу гучність каналу від останнього оновлення."
+" Коли машина стоїть, смуга і число на ній показують точно те, що канал "
+"видає в цей момент."
+
+msgid ""
+"**State** is shown only while the machine stands still. A tone generator "
+"flips much too fast to be read while the machine runs, so the column "
+"shows `-` then."
+msgstr ""
+"**State** показується лише тоді, коли машина стоїть. Генератор тону "
+"перемикається надто швидко, щоб його можна було прочитати під час роботи "
+"машини, тож тоді стовпець показує `-`."
+
+msgid ""
+"**Mute** silences a channel without touching the chip: the program goes "
+"on writing the same registers, and the other channels play as before. Use"
+" it to pick one voice out of a tune."
+msgstr ""
+"**Mute** глушить канал, не чіпаючи мікросхеми: програма й далі пише ті "
+"самі регістри, а інші канали грають, як і раніше. Так можна виділити один"
+" голос із мелодії."
+
+msgid ""
+"The E row draws the envelope shape set in register 13: two rounds of it, "
+"so the eight shapes can be told apart."
+msgstr ""
+"Рядок E малює форму обвідної, задану в регістрі 13: два її періоди, щоб "
+"вісім форм можна було розрізнити."
+
+msgid "The FM page"
+msgstr "Сторінка FM"
+
+msgid "The FM page shows the FM part of a YM2203 chip. Across the top:"
+msgstr "Сторінка FM показує FM-частину мікросхеми YM2203. Угорі:"
+
+msgid "**Timer A**, **Timer B**"
+msgstr "**Timer A**, **Timer B**"
+
+msgid "the timer values in hex, and **on** or **off**"
+msgstr "значення таймерів у шістнадцятковому вигляді і **on** або **off**"
+
+msgid "**Ch3**"
+msgstr "**Ch3**"
+
+msgid "the mode of channel 3: **off**, **special** or **CSM**"
+msgstr "режим каналу 3: **off**, **special** або **CSM**"
+
+msgid "**1**, **2**, **3**"
+msgstr "**1**, **2**, **3**"
+
+msgid "tabs for the three FM channels"
+msgstr "вкладки трьох FM-каналів"
+
+msgid "**off**"
+msgstr "**off**"
+
+msgid "tick to silence this FM channel"
+msgstr "позначте, щоб заглушити цей FM-канал"
+
+msgid "**Alg**, **Fb**"
+msgstr "**Alg**, **Fb**"
+
+msgid "the algorithm and the feedback of the channel"
+msgstr "алгоритм і зворотний зв'язок каналу"
+
+msgid "**Bk/Fq**"
+msgstr "**Bk/Fq**"
+
+msgid "the block and frequency of the channel"
+msgstr "блок і частота каналу"
+
+msgid "**Out**"
+msgstr "**Out**"
+
+msgid "the channel's output now"
+msgstr "поточний вихід каналу"
+
+msgid ""
+"Under them is a row for each operator, **Op1** to **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** and "
+"**EG** are the operator's register fields: click one and type a new value"
+" in hex. **St** is the state of the operator's envelope (**OFF**, "
+"**ATK**, **DEC**, **SUS** or **REL**), **Bk/Fq** its block and frequency,"
+" and **Lev** its envelope level, where a bigger number is louder. A `*` "
+"in the last column marks the operators that reach the output in the "
+"channel's algorithm."
+msgstr ""
+"Під ними — рядок для кожного оператора, від **Op1** до **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** і **EG** "
+"— поля регістрів оператора: клацніть одне з них і введіть нове значення в"
+" шістнадцятковому вигляді. **St** — стан обвідної оператора (**OFF**, "
+"**ATK**, **DEC**, **SUS** або **REL**), **Bk/Fq** — його блок і частота, "
+"а **Lev** — рівень його обвідної, де більше число означає гучніше. `*` в "
+"останньому стовпці позначає оператори, що потрапляють на вихід в "
+"алгоритмі каналу."
+
+msgid "Wave and Beeper"
+msgstr "Wave і Beeper"
+
+msgid ""
+"The wave box at the bottom shows the sound the machine puts out, all "
+"sources mixed: the sound chips, the beeper and the rest. While the "
+"machine runs it holds the last 40 milliseconds, enough to see a tune "
+"move. While the machine stands still it holds the last 2 milliseconds, "
+"fine enough to count the edges of a beeper routine one step at a time."
+msgstr ""
+"Осцилограма внизу показує звук, який видає машина, з усіма джерелами "
+"разом: звуковими мікросхемами, біпером та іншими. Поки машина працює, "
+"вона містить останні 40 мілісекунд — достатньо, щоб бачити рух мелодії. "
+"Коли машина стоїть, вона містить останні 2 мілісекунди — досить детально,"
+" щоб покроково рахувати фронти біперної підпрограми."
+
+msgid ""
+"The figure beside **Wave** is the highest level in the box, in hex, "
+"followed by the time the box holds. The scale at the left marks the "
+"levels."
+msgstr ""
+"Число поруч із **Wave** — найвищий рівень в осцилограмі в "
+"шістнадцятковому вигляді, а за ним час, який вона охоплює. Шкала ліворуч "
+"позначає рівні."
+
+msgid ""
+"**Fit** - centers the wave and scales the box to it, so quiet sound fills"
+" it too. Off, the box keeps one fixed scale."
+msgstr ""
+"**Fit** — центрує хвилю і масштабує осцилограму під неї, тож тихий звук "
+"теж її заповнює. Коли вимкнено, осцилограма тримає одну фіксовану шкалу."
+
+msgid ""
+"**Log** - draws the wave on a curve, so a quiet tune is still visible "
+"beside a loud one."
+msgstr "**Log** — малює хвилю на кривій, тож тиху мелодію видно поруч із гучною."
+
+msgid "**Beeper** is a bar of the beeper's level."
+msgstr "**Beeper** — смуга рівня біпера."
+
+msgid "Tape"
+msgstr "Tape"
+
+msgid "![The Tape panel](images/dbg-tape.png)"
+msgstr "![Панель Tape](images/dbg-tape.png)"
+
+msgid "The Tape panel"
+msgstr "Панель Tape"
+
+msgid ""
+"The **Tape** panel draws the tape signal around the place the tape is at."
+" The red vertical line is now: on its left is the signal that has played,"
+" on its right what comes next. The picture covers about two milliseconds "
+"of tape at the machine's speed. In the picture Exolon is loading, with "
+"fast loading off."
+msgstr ""
+"Панель **Tape** малює сигнал стрічки довкола місця, де зараз стрічка. "
+"Червона вертикальна лінія — це «зараз»: ліворуч від неї сигнал, що вже "
+"прозвучав, праворуч — те, що буде далі. Зображення охоплює близько двох "
+"мілісекунд стрічки на швидкості машини. На зображенні завантажується "
+"Exolon з вимкненим швидким завантаженням."
+
+msgid "**Pos**"
+msgstr "**Pos**"
+
+msgid ""
+"the number of the pulse in the current block; `--` while the tape is "
+"stopped"
+msgstr "номер імпульсу в поточному блоці; `--`, коли стрічку зупинено"
+
+msgid "**Current**"
+msgstr "**Current**"
+
+msgid "how much of the current pulse is left; empty while the tape is stopped"
+msgstr "скільки лишилося від поточного імпульсу; порожньо, коли стрічку зупинено"
+
+msgid "**play**, **rec** or **stop**"
+msgstr "**play**, **rec** або **stop**"
+
+msgid "**Tape in**"
+msgstr "**Tape in**"
+
+msgid "the level the tape plays into the machine's EAR input"
+msgstr "рівень, який стрічка подає на вхід EAR машини"
+
+msgid "**Tape out**"
+msgstr "**Tape out**"
+
+msgid "the bit the machine sends to the tape: the bar is full while it is 1"
+msgstr "біт, який машина надсилає на стрічку: смуга повна, поки він дорівнює 1"
+
+msgid ""
+"Use it while you step through a loader, to see which pulse it is reading "
+"and what comes next. The tape itself is worked from the **Tape Player** "
+"(see [Tapes](tapes.md))."
+msgstr ""
+"Користуйтеся нею, коли покроково проходите завантажувач, щоб бачити, який"
+" імпульс він читає і що буде далі. Самою стрічкою керують з **Tape "
+"Player** (див. [Стрічки](tapes.md))."
+
+msgid "FDC"
+msgstr "FDC"
+
+msgid "![The FDC panel](images/dbg-fdc.png)"
+msgstr "![Панель FDC](images/dbg-fdc.png)"
+
+msgid "The FDC panel"
+msgstr "Панель FDC"
+
+msgid ""
+"The **FDC** panel shows the floppy disk controller in its left and middle"
+" columns and the drive it works with in the right one. It is there only "
+"on a machine with a disk interface (see [Disks and drives](disks.md)). "
+"All numbers are hex; a flag is 1 or 0. In the picture Fire 'n Ice "
+"(n-Discovery, 2003) is loading from a TR-DOS disk: the controller reads a"
+" sector, command 80."
+msgstr ""
+"Панель **FDC** показує контролер дисковода в лівому і середньому "
+"стовпцях, а дисковод, з яким він працює, — у правому. Вона є лише на "
+"машині з дисковим інтерфейсом (див. [Диски й дисководи](disks.md)). Усі "
+"числа шістнадцяткові; прапорець — 1 або 0. На зображенні Fire 'n Ice "
+"(n-Discovery, 2003) завантажується з диска TR-DOS: контролер читає "
+"сектор, команда 80."
+
+msgid "**BUSY**"
+msgstr "**BUSY**"
+
+msgid "1 while the controller carries out a command"
+msgstr "1, поки контролер виконує команду"
+
+msgid "**COM**"
+msgstr "**COM**"
+
+msgid "the command it carries out; `--` when it is idle"
+msgstr "команда, яку він виконує; `--`, коли він простоює"
+
+msgid "**IRQ**"
+msgstr "**IRQ**"
+
+msgid "the controller's interrupt request: the command has ended"
+msgstr "запит на переривання від контролера: команда завершилася"
+
+msgid "**DRQ**"
+msgstr "**DRQ**"
+
+msgid "the data request: a byte is waiting to be read or written"
+msgstr "запит даних: байт чекає на читання або запис"
+
+msgid "**HEAD**"
+msgstr "**HEAD**"
+
+msgid "the side of the disk, 0 or 1"
+msgstr "бік диска, 0 або 1"
+
+msgid "**TRK**, **SEC**, **DATA**"
+msgstr "**TRK**, **SEC**, **DATA**"
+
+msgid "the track, sector and data registers"
+msgstr "регістри доріжки, сектора і даних"
+
+msgid "**SR**"
+msgstr "**SR**"
+
+msgid "the status register"
+msgstr "регістр стану"
+
+msgid "**SR0**, **SR1**, **SR2**"
+msgstr "**SR0**, **SR1**, **SR2**"
+
+msgid "the result registers of the +3's controller"
+msgstr "регістри результату контролера +3"
+
+msgid "**CRC**"
+msgstr "**CRC**"
+
+msgid "the checksum the controller has worked out so far"
+msgstr "контрольна сума, яку контролер обчислив на цей момент"
+
+msgid "**INT**"
+msgstr "**INT**"
+
+msgid "an interrupt waiting on the +3's controller"
+msgstr "переривання, що чекає на контролері +3"
+
+msgid "**DMA**"
+msgstr "**DMA**"
+
+msgid "the DMA mode of the +3's controller"
+msgstr "режим DMA контролера +3"
+
+msgid "**IE**"
+msgstr "**IE**"
+
+msgid "interrupts from the disk interface enabled"
+msgstr "переривання від дискового інтерфейсу дозволено"
+
+msgid "**FLP**"
+msgstr "**FLP**"
+
+msgid "the drive the controller works with, **A** to **D**"
+msgstr "дисковод, з яким працює контролер, від **A** до **D**"
+
+msgid "**RDY**"
+msgstr "**RDY**"
+
+msgid "a disk is in the drive"
+msgstr "у дисководі є диск"
+
+msgid "**MOT**"
+msgstr "**MOT**"
+
+msgid "the drive motor is on"
+msgstr "двигун дисковода ввімкнено"
+
+msgid "**TRK**"
+msgstr "**TRK**"
+
+msgid "the track the head stands on"
+msgstr "доріжка, на якій стоїть головка"
+
+msgid "**POS**"
+msgstr "**POS**"
+
+msgid "the place on the track under the head, in bytes from its start"
+msgstr "місце на доріжці під головкою, у байтах від її початку"
+
+msgid "**DATA**"
+msgstr "**DATA**"
+
+msgid "the byte under the head; `--` with no disk"
+msgstr "байт під головкою; `--` без диска"
+
+msgid "**IDX**"
+msgstr "**IDX**"
+
+msgid "the index hole is passing: the start of the track"
+msgstr "проходить індексний отвір: початок доріжки"
+
+msgid ""
+"Use it to follow a disk loader: step over the OUT that gives a command, "
+"then watch **BUSY**, **DRQ** and the registers as the command runs."
+msgstr ""
+"Користуйтеся нею, щоб стежити за дисковим завантажувачем: виконайте крок "
+"через OUT, що подає команду, а потім стежте за **BUSY**, **DRQ** і "
+"регістрами, поки команда виконується."
+
+msgid "FDD"
+msgstr "FDD"
+
+msgid "![The FDD panel](images/dbg-fdd.png)"
+msgstr "![Панель FDD](images/dbg-fdd.png)"
+
+msgid "The FDD panel"
+msgstr "Панель FDD"
+
+msgid ""
+"The **FDD** panel shows a whole track of a floppy disk as it lies on the "
+"disk: the gaps, the sector headers, the data and the checksums, byte by "
+"byte. It is on a tab beside **DUMP**, and only on a machine with a disk "
+"interface."
+msgstr ""
+"Панель **FDD** показує цілу доріжку дискети так, як вона лежить на диску:"
+" проміжки, заголовки секторів, дані й контрольні суми, байт за байтом. "
+"Вона розташована на вкладці поруч із **DUMP** і є лише на машині з "
+"дисковим інтерфейсом."
+
+msgid "**Drive** - the drive, **A** to **D**."
+msgstr "**Drive** — дисковод, від **A** до **D**."
+
+msgid ""
+"**Track** - the track to show, counted with both sides: 0 is the first "
+"track on side 0, 1 the same track on side 1, 2 the next track on side 0, "
+"and so on. On a single-sided drive it steps by 2."
+msgstr ""
+"**Track** — доріжка для показу, з урахуванням обох боків: 0 — перша "
+"доріжка на боці 0, 1 — та сама доріжка на боці 1, 2 — наступна доріжка на"
+" боці 0 і так далі. На односторонньому дисководі крок дорівнює 2."
+
+msgid "**Bytes per row** - **Auto**, **8/row**, **12/row** or **16/row**."
+msgstr "**Bytes per row** — **Auto**, **8/row**, **12/row** або **16/row**."
+
+#, python-brace-format
+msgid ""
+"{icon}`target` The target button - jumps to the drive, the track and the "
+"byte the head is at now."
+msgstr ""
+"{icon}`target` Кнопка з мішенню — переходить до дисковода, доріжки і "
+"байта, де зараз головка."
+
+msgid ""
+"Each row starts with the track and the place on the track, in hex: "
+"`02:0040`. The byte under the head is in bold. Sector headers are in the "
+"**ID / Label** color of the **Debugger** page of **Options**, sector data"
+" in the **Data** color and the checksums in the **CRC** color. With no "
+"disk in the drive every byte reads `FF`. The panel cannot be edited; to "
+"change a disk's files, use the **Disk Manager** (see [Disks and "
+"drives](disks.md))."
+msgstr ""
+"Кожен рядок починається з доріжки і місця на доріжці в шістнадцятковому "
+"вигляді: `02:0040`. Байт під головкою виділено жирним. Заголовки секторів"
+" мають колір **ID / Label** зі сторінки **Debugger** вікна **Options**, "
+"дані секторів — колір **Data**, а контрольні суми — колір **CRC**. Без "
+"диска в дисководі кожен байт читається як `FF`. Панель не можна "
+"редагувати; щоб змінити файли на диску, скористайтеся **Disk Manager** "
+"(див. [Диски й дисководи](disks.md))."
+
+msgid ""
+"Use it to see how a disk is laid out: how many sectors a track has, how "
+"long they are, and whether a protected disk has a header or a checksum "
+"that is wrong on purpose."
+msgstr ""
+"Користуйтеся нею, щоб побачити, як розмічено диск: скільки секторів на "
+"доріжці, якої вони довжини і чи має захищений диск навмисно хибний "
+"заголовок або контрольну суму."
+
+msgid "CMOS"
+msgstr "CMOS"
+
+msgid "![The CMOS panel](images/dbg-cmos.png)"
+msgstr "![Панель CMOS](images/dbg-cmos.png)"
+
+msgid "The CMOS panel"
+msgstr "Панель CMOS"
+
+msgid ""
+"The **CMOS** panel shows the 256 bytes of the clock chip's memory, eight "
+"to a row. The number at the start of a row is the address of its first "
+"byte. It is on a tab beside **DUMP**, and only on a machine that has a "
+"clock chip:"
+msgstr ""
+"Панель **CMOS** показує 256 байтів пам'яті мікросхеми годинника, по вісім"
+" у рядку. Число на початку рядка — адреса його першого байта. Вона "
+"розташована на вкладці поруч із **DUMP** і є лише на машині з мікросхемою"
+" годинника:"
+
+msgid "**ZX Evolution (BaseConf)** and **ZX Evolution (TSConf)**;"
+msgstr "**ZX Evolution (BaseConf)** і **ZX Evolution (TSConf)**;"
+
+msgid "**Pentagon 1024 SL**;"
+msgstr "**Pentagon 1024 SL**;"
+
+msgid "**Profi v5**;"
+msgstr "**Profi v5**;"
+
+msgid ""
+"any machine with the **SMUC** hard disk interface, such as the **Scorpion"
+" ZS 256 Turbo+**."
+msgstr ""
+"будь-яка машина з інтерфейсом жорсткого диска **SMUC**, як-от **Scorpion "
+"ZS 256 Turbo+**."
+
+msgid "Double-click a byte and type a new value in hex to change it."
+msgstr ""
+"Двічі клацніть байт і введіть нове значення в шістнадцятковому вигляді, "
+"щоб змінити його."
+
+msgid ""
+"The time and date in bytes 00 to 09 are not kept here. When the machine "
+"reads them, it gets the time of your computer's clock, so the panel shows"
+" only what a program wrote there. The settings a BIOS keeps in the clock "
+"chip are in the bytes from 0E on."
+msgstr ""
+"Час і дата в байтах від 00 до 09 тут не зберігаються. Коли машина їх "
+"читає, вона отримує час годинника вашого комп'ютера, тож панель показує "
+"лише те, що туди записала програма. Налаштування, які BIOS зберігає в "
+"мікросхемі годинника, розташовані в байтах від 0E і далі."
+
+msgid "Use it to see which settings a BIOS has stored, or to change one by hand."
+msgstr ""
+"Користуйтеся нею, щоб побачити, які налаштування зберіг BIOS, або змінити"
+" одне з них вручну."
+
+msgid "Palette"
+msgstr "Palette"
+
+msgid "![The Palette panel](images/dbg-palette.png)"
+msgstr "![Панель Palette](images/dbg-palette.png)"
+
+msgid "The Palette panel"
+msgstr "Панель Palette"
+
+msgid ""
+"The **Palette** panel shows the machine's palette as it is now: 256 "
+"squares, 16 to a row. Click a square to see its **Index** (0 to 255), its"
+" **Red**, **Green** and **Blue** levels (0 to 255 each) and the **Color**"
+" itself. The panel only shows the colors; it cannot change them."
+msgstr ""
+"Панель **Palette** показує поточну палітру машини: 256 квадратів, по 16 у"
+" рядку. Клацніть квадрат, щоб побачити його **Index** (від 0 до 255), "
+"рівні **Red**, **Green** і **Blue** (кожен від 0 до 255) і сам **Color**."
+" Панель лише показує кольори; змінювати їх вона не може."
+
+msgid ""
+"A plain ZX uses the first 16 squares. With ULA+ in use, the first 64 are "
+"the colors the program set. The ATM Turbo 2+ and the Profi v5 set their "
+"colors through ports, and the colors a program sets show here as it sets "
+"them."
+msgstr ""
+"Звичайний ZX використовує перші 16 квадратів. З ULA+ перші 64 — це "
+"кольори, задані програмою. ATM Turbo 2+ і Profi v5 задають кольори через "
+"порти, і кольори, які задає програма, з'являються тут у мить їх задання."
+
+msgid ""
+"On a ZX Evolution this panel is not there: the **Palette** tab of the "
+"**ZX Evo** panel shows the colors instead (see [The Palette tab](#the-"
+"palette-tab))."
+msgstr ""
+"На ZX Evolution цієї панелі немає: кольори показує вкладка **Palette** "
+"панелі **ZX Evo** (див. [Вкладка Palette](#the-palette-tab))."
+
+msgid ""
+"Use it to check the colors a program has set, for example after a fade to"
+" black."
+msgstr ""
+"Користуйтеся нею, щоб перевірити кольори, задані програмою, наприклад "
+"після затемнення до чорного."
+
+msgid "ZX Evo"
+msgstr "ZX Evo"
+
+msgid "![The ZX Evo panel in its own window, on TSConf](images/dbg-evo-regs.png)"
+msgstr "![Панель ZX Evo в окремому вікні, на TSConf](images/dbg-evo-regs.png)"
+
+msgid "The ZX Evo panel in its own window, on TSConf"
+msgstr "Панель ZX Evo в окремому вікні, на TSConf"
+
+msgid "**Tabs** - the pages of the panel; which there are depends on the machine."
+msgstr "**Вкладки** — сторінки панелі; які саме, залежить від машини."
+
+msgid "**Layers hidden** - shown while a TSConf layer is kept out of the picture."
+msgstr ""
+"**Layers hidden** — показується, поки якийсь шар TSConf прибрано із "
+"зображення."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**ZX Evolution** window; pressed in here, as the panel is in it."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносить панель у вікно "
+"**ZX Evolution**; тут кнопка натиснута, бо панель у ньому."
+
+msgid "**Show** - the six layer switches of TSConf."
+msgstr "**Show** — шість перемикачів шарів TSConf."
+
+msgid "**Register list** - the registers in groups, each with what it means."
+msgstr "**Список регістрів** — регістри за групами, кожен із тим, що він означає."
+
+msgid ""
+"The pictures show the panel in its own window, with Uwol: Quest for Money"
+" (The Mojon Twins, TSConf version by Blade and Shiru) on its first level,"
+" and layer **S2** switched off."
+msgstr ""
+"На зображеннях панель в окремому вікні, з Uwol: Quest for Money (The "
+"Mojon Twins, версія для TSConf від Blade і Shiru) на першому рівні і "
+"вимкненим шаром **S2**."
+
+msgid ""
+"The **ZX Evo** panel shows what the video and memory hardware of a ZX "
+"Evolution is set to. It is there only on the **ZX Evolution (TSConf)** "
+"and **ZX Evolution (BaseConf)** machines, on a tab beside "
+"**Breakpoints**. Its tab shows the NedoPC logo, and its title bar says "
+"**ZX Evo**."
+msgstr ""
+"Панель **ZX Evo** показує, як налаштовано відеоапаратуру й апаратуру "
+"пам'яті ZX Evolution. Вона є лише на машинах **ZX Evolution (TSConf)** і "
+"**ZX Evolution (BaseConf)**, на вкладці поруч із **Breakpoints**. Її "
+"вкладка показує логотип NedoPC, а в заголовку написано **ZX Evo**."
+
+msgid "Machine"
+msgstr "Машина"
+
+msgid "Tabs"
+msgstr "Вкладки"
+
+msgid "**ZX Evolution (TSConf)**"
+msgstr "**ZX Evolution (TSConf)**"
+
+msgid "**Registers**, **Sprites**, **Tiles**, **Palette**, **DMA**"
+msgstr "**Registers**, **Sprites**, **Tiles**, **Palette**, **DMA**"
+
+msgid "**ZX Evolution (BaseConf)**"
+msgstr "**ZX Evolution (BaseConf)**"
+
+msgid "**Ports**, **Palette**"
+msgstr "**Ports**, **Palette**"
+
+msgid ""
+"In the lists of registers a value that changed since the last step is in "
+"the **Changed** color, as in the **CPU** panel."
+msgstr ""
+"У списках регістрів значення, що змінилося від останнього кроку, має "
+"колір **Changed**, як на панелі **CPU**."
+
+msgid ""
+"Right-click a list of registers, or its header, and choose **In words** "
+"or **Field names**. **In words** says in the last column, **Means**, what"
+" a value sets. **Field names** names the bit fields instead, the way the "
+"TSConf and BaseConf documents name them, for example `VM=ZX "
+"RRES=256x192`, and the column is called **Fields**. The choice holds for "
+"every list of the panel and is kept for the next time."
+msgstr ""
+"Клацніть правою кнопкою список регістрів або його заголовок і виберіть "
+"**In words** чи **Field names**. **In words** пише в останньому стовпці, "
+"**Means**, що задає значення. **Field names** натомість називає бітові "
+"поля так, як їх називають документи TSConf і BaseConf, наприклад `VM=ZX "
+"RRES=256x192`, а стовпець тоді називається **Fields**. Вибір діє для всіх"
+" списків панелі і зберігається до наступного разу."
+
+msgid "The Registers tab"
+msgstr "Вкладка Registers"
+
+msgid ""
+"The **Registers** tab lists the TSConf registers, the ones a program sets"
+" through the ports that end in AF. They are in five groups: **Video**, "
+"**Tiles and sprites**, **Memory**, **System** and **DMA**."
+msgstr ""
+"Вкладка **Registers** перелічує регістри TSConf, тобто ті, які програма "
+"задає через порти, що закінчуються на AF. Вони поділені на п'ять груп: "
+"**Video**, **Tiles and sprites**, **Memory**, **System** і **DMA**."
+
+msgid "**Port**"
+msgstr "**Port**"
+
+msgid "the port the register is written through, such as `00AF`"
+msgstr "порт, через який записується регістр, як-от `00AF`"
+
+msgid "**Register**"
+msgstr "**Register**"
+
+msgid "the name of the register, such as **VConfig**"
+msgstr "назва регістра, як-от **VConfig**"
+
+msgid "**Value**"
+msgstr "**Value**"
+
+msgid "the value, in hex"
+msgstr "значення в шістнадцятковому вигляді"
+
+msgid "**Means**"
+msgstr "**Means**"
+
+msgid "what the value sets"
+msgstr "що задає значення"
+
+msgid ""
+"Some registers, such as **VConfig**, **VPage**, **PalSel** and "
+"**GXOffs**, take a new value only at the start of the next line. While a "
+"new value waits, **Value** shows the one in use and the one that comes, "
+"as in `00 > 01`, and **Means** describes the one that comes."
+msgstr ""
+"Деякі регістри, як-от **VConfig**, **VPage**, **PalSel** і **GXOffs**, "
+"приймають нове значення лише на початку наступного рядка. Поки нове "
+"значення чекає, **Value** показує чинне і наступне, як-от `00 > 01`, а "
+"**Means** описує наступне."
+
+msgid ""
+"The **DMA** group is the same as at the top of the **DMA** tab: see [The "
+"DMA tab](#the-dma-tab)."
+msgstr ""
+"Група **DMA** така сама, як угорі вкладки **DMA**: див. [Вкладка DMA"
+"](#the-dma-tab)."
+
+msgid "Hiding layers"
+msgstr "Приховування шарів"
+
+msgid ""
+"TSConf builds its picture from six layers. The switches in the **Show** "
+"row at the top of the **Registers** tab take each of them out of the "
+"picture and put it back:"
+msgstr ""
+"TSConf будує зображення із шести шарів. Перемикачі в рядку **Show** угорі"
+" вкладки **Registers** прибирають кожен із них із зображення і повертають"
+" назад:"
+
+msgid "Switch"
+msgstr "Перемикач"
+
+msgid "Layer"
+msgstr "Шар"
+
+msgid "**S0**"
+msgstr "**S0**"
+
+msgid "the sprites under tile layer 0"
+msgstr "спрайти під шаром тайлів 0"
+
+msgid "**T0**"
+msgstr "**T0**"
+
+msgid "tile layer 0"
+msgstr "шар тайлів 0"
+
+msgid "**S1**"
+msgstr "**S1**"
+
+msgid "the sprites between the tile layers"
+msgstr "спрайти між шарами тайлів"
+
+msgid "**T1**"
+msgstr "**T1**"
+
+msgid "tile layer 1"
+msgstr "шар тайлів 1"
+
+msgid "**S2**"
+msgstr "**S2**"
+
+msgid "the sprites over both tile layers"
+msgstr "спрайти над обома шарами тайлів"
+
+msgid "**Bitmap**"
+msgstr "**Bitmap**"
+
+msgid "the bitmap screen"
+msgstr "растровий екран"
+
+msgid ""
+"Use them to find which layer draws something on the screen, or to see "
+"what a layer covers."
+msgstr ""
+"Користуйтеся ними, щоб знайти, який шар малює щось на екрані, або "
+"побачити, що шар закриває."
+
+msgid ""
+"A switch changes only what you see. The program runs exactly as before, "
+"with the same timing and the same memory, whether a layer is hidden or "
+"not."
+msgstr ""
+"Перемикач змінює лише те, що ви бачите. Програма працює точно так само, з"
+" тими самими таймінгами і тією самою пам'яттю, прихований шар чи ні."
+
+msgid ""
+"While the machine runs, the change shows from the next line on. While the"
+" machine is stopped in the Debugger, the main window draws the frame "
+"again at once with the layers as they are now set, as far as the machine "
+"had drawn it."
+msgstr ""
+"Поки машина працює, зміна видна з наступного рядка. Коли машину зупинено "
+"в Debugger, головне вікно одразу перемальовує кадр із поточними "
+"налаштуваннями шарів — настільки, наскільки машина встигла його "
+"намалювати."
+
+msgid ""
+"To draw the frame again, the machine runs it once more from a copy of its"
+" start. When that cannot be done, a note under the switches says why: "
+"**Shown from the next frame:** followed by the reason, such as **the tape"
+" or a disk command is running** or **an RZX is playing or recording**. "
+"The layers then change once the machine runs on. The copies are made only"
+" after the Debugger or the **ZX Evolution** window has been open on "
+"TSConf once, so the first stop may have none yet: the reason is then **no"
+" snapshot of the frame before**."
+msgstr ""
+"Щоб перемалювати кадр, машина виконує його ще раз із копії його початку. "
+"Коли це неможливо, примітка під перемикачами пояснює чому: **Shown from "
+"the next frame:** і далі причина, як-от **the tape or a disk command is "
+"running** чи **an RZX is playing or recording**. Тоді шари зміняться, "
+"коли машина працюватиме далі. Копії робляться лише після того, як "
+"Debugger або вікно **ZX Evolution** хоч раз відкривалися на TSConf, тож "
+"на першій зупинці копії може ще не бути: тоді причина — **no snapshot of "
+"the frame before**."
+
+msgid ""
+"While any layer is hidden, **Layers hidden** shows at the top of the "
+"panel, on every tab. The layers stay hidden after you close the Debugger,"
+" until you tick them again."
+msgstr ""
+"Поки будь-який шар приховано, угорі панелі на кожній вкладці показується "
+"**Layers hidden**. Шари лишаються прихованими й після закриття Debugger, "
+"доки ви знову їх не позначите."
+
+msgid "The Sprites tab"
+msgstr "Вкладка Sprites"
+
+msgid "![The Sprites tab](images/dbg-evo-sprites.png)"
+msgstr "![Вкладка Sprites](images/dbg-evo-sprites.png)"
+
+msgid "The **Sprites** tab lists the 85 sprites of TSConf, a row each."
+msgstr "Вкладка **Sprites** перелічує 85 спрайтів TSConf, по рядку на кожен."
+
+msgid "**#**"
+msgstr "**#**"
+
+msgid "the number of the sprite, 0 to 84"
+msgstr "номер спрайта, від 0 до 84"
+
+msgid "**Layer**"
+msgstr "**Layer**"
+
+msgid ""
+"the layer it is on: **S0**, **S1** or **S2**; `-` after the third layer "
+"has ended"
+msgstr ""
+"шар, на якому він розташований: **S0**, **S1** або **S2**; `-` після "
+"завершення третього шару"
+
+msgid "**X**, **Y**"
+msgstr "**X**, **Y**"
+
+msgid "where it is, in dots"
+msgstr "де він розташований, у точках"
+
+msgid "**Size**"
+msgstr "**Size**"
+
+msgid "its width and height in dots, such as `16x16`"
+msgstr "його ширина і висота в точках, як-от `16x16`"
+
+msgid "**Tile**"
+msgstr "**Tile**"
+
+msgid "the number of its tile in the sprite graphics"
+msgstr "номер його тайла в графіці спрайтів"
+
+msgid "**Pal**"
+msgstr "**Pal**"
+
+msgid "the palette row its colors come from, 0 to 15"
+msgstr "рядок палітри, з якого беруться його кольори, від 0 до 15"
+
+msgid "**Flags**"
+msgstr "**Flags**"
+
+msgid ""
+"`ACT` active; `XF`, `YF` flipped across or down; `LEAP` the next sprite "
+"is on the next layer"
+msgstr ""
+"`ACT` — активний; `XF`, `YF` — віддзеркалений по горизонталі або по "
+"вертикалі; `LEAP` — наступний спрайт на наступному шарі"
+
+msgid ""
+"A sprite that is not drawn, because it is not active or comes after the "
+"third layer, is grayed. **Active only**, ticked out of the box, leaves "
+"out the sprites that are not active."
+msgstr ""
+"Спрайт, який не малюється, бо неактивний або йде після третього шару, "
+"показано сірим. **Active only**, типово позначений, прибирає зі списку "
+"неактивні спрайти."
+
+msgid ""
+"Click a sprite to see it under the list, in the colors it has now and as "
+"large as the room allows. The dots that are transparent show a checker. "
+"Beside the sprite are its size and place, the row and column of its tile "
+"in the sprite graphics page, and the colors of its palette row. Drag the "
+"line between the list and the sprite to share the room differently."
+msgstr ""
+"Клацніть спрайт, щоб побачити його під списком у його поточних кольорах і"
+" настільки великим, наскільки дозволяє місце. Прозорі точки показано "
+"шаховим візерунком. Поруч зі спрайтом — його розмір і розташування, рядок"
+" і стовпець його тайла на сторінці графіки спрайтів і кольори його рядка "
+"палітри. Перетягніть лінію між списком і спрайтом, щоб інакше розподілити"
+" місце."
+
+msgid "The Tiles tab"
+msgstr "Вкладка Tiles"
+
+msgid "![The Tiles tab](images/dbg-evo-tiles.png)"
+msgstr "![Вкладка Tiles](images/dbg-evo-tiles.png)"
+
+msgid ""
+"The **Tiles** tab draws a tile map or a page of tile graphics, 512 x 512 "
+"dots: 64 x 64 tiles of 8 x 8 dots. Choose what it draws in the list at "
+"the top left:"
+msgstr ""
+"Вкладка **Tiles** малює карту тайлів або сторінку графіки тайлів, 512 x "
+"512 точок: 64 x 64 тайли по 8 x 8 точок. Виберіть, що малювати, у списку "
+"вгорі ліворуч:"
+
+msgid ""
+"**Map, layer 0** and **Map, layer 1** - the tile map of a tile layer, "
+"drawn with its tiles and colors. A box in the **Header** color outlines "
+"the part of the map the picture shows. Where that part runs past an edge "
+"of the map it goes on at the other edge, so the box can be in two or four"
+" pieces."
+msgstr ""
+"**Map, layer 0** і **Map, layer 1** — карта тайлів шару тайлів, "
+"намальована з її тайлами й кольорами. Рамка кольору **Header** обводить "
+"частину карти, яку показує зображення. Там, де ця частина виходить за "
+"край карти, вона продовжується з протилежного краю, тож рамка може "
+"складатися з двох або чотирьох частин."
+
+msgid ""
+"**Graphics** - a page of tile graphics with all its 4096 tiles in order. "
+"**Page** is the RAM page it starts at, in hex; its arrows step by 8, the "
+"length of a graphics page. **Palette** is the palette row the tiles are "
+"drawn with, 0 to 15. Both are grayed out while a map is shown."
+msgstr ""
+"**Graphics** — сторінка графіки тайлів з усіма її 4096 тайлами по "
+"порядку. **Page** — сторінка RAM, з якої вона починається, у "
+"шістнадцятковому вигляді; її стрілки крокують на 8, довжину сторінки "
+"графіки. **Palette** — рядок палітри, яким малюються тайли, від 0 до 15. "
+"Обидва поля неактивні, поки показано карту."
+
+msgid ""
+"**T0G**, **T1G** and **SG** switch to **Graphics** and set **Page** to "
+"the page that **T0GPage**, **T1GPage** or **SGPage** points at."
+msgstr ""
+"**T0G**, **T1G** і **SG** перемикають на **Graphics** і задають у "
+"**Page** сторінку, на яку вказує **T0GPage**, **T1GPage** або **SGPage**."
+
+msgid ""
+"A checker shows where nothing is drawn: a dot of color 0, which is "
+"transparent, and on a map a cell with tile 0 on a layer that does not "
+"draw tile 0."
+msgstr ""
+"Шаховий візерунок показує, де нічого не намальовано: точку кольору 0, "
+"який прозорий, а на карті — клітинку з тайлом 0 на шарі, що не малює тайл"
+" 0."
+
+msgid ""
+"Move the mouse over the picture to see the cell or the tile under it in "
+"the column on the right. For a map:"
+msgstr ""
+"Наведіть мишу на зображення, щоб побачити клітинку або тайл під нею в "
+"стовпці праворуч. Для карти:"
+
+msgid "Row"
+msgstr "Рядок"
+
+msgid "**TMPage**"
+msgstr "**TMPage**"
+
+msgid "the page the tile maps are in"
+msgstr "сторінка, на якій лежать карти тайлів"
+
+msgid "**Cell**"
+msgstr "**Cell**"
+
+msgid "the cell, across and down, 0 to 63"
+msgstr "клітинка, по горизонталі і по вертикалі, від 0 до 63"
+
+msgid "**Address**"
+msgstr "**Address**"
+
+msgid "where the cell's entry is: page and offset, in hex"
+msgstr ""
+"де розташований запис клітинки: сторінка і зміщення в шістнадцятковому "
+"вигляді"
+
+msgid "**Entry**"
+msgstr "**Entry**"
+
+msgid "the entry, in hex"
+msgstr "запис у шістнадцятковому вигляді"
+
+msgid "the tile it holds"
+msgstr "тайл, який він містить"
+
+msgid "**Row**, **Column**"
+msgstr "**Row**, **Column**"
+
+msgid "where that tile is in the graphics page"
+msgstr "де цей тайл розташований на сторінці графіки"
+
+msgid "**Colors**"
+msgstr "**Colors**"
+
+msgid "the 16 colors the cell is drawn with, such as `10..1F`"
+msgstr "16 кольорів, якими малюється клітинка, як-от `10..1F`"
+
+msgid "**Flip**"
+msgstr "**Flip**"
+
+msgid "`XF`, `YF`, or `-` when the tile is not flipped"
+msgstr "`XF`, `YF` або `-`, коли тайл не віддзеркалений"
+
+msgid "**Hole**"
+msgstr "**Hole**"
+
+msgid "**yes** when the cell is not drawn and the layer under it shows through"
+msgstr "**yes**, коли клітинка не малюється і крізь неї видно шар під нею"
+
+msgid ""
+"For a graphics page the column shows the **Page**, the **Tile** with its "
+"**Row** and **Column**, the **Address** of the tile's first line, and the"
+" **Line step**: the bytes from one line of a tile to the next, in hex."
+msgstr ""
+"Для сторінки графіки стовпець показує **Page**, **Tile** з його **Row** і"
+" **Column**, **Address** першого рядка тайла і **Line step**: кількість "
+"байтів від одного рядка тайла до наступного в шістнадцятковому вигляді."
+
+msgid "The Palette tab"
+msgstr "Вкладка Palette"
+
+msgid ""
+"On TSConf the **Palette** tab shows the 256 colors of the palette memory,"
+" 16 to a row. The rows are named by their first color, `00` to `F0`, and "
+"the columns `0` to `F`. On BaseConf it shows the 16 palette cells in one "
+"row."
+msgstr ""
+"На TSConf вкладка **Palette** показує 256 кольорів пам'яті палітри, по 16"
+" у рядку. Рядки названо за їхнім першим кольором, від `00` до `F0`, а "
+"стовпці — від `0` до `F`. На BaseConf вона показує 16 комірок палітри в "
+"одному рядку."
+
+msgid ""
+"The columns **B**, **T0**, **T1** and **S** on the right of the TSConf "
+"grid mark the rows that the bitmap, tile layer 0, tile layer 1 and the "
+"sprites take their colors from now. The color of the border is framed "
+"with a dashed line."
+msgstr ""
+"Стовпці **B**, **T0**, **T1** і **S** праворуч від сітки TSConf "
+"позначають рядки, з яких зараз беруть кольори растр, шар тайлів 0, шар "
+"тайлів 1 і спрайти. Колір бордюру обведено пунктиром."
+
+msgid ""
+"Move the mouse over a color to see it in the column beside the grid. "
+"Click a color to keep it there while the mouse is elsewhere; it is framed"
+" in white and black."
+msgstr ""
+"Наведіть мишу на колір, щоб побачити його в стовпці поруч із сіткою. "
+"Клацніть колір, щоб він лишався там, коли миша деінде; його обведено "
+"білим і чорним."
+
+msgid "**Index**"
+msgstr "**Index**"
+
+msgid "the number of the color, in hex"
+msgstr "номер кольору в шістнадцятковому вигляді"
+
+msgid "**CRAM**"
+msgstr "**CRAM**"
+
+msgid "on TSConf, its address in the palette memory"
+msgstr "на TSConf — його адреса в пам'яті палітри"
+
+msgid "**Word**"
+msgstr "**Word**"
+
+msgid "on TSConf, the word that holds it, in hex"
+msgstr "на TSConf — слово, що його містить, у шістнадцятковому вигляді"
+
+msgid "**#FF**"
+msgstr "**#FF**"
+
+msgid "on BaseConf, the byte written for this cell through port FF"
+msgstr "на BaseConf — байт, записаний для цієї комірки через порт FF"
+
+msgid "**R**, **G**, **B**"
+msgstr "**R**, **G**, **B**"
+
+msgid "the red, green and blue levels"
+msgstr "рівні червоного, зеленого і синього"
+
+msgid "**VDAC_MODE**"
+msgstr "**VDAC_MODE**"
+
+msgid "on TSConf, the top bit of the word"
+msgstr "на TSConf — старший біт слова"
+
+msgid "**RGB**"
+msgstr "**RGB**"
+
+msgid "the color as it is shown, in hex"
+msgstr "колір так, як він показується, у шістнадцятковому вигляді"
+
+msgid "**Used by**"
+msgstr "**Used by**"
+
+msgid "the layers whose row it is in, and **border** for the border color"
+msgstr "шари, у чиєму рядку він розташований, і **border** для кольору бордюру"
+
+msgid ""
+"On TSConf the levels go from 0 to 31. As the note under the grid says, "
+"with **VDAC_MODE** 0 a level is at full brightness from 24 on."
+msgstr ""
+"На TSConf рівні — від 0 до 31. Як сказано в примітці під сіткою, з "
+"**VDAC_MODE** 0 рівень має повну яскравість від 24 і вище."
+
+msgid "The DMA tab"
+msgstr "Вкладка DMA"
+
+msgid ""
+"The **DMA** tab shows the DMA of TSConf, which copies memory and fills it"
+" without the CPU. At the top are its registers:"
+msgstr ""
+"Вкладка **DMA** показує DMA TSConf, який копіює і заповнює пам'ять без "
+"участі CPU. Угорі — його регістри:"
+
+msgid "Register"
+msgstr "Регістр"
+
+msgid "**DMASAddr**, **DMADAddr**"
+msgstr "**DMASAddr**, **DMADAddr**"
+
+msgid "the source and the destination: page and offset, in hex"
+msgstr "джерело і призначення: сторінка і зміщення в шістнадцятковому вигляді"
+
+msgid "**DMALen**"
+msgstr "**DMALen**"
+
+msgid "the length of a burst, in words"
+msgstr "довжина пакета в словах"
+
+msgid "**DMANum**"
+msgstr "**DMANum**"
+
+msgid "the number of bursts"
+msgstr "кількість пакетів"
+
+msgid "**DMACtrl**"
+msgstr "**DMACtrl**"
+
+msgid "the kind of transfer, such as `RAM > RAM` or `RAM > CRAM`, and its options"
+msgstr "вид пересилання, як-от `RAM > RAM` чи `RAM > CRAM`, і його параметри"
+
+msgid "**DMAStatus**"
+msgstr "**DMAStatus**"
+
+msgid "**running** or **idle**"
+msgstr "**running** або **idle**"
+
+msgid "**Source now**, **Dest now**, **Done**"
+msgstr "**Source now**, **Dest now**, **Done**"
+
+msgid "while a transfer runs, how far it has got"
+msgstr "поки триває пересилання — наскільки воно просунулося"
+
+msgid ""
+"The address registers get their new values only when a transfer ends, so "
+"while one runs, **Source now** and **Dest now** show where it is and "
+"**Done** which burst and word it is at."
+msgstr ""
+"Адресні регістри отримують нові значення лише після завершення "
+"пересилання, тож поки воно триває, **Source now** і **Dest now** "
+"показують, де воно зараз, а **Done** — на якому пакеті і слові."
+
+msgid ""
+"Under them, **Started this frame and the last** lists each transfer the "
+"program started in the frame the machine is in and in the frame before:"
+msgstr ""
+"Під ними **Started this frame and the last** перелічує кожне пересилання,"
+" яке програма запустила в поточному кадрі машини і в попередньому:"
+
+msgid "**Frame**"
+msgstr "**Frame**"
+
+msgid "**this** or **last**"
+msgstr "**this** або **last**"
+
+msgid "**Line:dot**"
+msgstr "**Line:dot**"
+
+msgid "where the beam was when it started"
+msgstr "де був промінь, коли воно почалося"
+
+msgid "**Transfer**"
+msgstr "**Transfer**"
+
+msgid "the kind of transfer"
+msgstr "вид пересилання"
+
+msgid "**From**, **To**"
+msgstr "**From**, **To**"
+
+msgid "words a burst x bursts, such as `256 x 4`"
+msgstr "слів у пакеті x пакетів, як-от `256 x 4`"
+
+msgid "**Took**"
+msgstr "**Took**"
+
+msgid ""
+"how long it took, in T-states and in lines; **running** while it is not "
+"done; **cut short** when the program started the next transfer before it "
+"ended"
+msgstr ""
+"скільки воно тривало, у тактах і в рядках; **running**, поки воно не "
+"завершилося; **cut short**, коли програма запустила наступне пересилання "
+"раніше, ніж це завершилося"
+
+msgid ""
+"Use it to see when a program moves its graphics during the frame, and how"
+" long it takes."
+msgstr ""
+"Користуйтеся нею, щоб побачити, коли програма переносить графіку протягом"
+" кадру і скільки часу це займає."
+
+msgid "The Ports tab"
+msgstr "Вкладка Ports"
+
+msgid ""
+"On BaseConf the **Ports** tab shows the ports that set the memory and the"
+" screen, in four groups:"
+msgstr ""
+"На BaseConf вкладка **Ports** показує порти, що керують пам'яттю й "
+"екраном, у чотирьох групах:"
+
+msgid "**Ports** - `7FFD`, `EFF7`, `77` and `BF`, each with what it sets."
+msgstr "**Ports** — `7FFD`, `EFF7`, `77` і `BF`, кожен із тим, що він задає."
+
+msgid ""
+"**Windows** - the four 16K windows of the CPU's memory, `#0000` to "
+"`#C000`, with the RAM or ROM page in each."
+msgstr ""
+"**Windows** — чотири 16K-вікна пам'яті CPU, від `#0000` до `#C000`, зі "
+"сторінкою RAM або ROM у кожному."
+
+msgid ""
+"**Pager** - the eight pager registers, two for each window, written "
+"through ports `0FF7`, `4FF7`, `8FF7` and `CFF7`. One of each pair is used"
+" while the ROM signal is off (**ROM=0**), the other while it is on "
+"(**ROM=1**); a `*` marks the ones in use now."
+msgstr ""
+"**Pager** — вісім регістрів диспетчера сторінок, по два на кожне вікно, "
+"що записуються через порти `0FF7`, `4FF7`, `8FF7` і `CFF7`. Один із "
+"кожної пари діє, поки сигнал ROM вимкнено (**ROM=0**), інший — поки "
+"ввімкнено (**ROM=1**); `*` позначає ті, що діють зараз."
+
+msgid ""
+"**System** - the DOS and NMI state, the CPU clock, the trap address, the "
+"border color, the virtual drives and ports `2F`, `4F`, `6F` and `8F`."
+msgstr ""
+"**System** — стан DOS і NMI, тактова частота CPU, адреса пастки, колір "
+"бордюру, віртуальні дисководи і порти `2F`, `4F`, `6F` і `8F`."
+
+msgid "The ZX Evolution window"
+msgstr "Вікно ZX Evolution"
+
+#, python-brace-format
+msgid ""
+"The button at the top right of the panel, {icon}`display` **Show in its "
+"own window**, moves the panel into a window of its own, **ZX Evolution**."
+" In the window the button is pressed in; click it again, or close the "
+"window, to put the panel back in the Debugger. While the panel is out, "
+"its tab in the Debugger says so, with a **Bring it back** button. Unlike "
+"the **Screen** and **Sound Chips** windows, this one has no command in "
+"the **Debug** menu."
+msgstr ""
+"Кнопка вгорі праворуч на панелі, {icon}`display` **Show in its own "
+"window**, переносить панель в окреме вікно **ZX Evolution**. У вікні "
+"кнопка натиснута; клацніть її знову або закрийте вікно, щоб повернути "
+"панель у Debugger. Поки панель винесено, її вкладка в Debugger повідомляє"
+" про це і має кнопку **Bring it back**. На відміну від вікон **Screen** і"
+" **Sound Chips**, це вікно не має команди в меню **Debug**."
+
+msgid ""
+"The window works without the Debugger: it follows the machine while it "
+"runs, once a frame (in fast mode, once in ten frames), and its layer "
+"switches work as in the panel. The window keeps its place and size, and a"
+" window that was open when you quit opens again at the next start. On a "
+"machine that is not a ZX Evolution it shows **Nothing to show on this "
+"machine**."
+msgstr ""
+"Вікно працює без Debugger: воно стежить за машиною, поки та працює, раз "
+"на кадр (у швидкому режимі — раз на десять кадрів), а його перемикачі "
+"шарів діють так само, як на панелі. Вікно запам'ятовує своє розташування "
+"і розмір, а вікно, відкрите під час виходу, знову відкривається під час "
+"наступного запуску. На машині, що не є ZX Evolution, воно показує "
+"**Nothing to show on this machine**."
+
+msgid "Screen and Sound Chips windows"
+msgstr "Вікна Screen і Sound Chips"
+
+msgid "![The Screen window](images/dbg-screen-window.png)"
+msgstr "![Вікно Screen](images/dbg-screen-window.png)"
+
+msgid "The Screen window"
+msgstr "Вікно Screen"
+
+msgid ""
+"**Debug > Screen** and **Debug > Sound Chips** move the **Screen** and "
+"**Sound Chip** panels out of the Debugger into windows of their own. The "
+"same command again puts the panel back. In the Classic preset the keys "
+"are Alt+S and Alt+A; the Modern preset has no keys for them."
+msgstr ""
+"**Debug > Screen** і **Debug > Sound Chips** виносять панелі **Screen** і"
+" **Sound Chip** з Debugger в окремі вікна. Та сама команда ще раз "
+"повертає панель назад. У наборі Classic клавіші — Alt+S і Alt+A; набір "
+"Modern не має для них клавіш."
+
+#, python-brace-format
+msgid ""
+"The button at the top right of each panel, {icon}`display` **Show in its "
+"own window**, does the same. In the window it is pressed in; click it "
+"again, or close the window, to put the panel back in the Debugger. While "
+"the panel is out, its tab in the Debugger says so, with a **Bring it "
+"back** or **Bring them back** button."
+msgstr ""
+"Кнопка вгорі праворуч на кожній панелі, {icon}`display` **Show in its own"
+" window**, робить те саме. У вікні вона натиснута; клацніть її знову або "
+"закрийте вікно, щоб повернути панель у Debugger. Поки панель винесено, її"
+" вкладка в Debugger повідомляє про це і має кнопку **Bring it back** або "
+"**Bring them back**."
+
+msgid ""
+"The windows work without the Debugger: they follow the machine while it "
+"runs, one picture a frame (in fast mode, one in ten frames). The settings"
+" are the same as in the panel. Each window keeps its place and size, and "
+"a window that was open when you quit opens again at the next start."
+msgstr ""
+"Вікна працюють без Debugger: вони стежать за машиною, поки та працює, "
+"одне зображення на кадр (у швидкому режимі — одне на десять кадрів). "
+"Параметри такі самі, як на панелі. Кожне вікно запам'ятовує своє "
+"розташування і розмір, а вікно, відкрите під час виходу, знову "
+"відкривається під час наступного запуску."
+
+msgid "Examples"
+msgstr "Приклади"
+
+msgid "See which screen a 128K program draws to"
+msgstr "Побачити, на який екран малює програма 128K"
+
+msgid ""
+"A 128K has two screens, in RAM pages 5 and 7. Many programs draw on the "
+"screen that is not shown and then flip, so that the picture never shows "
+"half drawn."
+msgstr ""
+"128K має два екрани, у сторінках RAM 5 і 7. Багато програм малюють на "
+"екрані, який не показується, а потім перемикають екрани, щоб зображення "
+"ніколи не було видно напівнамальованим."
+
+msgid "Choose a 128K machine and load the program."
+msgstr "Виберіть машину 128K і завантажте програму."
+
+msgid "Choose **Debug > Screen**. The **Screen** window opens."
+msgstr "Виберіть **Debug > Screen**. Відкриється вікно **Screen**."
+
+msgid "Click **Both**. The window shows **Main (5)** and **Shadow (7)** together."
+msgstr "Клацніть **Both**. Вікно покаже **Main (5)** і **Shadow (7)** разом."
+
+msgid ""
+"Let the program run. The name of the screen the machine shows is in the "
+"**Header** color; when the program flips, the other name takes that "
+"color."
+msgstr ""
+"Дайте програмі працювати. Назва екрана, який показує машина, має колір "
+"**Header**; коли програма перемикає екрани, цей колір переходить до іншої"
+" назви."
+
+msgid ""
+"You see the hidden screen being drawn while the other one is shown. Click"
+" **Auto** to see only the screen the machine shows, the way the main "
+"window does."
+msgstr ""
+"Ви бачите, як малюється прихований екран, поки показано інший. Клацніть "
+"**Auto**, щоб бачити лише екран, який показує машина, як у головному "
+"вікні."
+
+msgid "![Both screens of a 128K](images/dbg-example-screens.png)"
+msgstr "![Обидва екрани 128K](images/dbg-example-screens.png)"
+
+msgid "Both screens of a 128K"
+msgstr "Обидва екрани 128K"
+
+msgid "Find the bytes behind a spot on the screen"
+msgstr "Знайти байти, що стоять за місцем на екрані"
+
+msgid "Open the Debugger and click the **Screen** tab."
+msgstr "Відкрийте Debugger і клацніть вкладку **Screen**."
+
+msgid ""
+"Move the mouse onto the spot and click: the cell is marked and the "
+"readout holds."
+msgstr ""
+"Наведіть мишу на місце і клацніть: знакомісце позначиться, а показники "
+"зафіксуються."
+
+msgid ""
+"Read **Screen:** for the byte of pixels and **Attr:** for its colors, for"
+" example `#4000` and `#5800` for the top left corner."
+msgstr ""
+"Прочитайте **Screen:** для байта пікселів і **Attr:** для його кольорів, "
+"наприклад `#4000` і `#5800` для лівого верхнього кута."
+
+msgid "Right-click the picture and choose **Copy screen address**."
+msgstr "Клацніть зображення правою кнопкою і виберіть **Copy screen address**."
+
+msgid ""
+"With the address in hand, look at the byte in the **DUMP** panel (see "
+"[Memory](debugger-memory.md)), or set a **Write** breakpoint on it to "
+"stop the machine when the program draws there (see [Breakpoints and "
+"watching](debugger-breakpoints.md))."
+msgstr ""
+"Маючи адресу, перегляньте байт на панелі **DUMP** (див. [Пам'ять"
+"](debugger-memory.md)) або встановіть на нього точку зупинки **Write**, "
+"щоб зупинити машину, коли програма малює там (див. [Точки зупинки та "
+"спостереження](debugger-breakpoints.md))."
+
+msgid "Watch the AY registers while music plays"
+msgstr "Стежити за регістрами AY, поки грає музика"
+
+msgid "Choose **ZX Spectrum 128K** and pick **128 BASIC** in its menu."
+msgstr "Виберіть **ZX Spectrum 128K** і виберіть **128 BASIC** у його меню."
+
+msgid ""
+"Choose **Debug > Sound Chips**. The **Sound Chips** window opens on "
+"**PSG1**."
+msgstr ""
+"Виберіть **Debug > Sound Chips**. Вікно **Sound Chips** відкриється на "
+"**PSG1**."
+
+msgid "Type `PLAY \"cdefgab\"` and press Enter."
+msgstr "Введіть `PLAY \"cdefgab\"` і натисніть Enter."
+
+msgid ""
+"Watch channel A: its **Period** changes with each note, its **Mixer** "
+"starts with `T` for the tone, and its **Lev** bar rises and falls. The "
+"wave box shows the square wave of the tone."
+msgstr ""
+"Стежте за каналом A: його **Period** змінюється з кожною нотою, його "
+"**Mixer** починається з `T` для тону, а його смуга **Lev** піднімається й"
+" опускається. Осцилограма показує прямокутну хвилю тону."
+
+msgid ""
+"Tick **Mute** on the A row and play again: the notes go on in the "
+"registers, but you hear nothing."
+msgstr ""
+"Позначте **Mute** у рядку A і зіграйте знову: ноти й далі йдуть у "
+"регістри, але ви нічого не чуєте."
+
+msgid "Untick **Mute** to hear the channel again."
+msgstr "Зніміть позначку **Mute**, щоб знову почути канал."
+
+msgid "Screen panel"
+msgstr "панель Screen"
+
+msgid "shadow screen"
+msgstr "тіньовий екран"
+
+msgid "which screen"
+msgstr "вибір екрана"
+
+msgid "zoom"
+msgstr "масштаб"
+
+msgid "screen address"
+msgstr "адреса екрана"
+
+msgid "attribute address"
+msgstr "адреса атрибутів"
+
+msgid "Copy screen address"
+msgstr "Copy screen address"
+
+msgid "Copy attribute address"
+msgstr "Copy attribute address"
+
+msgid "Sound Chip panel"
+msgstr "панель Sound Chip"
+
+msgid "AY"
+msgstr "AY"
+
+msgid "registers"
+msgstr "регістри"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "FM"
+msgstr "FM"
+
+msgid "YM2203"
+msgstr "YM2203"
+
+msgid "wave box"
+msgstr "осцилограма"
+
+msgid "beeper"
+msgstr "біпер"
+
+msgid "level"
+msgstr "рівень"
+
+msgid "Tape panel"
+msgstr "панель Tape"
+
+msgid "tape signal"
+msgstr "сигнал стрічки"
+
+msgid "FDC panel"
+msgstr "панель FDC"
+
+msgid "floppy disk controller"
+msgstr "контролер дисковода"
+
+msgid "FDD panel"
+msgstr "панель FDD"
+
+msgid "track"
+msgstr "доріжка"
+
+msgid "raw bytes"
+msgstr "сирі байти"
+
+msgid "CMOS panel"
+msgstr "панель CMOS"
+
+msgid "clock chip"
+msgstr "мікросхема годинника"
+
+msgid "RTC"
+msgstr "RTC"
+
+msgid "Palette panel"
+msgstr "панель Palette"
+
+msgid "palette"
+msgstr "палітра"
+
+msgid "ZX Evo panel"
+msgstr "панель ZX Evo"
+
+msgid "ZX Evolution"
+msgstr "ZX Evolution"
+
+msgid "Debugger panel"
+msgstr "панель Debugger"
+
+msgid "TSConf"
+msgstr "TSConf"
+
+msgid "BaseConf"
+msgstr "BaseConf"
+
+msgid "layers"
+msgstr "шари"
+
+msgid "layer"
+msgstr "шар"
+
+msgid "hiding"
+msgstr "приховування"
+
+msgid "Layers hidden"
+msgstr "Layers hidden"
+
+msgid "sprites"
+msgstr "спрайти"
+
+msgid "sprite"
+msgstr "спрайт"
+
+msgid "tiles"
+msgstr "тайли"
+
+msgid "tile map"
+msgstr "карта тайлів"
+
+msgid "DMA"
+msgstr "DMA"
+
+msgid "ports"
+msgstr "порти"
+
+msgid "pager"
+msgstr "диспетчер сторінок"
+
+msgid "ZX Evolution window"
+msgstr "вікно ZX Evolution"
+
+msgid "Show in its own window"
+msgstr "Show in its own window"
+
+msgid "Screen window"
+msgstr "вікно Screen"
+
+msgid "Sound Chips window"
+msgstr "вікно Sound Chips"
+

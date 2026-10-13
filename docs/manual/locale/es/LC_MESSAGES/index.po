@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Debugger"
+msgstr "Debugger"
+
+msgid "Xpeccy+ Manual"
+msgstr "Manual de Xpeccy+"
+
+msgid ""
+"Xpeccy+ is an emulator of the ZX Spectrum and its clones, with a debugger"
+" built in. This manual says what each part of it does and where to find "
+"it."
+msgstr ""
+"Xpeccy+ es un emulador del ZX Spectrum y sus clones, con un depurador "
+"integrado. Este manual dice qué hace cada parte y dónde encontrarla."
+
+msgid ""
+"Look a word up in the search box: it works in the copy that comes with "
+"the program too, with no network."
+msgstr ""
+"Busca una palabra en el cuadro de búsqueda: también funciona en la copia "
+"que viene con el programa, sin red."
+
+#, python-brace-format
+msgid "The {ref}`genindex` lists terms, commands and settings from A to Z."
+msgstr "El {ref}`genindex` lista términos, comandos y ajustes de la A a la Z."
+

@@ -1,0 +1,745 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 21:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Command line"
+msgstr "Командний рядок"
+
+msgid "Xpeccy+ takes file names and options on the command line:"
+msgstr "Xpeccy+ приймає в командному рядку імена файлів і параметри:"
+
+msgid ""
+"On Windows the program is `xpeccy-plus.exe`. Put a name that has spaces "
+"in it in quotes."
+msgstr "У Windows програма — `xpeccy-plus.exe`. Ім'я з пробілами беріть у лапки."
+
+msgid ""
+"`-h` or `--help` prints the list of options and quits without opening the"
+" window. On Windows add `-c` to see it."
+msgstr ""
+"`-h` або `--help` виводить список параметрів і завершує роботу, не "
+"відкриваючи вікна. У Windows додайте `-c`, щоб його побачити."
+
+msgid ""
+"An option the program does not know, or one given last without its value,"
+" is not opened as a file: it is a warning in the log and, once the window"
+" is up, a message over the picture. An address or a page number that is "
+"not a number gets the same warning, and the option is left out."
+msgstr ""
+"Параметр, якого програма не знає, або останній параметр без значення не "
+"відкривається як файл: це попередження в журналі, а коли вікно "
+"відкриється, — повідомлення поверх зображення. Адреса чи номер сторінки, "
+"що не є числом, отримує таке саме попередження, і параметр пропускається."
+
+msgid "Files"
+msgstr "Файли"
+
+msgid ""
+"Every word that is not an option is a file to open: a snapshot, a tape, a"
+" disk or anything else **File > Open...** takes. Name several to open "
+"several, a disk and a tape for instance."
+msgstr ""
+"Кожне слово, що не є параметром, — файл, який треба відкрити: снапшот, "
+"стрічка, диск або будь-що інше, що приймає **File > Open...**. Назвіть "
+"кілька, щоб відкрити кілька, наприклад диск і стрічку."
+
+msgid ""
+"The command line is read from left to right, and an option acts on the "
+"files after it."
+msgstr ""
+"Командний рядок читається зліва направо, і параметр діє на файли після "
+"нього."
+
+msgid ""
+"A tape or a disk named here is run, as when **Run opened media** is "
+"chosen on the **File types** page of **Options**. Only **Mount opened "
+"media** there makes it just go in. The command line never asks which one "
+"you want. Two options decide it for one start:"
+msgstr ""
+"Стрічка чи диск, названі тут, запускаються, як коли на сторінці **File "
+"types** вікна **Options** вибрано **Run opened media**. Лише **Mount "
+"opened media** там змушує їх просто вставлятися. Командний рядок ніколи "
+"не питає, що ви хочете. Два параметри вирішують це для одного запуску:"
+
+msgid "`--autostart` - run the files named here, whatever **Options** says;"
+msgstr "`--autostart` — запустити названі тут файли, хоч би що казали **Options**;"
+
+msgid "`--no-autostart` - only mount them."
+msgstr "`--no-autostart` — лише підключити їх."
+
+msgid ""
+"A file can switch the machine, as it does when you open it from the menu "
+"(see [Run a program](getting-started.md#run-a-program)), unless `-m` "
+"names the machine."
+msgstr ""
+"Файл може перемкнути машину, як і тоді, коли ви відкриваєте його з меню "
+"(див. [Запуск програми](getting-started.md#run-a-program)), якщо `-m` не "
+"називає машину."
+
+msgid ""
+"A file or a machine named here skips the **Start Machine** question, if "
+"**Options** asks it at start (see [Machine at start](machines.md#machine-"
+"at-start))."
+msgstr ""
+"Файл чи машина, названі тут, пропускають запитання **Start Machine**, "
+"якщо **Options** ставлять його під час запуску (див. [Machine at "
+"start](machines.md#machine-at-start))."
+
+msgid "Machine and media"
+msgstr "Машина й носії"
+
+msgid ""
+"`-m ID`, `--machine ID` - start on this machine. It takes the machine's "
+"name as the list shows it, such as `\"ZX Spectrum 128K\"`, or its short "
+"id: the name of its file, such as `zx48`, `zx128`, `zxplus2`, `zxplus2a`,"
+" `zxplus3`, `pent`, `pent1024`, `scorp`, `scorptp`, `atm2`, `profi3`, "
+"`profi`, `phoenix`, `evo-baseconf`, `evo-tsconf`, `alf`, `alf128`. `-p` "
+"is the older name of the same option. It is acted on before anything "
+"else, wherever it stands, so a snapshot named before it is not lost; "
+"given twice, the last one counts. It counts as your own pick of a "
+"machine, as in the **Machine** menu."
+msgstr ""
+"`-m ID`, `--machine ID` — запустити на цій машині. Параметр приймає назву"
+" машини так, як її показує список, наприклад `\"ZX Spectrum 128K\"`, або "
+"її короткий id — ім'я її файлу, наприклад `zx48`, `zx128`, `zxplus2`, "
+"`zxplus2a`, `zxplus3`, `pent`, `pent1024`, `scorp`, `scorptp`, `atm2`, "
+"`profi3`, `profi`, `phoenix`, `evo-baseconf`, `evo-tsconf`, `alf`, "
+"`alf128`. `-p` — давніша назва того самого параметра. Він виконується "
+"раніше за все інше, де б не стояв, тож снапшот, названий перед ним, не "
+"губиться; якщо його задано двічі, діє останній. Він вважається вашим "
+"власним вибором машини, як у меню **Machine**."
+
+msgid ""
+"`--disk X` - the floppy drive for the disks named after it: `0` to `3`, "
+"`a` to `d` or `A` to `D`. Without it a disk goes into drive A."
+msgstr ""
+"`--disk X` — дисковод для дисків, названих після нього: від `0` до `3`, "
+"від `a` до `d` або від `A` до `D`. Без нього диск вставляється в дисковод"
+" A."
+
+msgid ""
+"`--sdcard PATH` - the SD card of the ZX Evolution: an image, or a folder "
+"served as a card."
+msgstr ""
+"`--sdcard PATH` — SD card для ZX Evolution: образ або папка, що подається"
+" як картка."
+
+msgid ""
+"`--confdir DIR` - take the settings from another folder instead of the "
+"usual one (see [Where the settings are](getting-started.md#where-the-"
+"settings-are))."
+msgstr ""
+"`--confdir DIR` — брати налаштування з іншої папки замість звичайної "
+"(див. [Де зберігаються налаштування](getting-started.md#where-the-"
+"settings-are))."
+
+msgid "Window"
+msgstr "Вікно"
+
+msgid ""
+"These change the setting itself, as **Options** would, and it stays for "
+"the next start."
+msgstr ""
+"Ці параметри змінюють саме налаштування, як це зробили б **Options**, і "
+"воно зберігається до наступного запуску."
+
+msgid "`-s N`, `--size N` - window size, 1 to 6 (x1 to x6)."
+msgstr "`-s N`, `--size N` — розмір вікна, від 1 до 6 (від x1 до x6)."
+
+msgid "`--fullscreen 1` - start fullscreen; `--fullscreen 0` - in a window."
+msgstr ""
+"`--fullscreen 1` — запуск у повноекранному режимі; `--fullscreen 0` — у "
+"вікні."
+
+msgid ""
+"`-r 1`, `--ratio 1` - keep the picture's shape in fullscreen; `0` "
+"stretches it."
+msgstr ""
+"`-r 1`, `--ratio 1` — зберігати пропорції зображення в повноекранному "
+"режимі; `0` розтягує його."
+
+msgid "`-n N`, `--noflick N` - anti-flicker intensity, 0 to 100 percent."
+msgstr ""
+"`-n N`, `--noflick N` — інтенсивність усунення мерехтіння, від 0 до 100 "
+"відсотків."
+
+msgid ""
+"`--style` - macOS only: the system's own look instead of the one Xpeccy+ "
+"sets."
+msgstr ""
+"`--style` — лише macOS: власний вигляд системи замість того, який задає "
+"Xpeccy+."
+
+msgid "Debugging"
+msgstr "Налагодження"
+
+msgid "`-d`, `--debug` - open the Debugger at once."
+msgstr "`-d`, `--debug` — одразу відкрити Debugger."
+
+msgid ""
+"`-l FILE`, `--labels FILE` - load labels made by SjASMPlus (its "
+"`LABELSLIST`). They win over the labels that come with an image."
+msgstr ""
+"`-l FILE`, `--labels FILE` — завантажити мітки, створені SjASMPlus (його "
+"`LABELSLIST`). Вони мають перевагу над мітками, що йдуть з образом."
+
+msgid "`-a ADR`, `--adr ADR` - where `-f` loads, 16384 (`0x4000`) if not given."
+msgstr ""
+"`-a ADR`, `--adr ADR` — куди завантажує `-f`, 16384 (`0x4000`), якщо не "
+"задано."
+
+msgid "`-f FILE`, `--file FILE` - load a binary file into memory at that address."
+msgstr ""
+"`-f FILE`, `--file FILE` — завантажити двійковий файл у пам'ять за цією "
+"адресою."
+
+msgid "`-b N`, `--bank N` - put RAM page N at `#C000`."
+msgstr "`-b N`, `--bank N` — підключити сторінку RAM N за адресою `#C000`."
+
+msgid "`--pc ADR` - set the PC register."
+msgstr "`--pc ADR` — задати регістр PC."
+
+msgid "`--sp ADR` - set the SP register."
+msgstr "`--sp ADR` — задати регістр SP."
+
+msgid ""
+"`--bp ADR` - a breakpoint on executing that address. A label name works "
+"too."
+msgstr ""
+"`--bp ADR` — точка зупинки на виконанні цієї адреси. Підходить і ім'я "
+"мітки."
+
+msgid ""
+"`--brk FILE` - load a list of breakpoints (`.xbrk`); its addresses can be"
+" labels. Give it more than once to load several lists."
+msgstr ""
+"`--brk FILE` — завантажити список точок зупинки (`.xbrk`); його адреси "
+"можуть бути мітками. Задайте його кілька разів, щоб завантажити кілька "
+"списків."
+
+msgid ""
+"`--brk-log FILE` - where the [breakpoint log](debugger-breakpoints.md"
+"#the-breakpoint-log) goes; `-` writes it to the standard output."
+msgstr ""
+"`--brk-log FILE` — куди йде [журнал точок зупинки](debugger-"
+"breakpoints.md#the-breakpoint-log); `-` записує його в стандартний вивід."
+
+msgid "`--xmap FILE` - load a memory map saved by the Debugger (`.xmap`)."
+msgstr "`--xmap FILE` — завантажити карту пам'яті, збережену в Debugger (`.xmap`)."
+
+msgid ""
+"A number in these options is hex with `#`, `$` or `0x` in front (`#8000`,"
+" `$8000`, `0x8000`), and decimal without one (`32768`). A leading zero "
+"means nothing: `0100` is a hundred. In a shell `#` starts a comment and "
+"`$` a variable, so there write `0x8000`, or put the number in quotes: "
+"`\"#8000\"`."
+msgstr ""
+"Число в цих параметрах шістнадцяткове з `#`, `$` або `0x` попереду "
+"(`#8000`, `$8000`, `0x8000`) і десяткове без них (`32768`). Нуль на "
+"початку нічого не означає: `0100` — це сто. В оболонці `#` починає "
+"коментар, а `$` — змінну, тож там пишіть `0x8000` або беріть число в "
+"лапки: `\"#8000\"`."
+
+msgid ""
+"`--bp` and `--brk` are set once every option is read, so the labels of "
+"`-l` are there for them wherever `-l` stands. The others act at the "
+"moment they are read, so put them after a snapshot they belong to: a "
+"snapshot loaded later sets its own registers and memory. A tape or a disk"
+" that is run resets the machine after all the options are read, which "
+"undoes `--pc` and `--sp`."
+msgstr ""
+"`--bp` і `--brk` задаються, коли прочитано всі параметри, тож мітки з "
+"`-l` для них є, де б не стояв `-l`. Інші діють у момент, коли їх "
+"прочитано, тож ставте їх після снапшота, до якого вони належать: снапшот,"
+" завантажений пізніше, задає власні регістри й пам'ять. Стрічка чи диск, "
+"що запускаються, скидають машину після того, як прочитано всі параметри, "
+"і це скасовує `--pc` і `--sp`."
+
+msgid "Running with no window"
+msgstr "Запуск без вікна"
+
+msgid ""
+"`--bench N` runs the machine for N frames with no window, as fast as the "
+"computer can, with no sound, and quits. It is for scripts: running a test"
+" program, measuring a routine, taking a picture or a snapshot at a given "
+"frame. Everything else on the command line acts as usual, so the files, "
+"the machine and the breakpoints are set first."
+msgstr ""
+"`--bench N` запускає машину на N кадрів без вікна, так швидко, як може "
+"комп'ютер, без звуку, і завершує роботу. Це для скриптів: запустити "
+"тестову програму, виміряти підпрограму, зробити зображення чи снапшот на "
+"заданому кадрі. Усе інше в командному рядку діє як звичайно, тож файли, "
+"машину й точки зупинки задано спершу."
+
+msgid ""
+"A breakpoint whose action is **Debugger** ends the run where it fires. "
+"One with **Counter** counts and lets the run go on, and one with **Log** "
+"writes its line, as in the window."
+msgstr ""
+"Точка зупинки з дією **Debugger** завершує прогін там, де спрацьовує. "
+"Точка з **Counter** рахує й дає прогону йти далі, а точка з **Log** пише "
+"свій рядок, як і у вікні."
+
+msgid ""
+"What the run prints goes to the standard output; the program's log, when "
+"it goes to the console, to the standard error. A run ends with a line of "
+"its speed:"
+msgstr ""
+"Те, що виводить прогін, іде в стандартний вивід; журнал програми, коли "
+"він іде в консоль, — у стандартний потік помилок. Прогін закінчується "
+"рядком про його швидкість:"
+
+msgid ""
+"`(stopped early)` says a breakpoint ended it. After it comes one `SPAN` "
+"line for each span the breakpoints measured (see [Spans](debugger-"
+"breakpoints.md#spans))."
+msgstr ""
+"`(stopped early)` означає, що його завершила точка зупинки. Після нього "
+"йде по рядку `SPAN` на кожен інтервал, виміряний точками зупинки (див. "
+"[Інтервали](debugger-breakpoints.md#spans))."
+
+msgid "The exit code tells a script how the run ended:"
+msgstr "Код виходу каже скрипту, як закінчився прогін:"
+
+msgid "Code"
+msgstr "Код"
+
+msgid "Meaning"
+msgstr "Значення"
+
+msgid "`0`"
+msgstr "`0`"
+
+msgid "it ran every frame asked for"
+msgstr "виконано всі запитані кадри"
+
+msgid "`1`"
+msgstr "`1`"
+
+msgid "something on the command line was not understood; nothing was run"
+msgstr "щось у командному рядку не зрозуміло; нічого не запущено"
+
+msgid "`2`"
+msgstr "`2`"
+
+msgid "a breakpoint stopped it"
+msgstr "його зупинила точка зупинки"
+
+msgid "More options for such a run:"
+msgstr "Інші параметри для такого прогону:"
+
+msgid "`--bench-skip N` - run N frames first, left out of the timing;"
+msgstr ""
+"`--bench-skip N` — спершу виконати N кадрів, не враховуючи їх у "
+"вимірюванні часу;"
+
+msgid ""
+"`--bench-steps N` - then N instructions more, to stop in the middle of a "
+"frame;"
+msgstr "`--bench-steps N` — потім ще N інструкцій, щоб зупинитися посеред кадру;"
+
+msgid "`--bench-full` - mix the sound too, as playing does;"
+msgstr "`--bench-full` — також мікшувати звук, як під час гри;"
+
+msgid "`--bench-keys SPEC` - press keys on given frames, see below;"
+msgstr "`--bench-keys SPEC` — натискати клавіші на заданих кадрах, див. нижче;"
+
+msgid ""
+"`--bench-hash` - print a check sum of the frames, the sound, the RAM and "
+"the registers, for telling whether two runs did the same;"
+msgstr ""
+"`--bench-hash` — вивести контрольну суму кадрів, звуку, RAM і регістрів, "
+"щоб визначити, чи зробили два прогони те саме;"
+
+msgid ""
+"`--bench-shot FILE` - save the last frame, with the whole border, as a "
+"PPM picture;"
+msgstr ""
+"`--bench-shot FILE` — зберегти останній кадр з усім бордюром як "
+"зображення PPM;"
+
+msgid ""
+"`--bench-save FILE` - save a snapshot at the end, in the format the "
+"extension names;"
+msgstr ""
+"`--bench-save FILE` — зберегти снапшот наприкінці у форматі, який називає"
+" розширення;"
+
+msgid "`--bench-state FILE` - save the raw state of the machine at the end;"
+msgstr "`--bench-state FILE` — зберегти сирий стан машини наприкінці;"
+
+msgid "`--bench-nodraw` - draw no picture, to measure the rest without it;"
+msgstr "`--bench-nodraw` — не малювати зображення, щоб виміряти решту без нього;"
+
+msgid "`--bench-heat` - collect the memory heat map, counted in `--bench-hash`;"
+msgstr ""
+"`--bench-heat` — збирати теплову карту пам'яті, що враховується в "
+"`--bench-hash`;"
+
+msgid "`--bench-prof FILE` - Windows only: where the time of the emulation goes."
+msgstr "`--bench-prof FILE` — лише Windows: на що йде час емуляції."
+
+msgid ""
+"`--bench-keys` takes a list split by commas, each item `FRAME:KEYS` or "
+"`FRAME:KEYS/N`: the keys go down on that frame of the run and are held N "
+"frames, 4 if not given. The keys of one item are pressed together. Digits"
+" and small letters are those keys of the Spectrum, `E` is Enter, `C` Caps"
+" Shift, `S` Symbol Shift and `_` Space. `joy:up+fire` holds the joystick,"
+" `joyb:` the second one, `nmi` presses the NMI button, and `pc:` with a "
+"keymap name presses a key of the PC keyboard a ZX Evolution has: `pc:F1`,"
+" `pc:UP`, `pc:ENT`."
+msgstr ""
+"`--bench-keys` приймає список через кому, кожен елемент — `FRAME:KEYS` "
+"або `FRAME:KEYS/N`: клавіші натискаються на цьому кадрі прогону й "
+"утримуються N кадрів, 4, якщо не задано. Клавіші одного елемента "
+"натискаються разом. Цифри й малі літери — це відповідні клавіші Spectrum,"
+" `E` — Enter, `C` — Caps Shift, `S` — Symbol Shift, а `_` — Space. "
+"`joy:up+fire` утримує джойстик, `joyb:` — другий, `nmi` натискає кнопку "
+"NMI, а `pc:` з назвою з карти клавіш натискає клавішу PC-клавіатури, яка "
+"є в ZX Evolution: `pc:F1`, `pc:UP`, `pc:ENT`."
+
+msgid ""
+"`--help` lists a few more `--bench-` options. They check the emulator "
+"itself."
+msgstr ""
+"`--help` перелічує ще кілька параметрів `--bench-`. Вони перевіряють сам "
+"емулятор."
+
+msgid ""
+"On Linux and macOS a shell waits for the run and has its exit code as "
+"usual. On Windows the program does not hold up the console it is started "
+"from. In PowerShell send what it prints into a pipe, and the exit code is"
+" in `$LASTEXITCODE`:"
+msgstr ""
+"У Linux і macOS оболонка чекає на прогін і, як звичайно, має його код "
+"виходу. У Windows програма не затримує консоль, з якої її запущено. У "
+"PowerShell передайте те, що вона виводить, у конвеєр, а код виходу буде в"
+" `$LASTEXITCODE`:"
+
+#, python-format
+msgid ""
+"In the Command Prompt start it with `start /wait \"\" xpeccy-plus.exe "
+"...`, and the exit code is in `%errorlevel%`."
+msgstr ""
+"У Command Prompt запускайте її командою `start /wait \"\" xpeccy-plus.exe"
+" ...`, а код виходу буде в `%errorlevel%`."
+
+msgid "Recording"
+msgstr "Запис"
+
+msgid "`--wav-out FILE` - record the sound to a WAV file from the start."
+msgstr "`--wav-out FILE` — записувати звук у файл WAV від запуску."
+
+msgid "`--video-out FILE` - record a video from the start, `.mp4` or `.mkv`."
+msgstr "`--video-out FILE` — записувати відео від запуску, `.mp4` або `.mkv`."
+
+msgid ""
+"`--video-auto`, `--no-video-auto` - start and stop recording by itself, "
+"or not, whatever **Options** says."
+msgstr ""
+"`--video-auto`, `--no-video-auto` — починати й зупиняти запис автоматично"
+" чи ні, хоч би що казали **Options**."
+
+msgid ""
+"`--video-autostart AT`, `--video-autostop AT` - when it starts and stops "
+"by itself."
+msgstr ""
+"`--video-autostart AT`, `--video-autostop AT` — коли запис автоматично "
+"починається й зупиняється."
+
+msgid "See [Screenshots and recording](capture.md) for what each one does."
+msgstr ""
+"Що робить кожен із них, див. у розділі [Знімки екрана й "
+"запис](capture.md)."
+
+msgid "Logging"
+msgstr "Журнал"
+
+msgid ""
+"What these set is for this start only: the settings in **Options** stay "
+"as they are."
+msgstr ""
+"Те, що задають ці параметри, діє лише для цього запуску: налаштування в "
+"**Options** лишаються як є."
+
+msgid ""
+"`--log` - write a log file, to `logs/<date>/` beside the program. Where "
+"the program's folder cannot be written to, the log goes to the settings "
+"folder."
+msgstr ""
+"`--log` — писати файл журналу в `logs/<date>/` поруч із програмою. Якщо в"
+" папку програми не можна записувати, журнал іде в папку налаштувань."
+
+msgid "`--no-log` - no log file, even if **Options** says to write one."
+msgstr ""
+"`--no-log` — без файлу журналу, навіть якщо **Options** кажуть його "
+"писати."
+
+msgid "`--log-dir DIR` - put the `logs` folder into `DIR`."
+msgstr "`--log-dir DIR` — помістити папку `logs` у `DIR`."
+
+msgid ""
+"`--log-level LEVEL` - how much is written: `error`, `warn`, `info` (the "
+"usual), `debug` or `trace`."
+msgstr ""
+"`--log-level LEVEL` — скільки записується: `error`, `warn`, `info` "
+"(звичайний), `debug` або `trace`."
+
+msgid ""
+"`--log-groups SPEC` - a level for single parts of the program, such as "
+"`\"video:trace,net:off\"`; `\"all:debug\"` sets them all, `-sound` turns "
+"one off. The parts are `app`, `conf`, `core`, `cpu`, `video`, `sound`, "
+"`tape`, `disk`, `input`, `hw`, `file`, `gui`, `gl`, `net` and `brk`."
+msgstr ""
+"`--log-groups SPEC` — рівень для окремих частин програми, наприклад "
+"`\"video:trace,net:off\"`; `\"all:debug\"` задає всі, `-sound` вимикає "
+"одну. Частини: `app`, `conf`, `core`, `cpu`, `video`, `sound`, `tape`, "
+"`disk`, `input`, `hw`, `file`, `gui`, `gl`, `net` і `brk`."
+
+msgid ""
+"`--log-console` - write the log to the standard error as well, as **To "
+"the console** in **Options** does. On Windows there is one only with `-c`"
+" or a redirect."
+msgstr ""
+"`--log-console` — писати журнал також у стандартний потік помилок, як це "
+"робить **To the console** в **Options**. У Windows він є лише з `-c` або "
+"з перенаправленням."
+
+msgid ""
+"`-c`, `--console` - Windows only: write to the console the program was "
+"started from, or open a console of its own when there is none. That "
+"console waits for a key before it closes. The log goes there at `debug` "
+"level unless `--log-level` says otherwise. Output sent to a file stays in"
+" the file."
+msgstr ""
+"`-c`, `--console` — лише Windows: писати в консоль, з якої запущено "
+"програму, або відкрити власну консоль, коли її немає. Ця консоль чекає на"
+" натискання клавіші, перш ніж закритися. Журнал іде туди на рівні "
+"`debug`, якщо `--log-level` не каже інакше. Вивід, перенаправлений у "
+"файл, лишається у файлі."
+
+msgid "command line"
+msgstr "командний рядок"
+
+msgid "options"
+msgstr "параметри"
+
+msgid "--help"
+msgstr "--help"
+
+msgid "-h"
+msgstr "-h"
+
+msgid "files"
+msgstr "файли"
+
+msgid "--autostart"
+msgstr "--autostart"
+
+msgid "--no-autostart"
+msgstr "--no-autostart"
+
+msgid "-m"
+msgstr "-m"
+
+msgid "--machine"
+msgstr "--machine"
+
+msgid "-p"
+msgstr "-p"
+
+msgid "--disk"
+msgstr "--disk"
+
+msgid "--sdcard"
+msgstr "--sdcard"
+
+msgid "--confdir"
+msgstr "--confdir"
+
+msgid "-s"
+msgstr "-s"
+
+msgid "--size"
+msgstr "--size"
+
+msgid "--fullscreen"
+msgstr "--fullscreen"
+
+msgid "-r"
+msgstr "-r"
+
+msgid "--ratio"
+msgstr "--ratio"
+
+msgid "-n"
+msgstr "-n"
+
+msgid "--noflick"
+msgstr "--noflick"
+
+msgid "--style"
+msgstr "--style"
+
+msgid "debugging"
+msgstr "налагодження"
+
+msgid "-d"
+msgstr "-d"
+
+msgid "--debug"
+msgstr "--debug"
+
+msgid "-l"
+msgstr "-l"
+
+msgid "--labels"
+msgstr "--labels"
+
+msgid "-a"
+msgstr "-a"
+
+msgid "--adr"
+msgstr "--adr"
+
+msgid "-f"
+msgstr "-f"
+
+msgid "--file"
+msgstr "--file"
+
+msgid "-b"
+msgstr "-b"
+
+msgid "--bank"
+msgstr "--bank"
+
+msgid "--pc"
+msgstr "--pc"
+
+msgid "--sp"
+msgstr "--sp"
+
+msgid "--bp"
+msgstr "--bp"
+
+msgid "--brk"
+msgstr "--brk"
+
+msgid "--brk-log"
+msgstr "--brk-log"
+
+msgid "--xmap"
+msgstr "--xmap"
+
+msgid "numbers"
+msgstr "числа"
+
+msgid "--bench"
+msgstr "--bench"
+
+msgid "headless run"
+msgstr "запуск без вікна"
+
+msgid "benchmark"
+msgstr "вимірювання швидкодії"
+
+msgid "exit code"
+msgstr "код виходу"
+
+msgid "--bench-skip"
+msgstr "--bench-skip"
+
+msgid "--bench-steps"
+msgstr "--bench-steps"
+
+msgid "--bench-full"
+msgstr "--bench-full"
+
+msgid "--bench-keys"
+msgstr "--bench-keys"
+
+msgid "--bench-hash"
+msgstr "--bench-hash"
+
+msgid "--bench-shot"
+msgstr "--bench-shot"
+
+msgid "--bench-save"
+msgstr "--bench-save"
+
+msgid "--bench-state"
+msgstr "--bench-state"
+
+msgid "--bench-nodraw"
+msgstr "--bench-nodraw"
+
+msgid "--bench-heat"
+msgstr "--bench-heat"
+
+msgid "--bench-prof"
+msgstr "--bench-prof"
+
+msgid "--wav-out"
+msgstr "--wav-out"
+
+msgid "--video-out"
+msgstr "--video-out"
+
+msgid "--video-auto"
+msgstr "--video-auto"
+
+msgid "--no-video-auto"
+msgstr "--no-video-auto"
+
+msgid "--video-autostart"
+msgstr "--video-autostart"
+
+msgid "--video-autostop"
+msgstr "--video-autostop"
+
+msgid "log"
+msgstr "журнал"
+
+msgid "--log"
+msgstr "--log"
+
+msgid "--no-log"
+msgstr "--no-log"
+
+msgid "--log-dir"
+msgstr "--log-dir"
+
+msgid "--log-level"
+msgstr "--log-level"
+
+msgid "--log-groups"
+msgstr "--log-groups"
+
+msgid "--log-console"
+msgstr "--log-console"
+
+msgid "-c"
+msgstr "-c"
+
+msgid "--console"
+msgstr "--console"
+

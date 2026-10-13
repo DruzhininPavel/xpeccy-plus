@@ -51,11 +51,16 @@ jobs:
           # CI only: there is no display here, and Qt builds the windows even
           # for --help
           sudo apt-get install -y --no-install-recommends xvfb
+          # MANUAL=1 runs tools/manual.py with the python3 found first
+          python3 -m venv "$RUNNER_TEMP/docs"
+          "$RUNNER_TEMP/docs/bin/python3" -m pip install --disable-pip-version-check -r docs/manual/requirements.txt
+          echo "$RUNNER_TEMP/docs/bin" >> "$GITHUB_PATH"
 
       - name: Build and pack
         # runner.temp is out of reach in the job's env, hence the step's own
         env:
           BUILD_DIR: ${{ runner.temp }}/build
+          MANUAL: 1
         run: |
           packaging/make-appimage.sh
           img=$(ls "$BUILD_DIR"/*.AppImage)

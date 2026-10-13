@@ -1,0 +1,145 @@
+/* a step smaller than the theme's 16px, so a line holds more and tables wrap less */
+html {
+	font-size: 93.75%;
+}
+
+/* wider text column where the screen has room for it */
+@media (min-width: 82em) {
+	.content {
+		width: 52em;
+	}
+}
+
+/* language switcher under the search box */
+.xp-languages {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 0.75rem;
+	padding: 0.5rem var(--sidebar-item-spacing-horizontal);
+	font-size: var(--sidebar-item-font-size);
+	border-bottom: 1px solid var(--color-sidebar-search-border);
+}
+.xp-lang-current {
+	font-weight: bold;
+}
+
+/* Tables: names, keys and values never break over two lines - only the last
+   column, the description, wraps. Narrow screens scroll the table. */
+table.docutils {
+	font-size: 0.9em;
+	border-collapse: collapse;
+}
+table.docutils th,
+table.docutils td {
+	padding: 0.4em 0.8em;
+	vertical-align: top;
+}
+table.docutils td:not(:last-child),
+table.docutils th,
+table.docutils td strong,
+table.docutils td code {
+	white-space: nowrap;
+}
+table.docutils tbody tr:nth-child(even) {
+	background: var(--color-table-header-background);
+}
+
+/* screenshots: a thin edge, never wider than the text */
+article img {
+	max-width: 100%;
+	height: auto;
+}
+article img[src*="images/"] {
+	border: 1px solid var(--color-background-border);
+	border-radius: 4px;
+}
+/* a button's icon in the line, {icon}`name`: as tall as the text, no edge */
+article img.xp-icon,
+article img.xp-icon[src*="images/"] {
+	height: 1.25em;
+	width: auto;
+	max-height: none;
+	vertical-align: -0.25em;
+	margin-right: 0.3em;
+	border: 0;
+	border-radius: 0;
+}
+/* the numbered list under an overview picture sits close to it */
+article p:has(> img) + ol {
+	margin-top: 0.25em;
+}
+
+/* the version under the title of the first page */
+.xp-version {
+	color: var(--color-foreground-secondary);
+	margin-top: -0.5em;
+}
+
+/* the index: no bullets, sub-entries indented under their word */
+table.indextable ul {
+	list-style: none;
+	margin: 0;
+	padding-left: 0;
+}
+table.indextable ul ul {
+	padding-left: 1.25em;
+}
+table.indextable li {
+	margin: 0.1em 0;
+}
+
+/* The PDF is the single-page build printed by Chrome */
+@media print {
+	html {
+		font-size: 10.5pt;
+	}
+	.skip-to-content, .sidebar-drawer, .toc-drawer, .mobile-header, .related-pages, footer,
+	.xp-languages, .headerlink, .theme-toggle-container, .back-to-top,
+	.content-icon-container {
+		display: none !important;
+	}
+	.main, .content {
+		width: 100% !important;
+		max-width: none !important;
+		padding: 0 !important;
+	}
+	@page {
+		margin: 16mm 15mm;
+	}
+	/* the title and the contents fill the first pages; every chapter starts a page */
+	.toctree-wrapper > section {
+		break-before: page;
+	}
+	/* nothing hangs below a chapter's last line: a margin that does not fit on a full
+	   page would push an empty page in before the next chapter */
+	.toctree-wrapper > section :last-child {
+		margin-bottom: 0 !important;
+		padding-bottom: 0 !important;
+	}
+	section#xpeccy-manual > h1 {
+		margin-top: 30vh;
+		font-size: 2.6em;
+	}
+	/* a heading never ends a page without its text */
+	h1, h2, h3, h4 {
+		break-after: avoid;
+	}
+	h2 + *, h3 + *, h4 + * {
+		break-before: avoid;
+	}
+	img, pre, figure, li, tr {
+		break-inside: avoid;
+	}
+	.table-wrapper, table.docutils {
+		width: 100% !important;
+		overflow: visible !important;
+	}
+	article img[src*="images/"] {
+		max-height: 60vh;
+		width: auto;
+	}
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+}

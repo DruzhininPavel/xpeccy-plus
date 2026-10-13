@@ -1,0 +1,1074 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 19:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Disks and drives"
+msgstr "Диски и дисководы"
+
+msgid ""
+"A machine can have floppy drives, hard disks, an SD card or a cartridge "
+"slot, depending on the hardware it copies. The **Media** menu lists only "
+"what the running machine has."
+msgstr ""
+"У машины могут быть дисководы, жёсткие диски, SD-карта или разъём для "
+"картриджа — в зависимости от того, какое железо она повторяет. Меню "
+"**Media** показывает только то, что есть у работающей машины."
+
+msgid "Which machine has what"
+msgstr "Что есть у какой машины"
+
+msgid "Machine"
+msgstr "Машина"
+
+msgid "Floppy"
+msgstr "Дисковод"
+
+msgid "Hard disk"
+msgstr "Жёсткий диск"
+
+msgid "Other"
+msgstr "Другое"
+
+msgid "ZX Spectrum 48K"
+msgstr "ZX Spectrum 48K"
+
+msgid "-"
+msgstr "-"
+
+msgid "cartridge"
+msgstr "картридж"
+
+msgid "ZX Spectrum 128K, +2, +2A"
+msgstr "ZX Spectrum 128K, +2, +2A"
+
+msgid "ZX Spectrum +3"
+msgstr "ZX Spectrum +3"
+
+msgid "+3 drives"
+msgstr "дисководы +3"
+
+msgid "Pentagon, Pentagon 1024 SL"
+msgstr "Pentagon, Pentagon 1024 SL"
+
+msgid "Beta Disk"
+msgstr "Beta Disk"
+
+msgid "Scorpion ZS 256"
+msgstr "Scorpion ZS 256"
+
+msgid "Scorpion ZS 256 Turbo+"
+msgstr "Scorpion ZS 256 Turbo+"
+
+msgid "SMUC"
+msgstr "SMUC"
+
+msgid "ATM Turbo 2+"
+msgstr "ATM Turbo 2+"
+
+msgid "ATM Turbo"
+msgstr "ATM Turbo"
+
+msgid "Profi v3"
+msgstr "Profi v3"
+
+msgid "Profi v5"
+msgstr "Profi v5"
+
+msgid "Profi"
+msgstr "Profi"
+
+msgid "ZX Evolution, both"
+msgstr "ZX Evolution, обе"
+
+msgid "NemoIDE (ZX Evo)"
+msgstr "NemoIDE (ZX Evo)"
+
+msgid "SD card"
+msgstr "SD-карта"
+
+msgid "ZXM-Phoenix"
+msgstr "ZXM-Phoenix"
+
+msgid "ALF TV Game, ALF TV Game 128K"
+msgstr "ALF TV Game, ALF TV Game 128K"
+
+msgid ""
+"**Beta Disk** is the TR-DOS disk interface with up to four drives, A to "
+"D. The **+3** interface has two drives, A and B, and runs +3DOS."
+msgstr ""
+"**Beta Disk** — дисковый интерфейс TR-DOS, до четырёх дисководов, от A до"
+" D. Интерфейс **+3** — два дисковода, A и B, и система +3DOS."
+
+msgid ""
+"A machine with no disk interface of its own can be given one. Open the "
+"**Machine** page of **Options** and pick it in the **Disk** row: "
+"**None**, **Beta Disk (WD1793)** or **+3 (uPD765)**. The **Hard disk** "
+"row does the same for an IDE interface: **NemoIDE**, **NemoIDE A8**, "
+"**NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** or **Profi**. An interface "
+"that is part of the machine's board cannot be changed: the list is grayed"
+" out, and its tooltip says **Built into this board**. The +2A and +3 "
+"cannot take a Beta Disk."
+msgstr ""
+"Машине без своего дискового интерфейса его можно добавить. Откройте "
+"страницу **Machine** окна **Options** и выберите интерфейс в строке "
+"**Disk**: **None**, **Beta Disk (WD1793)** или **+3 (uPD765)**. Строка "
+"**Hard disk** делает то же для интерфейса IDE: **NemoIDE**, **NemoIDE "
+"A8**, **NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** или **Profi**. "
+"Интерфейс, который входит в плату машины, сменить нельзя: список "
+"недоступен, а его подсказка говорит **Built into this board**. К +2A и +3"
+" нельзя подключить Beta Disk."
+
+msgid "Floppy disks"
+msgstr "Дискеты"
+
+msgid "Putting a disk in"
+msgstr "Как вставить диск"
+
+msgid ""
+"Open a disk image with **File > Open...**, or drop it onto the window: it"
+" goes into drive A (see [Run a program](getting-"
+"started.md#run-a-program)). To put it into another drive, pick **Disk "
+"B**, **Disk C** or **Disk D** as the file type in the open dialog."
+msgstr ""
+"Откройте образ диска через **File > Open...** или перетащите его на окно:"
+" он попадёт в дисковод A (см. [Запуск программы](getting-"
+"started.md#run-a-program)). Чтобы вставить его в другой дисковод, "
+"выберите тип файла **Disk B**, **Disk C** или **Disk D** в окне открытия."
+
+msgid "![Media > Floppy Drives](images/menu-floppy.png)"
+msgstr "![Media > Floppy Drives](images/menu-floppy.png)"
+
+msgid "Media > Floppy Drives"
+msgstr "Media > Floppy Drives"
+
+msgid ""
+"**Media > Floppy Drives** has a submenu for each drive the machine has. "
+"Its name is the disk in the drive, or **(empty)**; the drive letter is on"
+" its icon. A star after the name means the disk has been changed and not "
+"saved yet. Each submenu has:"
+msgstr ""
+"В **Media > Floppy Drives** есть подменю для каждого дисковода машины. "
+"Его название — диск в дисководе или **(empty)**; буква дисковода — на "
+"значке. Звёздочка после названия значит, что диск изменён и ещё не "
+"сохранён. В каждом подменю:"
+
+msgid ""
+"**Open...** - put a disk image into this drive. It is only mounted: "
+"nothing starts, and the machine stays the same."
+msgstr ""
+"**Open...** — вставить образ диска в этот дисковод. Он только "
+"вставляется: ничего не запускается, машина остаётся той же."
+
+#, python-brace-format
+msgid ""
+"**New** - an empty disk. On a Beta Disk machine you are asked **Format "
+"for TR-DOS?**: {icon}`ok-apply` **Yes** gives an empty TR-DOS disk ready "
+"for files, {icon}`cancel` **No** an unformatted one, for a program that "
+"formats it itself."
+msgstr ""
+"**New** — пустой диск. На машине с Beta Disk появится вопрос **Format for"
+" TR-DOS?**: {icon}`ok-apply` **Yes** даёт пустой диск TR-DOS, готовый для"
+" файлов, {icon}`cancel` **No** — неформатированный, для программы, "
+"которая форматирует его сама."
+
+msgid "**Save** - write the disk back to the file it came from."
+msgstr "**Save** — записать диск обратно в файл, из которого он взят."
+
+msgid ""
+"**Save As...** - write the disk to a new file; you pick the name and the "
+"format."
+msgstr "**Save As...** — записать диск в новый файл; имя и формат выбираете вы."
+
+msgid "**Eject** - take the disk out."
+msgstr "**Eject** — извлечь диск."
+
+msgid ""
+"**Write Protect** - the machine cannot write to this disk, as with the "
+"tab on a real one."
+msgstr ""
+"**Write Protect** — машина не может писать на этот диск, как с заклеенной"
+" прорезью у настоящего."
+
+#, python-brace-format
+msgid ""
+"A right-click on a drive's {icon}`diskGreen` light in the status bar "
+"opens the same menu."
+msgstr ""
+"Правый щелчок по индикатору дисковода {icon}`diskGreen` в строке "
+"состояния открывает то же меню."
+
+msgid "Disk formats"
+msgstr "Форматы дисков"
+
+msgid "Format"
+msgstr "Формат"
+
+msgid "Opens"
+msgstr "Открытие"
+
+msgid "Saves"
+msgstr "Сохранение"
+
+msgid "What it is"
+msgstr "Что это"
+
+msgid "`.trd`"
+msgstr "`.trd`"
+
+msgid "yes"
+msgstr "да"
+
+msgid "TR-DOS disk, sector by sector"
+msgstr "диск TR-DOS, сектор за сектором"
+
+msgid "`.scl`"
+msgstr "`.scl`"
+
+msgid "TR-DOS files packed together without the empty space"
+msgstr "файлы TR-DOS, упакованные вместе без пустого места"
+
+msgid "`.udi`"
+msgstr "`.udi`"
+
+msgid "the whole disk track by track, as the drive reads it"
+msgstr "весь диск дорожка за дорожкой, как его читает дисковод"
+
+msgid "`.dsk`"
+msgstr "`.dsk`"
+
+msgid "+3 disk (extended DSK too)"
+msgstr "диск +3 (и extended DSK)"
+
+msgid "`.td0`"
+msgstr "`.td0`"
+
+msgid "Teledisk image"
+msgstr "образ Teledisk"
+
+msgid "`.fdi`"
+msgstr "`.fdi`"
+
+msgid "FDI image"
+msgstr "образ FDI"
+
+msgid "`.ima`, `.img`"
+msgstr "`.ima`, `.img`"
+
+msgid "1.44 MB PC floppy"
+msgstr "дискета PC на 1,44 МБ"
+
+msgid "`.$B`, `.$C`..."
+msgstr "`.$B`, `.$C`..."
+
+msgid "Hobeta: one TR-DOS file"
+msgstr "Hobeta: один файл TR-DOS"
+
+msgid ""
+"A **Hobeta** file is not a disk but a single TR-DOS file. Opening it into"
+" a drive adds the file to the disk that is there; an empty drive gets a "
+"new TR-DOS disk with the file on it."
+msgstr ""
+"Файл **Hobeta** — не диск, а один файл TR-DOS. Если открыть его в "
+"дисковод, файл добавится на диск, который там стоит; в пустой дисковод "
+"вставится новый диск TR-DOS с этим файлом."
+
+msgid ""
+"Any other file can be opened as **RAW file to disk**: it is copied onto "
+"the TR-DOS disk in the drive as one file, named after the host file. A "
+"file longer than 65280 bytes is split into several parts."
+msgstr ""
+"Любой другой файл можно открыть как **RAW file to disk**: он копируется "
+"одним файлом на диск TR-DOS в дисководе, под именем файла на компьютере. "
+"Файл длиннее 65280 байт делится на несколько частей."
+
+msgid "The boot file"
+msgstr "Загрузочный файл"
+
+msgid ""
+"Most TR-DOS disks start with a file named `boot`, which the machine runs "
+"when it boots from the disk. When a TR-DOS disk has no `boot` of its own,"
+" Xpeccy+ adds one as the disk is opened, so the disk starts by itself and"
+" shows a menu of its files. The disk is not counted as changed for that, "
+"and the image file is not touched unless you save the disk."
+msgstr ""
+"Большинство дисков TR-DOS начинаются с файла `boot`, который машина "
+"запускает при загрузке с диска. Если у диска TR-DOS нет своего `boot`, "
+"Xpeccy+ добавляет его при открытии диска, чтобы диск запускался сам и "
+"показывал меню своих файлов. Диск от этого не считается изменённым, а "
+"файл образа не трогается, пока вы не сохраните диск."
+
+#, python-brace-format
+msgid ""
+"To stop this, open the **Machine** page of **Options**, click the "
+"{icon}`settings` gear in the **Disk** row and clear **Add boot loader**. "
+"The file added is `boot.$B` in the [settings folder](getting-started.md"
+"#where-the-settings-are); put another Hobeta file there under the same "
+"name to use your own."
+msgstr ""
+"Чтобы это отключить, откройте страницу **Machine** окна **Options**, "
+"щёлкните шестерёнку {icon}`settings` в строке **Disk** и снимите **Add "
+"boot loader**. Добавляется файл `boot.$B` из [папки настроек](getting-"
+"started.md#where-the-settings-are); положите туда другой файл Hobeta под "
+"тем же именем, чтобы использовать свой."
+
+msgid "Drive settings"
+msgstr "Настройки дисководов"
+
+#, python-brace-format
+msgid ""
+"The {icon}`settings` gear in the **Disk** row of the **Machine** page "
+"opens **Machine: Disk**:"
+msgstr ""
+"Шестерёнка {icon}`settings` в строке **Disk** на странице **Machine** "
+"открывает **Machine: Disk**:"
+
+msgid ""
+"**Fast disk access** - no waiting for the head to move or the disk to "
+"turn; see below."
+msgstr ""
+"**Fast disk access** — без ожидания, пока движется головка или "
+"поворачивается диск; см. ниже."
+
+msgid "**Add boot loader** - see [The boot file](#the-boot-file)."
+msgstr "**Add boot loader** — см. [Загрузочный файл](#the-boot-file)."
+
+msgid "**TR-DOS ROM** - which ROM image the Beta Disk runs."
+msgstr "**TR-DOS ROM** — какой образ ROM работает в Beta Disk."
+
+msgid ""
+"**Interleave** - the order of sectors on each track of a `.trd` or `.scl`"
+" image, set when it is opened. TR-DOS formats its own disks as 1, 9, 2, "
+"10..."
+msgstr ""
+"**Interleave** — порядок секторов на каждой дорожке образа `.trd` или "
+"`.scl`, задаётся при открытии. Свои диски TR-DOS форматирует как 1, 9, 2,"
+" 10..."
+
+msgid ""
+"**Number of drives** - from one (A) to four (A to D); a +3 has two at "
+"most. A drive left out is not there at all, and programs find it missing."
+msgstr ""
+"**Number of drives** — от одного (A) до четырёх (от A до D); у +3 не "
+"больше двух. Отключённого дисковода нет вовсе, и программы его не "
+"находят."
+
+msgid "**Drives** - for each drive, **80 cylinders** and **Double side**."
+msgstr "**Drives** — для каждого дисковода **80 cylinders** и **Double side**."
+
+msgid "Fast Disk Access"
+msgstr "Fast Disk Access"
+
+msgid ""
+"Real drives spend time moving the head and waiting for the sector to come"
+" round. **Media > Fast Disk Access** skips those waits, so disks load "
+"much faster. The same switch is in the **Disk Manager** and in **Machine:"
+" Disk**."
+msgstr ""
+"Настоящие дисководы тратят время на перемещение головки и ожидание "
+"нужного сектора. **Media > Fast Disk Access** пропускает эти ожидания, и "
+"диски загружаются намного быстрее. Тот же переключатель есть в **Disk "
+"Manager** и в **Machine: Disk**."
+
+msgid "Changed disks"
+msgstr "Изменённые диски"
+
+msgid ""
+"What the machine writes to a disk stays in memory: the image file changes"
+" only when you save the disk."
+msgstr ""
+"То, что машина пишет на диск, остаётся в памяти: файл образа меняется, "
+"только когда вы сохраняете диск."
+
+msgid ""
+"**File > Save Changed Disks** asks about each drive whose disk was "
+"changed: **Disk A: game.trd has been changed. Do you want to save it?** "
+"**Yes** writes it to its file, **No** leaves it, **Cancel** stops asking."
+" A new disk that has no file yet asks for a name, and so does a disk "
+"opened from a format Xpeccy+ reads but does not write, such as `.td0`, "
+"`.fdi` or `.ima`. A save that fails says why, and the disk stays changed."
+msgstr ""
+"**File > Save Changed Disks** спрашивает про каждый дисковод с изменённым"
+" диском: **Disk A: game.trd has been changed. Do you want to save it?** "
+"**Yes** записывает его в свой файл, **No** оставляет как есть, **Cancel**"
+" прекращает вопросы. Новый диск, у которого ещё нет файла, спросит имя; "
+"так же и диск, открытый из формата, который Xpeccy+ читает, но не пишет, "
+"например `.td0`, `.fdi` или `.ima`. Если сохранить не удалось, программа "
+"скажет почему, и диск останется изменённым."
+
+msgid ""
+"Before a changed disk is ejected or replaced, and when you close Xpeccy+,"
+" you are asked the same question. **Cancel** keeps the disk in the drive,"
+" or keeps the program open."
+msgstr ""
+"Тот же вопрос задаётся перед тем, как изменённый диск извлекается или "
+"заменяется, и при закрытии Xpeccy+. **Cancel** оставляет диск в дисководе"
+" или не даёт закрыть программу."
+
+msgid ""
+"With **Remember mounted media** on the **File types** page of "
+"**Options**, the disks in the drives are opened again at the next start."
+msgstr ""
+"С **Remember mounted media** на странице **File types** окна **Options** "
+"диски в дисководах открываются снова при следующем запуске."
+
+msgid "Disk Manager"
+msgstr "Disk Manager"
+
+msgid "![The Disk Manager](images/disk-manager.png)"
+msgstr "![Disk Manager](images/disk-manager.png)"
+
+msgid "The Disk Manager"
+msgstr "Disk Manager"
+
+#, python-brace-format
+msgid ""
+"**Media > Disk Manager** (also {icon}`fdd_disk` on the toolbar, and a "
+"click on a drive {icon}`diskGreen` light in the status bar) shows what is"
+" in the drives and on the disks. In the picture drive A holds Fire 'n Ice"
+" (n-Discovery, 2003)."
+msgstr ""
+"**Media > Disk Manager** (а также {icon}`fdd_disk` на панели инструментов"
+" и щелчок по индикатору дисковода {icon}`diskGreen` в строке состояния) "
+"показывает, что в дисководах и на дисках. На рисунке в дисководе A — Fire"
+" 'n Ice (n-Discovery, 2003)."
+
+msgid ""
+"**Tabs** - one for each drive, named after the disk's own TR-DOS label or"
+" the file name. **Fast disk access** beside them is the same switch as in"
+" the **Media** menu."
+msgstr ""
+"**Вкладки** — по одной на дисковод, с названием по метке TR-DOS диска или"
+" по имени файла. **Fast disk access** рядом с ними — тот же "
+"переключатель, что в меню **Media**."
+
+#, python-brace-format
+msgid ""
+"**The line under the tabs** - the file in the drive, then buttons to "
+"{icon}`fileopen` open a disk image, {icon}`doc-new` insert a new disk, "
+"{icon}`save_all` save to the file it came from, {icon}`floppy` save as, "
+"and {icon}`tape-eject` eject, and the **Write protect** box. They do what"
+" the **Floppy Drives** menu does."
+msgstr ""
+"**Строка под вкладками** — файл в дисководе, затем кнопки: "
+"{icon}`fileopen` открыть образ диска, {icon}`doc-new` вставить новый "
+"диск, {icon}`save_all` сохранить в исходный файл, {icon}`floppy` "
+"сохранить как, {icon}`tape-eject` извлечь, и флажок **Write protect**. "
+"Они делают то же, что меню **Floppy Drives**."
+
+msgid ""
+"**The catalog** - the files on a TR-DOS disk: **Name**, **Ext**, "
+"**Start**, **Length**, **SecLen** (length in sectors), **Trk** and "
+"**Sec** (where the file begins). A +3DOS disk has columns of its own (see"
+" below); any other disk shows no catalog."
+msgstr ""
+"**Каталог** — файлы на диске TR-DOS: **Name**, **Ext**, **Start**, "
+"**Length**, **SecLen** (длина в секторах), **Trk** и **Sec** (где "
+"начинается файл). У диска +3DOS свои столбцы (см. ниже); для других "
+"дисков каталог не показывается."
+
+msgid ""
+"**The line at the bottom** - the disk's label, how many files and deleted"
+" files it has, free sectors, and **modified** when it has unsaved "
+"changes. While the drive's motor runs, **Head on track** shows where the "
+"head is, and the file under it is shown in bold."
+msgstr ""
+"**Строка внизу** — метка диска, сколько на нём файлов и удалённых файлов,"
+" свободные сектора и **modified**, если есть несохранённые изменения. "
+"Пока крутится мотор дисковода, **Head on track** показывает, где головка,"
+" а файл под ней выделен жирным."
+
+msgid ""
+"Select one or more files in the catalog (Ctrl or Shift for several) and "
+"use the buttons on the right:"
+msgstr ""
+"Выделите один или несколько файлов в каталоге (Ctrl или Shift — для "
+"нескольких) и нажмите кнопку справа:"
+
+#, python-brace-format
+msgid ""
+"{icon}`tape` **Copy to tape** - add the files to the tape in the [Tape "
+"Player](tapes.md), as BASIC programs or code blocks. A file whose length "
+"does not match the sectors it takes (several files joined into one) is "
+"skipped."
+msgstr ""
+"{icon}`tape` **Copy to tape** — добавить файлы на ленту в [Tape "
+"Player](tapes.md), как программы на Бейсике или блоки кода. Файл, длина "
+"которого не совпадает с занятыми секторами (несколько файлов, склеенных в"
+" один), пропускается."
+
+#, python-brace-format
+msgid ""
+"{icon}`dollar` **Save as Hobeta** - write each file to a folder you pick "
+"as a Hobeta file (`name.$C`)."
+msgstr ""
+"{icon}`dollar` **Save as Hobeta** — записать каждый файл в выбранную "
+"папку как файл Hobeta (`name.$C`)."
+
+#, python-brace-format
+msgid ""
+"{icon}`filebin` **Save as RAW** - write each file's bare data, with no "
+"header (`name.C`)."
+msgstr ""
+"{icon}`filebin` **Save as RAW** — записать голые данные каждого файла, "
+"без заголовка (`name.C`)."
+
+msgid ""
+"The window follows the drives as the machine runs: a file the program "
+"writes shows up in the catalog straight away."
+msgstr ""
+"Окно следит за дисководами, пока машина работает: файл, который записала "
+"программа, сразу появляется в каталоге."
+
+msgid "+3DOS disks"
+msgstr "Диски +3DOS"
+
+msgid ""
+"A +3 disk shows its files too, and so do the CPC system and data disks, "
+"which the +3 also reads. The columns are **Name**, **Ext**, **Type** "
+"(**Program**, **Numbers**, **Chars** or **Bytes**), **Start** (a "
+"program's autostart line, or the address of code), **Length**, **Size** "
+"(the space the file takes on the disk), **Trk** and **Sec**. A file in a "
+"user area other than 0 has its number before the name, as `3:GAME`. The "
+"line at the bottom says which kind of disk it is, how many files it has "
+"and how much space is free."
+msgstr ""
+"Диск +3 тоже показывает свои файлы, как и системные диски и диски данных "
+"CPC, которые +3 тоже читает. Столбцы: **Name**, **Ext**, **Type** "
+"(**Program**, **Numbers**, **Chars** или **Bytes**), **Start** (строка "
+"автозапуска программы или адрес кода), **Length**, **Size** (место, "
+"которое файл занимает на диске), **Trk** и **Sec**. У файла в "
+"пользовательской области не 0 её номер стоит перед именем, как `3:GAME`. "
+"Строка внизу говорит, какой это диск, сколько на нём файлов и сколько "
+"свободного места."
+
+#, python-brace-format
+msgid ""
+"The buttons work as on TR-DOS. {icon}`tape` **Copy to tape** and "
+"{icon}`dollar` **Save as Hobeta** need the file's +3DOS header, which "
+"gives its type, address and length; a file without one is skipped. "
+"{icon}`filebin` **Save as RAW** writes the data without the header, or "
+"the whole file when it has none."
+msgstr ""
+"Кнопки работают как для TR-DOS. Для {icon}`tape` **Copy to tape** и "
+"{icon}`dollar` **Save as Hobeta** нужен заголовок +3DOS файла с его "
+"типом, адресом и длиной; файл без заголовка пропускается. {icon}`filebin`"
+" **Save as RAW** записывает данные без заголовка или весь файл, если "
+"заголовка нет."
+
+msgid ""
+"The two ZX Evolution machines have an SD card slot. **Media > SD Card** "
+"shows the card that is in, or **(no card)**, and has:"
+msgstr ""
+"У двух машин ZX Evolution есть слот SD-карты. **Media > SD Card** "
+"показывает вставленную карту или **(no card)**, и в нём:"
+
+msgid "**Open Image...** - an image file of a card."
+msgstr "**Open Image...** — файл образа карты."
+
+msgid ""
+"**Open Folder...** - a folder on your computer, served to the machine as "
+"a card. See [A folder as a disk](#a-folder-as-a-disk)."
+msgstr ""
+"**Open Folder...** — папка на вашем компьютере, которую машина видит как "
+"карту. См. [Папка как диск](#a-folder-as-a-disk)."
+
+msgid "**Eject** - take the card out."
+msgstr "**Eject** — извлечь карту."
+
+msgid "**Write Protect** - the card's lock switch. It is always on for a folder."
+msgstr ""
+"**Write Protect** — переключатель защиты на карте. Для папки он всегда "
+"включён."
+
+msgid ""
+"What the machine writes to a card image goes into the image file at once."
+" To start with a card, use `--sdcard <file or folder>` on the [command "
+"line](command-line.md)."
+msgstr ""
+"То, что машина пишет на образ карты, сразу попадает в файл образа. Чтобы "
+"запустить программу с картой, используйте `--sdcard <file or folder>` в "
+"[командной строке](command-line.md)."
+
+msgid "Hard disks"
+msgstr "Жёсткие диски"
+
+#, python-brace-format
+msgid ""
+"A machine with an IDE interface (see [Which machine has what](#which-"
+"machine-has-what)) has two places for a drive, **Master** and **Slave**. "
+"Connect them first: on the **Machine** page of **Options**, click the "
+"{icon}`settings` gear in the **Hard disk** row and set **Master** (and "
+"**Slave**, if you want two) to **HDD (ATA)**."
+msgstr ""
+"У машины с интерфейсом IDE (см. [Что есть у какой машины](#which-machine-"
+"has-what)) два места для устройства, **Master** и **Slave**. Сначала "
+"подключите их: на странице **Machine** окна **Options** щёлкните "
+"шестерёнку {icon}`settings` в строке **Hard disk** и выберите для "
+"**Master** (и для **Slave**, если нужно два) **HDD (ATA)**."
+
+msgid ""
+"**Media > Drives** then has a submenu for each connected device, named "
+"**Master:** or **Slave:** and the image in it:"
+msgstr ""
+"Тогда в **Media > Drives** появится подменю для каждого подключённого "
+"устройства, с названием **Master:** или **Slave:** и образом в нём:"
+
+msgid ""
+"**Open Image...** - a hard disk image: `.hdi`, or a plain image of the "
+"disk under any other name."
+msgstr ""
+"**Open Image...** — образ жёсткого диска: `.hdi` или простой образ диска "
+"под любым другим именем."
+
+msgid ""
+"**Open Folder...** - a folder on your computer, served as a disk. See [A "
+"folder as a disk](#a-folder-as-a-disk)."
+msgstr ""
+"**Open Folder...** — папка на вашем компьютере, которую машина видит как "
+"диск. См. [Папка как диск](#a-folder-as-a-disk)."
+
+msgid "**Eject** - take the image out."
+msgstr "**Eject** — извлечь образ."
+
+msgid ""
+"**Properties...** - the window **Hard Disk: Master** (or **Slave**): the "
+"image, its cylinders, heads and sectors (**C / H / S**), its "
+"**Capacity**, and the **LBA** box. LBA lets the system address the disk "
+"by sector number; clear it for an old system that only knows cylinders, "
+"heads and sectors."
+msgstr ""
+"**Properties...** — окно **Hard Disk: Master** (или **Slave**): образ, "
+"его цилиндры, головки и сектора (**C / H / S**), **Capacity** и флажок "
+"**LBA**. LBA позволяет системе обращаться к диску по номеру сектора; "
+"снимите его для старой системы, которая знает только цилиндры, головки и "
+"сектора."
+
+msgid ""
+"What the machine writes to a hard disk image goes into the file at once. "
+"The images stay mounted when you switch machines, and are opened again at"
+" the next start."
+msgstr ""
+"То, что машина пишет на образ жёсткого диска, сразу попадает в файл. "
+"Образы остаются подключёнными при смене машины и снова открываются при "
+"следующем запуске."
+
+msgid "A folder as a disk"
+msgstr "Папка как диск"
+
+msgid ""
+"**Open Folder...** in **Media > SD Card** and in **Media > Drives** lets "
+"the machine read a folder of your computer as if it were a FAT32 card or "
+"disk. There is no image to make: copy programs into the folder and open "
+"it."
+msgstr ""
+"**Open Folder...** в **Media > SD Card** и в **Media > Drives** позволяет"
+" машине читать папку вашего компьютера, как будто это карта или диск "
+"FAT32. Образ делать не нужно: скопируйте программы в папку и откройте её."
+
+msgid ""
+"It is **read only**. The machine can read every file but cannot write: "
+"nothing it does changes your files."
+msgstr ""
+"Она **только для чтения**. Машина может прочитать любой файл, но не может"
+" писать: ничто из того, что она делает, не меняет ваши файлы."
+
+msgid ""
+"The folder is read when it is opened, and again when you switch machines "
+"or click **Apply** in **Options**. Files added later show up only then."
+msgstr ""
+"Папка читается при открытии и снова при смене машины или при нажатии "
+"**Apply** в **Options**. Файлы, добавленные позже, появляются только "
+"тогда."
+
+msgid ""
+"The disk is made just big enough for the folder: from 512 MB up to 32 GB."
+" A larger folder is not opened, and the message **folder too big for a "
+"disk** says so."
+msgstr ""
+"Диск делается такого размера, чтобы в него поместилась папка: от 512 МБ "
+"до 32 ГБ. Папка больше не открывается, и об этом говорит сообщение "
+"**folder too big for a disk**."
+
+msgid ""
+"Left out: files of 4 GB and over, folders more than 16 levels deep, more "
+"than 65536 entries in one folder, and anything past 200000 entries in "
+"all. The message **folder: not all of it fits** says when something was "
+"left out."
+msgstr ""
+"Не попадают: файлы от 4 ГБ, папки глубже 16 уровней, больше 65536 записей"
+" в одной папке и всё, что сверх 200000 записей в сумме. Сообщение "
+"**folder: not all of it fits** говорит, что что-то не попало."
+
+msgid ""
+"On a hard disk, a folder that holds NedoOS with its `ZXLDR` file in the "
+"top level can boot NedoOS."
+msgstr ""
+"На жёстком диске папка с NedoOS, где файл `ZXLDR` лежит на верхнем "
+"уровне, может загрузить NedoOS."
+
+msgid "Cartridge"
+msgstr "Картридж"
+
+msgid ""
+"The ZX Spectrum 48K takes an Interface 2 ROM cartridge, and the ALF TV "
+"Game consoles their game cartridges. **Media > Cartridge** shows the "
+"cartridge that is in, or **(empty)**, and has:"
+msgstr ""
+"В ZX Spectrum 48K вставляется ROM-картридж Interface 2, а в приставки ALF"
+" TV Game — их игровые картриджи. **Media > Cartridge** показывает "
+"вставленный картридж или **(empty)**, и в нём:"
+
+msgid ""
+"**Open...** - a cartridge image, `.rom` or `.bin`, up to 4 MB. The "
+"machine is reset with the cartridge in."
+msgstr ""
+"**Open...** — образ картриджа, `.rom` или `.bin`, до 4 МБ. Машина "
+"сбрасывается со вставленным картриджем."
+
+msgid ""
+"**Eject** - take the cartridge out; the machine is reset if it was "
+"running from it."
+msgstr ""
+"**Eject** — извлечь картридж; если машина работала с него, она "
+"сбрасывается."
+
+msgid "disk"
+msgstr "диск"
+
+msgid "TR-DOS"
+msgstr "TR-DOS"
+
+msgid "+3DOS"
+msgstr "+3DOS"
+
+msgid "disk interface"
+msgstr "дисковый интерфейс"
+
+msgid "NemoIDE"
+msgstr "NemoIDE"
+
+msgid "floppy disk"
+msgstr "дискета"
+
+msgid "Floppy Drives"
+msgstr "Floppy Drives"
+
+msgid "Write Protect"
+msgstr "Write Protect"
+
+msgid "floppy"
+msgstr "флоппи"
+
+msgid "TRD"
+msgstr "TRD"
+
+msgid "SCL"
+msgstr "SCL"
+
+msgid "UDI"
+msgstr "UDI"
+
+msgid "DSK"
+msgstr "DSK"
+
+msgid "TD0"
+msgstr "TD0"
+
+msgid "FDI"
+msgstr "FDI"
+
+msgid "IMA"
+msgstr "IMA"
+
+msgid "Hobeta"
+msgstr "Hobeta"
+
+msgid "RAW file to disk"
+msgstr "RAW file to disk"
+
+msgid "boot file"
+msgstr "загрузочный файл"
+
+msgid "Add boot loader"
+msgstr "Add boot loader"
+
+msgid "Machine: Disk"
+msgstr "Machine: Disk"
+
+msgid "Interleave"
+msgstr "Interleave"
+
+msgid "Number of drives"
+msgstr "Number of drives"
+
+msgid "TR-DOS ROM"
+msgstr "TR-DOS ROM"
+
+msgid "saving"
+msgstr "сохранение"
+
+msgid "Save Changed Disks"
+msgstr "Save Changed Disks"
+
+msgid "Remember mounted media"
+msgstr "Remember mounted media"
+
+msgid "Copy to tape"
+msgstr "Copy to tape"
+
+msgid "Save as Hobeta"
+msgstr "Save as Hobeta"
+
+msgid "Save as RAW"
+msgstr "Save as RAW"
+
+msgid "CPC disk"
+msgstr "диск CPC"
+
+msgid "--sdcard"
+msgstr "--sdcard"
+
+msgid "hard disk"
+msgstr "жёсткий диск"
+
+msgid "IDE"
+msgstr "IDE"
+
+msgid "HDI"
+msgstr "HDI"
+
+msgid "LBA"
+msgstr "LBA"
+
+msgid "HDD"
+msgstr "HDD"
+
+msgid "folder as a disk"
+msgstr "папка как диск"
+
+msgid "Open Folder"
+msgstr "Open Folder"
+
+msgid "FAT32"
+msgstr "FAT32"
+
+msgid "NedoOS"
+msgstr "NedoOS"
+
+msgid "Interface 2"
+msgstr "Interface 2"
+
+#~ msgid "ZX Evolution (BaseConf), ZX Evolution (TSConf)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**File > Save Changed Disks** asks "
+#~ "about each drive whose disk was "
+#~ "changed: **Disk A was changed. Save "
+#~ "it?** **Yes** writes it to its "
+#~ "file, **No** leaves it, **Cancel** stops"
+#~ " asking. A new disk that has no"
+#~ " file yet asks for a name."
+#~ msgstr ""
+
+#~ msgid "**Open...** - put a disk image into this drive."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Any other file can be opened as"
+#~ " **Raw file to disk**: it is "
+#~ "copied onto the TR-DOS disk in "
+#~ "the drive as one file, named after"
+#~ " the host file. A file longer "
+#~ "than 65280 bytes is split into "
+#~ "several parts."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Media > Disk Manager** (also on "
+#~ "the toolbar, and a click on a "
+#~ "drive light in the status bar) "
+#~ "shows what is in the drives and"
+#~ " on the disks."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**The catalog** - the files on a"
+#~ " TR-DOS disk: **Name**, **Ext**, "
+#~ "**Start**, **Length**, **SecLen** (length in"
+#~ " sectors), **Trk** and **Sec** (where "
+#~ "the file begins). A disk that is"
+#~ " not TR-DOS shows no catalog."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Save as raw** - write each "
+#~ "file's bare data, with no header "
+#~ "(`name.C`)."
+#~ msgstr ""
+
+#~ msgid "Raw file to disk"
+#~ msgstr ""
+
+#~ msgid "Save as raw"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**New** - an empty disk. On a "
+#~ "Beta Disk machine you are asked "
+#~ "**Format for TR-DOS?**: **Yes** gives"
+#~ " an empty TR-DOS disk ready for"
+#~ " files, **No** an unformatted one, "
+#~ "for a program that formats it "
+#~ "itself."
+#~ msgstr ""
+
+#~ msgid "A right-click on a drive's light in the status bar opens the same menu."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "To stop this, open the **Machine** "
+#~ "page of **Options**, click the gear "
+#~ "in the **Disk** row and clear "
+#~ "**Add boot loader**. The file added "
+#~ "is `boot.$B` in the [settings folder"
+#~ "](getting-started.md#where-the-settings-are); "
+#~ "put another Hobeta file there under "
+#~ "the same name to use your own."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The gear in the **Disk** row of"
+#~ " the **Machine** page opens **Machine: "
+#~ "Disk**:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Media > Disk Manager** (also on "
+#~ "the toolbar, and a click on a "
+#~ "drive light in the status bar) "
+#~ "shows what is in the drives and"
+#~ " on the disks. In the picture "
+#~ "drive A holds Fire 'n Ice "
+#~ "(n-Discovery, 2003)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**The line under the tabs** - the"
+#~ " file in the drive, then buttons "
+#~ "to open a disk image, insert a "
+#~ "new disk, save to the file it "
+#~ "came from, save as, and eject, and"
+#~ " the **Write protect** box. They do"
+#~ " what the **Floppy Drives** menu "
+#~ "does."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Copy to tape** - add the files"
+#~ " to the tape in the [Tape "
+#~ "Player](tapes.md), as BASIC programs or "
+#~ "code blocks. A file whose length "
+#~ "does not match the sectors it "
+#~ "takes (several files joined into one)"
+#~ " is skipped."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Save as Hobeta** - write each "
+#~ "file to a folder you pick as "
+#~ "a Hobeta file (`name.$C`)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Save as RAW** - write each "
+#~ "file's bare data, with no header "
+#~ "(`name.C`)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The buttons work as on TR-DOS. "
+#~ "**Copy to tape** and **Save as "
+#~ "Hobeta** need the file's +3DOS header,"
+#~ " which gives its type, address and"
+#~ " length; a file without one is "
+#~ "skipped. **Save as RAW** writes the "
+#~ "data without the header, or the "
+#~ "whole file when it has none."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A machine with an IDE interface "
+#~ "(see [Which machine has what](#which-"
+#~ "machine-has-what)) has two places for"
+#~ " a drive, **Master** and **Slave**. "
+#~ "Connect them first: on the **Machine**"
+#~ " page of **Options**, click the gear"
+#~ " in the **Hard disk** row and "
+#~ "set **Master** (and **Slave**, if you"
+#~ " want two) to **HDD (ATA)**."
+#~ msgstr ""
+
+#~ msgid ".. image:: images/menu-floppy.png"
+#~ msgstr ".. image:: images/menu-floppy.png"
+
+#~ msgid ".. image:: ../../images/ok-apply.png"
+#~ msgstr ".. image:: images/menu-floppy.png"
+
+#~ msgid ".. image:: ../../images/cancel.png"
+#~ msgstr ".. image:: images/disk-manager.png"
+
+#~ msgid ".. image:: ../../images/diskGreen.png"
+#~ msgstr ".. image:: images/disk-manager.png"
+
+#~ msgid ".. image:: ../../images/settings.png"
+#~ msgstr ".. image:: images/menu-floppy.png"
+
+#~ msgid ".. image:: images/disk-manager.png"
+#~ msgstr ".. image:: images/disk-manager.png"
+
+#~ msgid ".. image:: ../../images/fdd_disk.png"
+#~ msgstr ".. image:: images/disk-manager.png"
+
+#~ msgid ".. image:: ../../images/fileopen.png"
+#~ msgstr ".. image:: images/menu-floppy.png"
+
+#~ msgid ".. image:: ../../images/doc-new.png"
+#~ msgstr ".. image:: images/disk-manager.png"
+
+#~ msgid ".. image:: ../../images/save_all.png"
+#~ msgstr ".. image:: images/disk-manager.png"
+
+#~ msgid ".. image:: ../../images/floppy.png"
+#~ msgstr ".. image:: images/menu-floppy.png"
+
+#~ msgid ".. image:: ../../images/tape-eject.png"
+#~ msgstr ".. image:: images/menu-floppy.png"
+
+#~ msgid ".. image:: ../../images/tape.png"
+#~ msgstr ".. image:: images/disk-manager.png"
+
+#~ msgid ".. image:: ../../images/dollar.png"
+#~ msgstr ".. image:: images/disk-manager.png"
+
+#~ msgid ".. image:: ../../images/filebin.png"
+#~ msgstr ".. image:: images/menu-floppy.png"
+

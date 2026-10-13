@@ -1,0 +1,21 @@
+{
+  "args": [
+    "-m", "zx48",
+    "-l", "{media}/timing.lab",
+    "--brk", "{media}/timing.xbrk",
+    "-a", "#8000",
+    "-f", "{media}/timing.bin",
+    "--pc", "#8000"
+  ],
+  "steps": [
+    ["wait", 3000],
+    ["run", "run-action key.debuger"],
+    ["wait", 1500],
+    ["run", "activate-window Xpeccy+ Debugger"],
+    ["wait", 800],
+    ["click", "bpList", 200, 32],
+    ["wait", 300],
+    ["click-nowait", "tbEditBrk", 10, 10],
+    ["wait", 1200]
+  ]
+}

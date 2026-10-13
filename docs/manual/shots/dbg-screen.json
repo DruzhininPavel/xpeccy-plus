@@ -1,0 +1,139 @@
+{
+  "files": {
+    "EXOLON.TAP": {
+      "url": "https://spectrumcomputing.co.uk/pub/sinclair/games/e/Exolon.tap.zip",
+      "sha256": "e07e09ba7b401e9b5b296930496cdc2020d761157a4284b250bf2ba117ca2214"
+    }
+  },
+  "prepare": [
+    "-m",
+    "zx48",
+    "{media}/EXOLON.TAP",
+    "--bench",
+    "2400",
+    "--bench-keys",
+    "1600:_/10,2000:1/30",
+    "--bench-save",
+    "{media}/exolon.sna"
+  ],
+  "args": [
+    "-l",
+    "{media}/exolon.lab",
+    "--brk",
+    "{media}/exolon.xbrk",
+    "{media}/exolon.sna"
+  ],
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "run-action key.debuger"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "run",
+      "show-panel ZXSCRWIDGET"
+    ],
+    [
+      "wait",
+      600
+    ],
+    [
+      "click",
+      "tbScrCustom",
+      10,
+      8
+    ],
+    [
+      "wait",
+      600
+    ]
+  ],
+  "crop": {
+    "widget": "ZXSCRWIDGET",
+    "pad": 26
+  },
+  "badges": "inside",
+  "frames": [
+    {
+      "n": 1,
+      "widgets": [
+        "tbScrAuto",
+        "tbScrMain",
+        "tbScrShadow",
+        "tbScrBoth",
+        "tbScrCustom"
+      ],
+      "at": [
+        -14,
+        10
+      ]
+    },
+    {
+      "n": 2,
+      "widget": "tbScrDetach",
+      "at": [
+        -14,
+        10
+      ]
+    },
+    {
+      "n": 3,
+      "widget": "xZXScrView",
+      "at": [
+        -14,
+        20
+      ]
+    },
+    {
+      "n": 4,
+      "widgets": [
+        "cbScrZoom",
+        "cbScrPix",
+        "cbScrAtr",
+        "cbScrFlash",
+        "cbScrGrid"
+      ],
+      "at": "right"
+    },
+    {
+      "n": 5,
+      "widgets": [
+        "labScrXYCap",
+        "labScrXY",
+        "labScrCharCap",
+        "labScrChar",
+        "labScrPixCap",
+        "leScr",
+        "labScrBit",
+        "labScrAtrCap",
+        "leAtr"
+      ],
+      "at": "right"
+    },
+    {
+      "n": 6,
+      "widgets": [
+        "labScrPageCap",
+        "leScrPage",
+        "labScrOfsCap",
+        "leScrAdr"
+      ],
+      "at": "right"
+    }
+  ]
+}

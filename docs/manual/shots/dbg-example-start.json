@@ -1,0 +1,28 @@
+{
+  "args": [
+    "--bp",
+    "0x8000",
+    "{media}/demo.tap"
+  ],
+  "steps": [
+    [
+      "wait",
+      12000
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ]
+  ],
+  "crop": {
+    "widgets": [
+      "CPU",
+      "DISASM"
+    ],
+    "pad": 0
+  }
+}

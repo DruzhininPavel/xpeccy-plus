@@ -1,0 +1,2101 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Breakpoints and watching"
+msgstr "Точки зупинки та спостереження"
+
+msgid ""
+"A breakpoint tells the machine to stop at a place or on an event: when "
+"the CPU runs an instruction at an address, reads or writes a memory cell,"
+" uses a port, gets an interrupt, or when an expression comes true. "
+"Instead of stopping, a breakpoint can also count, save the screen or "
+"write a line to the breakpoint log, and two of them can time the code "
+"between them. The **Watcher** window and the watched ports show values "
+"while the machine runs."
+msgstr ""
+"Точка зупинки велить машині зупинитися в певному місці або за певної "
+"події: коли CPU виконує інструкцію за адресою, читає або записує комірку "
+"пам'яті, звертається до порту, отримує переривання або коли вираз стає "
+"істинним. Замість зупинки точка зупинки може також рахувати, зберігати "
+"екран або писати рядок у журнал точок зупинки, а дві точки можуть "
+"вимірювати час виконання коду між ними. Вікно **Watcher** і відстежувані "
+"порти показують значення, поки машина працює."
+
+msgid ""
+"Breakpoints work while the machine runs. A step taken in the Debugger "
+"does not stop on one (see [Running and stepping](debugger.md#running-and-"
+"stepping))."
+msgstr ""
+"Точки зупинки діють, поки машина працює. Крок, зроблений у Debugger, на "
+"них не зупиняється (див. [Виконання й покрокове проходження](debugger.md"
+"#running-and-stepping))."
+
+msgid "Kinds of breakpoint"
+msgstr "Види точок зупинки"
+
+msgid "Kind"
+msgstr "Вид"
+
+msgid "Stops when"
+msgstr "Зупиняє, коли"
+
+msgid "**CPU address**"
+msgstr "**CPU address**"
+
+msgid "the CPU uses an address, whatever memory page is there"
+msgstr ""
+"CPU звертається до адреси, незалежно від того, яка сторінка пам'яті там "
+"підключена"
+
+msgid "**I/O port**"
+msgstr "**I/O port**"
+
+msgid "the CPU reads or writes a port"
+msgstr "CPU читає або записує порт"
+
+msgid "**RAM cell**"
+msgstr "**RAM cell**"
+
+msgid "the CPU uses a byte of RAM, wherever that page is mapped"
+msgstr "CPU звертається до байта RAM, де б не була підключена його сторінка"
+
+msgid "**ROM cell**"
+msgstr "**ROM cell**"
+
+msgid "the CPU uses a byte of ROM, wherever that page is mapped"
+msgstr "CPU звертається до байта ROM, де б не була підключена його сторінка"
+
+msgid "**Slot cell**"
+msgstr "**Slot cell**"
+
+msgid "the CPU uses a byte of the cartridge"
+msgstr "CPU звертається до байта картриджа"
+
+msgid "**Interrupt**"
+msgstr "**Interrupt**"
+
+msgid "the CPU gets an interrupt request"
+msgstr "CPU отримує запит на переривання"
+
+msgid "**Condition (global)**"
+msgstr "**Condition (global)**"
+
+msgid "an expression comes true; no address"
+msgstr "вираз стає істинним; адреси немає"
+
+msgid "A memory breakpoint has three flags, and any of them can be on:"
+msgstr ""
+"Точка зупинки на пам'ять має три прапорці, і будь-який із них може бути "
+"ввімкнений:"
+
+msgid ""
+"**Fetch** - the CPU is about to run the instruction there. The machine "
+"stops before it runs, with the instruction under the cursor in the "
+"listing."
+msgstr ""
+"**Fetch** — CPU ось-ось виконає інструкцію за цією адресою. Машина "
+"зупиняється перед її виконанням, а інструкція в лістингу стоїть під "
+"курсором."
+
+msgid "**Read** - the CPU reads the byte as data."
+msgstr "**Read** — CPU читає байт як дані."
+
+msgid "**Write** - the CPU writes the byte."
+msgstr "**Write** — CPU записує байт."
+
+msgid ""
+"A port breakpoint has **Read** (IN) and **Write** (OUT). A read, write or"
+" port breakpoint stops after the instruction that did it has run to its "
+"end."
+msgstr ""
+"Точка зупинки на порт має **Read** (IN) і **Write** (OUT). Точка зупинки "
+"на читання, запис або порт зупиняє машину після того, як інструкція, що "
+"це зробила, виконається до кінця."
+
+msgid ""
+"**CPU address** and **RAM cell** differ on a machine that pages its "
+"memory. A breakpoint on CPU address `C000` stops whatever page is at "
+"`C000`. A breakpoint on a RAM cell stops only for that byte of that page,"
+" at whatever address the page is seen."
+msgstr ""
+"**CPU address** і **RAM cell** відрізняються на машині, що перемикає "
+"сторінки пам'яті. Точка зупинки на CPU-адресі `C000` спрацьовує, хоч яка "
+"сторінка стоїть за адресою `C000`. Точка зупинки на комірці RAM "
+"спрацьовує лише для цього байта цієї сторінки, хоч за якою адресою видно "
+"сторінку."
+
+msgid "Setting breakpoints from the listing"
+msgstr "Встановлення точок зупинки з лістингу"
+
+msgid ""
+"The quickest way is a key on a line of the **Disasm** listing. Each key "
+"switches its breakpoint on and off again. The keys are the same in both "
+"presets:"
+msgstr ""
+"Найшвидше — клавіша на рядку лістингу **Disasm**. Кожна клавіша вмикає "
+"свою точку зупинки і знову її вимикає. Клавіші однакові в обох наборах:"
+
+msgid "Key"
+msgstr "Клавіша"
+
+msgid "Breakpoint on the line under the cursor"
+msgstr "Точка зупинки на рядку під курсором"
+
+msgid "Space"
+msgstr "Space"
+
+msgid "**Fetch**, on the memory cell"
+msgstr "**Fetch**, на комірці пам'яті"
+
+msgid "Shift+Space"
+msgstr "Shift+Space"
+
+msgid "**Fetch**, on the CPU address"
+msgstr "**Fetch**, на CPU-адресі"
+
+msgid "Ctrl+Space"
+msgstr "Ctrl+Space"
+
+msgid "**Write**, on the memory cell"
+msgstr "**Write**, на комірці пам'яті"
+
+msgid "Alt+Shift+Space"
+msgstr "Alt+Shift+Space"
+
+msgid "**Read**, on the memory cell"
+msgstr "**Read**, на комірці пам'яті"
+
+msgid ""
+"A line with a breakpoint is drawn in its own color. The keys can be "
+"changed on the **Hotkeys** page of **Options**, as **Disasm: "
+"Breakpoint**, **Disasm: Breakpoint on read**, **Disasm: Breakpoint on "
+"write** and **Disasm: Breakpoint on CPU address** (see "
+"[Hotkeys](hotkeys.md))."
+msgstr ""
+"Рядок із точкою зупинки виділено своїм кольором. Клавіші можна змінити на"
+" сторінці **Hotkeys** вікна **Options** як **Disasm: Breakpoint**, "
+"**Disasm: Breakpoint on read**, **Disasm: Breakpoint on write** і "
+"**Disasm: Breakpoint on CPU address** (див. [Гарячі "
+"клавіші](hotkeys.md))."
+
+#, python-brace-format
+msgid ""
+"The {icon}`stop` **Breakpoints** button over the listing, and "
+"**Breakpoints** in the menu a right-click on the listing opens, hold "
+"**Fetch break**, **Read break** and **Write break**. They work on the "
+"selected block when the cursor is inside it, or else on the line under "
+"the cursor, and make a memory cell breakpoint. To select a block, drag "
+"over the lines with the left button."
+msgstr ""
+"Кнопка {icon}`stop` **Breakpoints** над лістингом і пункт **Breakpoints**"
+" у меню, яке відкривається клацанням правою кнопкою на лістингу, містять "
+"**Fetch break**, **Read break** і **Write break**. Вони діють на "
+"виділений блок, коли курсор усередині нього, інакше — на рядок під "
+"курсором, і створюють точку зупинки на комірці пам'яті. Щоб виділити "
+"блок, протягніть лівою кнопкою по рядках."
+
+msgid ""
+"In the memory dump, the right-click menu has **Fetch break**, **Read "
+"break** and **Write break** for the byte under the cursor (see [Memory"
+"](debugger-memory.md))."
+msgstr ""
+"У дампі пам'яті меню правої кнопки має **Fetch break**, **Read break** і "
+"**Write break** для байта під курсором (див. [Пам'ять](debugger-"
+"memory.md))."
+
+msgid ""
+"**Debugger: Stop here** - F4 (Modern), F9 (Classic) - lets the machine "
+"run until it gets to the line under the cursor, without a breakpoint in "
+"the list (see [Code and labels](debugger-code.md))."
+msgstr ""
+"**Debugger: Stop here** — F4 (Modern), F9 (Classic) — дає машині "
+"працювати, доки вона не дійде до рядка під курсором, без точки зупинки у "
+"списку (див. [Код і мітки](debugger-code.md))."
+
+msgid "The Breakpoints panel"
+msgstr "Панель Breakpoints"
+
+msgid "![The Breakpoints panel](images/dbg-brk-panel.png)"
+msgstr "![Панель Breakpoints](images/dbg-brk-panel.png)"
+
+msgid "The list of breakpoints."
+msgstr "Список точок зупинки."
+
+#, python-brace-format
+msgid ""
+"The buttons: {icon}`add` add, {icon}`edit` edit, {icon}`fileopen` open a "
+"list, {icon}`floppy` save the list, and {icon}`cancel` delete at the "
+"bottom."
+msgstr ""
+"Кнопки: {icon}`add` додати, {icon}`edit` змінити, {icon}`fileopen` "
+"відкрити список, {icon}`floppy` зберегти список і {icon}`cancel` видалити"
+" внизу."
+
+msgid ""
+"The **Breakpoints** panel is the tab with the stop sign under the memory "
+"dump. Each row is one breakpoint:"
+msgstr ""
+"Панель **Breakpoints** — це вкладка зі знаком «стоп» під дампом пам'яті. "
+"Кожен рядок — одна точка зупинки:"
+
+msgid "Column"
+msgstr "Стовпець"
+
+msgid "What it shows"
+msgstr "Що показує"
+
+msgid "**On**"
+msgstr "**On**"
+
+msgid ""
+"a tick: the breakpoint works; no tick: it stays in the list but does "
+"nothing"
+msgstr ""
+"позначка: точка зупинки діє; без позначки: вона лишається у списку, але "
+"нічого не робить"
+
+msgid "**F**, **R**, **W**"
+msgstr "**F**, **R**, **W**"
+
+msgid ""
+"the **Fetch**, **Read** and **Write** flags; a port has no **F**, an "
+"interrupt and a global condition have none"
+msgstr ""
+"прапорці **Fetch**, **Read** і **Write**; порт не має **F**, переривання "
+"і глобальна умова не мають жодного"
+
+msgid "**Addr**"
+msgstr "**Addr**"
+
+msgid "the kind and the address, see below"
+msgstr "вид і адреса, див. нижче"
+
+msgid "**Cond**"
+msgstr "**Cond**"
+
+msgid "the condition"
+msgstr "умова"
+
+msgid "**Cnt**"
+msgstr "**Cnt**"
+
+msgid "how many times it fired"
+msgstr "скільки разів вона спрацювала"
+
+msgid ""
+"Click a box in the first four columns to switch that flag. Click a column"
+" title to sort the list by it."
+msgstr ""
+"Клацніть клітинку в перших чотирьох стовпцях, щоб перемкнути цей "
+"прапорець. Клацніть заголовок стовпця, щоб упорядкувати список за ним."
+
+msgid "**Addr** names the kind of breakpoint:"
+msgstr "**Addr** називає вид точки зупинки:"
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "`CPU:8000`, `CPU:4000-5AFF`"
+msgstr "`CPU:8000`, `CPU:4000-5AFF`"
+
+msgid "**CPU address**, an address or a range"
+msgstr "**CPU address**, адреса або діапазон"
+
+msgid "`IO:00FE mask 0001`"
+msgstr "`IO:00FE mask 0001`"
+
+msgid "**I/O port**, the port and its mask"
+msgstr "**I/O port**, порт і його маска"
+
+msgid "`RAM:014000 [05:0000]`"
+msgstr "`RAM:014000 [05:0000]`"
+
+msgid "**RAM cell**: the place in all of RAM, then the page and the offset in it"
+msgstr "**RAM cell**: місце в усій RAM, потім сторінка і зміщення в ній"
+
+msgid "`ROM:...`, `SLT:...`"
+msgstr "`ROM:...`, `SLT:...`"
+
+msgid "**ROM cell**, **Slot cell**, written the same way"
+msgstr "**ROM cell**, **Slot cell**, записуються так само"
+
+msgid "`IRQ`"
+msgstr "`IRQ`"
+
+msgid "`COND`, `COND, on change`"
+msgstr "`COND`, `COND, on change`"
+
+msgid ""
+"Double-click a row of an address, RAM or ROM breakpoint to show that "
+"place in the listing; a RAM or ROM cell shows only while its page is "
+"mapped in."
+msgstr ""
+"Двічі клацніть рядок точки зупинки на адресі, RAM або ROM, щоб показати "
+"це місце в лістингу; комірку RAM або ROM видно лише тоді, коли її "
+"сторінку підключено."
+
+msgid "The buttons at the right:"
+msgstr "Кнопки праворуч:"
+
+#, python-brace-format
+msgid ""
+"{icon}`add` add (the plus sign) - opens the **Breakpoint Editor** for a "
+"new breakpoint;"
+msgstr ""
+"{icon}`add` додати (знак плюс) — відкриває **Breakpoint Editor** для "
+"нової точки зупинки;"
+
+#, python-brace-format
+msgid ""
+"{icon}`edit` edit (the pencil) - opens the selected one in the "
+"**Breakpoint Editor**;"
+msgstr ""
+"{icon}`edit` змінити (олівець) — відкриває вибрану точку в **Breakpoint "
+"Editor**;"
+
+#, python-brace-format
+msgid ""
+"{icon}`fileopen` open (the folder) - loads a list from a `.xbrk` file, in"
+" place of the one you have;"
+msgstr ""
+"{icon}`fileopen` відкрити (папка) — завантажує список із файлу `.xbrk` "
+"замість наявного;"
+
+#, python-brace-format
+msgid "{icon}`floppy` save (the floppy disk) - writes the list to a `.xbrk` file;"
+msgstr "{icon}`floppy` зберегти (дискета) — записує список у файл `.xbrk`;"
+
+#, python-brace-format
+msgid ""
+"{icon}`cancel` delete (the red cross, at the bottom) - removes the "
+"selected breakpoints."
+msgstr ""
+"{icon}`cancel` видалити (червоний хрестик, унизу) — вилучає вибрані точки"
+" зупинки."
+
+msgid "The right-click menu of the list has:"
+msgstr "Меню правої кнопки списку містить:"
+
+msgid ""
+"**Reset counter** - sets **Cnt** of the selected breakpoints back to 0, "
+"together with the hit count that `HITS` reads and what their spans "
+"measured;"
+msgstr ""
+"**Reset counter** — скидає **Cnt** вибраних точок зупинки до 0, разом із "
+"лічильником влучань, який читає `HITS`, і тим, що виміряли їхні "
+"інтервали;"
+
+msgid ""
+"**Open breakpoint log** - opens the [breakpoint log](#the-breakpoint-log)"
+" in the program your system opens `.log` files with. It is grayed out "
+"until the log is written."
+msgstr ""
+"**Open breakpoint log** — відкриває [журнал точок зупинки](#the-"
+"breakpoint-log) у програмі, якою ваша система відкриває файли `.log`. "
+"Пункт неактивний, доки журнал не записано."
+
+msgid ""
+"Hold the mouse over the row of a breakpoint that opens a span to see what"
+" the span measured (see [Spans](#spans))."
+msgstr ""
+"Наведіть мишу на рядок точки зупинки, що відкриває інтервал, щоб "
+"побачити, що виміряв інтервал (див. [Інтервали](#spans))."
+
+msgid ""
+"The list is not kept when the program closes. Save it to a file to use it"
+" again."
+msgstr ""
+"Список не зберігається після закриття програми. Збережіть його у файл, "
+"щоб використати знову."
+
+msgid "The Breakpoint Editor"
+msgstr "Breakpoint Editor"
+
+msgid "![The Breakpoint Editor](images/dbg-brk-editor.png)"
+msgstr "![Breakpoint Editor](images/dbg-brk-editor.png)"
+
+msgid ""
+"The editor shows only the fields the chosen **Type** needs. Here it holds"
+" a breakpoint that opens a span and logs two registers on every hit; the "
+"line beside **Span** is what the span has measured so far."
+msgstr ""
+"Редактор показує лише ті поля, які потрібні вибраному **Type**. Тут у "
+"ньому точка зупинки, що відкриває інтервал і на кожному влучанні пише в "
+"журнал два регістри; рядок поруч зі **Span** — це те, що інтервал виміряв"
+" на цей момент."
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "What it sets"
+msgstr "Що задає"
+
+msgid "**Type**"
+msgstr "**Type**"
+
+msgid ""
+"the kind: **CPU address**, **I/O port**, **RAM cell**, **ROM cell**, "
+"**Slot cell**, **Interrupt**, **Condition (global)**"
+msgstr ""
+"вид: **CPU address**, **I/O port**, **RAM cell**, **ROM cell**, **Slot "
+"cell**, **Interrupt**, **Condition (global)**"
+
+msgid "**Page**"
+msgstr "**Page**"
+
+msgid "the 16K page of a RAM, ROM or slot cell, as a decimal number"
+msgstr "16K-сторінка комірки RAM, ROM або слота, десяткове число"
+
+msgid "**Address** ... **to**"
+msgstr "**Address** ... **to**"
+
+msgid ""
+"the first and the last byte; **to** left empty means one byte. For an "
+"**I/O port** they are **Port** and **mask**"
+msgstr ""
+"перший і останній байт; порожнє **to** означає один байт. Для **I/O "
+"port** це **Port** і **mask**"
+
+msgid "**Access**"
+msgstr "**Access**"
+
+msgid "**Fetch**, **Read**, **Write**"
+msgstr "**Fetch**, **Read**, **Write**"
+
+msgid "**Span**"
+msgstr "**Span**"
+
+msgid "**None**, **Opens a span** or **Closes a span**, see [Spans](#spans)"
+msgstr "**None**, **Opens a span** або **Closes a span**, див. [Інтервали](#spans)"
+
+msgid "**Condition**"
+msgstr "**Condition**"
+
+msgid ""
+"an expression; the breakpoint fires only when it is not 0. Empty means "
+"always. **On change** beside it is for a global condition"
+msgstr ""
+"вираз; точка зупинки спрацьовує, лише коли він не 0. Порожнє поле — "
+"завжди. **On change** поруч призначено для глобальної умови"
+
+msgid "**Action**"
+msgstr "**Action**"
+
+msgid "what happens when it fires: **Debugger**, **Counter** or **Screen dump**"
+msgstr ""
+"що відбувається, коли вона спрацьовує: **Debugger**, **Counter** або "
+"**Screen dump**"
+
+msgid "**Log**"
+msgstr "**Log**"
+
+msgid ""
+"also write a line to the breakpoint log every time it fires, and what to "
+"write in it"
+msgstr ""
+"також писати рядок у журнал точок зупинки щоразу, коли вона спрацьовує, і"
+" що в ньому писати"
+
+msgid "Addresses"
+msgstr "Адреси"
+
+msgid ""
+"The **Address** fields take a hex number, with or without `#`, `$` or "
+"`0x` in front, or a label name. A label wins over a number written the "
+"same way: if there is a label `BEEF`, `BEEF` is that label and `#BEEF` "
+"the number."
+msgstr ""
+"Поля **Address** приймають шістнадцяткове число, з `#`, `$` чи `0x` "
+"попереду або без них, чи ім'я мітки. Мітка має перевагу над числом, "
+"записаним так само: якщо є мітка `BEEF`, то `BEEF` — це мітка, а `#BEEF` "
+"— число."
+
+msgid "![A RAM cell in the editor](images/dbg-brk-editor-cell.png)"
+msgstr "![Комірка RAM у редакторі](images/dbg-brk-editor-cell.png)"
+
+msgid "A RAM cell in the editor"
+msgstr "Комірка RAM у редакторі"
+
+msgid "A cell of RAM, ROM or the slot can be given four ways:"
+msgstr "Комірку RAM, ROM або слота можна задати чотирма способами:"
+
+msgid "an offset in the page, `0000` to `3FFF`, with the page in **Page**;"
+msgstr "зміщення в сторінці, від `0000` до `3FFF`, зі сторінкою в **Page**;"
+
+msgid ""
+"the page and the offset together, `05:1800`. The page is hex here, while "
+"**Page** counts in decimal;"
+msgstr ""
+"сторінка і зміщення разом, `05:1800`. Тут сторінка шістнадцяткова, тоді "
+"як **Page** рахує в десятковій системі;"
+
+msgid ""
+"a CPU address of `4000` or more, such as `5800`: the cell is the one "
+"mapped there now, and **Page** moves to its page. This works when the "
+"memory there is of the kind the type watches; otherwise the address is "
+"taken as an offset in **Page**;"
+msgstr ""
+"CPU-адреса `4000` або більша, як-от `5800`: це комірка, підключена там "
+"зараз, а **Page** переходить на її сторінку. Це працює, коли пам'ять там "
+"того виду, за яким стежить тип; інакше адресу вважають зміщенням у "
+"**Page**;"
+
+msgid "a label. For a RAM cell the label brings its page with it."
+msgstr "мітка. Для комірки RAM мітка приносить із собою свою сторінку."
+
+#, python-brace-format
+msgid ""
+"The line under the fields shows how the address was read: `8000, START` "
+"for a CPU address with its label; `RAM 05:1800-1AFF, at 5800 now` for a "
+"cell, or `not mapped now` when its page is not in the memory at the "
+"moment. When it cannot be read, the line says why in red, such as **the "
+"range ends before it starts** or **the end is in another page**, and "
+"{icon}`ok-apply` **OK** does not take it."
+msgstr ""
+"Рядок під полями показує, як прочитано адресу: `8000, START` для "
+"CPU-адреси з її міткою; `RAM 05:1800-1AFF, at 5800 now` для комірки або "
+"`not mapped now`, коли її сторінки зараз немає в пам'яті. Коли адресу не "
+"вдається прочитати, рядок червоним пише чому, як-от **the range ends "
+"before it starts** чи **the end is in another page**, і {icon}`ok-apply` "
+"**OK** її не приймає."
+
+msgid ""
+"The **mask** of a port says which bits of the 16-bit port address are "
+"compared: a 1 bit must be the same as in **Port**, a 0 bit can be "
+"anything. Empty or `FFFF` is one exact port; `00FF` matches on the low "
+"byte; `0001` with port `00FE` matches every even port, which is every "
+"port the Spectrum's ULA answers."
+msgstr ""
+"**mask** порту вказує, які біти 16-бітної адреси порту порівнюються: біт "
+"1 має збігатися з **Port**, біт 0 може бути будь-яким. Порожня маска або "
+"`FFFF` — один точний порт; `00FF` порівнює молодший байт; `0001` з портом"
+" `00FE` збігається з кожним парним портом, тобто з кожним портом, на який"
+" відповідає ULA Spectrum."
+
+msgid "Condition and Log"
+msgstr "Condition і Log"
+
+#, python-brace-format
+msgid ""
+"The line under **Condition** checks the expression as you type it. It "
+"shows **ok:** and the expression as it was understood, with brackets for "
+"the priorities and hex numbers with `0x`; or what is wrong and at which "
+"character. {icon}`ok-apply` **OK** does not take a broken condition. The "
+"**?** button opens **Expression Syntax**, a short reference of the next "
+"section."
+msgstr ""
+"Рядок під **Condition** перевіряє вираз під час введення. Він показує "
+"**ok:** і вираз так, як його зрозуміло, з дужками для пріоритетів і "
+"шістнадцятковими числами з `0x`; або що не так і на якому символі. {icon"
+"}`ok-apply` **OK** не приймає хибну умову. Кнопка **?** відкриває "
+"**Expression Syntax** — коротку довідку з наступного розділу."
+
+msgid ""
+"**Log** has a field beside it, for what a logged hit writes: expressions "
+"split by commas, such as `A, HL, M(SP)`, in the syntax of a condition. "
+"Empty, the line has every register. A wrong expression keeps the editor "
+"open, with what is wrong under **Condition**."
+msgstr ""
+"**Log** має поле поруч — для того, що пише влучання в журнал: вирази "
+"через кому, як-от `A, HL, M(SP)`, у синтаксисі умови. Якщо поле порожнє, "
+"рядок містить усі регістри. Хибний вираз не дає закрити редактор, а під "
+"**Condition** видно, що не так."
+
+#, python-brace-format
+msgid ""
+"Label names are completed as you type in the address fields, "
+"**Condition** and **Log**. {icon}`cancel` **Cancel** closes the editor "
+"and changes nothing. Editing a breakpoint keeps its counters and what its"
+" span has measured."
+msgstr ""
+"Імена міток доповнюються під час введення в полях адреси, **Condition** і"
+" **Log**. {icon}`cancel` **Cancel** закриває редактор і нічого не змінює."
+" Під час редагування точки зупинки її лічильники й виміряне інтервалом "
+"зберігаються."
+
+msgid "Conditions"
+msgstr "Умови"
+
+msgid ""
+"A condition is an expression in the style of C. It is checked when the "
+"breakpoint is hit; the breakpoint fires when the result is not 0. "
+"Comparisons and the logical operators give 1 for true and 0 for false."
+msgstr ""
+"Умова — це вираз у стилі C. Її перевіряють, коли досягнуто точку зупинки;"
+" точка зупинки спрацьовує, коли результат не 0. Порівняння і логічні "
+"оператори дають 1 для істини і 0 для хибності."
+
+msgid "Operators"
+msgstr "Оператори"
+
+msgid ""
+"From the one that binds tightest to the loosest; operators in one row "
+"have the same priority and work from left to right."
+msgstr ""
+"Від найсильнішого зв'язування до найслабшого; оператори в одному рядку "
+"мають однаковий пріоритет і виконуються зліва направо."
+
+msgid "Operator"
+msgstr "Оператор"
+
+msgid "Meaning"
+msgstr "Значення"
+
+msgid "`( )`"
+msgstr "`( )`"
+
+msgid "brackets"
+msgstr "дужки"
+
+msgid "`[x]`, `M(x)`"
+msgstr "`[x]`, `M(x)`"
+
+msgid "the word and the byte in memory at x"
+msgstr "слово і байт у пам'яті за адресою x"
+
+msgid "`!` `~` `-`"
+msgstr "`!` `~` `-`"
+
+msgid "logical not, invert all bits, negate"
+msgstr "логічне НЕ, інверсія всіх бітів, зміна знака"
+
+msgid "`x->n`"
+msgstr "`x->n`"
+
+msgid "the byte in memory at x+n"
+msgstr "байт у пам'яті за адресою x+n"
+
+msgid "`*` `/` `%`"
+msgstr "`*` `/` `%`"
+
+msgid "multiply, divide, remainder"
+msgstr "множення, ділення, остача"
+
+msgid "`+` `-`"
+msgstr "`+` `-`"
+
+msgid "add, subtract"
+msgstr "додавання, віднімання"
+
+msgid "`<<` `>>`"
+msgstr "`<<` `>>`"
+
+msgid "shift left, shift right"
+msgstr "зсув ліворуч, зсув праворуч"
+
+msgid "`<` `>` `<=` `>=`"
+msgstr "`<` `>` `<=` `>=`"
+
+msgid "compare"
+msgstr "порівняння"
+
+msgid "`==` `!=` `=`"
+msgstr "`==` `!=` `=`"
+
+msgid "equal, not equal; `=` is the same as `==`"
+msgstr "дорівнює, не дорівнює; `=` те саме, що `==`"
+
+msgid "`&`"
+msgstr "`&`"
+
+msgid "bitwise and"
+msgstr "побітове І"
+
+msgid "`^`"
+msgstr "`^`"
+
+msgid "bitwise exclusive or"
+msgstr "побітове виключне АБО"
+
+msgid "`|`"
+msgstr "`|`"
+
+msgid "bitwise or"
+msgstr "побітове АБО"
+
+msgid "`&&`"
+msgstr "`&&`"
+
+msgid "logical and"
+msgstr "логічне І"
+
+msgid "`||`"
+msgstr "`||`"
+
+msgid "logical or"
+msgstr "логічне АБО"
+
+msgid ""
+"The values are 32-bit numbers with no sign: `-1` is `FFFFFFFF`, so `A - 5"
+" < 0` is never true. Division by 0 gives 0, so a condition does not start"
+" firing when a divisor happens to be 0. A word in memory is read low byte"
+" first, as the Z80 reads it."
+msgstr ""
+"Значення — 32-бітні числа без знака: `-1` — це `FFFFFFFF`, тож `A - 5 < "
+"0` ніколи не буває істинним. Ділення на 0 дає 0, тож умова не почне "
+"спрацьовувати, коли дільник випадково дорівнює 0. Слово в пам'яті "
+"читається молодшим байтом уперед, як його читає Z80."
+
+msgid "Operands"
+msgstr "Операнди"
+
+msgid "Operand"
+msgstr "Операнд"
+
+msgid "`A`, `HL`, `BC'`..."
+msgstr "`A`, `HL`, `BC'`..."
+
+msgid "a CPU register, see below"
+msgstr "регістр CPU, див. нижче"
+
+msgid "a name"
+msgstr "ім'я"
+
+msgid "a label: its address"
+msgstr "мітка: її адреса"
+
+msgid "`1234`"
+msgstr "`1234`"
+
+msgid "a decimal number"
+msgstr "десяткове число"
+
+msgid "`0x1234`, `#1234`"
+msgstr "`0x1234`, `#1234`"
+
+msgid "a hex number"
+msgstr "шістнадцяткове число"
+
+msgid "`0123`"
+msgstr "`0123`"
+
+msgid "an octal number: a leading zero, as in C"
+msgstr "вісімкове число: нуль попереду, як у C"
+
+msgid "`'A'`"
+msgstr "`'A'`"
+
+msgid "the code of a character"
+msgstr "код символу"
+
+msgid "`M(x)`"
+msgstr "`M(x)`"
+
+msgid "the byte at x"
+msgstr "байт за адресою x"
+
+msgid "`[x]`"
+msgstr "`[x]`"
+
+msgid "the word at x"
+msgstr "слово за адресою x"
+
+msgid "`RAY(x, y)`"
+msgstr "`RAY(x, y)`"
+
+msgid "1 if the beam passed dot x of line y during this instruction"
+msgstr "1, якщо промінь пройшов точку x рядка y під час цієї інструкції"
+
+msgid ""
+"The registers are `A`, `F`, `B`, `C`, `D`, `E`, `H`, `L` and the same "
+"with `'` for the second set (`A'`, `B'`...); the pairs `AF`, `BC`, `DE`, "
+"`HL`, `AF'`, `BC'`, `DE'`, `HL'`; `IX`, `IY` and their halves `IXH`, "
+"`IXL`, `IYH`, `IYL`; `SP`, `PC`, `I`, `R`, `IR`; `IM`, `IFF1`, `IFF2`. "
+"Register names can be typed in either case; label names cannot."
+msgstr ""
+"Регістри: `A`, `F`, `B`, `C`, `D`, `E`, `H`, `L` і ті самі з `'` для "
+"другого набору (`A'`, `B'`...); пари `AF`, `BC`, `DE`, `HL`, `AF'`, "
+"`BC'`, `DE'`, `HL'`; `IX`, `IY` та їхні половини `IXH`, `IXL`, `IYH`, "
+"`IYL`; `SP`, `PC`, `I`, `R`, `IR`; `IM`, `IFF1`, `IFF2`. Імена регістрів "
+"можна вводити як великими, так і малими літерами; імена міток — ні."
+
+msgid ""
+"A name is looked up first as a register, then as one of the variables "
+"below, then as a label. So a label that has the name of a register cannot"
+" be reached by its name."
+msgstr ""
+"Ім'я шукається спершу серед регістрів, потім серед змінних нижче, потім "
+"серед міток. Тож до мітки з іменем регістра не можна звернутися за її "
+"іменем."
+
+msgid ""
+"A number without a prefix is decimal: `100` is a hundred, `0x100` and "
+"`#100` are 256, `0100` is 64. A bare `FF` is therefore not a number but a"
+" name, so hex always needs its prefix."
+msgstr ""
+"Число без префікса десяткове: `100` — це сто, `0x100` і `#100` — 256, "
+"`0100` — 64. Тому просте `FF` — не число, а ім'я, отже шістнадцяткове "
+"число завжди потребує префікса."
+
+msgid "Variables"
+msgstr "Змінні"
+
+msgid ""
+"The last memory or port access of the instruction. Each is `FFFFFFFF` "
+"when there was none."
+msgstr ""
+"Останнє звернення інструкції до пам'яті чи порту. Кожна змінна дорівнює "
+"`FFFFFFFF`, якщо звернення не було."
+
+msgid "Variable"
+msgstr "Змінна"
+
+msgid "`RD`"
+msgstr "`RD`"
+
+msgid "the address of the last memory read"
+msgstr "адреса останнього читання пам'яті"
+
+msgid "`WR`"
+msgstr "`WR`"
+
+msgid "the address of the last memory write"
+msgstr "адреса останнього запису в пам'ять"
+
+msgid "`MDT`"
+msgstr "`MDT`"
+
+msgid "the byte of that read or write"
+msgstr "байт цього читання або запису"
+
+msgid "`IN`"
+msgstr "`IN`"
+
+msgid "the port of the last IN"
+msgstr "порт останньої інструкції IN"
+
+msgid "`OUT`"
+msgstr "`OUT`"
+
+msgid "the port of the last OUT"
+msgstr "порт останньої інструкції OUT"
+
+msgid "`VAL`"
+msgstr "`VAL`"
+
+msgid "the byte of that IN or OUT"
+msgstr "байт цієї IN або OUT"
+
+msgid "The state of the machine:"
+msgstr "Стан машини:"
+
+msgid "`DOS`"
+msgstr "`DOS`"
+
+msgid "1 while the TR-DOS ROM is switched in"
+msgstr "1, поки підключено ROM TR-DOS"
+
+msgid "`SLOT0` ... `SLOT3`"
+msgstr "`SLOT0` ... `SLOT3`"
+
+msgid ""
+"the page in the memory window at `#0000`, `#4000`, `#8000` and `#C000`, "
+"as the **MEMMAP** panel shows them"
+msgstr ""
+"сторінка у вікні пам'яті за адресами `#0000`, `#4000`, `#8000` і `#C000`,"
+" як їх показує панель **MEMMAP**"
+
+msgid "`FRAME`"
+msgstr "`FRAME`"
+
+msgid ""
+"frames since the last reset, as the **FRAME** counter of the **MEMMAP** "
+"panel"
+msgstr "кадри від останнього скидання, як лічильник **FRAME** панелі **MEMMAP**"
+
+msgid "`RAYX`, `RAYY`"
+msgstr "`RAYX`, `RAYY`"
+
+msgid ""
+"where the beam is between two instructions, as the **RAY** counter of the"
+" **MEMMAP** panel"
+msgstr ""
+"де перебуває промінь між двома інструкціями, як лічильник **RAY** панелі "
+"**MEMMAP**"
+
+msgid "`HITS`"
+msgstr "`HITS`"
+
+msgid "how many times this breakpoint was hit, see below"
+msgstr "скільки разів досягнуто цієї точки зупинки, див. нижче"
+
+msgid "`DT`"
+msgstr "`DT`"
+
+msgid ""
+"T-states since the span opened, or since this breakpoint's hit before, "
+"see [Spans](#spans)"
+msgstr ""
+"такти від відкриття інтервалу або від попереднього влучання цієї точки "
+"зупинки, див. [Інтервали](#spans)"
+
+msgid ""
+"A port is 16 bits wide, and the Spectrum decodes only part of it. `IN` "
+"and `OUT` hold the whole 16 bits, so ask for the keyboard port as `(IN & "
+"0xFF) == 0xFE`, not as one exact value. When a program always uses the "
+"same full port, as 128K paging uses `7FFD`, plain `OUT == 0x7FFD` is "
+"enough."
+msgstr ""
+"Порт має ширину 16 біт, а Spectrum декодує лише частину з них. `IN` і "
+"`OUT` містять усі 16 біт, тож перевіряйте порт клавіатури як `(IN & 0xFF)"
+" == 0xFE`, а не як одне точне значення. Коли програма завжди використовує"
+" той самий повний порт, як перемикання сторінок 128K використовує `7FFD`,"
+" достатньо простого `OUT == 0x7FFD`."
+
+msgid ""
+"`RAYX` and `RAYY` count dots and lines from the first visible one, "
+"borders included. The line is longer than the picture, so a 48K frame is "
+"448 x 312. Use them for a region of the frame, for example `RAYY == 100 "
+"&& RAYX >= 200`."
+msgstr ""
+"`RAYX` і `RAYY` рахують точки й рядки від першого видимого, разом із "
+"бордюром. Рядок довший за зображення, тож кадр 48K має розмір 448 x 312. "
+"Використовуйте їх для ділянки кадру, наприклад `RAYY == 100 && RAYX >= "
+"200`."
+
+msgid ""
+"`RAY(x, y)` is for one exact dot. The beam moves 8 to 46 dots during one "
+"instruction, so `RAYX == 200` is almost never true between two of them; "
+"`RAY(200, 100)` asks whether the beam passed that dot while the "
+"instruction ran, and is true once a frame. The machine stops right after "
+"that instruction. Both arguments can be expressions, such as `RAY(200 + "
+"B, RAYY)`. A plain number outside the frame is refused while you type it;"
+" a computed one outside the frame is simply never reached."
+msgstr ""
+"`RAY(x, y)` — для однієї точної точки. За одну інструкцію промінь "
+"проходить від 8 до 46 точок, тож `RAYX == 200` майже ніколи не буває "
+"істинним між двома інструкціями; `RAY(200, 100)` перевіряє, чи пройшов "
+"промінь цю точку, поки виконувалася інструкція, і буває істинним раз на "
+"кадр. Машина зупиняється одразу після цієї інструкції. Обидва аргументи "
+"можуть бути виразами, як-от `RAY(200 + B, RAYY)`. Просте число поза "
+"кадром відхиляється ще під час введення; обчислене число поза кадром "
+"просто ніколи не досягається."
+
+msgid "Before or after the instruction"
+msgstr "До чи після інструкції"
+
+msgid ""
+"On a **Fetch** breakpoint the registers are read before the instruction "
+"runs. On a **Read**, **Write** or port breakpoint they are read after it."
+msgstr ""
+"На точці зупинки **Fetch** регістри читаються до виконання інструкції. На"
+" точці **Read**, **Write** або на порт — після нього."
+
+msgid "HITS"
+msgstr "HITS"
+
+msgid ""
+"On a breakpoint with an address, `HITS` counts every hit of it, this one "
+"included, whatever the condition says. `HITS > 30` lets the first 30 hits"
+" pass and stops on the 31st."
+msgstr ""
+"На точці зупинки з адресою `HITS` рахує кожне її влучання, разом із цим, "
+"хоч би що казала умова. `HITS > 30` пропускає перші 30 влучань і зупиняє "
+"на 31-му."
+
+msgid ""
+"On a global condition there is no address to count, so `HITS` counts the "
+"times the condition itself fired. It can limit a condition (`HITS < 3` "
+"stops the first three times) but not skip: `PC == 0x8000 && HITS > 30` "
+"never comes true, because `HITS` only moves when the whole condition is "
+"true. To let an address pass a number of times, make it an address "
+"breakpoint with the condition `HITS > 30`. The editor warns about this in"
+" amber."
+msgstr ""
+"У глобальної умови немає адреси для підрахунку, тож `HITS` рахує, скільки"
+" разів спрацювала сама умова. Так можна обмежити умову (`HITS < 3` "
+"зупиняє перші три рази), але не пропустити: `PC == 0x8000 && HITS > 30` "
+"ніколи не стає істинним, бо `HITS` змінюється, лише коли вся умова "
+"істинна. Щоб пропустити адресу певну кількість разів, зробіть точку "
+"зупинки на адресі з умовою `HITS > 30`. Редактор попереджає про це "
+"бурштиновим кольором."
+
+msgid "DT"
+msgstr "DT"
+
+msgid ""
+"On a breakpoint that closes a span, `DT` is how long that span took, in "
+"T-states: `DT > 12000` in its condition fires only on a pass that ran too"
+" long. On any other breakpoint with an address it is the time since its "
+"own hit before. It is 0 when there is nothing to measure from, such as on"
+" the first hit, and on a global condition."
+msgstr ""
+"На точці зупинки, що закриває інтервал, `DT` — це тривалість цього "
+"інтервалу в тактах: `DT > 12000` в її умові спрацьовує лише на проході, "
+"який тривав занадто довго. На будь-якій іншій точці зупинки з адресою це "
+"час від її попереднього влучання. Він дорівнює 0, коли немає від чого "
+"міряти, як-от на першому влучанні, і на глобальній умові."
+
+msgid "Good to know"
+msgstr "Варто знати"
+
+msgid ""
+"An address holds one breakpoint, so it has one condition. Join several "
+"with `||`."
+msgstr ""
+"На адресі може бути одна точка зупинки, тож і умова одна. Об'єднуйте "
+"кілька умов через `||`."
+
+msgid ""
+"A condition that cannot be worked out when it runs, such as one with a "
+"label that is no longer loaded, fires, so the mistake does not go "
+"unnoticed."
+msgstr ""
+"Умова, яку не вдається обчислити під час виконання, як-от умова з міткою,"
+" що вже не завантажена, спрацьовує, щоб помилка не лишилася непоміченою."
+
+msgid "Examples"
+msgstr "Приклади"
+
+msgid "Condition"
+msgstr "Умова"
+
+msgid "Fires when"
+msgstr "Спрацьовує, коли"
+
+msgid "`A == 5 && [SP] > 0xFF00`"
+msgstr "`A == 5 && [SP] > 0xFF00`"
+
+msgid "A is 5 and the word on top of the stack is above `FF00`"
+msgstr "A дорівнює 5, а слово на вершині стека більше за `FF00`"
+
+msgid "`(BC == 0x1234) || (BC == 0x5678)`"
+msgstr "`(BC == 0x1234) || (BC == 0x5678)`"
+
+msgid "BC holds either value"
+msgstr "BC містить одне з двох значень"
+
+msgid "`M(PC) == 0x76`"
+msgstr "`M(PC) == 0x76`"
+
+msgid "a HALT is about to run"
+msgstr "ось-ось виконається HALT"
+
+msgid "`SP < 0x5B00`"
+msgstr "`SP < 0x5B00`"
+
+msgid "the stack ran down into the screen and system variables"
+msgstr "стек опустився в область екрана й системних змінних"
+
+msgid "`WR >= 0x4000 && WR < 0x5800`"
+msgstr "`WR >= 0x4000 && WR < 0x5800`"
+
+msgid "something writes to the screen's pixels"
+msgstr "щось пише в пікселі екрана"
+
+msgid "`(IN & 0xFF) == 0xFE && (VAL & 0x1F) != 0x1F`"
+msgstr "`(IN & 0xFF) == 0xFE && (VAL & 0x1F) != 0x1F`"
+
+msgid "a key is pressed while the keyboard is read"
+msgstr "натиснуто клавішу під час опитування клавіатури"
+
+msgid "`OUT == 0x7FFD && (VAL & 7) == 3`"
+msgstr "`OUT == 0x7FFD && (VAL & 7) == 3`"
+
+msgid "a 128K program pages RAM page 3 in at `#C000`"
+msgstr "програма 128K підключає сторінку RAM 3 за адресою `#C000`"
+
+msgid "`SLOT3 == 7`"
+msgstr "`SLOT3 == 7`"
+
+msgid "RAM page 7 is at `#C000`"
+msgstr "сторінка RAM 7 стоїть за адресою `#C000`"
+
+msgid "`HITS == 30`"
+msgstr "`HITS == 30`"
+
+msgid "on an address breakpoint: the 30th time it is hit"
+msgstr "на точці зупинки з адресою: 30-те влучання"
+
+msgid "`FRAME == 300`"
+msgstr "`FRAME == 300`"
+
+msgid ""
+"as a global condition with **On change**: the first instruction of frame "
+"300"
+msgstr "як глобальна умова з **On change**: перша інструкція кадру 300"
+
+msgid "`RAYY == 100`"
+msgstr "`RAYY == 100`"
+
+msgid "every instruction on line 100; with **On change**, once a frame"
+msgstr "кожна інструкція на рядку 100; з **On change** — раз на кадр"
+
+msgid "`RAY(200, 100)`"
+msgstr "`RAY(200, 100)`"
+
+msgid "the instruction during which the beam passed dot 200 of line 100"
+msgstr "інструкція, під час якої промінь пройшов точку 200 рядка 100"
+
+msgid "`DT > 12000`"
+msgstr "`DT > 12000`"
+
+msgid "on a breakpoint that closes a span: the span took more than 12000 T"
+msgstr "на точці зупинки, що закриває інтервал: інтервал тривав понад 12000 T"
+
+msgid "Global conditions and On change"
+msgstr "Глобальні умови та On change"
+
+msgid ""
+"A breakpoint of type **Condition (global)** has no address. Its "
+"expression is checked after every instruction, so it finds things no "
+"single address can: \"A became 0 somewhere\", \"the stack went below "
+"`5B00`\"."
+msgstr ""
+"Точка зупинки типу **Condition (global)** не має адреси. Її вираз "
+"перевіряється після кожної інструкції, тож вона знаходить те, чого не "
+"знайде жодна окрема адреса: «A десь стало 0», «стек опустився нижче "
+"`5B00`»."
+
+msgid ""
+"Out of the box it fires on every instruction while the expression is "
+"true, just as the condition of an address breakpoint does. Tick **On "
+"change** to make it fire only when the expression becomes true: once, and"
+" again only after it was false in between. `A == 0` without **On change**"
+" stops on every instruction while A stays 0; with it, only on the "
+"instruction that made it 0."
+msgstr ""
+"Типово вона спрацьовує на кожній інструкції, поки вираз істинний, так "
+"само як умова точки зупинки з адресою. Позначте **On change**, щоб вона "
+"спрацьовувала лише тоді, коли вираз стає істинним: один раз, і знову лише"
+" після того, як він у проміжку був хибним. `A == 0` без **On change** "
+"зупиняє на кожній інструкції, поки A лишається 0; з ним — лише на "
+"інструкції, яка зробила його 0."
+
+msgid ""
+"Several global conditions can come true on the same instruction; each one"
+" then does its own action."
+msgstr ""
+"Кілька глобальних умов можуть стати істинними на одній інструкції; тоді "
+"кожна виконує свою дію."
+
+msgid "Actions"
+msgstr "Дії"
+
+msgid "Action"
+msgstr "Дія"
+
+msgid "What happens"
+msgstr "Що відбувається"
+
+msgid "**Debugger**"
+msgstr "**Debugger**"
+
+msgid "the machine stops and the Debugger opens"
+msgstr "машина зупиняється і відкривається Debugger"
+
+msgid "**Counter**"
+msgstr "**Counter**"
+
+msgid "the machine goes on; only **Cnt** in the list grows"
+msgstr "машина працює далі; у списку збільшується лише **Cnt**"
+
+msgid "**Screen dump**"
+msgstr "**Screen dump**"
+
+msgid ""
+"the machine goes on; the 6912 bytes of the main screen (RAM page 5) are "
+"saved as an `.scr` file"
+msgstr ""
+"машина працює далі; 6912 байтів основного екрана (сторінка RAM 5) "
+"зберігаються у файл `.scr`"
+
+msgid ""
+"A screen dump goes into the screenshots folder (the **Output** of the "
+"**Screenshots** group on the **Video** page of **Options**, see "
+"[Screenshots](capture.md#screenshots)), named after the time, such as "
+"`xpeccy_153012_250_0.scr`."
+msgstr ""
+"Дамп екрана потрапляє в папку знімків екрана (**Output** групи "
+"**Screenshots** на сторінці **Video** вікна **Options**, див. [Знімки "
+"екрана](capture.md#screenshots)) з іменем за часом, як-от "
+"`xpeccy_153012_250_0.scr`."
+
+msgid "Spans"
+msgstr "Інтервали"
+
+msgid ""
+"Two breakpoints can time the code between them. Set **Span** of the first"
+" to **Opens a span** and of the second to **Closes a span**. Each time "
+"the machine gets to the first and then to the second, the T-states "
+"between them make one span. The opening breakpoint keeps how many spans "
+"there were, the shortest, the average and the longest, and how many of "
+"them had an interrupt in the middle."
+msgstr ""
+"Дві точки зупинки можуть вимірювати час виконання коду між ними. Задайте "
+"**Span** першої як **Opens a span**, а другої — як **Closes a span**. "
+"Щоразу, коли машина доходить до першої, а потім до другої, такти між ними"
+" утворюють один інтервал. Точка, що відкриває інтервал, зберігає, скільки"
+" було інтервалів, найкоротший, середній і найдовший, і скільки з них мали"
+" переривання посередині."
+
+msgid ""
+"The span is opened and closed on every hit, whatever the condition says. "
+"The condition and the action decide only whether the hit stops, counts or"
+" logs."
+msgstr ""
+"Інтервал відкривається і закривається на кожному влучанні, хоч би що "
+"казала умова. Умова і дія вирішують лише, чи влучання зупиняє машину, "
+"рахується чи пишеться в журнал."
+
+msgid ""
+"A close takes the span opened last, whichever breakpoint opened it. So "
+"spans can nest: a routine called from a timed routine can be timed too, "
+"each on its own."
+msgstr ""
+"Закриття бере останній відкритий інтервал, хоч яка точка зупинки його "
+"відкрила. Тож інтервали можуть бути вкладеними: підпрограму, викликану з "
+"підпрограми, час якої вимірюється, теж можна виміряти, кожну окремо."
+
+msgid "A close with no span open measures nothing."
+msgstr "Закриття без відкритого інтервалу нічого не вимірює."
+
+msgid ""
+"A routine with several ways out needs a closing breakpoint on each of "
+"them."
+msgstr ""
+"Підпрограмі з кількома виходами потрібна закривальна точка зупинки на "
+"кожному з них."
+
+msgid ""
+"Any breakpoint with an address can open or close a span, and so can "
+"**Interrupt**; a global condition cannot."
+msgstr ""
+"Будь-яка точка зупинки з адресою може відкрити або закрити інтервал, як і"
+" **Interrupt**; глобальна умова — ні."
+
+msgid "What the spans measured is shown:"
+msgstr "Виміряне інтервалами показується:"
+
+msgid "beside **Span** in the **Breakpoint Editor**, for an opening breakpoint;"
+msgstr ""
+"поруч зі **Span** у **Breakpoint Editor**, для точки, що відкриває "
+"інтервал;"
+
+msgid ""
+"when you hold the mouse over its row in the **Breakpoints** panel, such "
+"as `938 spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`;"
+msgstr ""
+"коли ви наводите мишу на її рядок на панелі **Breakpoints**, як-от `938 "
+"spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`;"
+
+msgid ""
+"at the end of the breakpoint log, when the program closes, if a "
+"breakpoint wrote to it, and at the end of a [run with no window](command-"
+"line.md#running-with-no-window): one line for each opening breakpoint."
+msgstr ""
+"у кінці журналу точок зупинки, коли програма закривається, якщо якась "
+"точка зупинки в нього писала, а також у кінці [запуску без вікна"
+"](command-line.md#running-with-no-window): по рядку для кожної точки, що "
+"відкриває інтервал."
+
+msgid ""
+"The line has the breakpoint's label, or its address when it has none, "
+"then the number of spans, the shortest, the average and the longest in "
+"T-states, their sum, and how many had an interrupt."
+msgstr ""
+"Рядок містить мітку точки зупинки або її адресу, якщо мітки немає, далі "
+"кількість інтервалів, найкоротший, середній і найдовший у тактах, їхню "
+"суму і скільки з них мали переривання."
+
+msgid ""
+"Spans of the same code differ for a reason: on a Spectrum the CPU waits "
+"when it uses the memory the screen is read from at that moment, so the "
+"same loop takes longer while the beam draws the picture. **Reset "
+"counter** in the right-click menu of the list starts them again."
+msgstr ""
+"Інтервали того самого коду відрізняються не випадково: на Spectrum CPU "
+"чекає, коли звертається до пам'яті, з якої саме в цей момент читається "
+"екран, тож той самий цикл триває довше, поки промінь малює зображення. "
+"**Reset counter** у меню правої кнопки списку починає їх наново."
+
+msgid "The breakpoint log"
+msgstr "Журнал точок зупинки"
+
+msgid ""
+"Tick **Log** in the **Breakpoint Editor** and every time the breakpoint "
+"fires, a line goes to the breakpoint log, whatever its action is. With "
+"the action **Counter** this logs every hit without stopping."
+msgstr ""
+"Позначте **Log** у **Breakpoint Editor**, і щоразу, коли точка зупинки "
+"спрацьовує, у журнал точок зупинки потрапляє рядок, хоч якою є її дія. З "
+"дією **Counter** так записується кожне влучання без зупинки."
+
+msgid ""
+"The log is a file of its own. It is made at the first hit that logs, with"
+" nothing to switch on first: `xpeccy-plus-<date>-<time>-brk.log`, in "
+"`logs/<date>/` beside the program, or in the **Folder** of the **Log** "
+"group on the **Application** page of **Options**. Where that cannot be "
+"written to, it goes to the settings folder. **Open breakpoint log** in "
+"the right-click menu of the **Breakpoints** list opens it; `--brk-log` on"
+" the command line sends it elsewhere (see [Command line](command-"
+"line.md#debugging))."
+msgstr ""
+"Журнал — окремий файл. Він створюється на першому влучанні, що пише в "
+"журнал, і нічого не треба вмикати заздалегідь: `xpeccy-"
+"plus-<date>-<time>-brk.log`, у `logs/<date>/` поруч із програмою або в "
+"**Folder** групи **Log** на сторінці **Application** вікна **Options**. "
+"Якщо туди неможливо записати, він потрапляє в папку налаштувань. **Open "
+"breakpoint log** у меню правої кнопки списку **Breakpoints** відкриває "
+"його; `--brk-log` у командному рядку спрямовує його в інше місце (див. "
+"[Командний рядок](command-line.md#debugging))."
+
+msgid ""
+"Apart from the date in its first line, the log has no time of day in it, "
+"only the machine's own time. Two runs of the same program give the same "
+"lines, so two logs can be compared line by line."
+msgstr ""
+"Окрім дати в першому рядку, журнал не містить часу доби, лише власний час"
+" машини. Два запуски тієї самої програми дають однакові рядки, тож два "
+"журнали можна порівнювати рядок за рядком."
+
+msgid "Part"
+msgstr "Частина"
+
+msgid "`F00000000 T034459`"
+msgstr "`F00000000 T034459`"
+
+msgid "the frame since the last reset, and the T-state in it"
+msgstr "кадр від останнього скидання і такт у ньому"
+
+msgid "`t=5758`"
+msgstr "`t=5758`"
+
+msgid "T-states since the machine was made"
+msgstr "такти від створення машини"
+
+msgid "`CPU:8006 RAM:02:0006`"
+msgstr "`CPU:8006 RAM:02:0006`"
+
+msgid ""
+"where it fired: the breakpoint's own address, then the same place the "
+"other way - page and offset for a CPU address, the CPU address for a cell"
+msgstr ""
+"де вона спрацювала: власна адреса точки зупинки, потім те саме місце в "
+"іншому записі — сторінка і зміщення для CPU-адреси, CPU-адреса для "
+"комірки"
+
+msgid "`F`"
+msgstr "`F`"
+
+msgid ""
+"what was done there: `F` a fetch, `RD 5C3A=FF` a read, `WR 4000=00` a "
+"write, `IN=BF` or `OUT=07` on a port"
+msgstr ""
+"що там відбулося: `F` — вибірка, `RD 5C3A=FF` — читання, `WR 4000=00` — "
+"запис, `IN=BF` або `OUT=07` — на порту"
+
+msgid "`n=1/129`"
+msgstr "`n=1/129`"
+
+msgid "how many times it fired, and how many times it was hit"
+msgstr "скільки разів вона спрацювала і скільки разів її досягнуто"
+
+msgid "`stop`"
+msgstr "`stop`"
+
+msgid "the action is **Debugger**: the machine stopped here"
+msgstr "дія **Debugger**: машина тут зупинилася"
+
+msgid "`span=open`, `span=close from=START int=0`"
+msgstr "`span=open`, `span=close from=START int=0`"
+
+msgid ""
+"the breakpoint opens or closes a span; a close names the breakpoint that "
+"opened it and how many interrupts came in between"
+msgstr ""
+"точка зупинки відкриває або закриває інтервал; закриття називає точку, що"
+" його відкрила, і скільки переривань було між ними"
+
+msgid "`DT=42`"
+msgstr "`DT=42`"
+
+msgid "the value of `DT`"
+msgstr "значення `DT`"
+
+msgid "`cond=...`"
+msgstr "`cond=...`"
+
+msgid "the condition, when there is one"
+msgstr "умова, якщо вона є"
+
+msgid "`PC=8006 ... IFF2=0`"
+msgstr "`PC=8006 ... IFF2=0`"
+
+msgid "the registers; PC is the instruction the breakpoint belongs to"
+msgstr "регістри; PC — інструкція, якій належить точка зупинки"
+
+msgid "`F=S-------`"
+msgstr "`F=S-------`"
+
+msgid "the flags, by letter: S, Z, 5, H, 3, P, N, C"
+msgstr "прапорці за літерами: S, Z, 5, H, 3, P, N, C"
+
+msgid "`ROMPG=0 RAMPG=0`"
+msgstr "`ROMPG=0 RAMPG=0`"
+
+msgid "the ROM page at `#0000` and the RAM page at `#C000`"
+msgstr "сторінка ROM за адресою `#0000` і сторінка RAM за адресою `#C000`"
+
+msgid "`DOS=0 ROM=1 CPM=0 INT=0`"
+msgstr "`DOS=0 ROM=1 CPM=0 INT=0`"
+
+msgid "the signals of the **MEMMAP** panel"
+msgstr "сигнали панелі **MEMMAP**"
+
+msgid ""
+"With expressions in the field beside **Log**, the line has them in place "
+"of the registers, each as written and its value in hex:"
+msgstr ""
+"Якщо в полі поруч із **Log** є вирази, рядок містить їх замість "
+"регістрів, кожен так, як його записано, і його значення в "
+"шістнадцятковому вигляді:"
+
+msgid "An expression that cannot be worked out at that moment is written as `?`."
+msgstr "Вираз, який у цей момент неможливо обчислити, записується як `?`."
+
+msgid "Breakpoint files"
+msgstr "Файли точок зупинки"
+
+#, python-brace-format
+msgid ""
+"{icon}`floppy` **Save** in the **Breakpoints** panel writes the list to a"
+" text file, `.xbrk`; {icon}`fileopen` **Open** loads one, in place of the"
+" list you have. A file can be written by hand too: one breakpoint a line,"
+" its fields split by colons. Lines starting with `;` are skipped."
+msgstr ""
+"{icon}`floppy` **Save** на панелі **Breakpoints** записує список у "
+"текстовий файл `.xbrk`; {icon}`fileopen` **Open** завантажує такий файл "
+"замість наявного списку. Файл можна написати й вручну: одна точка зупинки"
+" на рядок, поля розділено двокрапками. Рядки, що починаються з `;`, "
+"пропускаються."
+
+msgid "What it holds"
+msgstr "Що містить"
+
+msgid "1, kind"
+msgstr "1, вид"
+
+msgid "`CPU`, `IO`, `RAM`, `ROM`, `SLT`, `IRQ` or `COND`"
+msgstr "`CPU`, `IO`, `RAM`, `ROM`, `SLT`, `IRQ` або `COND`"
+
+msgid "2"
+msgstr "2"
+
+msgid ""
+"`CPU`: the address or a range; `IO`: the port; `RAM`, `ROM`, `SLT`: the "
+"page; others: empty"
+msgstr ""
+"`CPU`: адреса або діапазон; `IO`: порт; `RAM`, `ROM`, `SLT`: сторінка; "
+"інші: порожнє"
+
+msgid "3"
+msgstr "3"
+
+msgid ""
+"`IO`: the mask; `RAM`, `ROM`, `SLT`: the offset or a range of offsets; "
+"others: empty"
+msgstr ""
+"`IO`: маска; `RAM`, `ROM`, `SLT`: зміщення або діапазон зміщень; інші: "
+"порожнє"
+
+msgid "4, flags"
+msgstr "4, прапорці"
+
+msgid ""
+"any of `F`, `R`, `W`; `0` switched off; `E` **On change**; `L` **Log**; "
+"`[` opens a span, `]` closes one"
+msgstr ""
+"будь-які з `F`, `R`, `W`; `0` — вимкнено; `E` — **On change**; `L` — "
+"**Log**; `[` відкриває інтервал, `]` закриває"
+
+msgid "5, action"
+msgstr "5, дія"
+
+msgid "`DBG` (**Debugger**), `CNT` (**Counter**) or `SCR` (**Screen dump**)"
+msgstr "`DBG` (**Debugger**), `CNT` (**Counter**) або `SCR` (**Screen dump**)"
+
+msgid "6, condition"
+msgstr "6, умова"
+
+msgid "the condition, or empty"
+msgstr "умова або порожнє"
+
+msgid "7, log"
+msgstr "7, журнал"
+
+msgid ""
+"what a logged hit writes: expressions split by commas. Leave it out for "
+"every register"
+msgstr ""
+"що пише влучання в журнал: вирази через кому. Пропустіть поле, щоб писати"
+" всі регістри"
+
+msgid "A line can stop after the condition; the last two fields can be empty."
+msgstr ""
+"Рядок може закінчуватися після умови; останні два поля можуть бути "
+"порожніми."
+
+msgid ""
+"An address in a list is hex without a prefix, as **Save** writes it, or a"
+" label of the labels loaded at the time: `CPU:START`, `CPU:START-DONE`. A"
+" label wins over hex written the same way; `#`, `$` or `0x` in front "
+"makes it a number. A RAM label carries its page, so the page field can be"
+" left empty: `RAM::SCREEN_BUF:W:CNT:`. **Save** writes the addresses as "
+"numbers."
+msgstr ""
+"Адреса у списку — шістнадцяткове число без префікса, як його пише "
+"**Save**, або мітка з міток, завантажених на той момент: `CPU:START`, "
+"`CPU:START-DONE`. Мітка має перевагу над шістнадцятковим числом, "
+"записаним так само; `#`, `$` або `0x` попереду роблять його числом. Мітка"
+" RAM несе свою сторінку, тож поле сторінки можна залишити порожнім: "
+"`RAM::SCREEN_BUF:W:CNT:`. **Save** записує адреси як числа."
+
+msgid ""
+"A line that cannot be read is left out and named in the log. A condition "
+"or a log expression that does not compile is kept as it is: the condition"
+" then fires every time, and the expression is written as `?`, so the "
+"mistake shows."
+msgstr ""
+"Рядок, який не вдається прочитати, пропускається і згадується в журналі. "
+"Умова або вираз журналу, що не компілюється, зберігається як є: умова "
+"тоді спрацьовує щоразу, а вираз записується як `?`, тож помилку видно."
+
+msgid ""
+"Options of the command line set breakpoints at start (see [Command line"
+"](command-line.md#debugging)):"
+msgstr ""
+"Параметри командного рядка встановлюють точки зупинки під час запуску "
+"(див. [Командний рядок](command-line.md#debugging)):"
+
+msgid "`--bp ADR` - a **Fetch** breakpoint on a CPU address or a label;"
+msgstr "`--bp ADR` — точка зупинки **Fetch** на CPU-адресі або мітці;"
+
+msgid "`--brk FILE` - loads a `.xbrk` file, added to the ones loaded before it;"
+msgstr ""
+"`--brk FILE` — завантажує файл `.xbrk`, додаючи його до завантажених "
+"раніше;"
+
+msgid ""
+"`--brk-log FILE` - writes the breakpoint log to that file, or with `-` to"
+" the standard output."
+msgstr ""
+"`--brk-log FILE` — записує журнал точок зупинки в цей файл, а з `-` — у "
+"стандартний вивід."
+
+msgid ""
+"The labels of `-l` are loaded first, wherever it stands on the command "
+"line. Together with `--bench` this runs a test from a script with no "
+"window, which ends on the first breakpoint with the action **Debugger** "
+"(see [Running with no window](command-line.md#running-with-no-window))."
+msgstr ""
+"Мітки з `-l` завантажуються першими, хоч де цей параметр стоїть у "
+"командному рядку. Разом із `--bench` це запускає тест зі скрипту без "
+"вікна, який закінчується на першій точці зупинки з дією **Debugger** "
+"(див. [Запуск без вікна](command-line.md#running-with-no-window))."
+
+msgid "The Watcher"
+msgstr "Вікно Watcher"
+
+msgid "![The Watcher](images/dbg-watcher.png)"
+msgstr "![Вікно Watcher](images/dbg-watcher.png)"
+
+#, python-brace-format
+msgid ""
+"The **Watcher** window shows the registers and some places in memory, and"
+" follows them while the machine runs. Open it with **Debug > Watcher** in"
+" the main window, or **Watcher** under the {icon}`other` **Tools** button"
+" over the listing."
+msgstr ""
+"Вікно **Watcher** показує регістри і деякі місця в пам'яті та стежить за "
+"ними, поки машина працює. Відкрийте його через **Debug > Watcher** у "
+"головному вікні або **Watcher** під кнопкою {icon}`other` **Tools** над "
+"лістингом."
+
+msgid "**CPU** - the registers."
+msgstr "**CPU** — регістри."
+
+msgid "**MEMORY** - the watches, two rows each."
+msgstr "**MEMORY** — спостереження, по два рядки на кожне."
+
+msgid "The four memory banks, from `#0000` to `#C000`: ROM or RAM, and the page."
+msgstr "Чотири банки пам'яті, від `#0000` до `#C000`: ROM чи RAM і сторінка."
+
+msgid ""
+"In the picture the game Exolon runs, with a file of labels for it. `AMMO`"
+" is its ammo counter: the first byte, `63`, is 99 rounds. `VITORC + 0x60`"
+" is the second frame of its hero's sprite. `SP` is the stack, and `[SP]` "
+"the code the routine will return to. `0x3D00` is the start of the font in"
+" ROM."
+msgstr ""
+"На зображенні працює гра Exolon з файлом міток до неї. `AMMO` — її "
+"лічильник набоїв: перший байт, `63`, — це 99 пострілів. `VITORC + 0x60` —"
+" другий кадр спрайта її героя. `SP` — стек, а `[SP]` — код, куди "
+"повернеться підпрограма. `0x3D00` — початок шрифту в ROM."
+
+msgid ""
+"Right-click the **MEMORY** list and choose **Add watcher** to add a "
+"watch, or **Delete watcher** to remove the selected one. Double-click a "
+"watch to change it."
+msgstr ""
+"Клацніть правою кнопкою список **MEMORY** і виберіть **Add watcher**, щоб"
+" додати спостереження, або **Delete watcher**, щоб вилучити вибране. "
+"Двічі клацніть спостереження, щоб змінити його."
+
+msgid "![The Watcher Editor](images/dbg-watcher-editor.png)"
+msgstr "![Вікно Watcher Editor](images/dbg-watcher-editor.png)"
+
+msgid "The Watcher Editor"
+msgstr "Вікно Watcher Editor"
+
+msgid "The **Watcher Editor** has:"
+msgstr "**Watcher Editor** містить:"
+
+msgid ""
+"**Type** - **CPU addr**, **RAM addr** or **ROM addr**, written before the"
+" watch;"
+msgstr ""
+"**Type** — **CPU addr**, **RAM addr** або **ROM addr**, пишеться перед "
+"спостереженням;"
+
+#, python-brace-format
+msgid ""
+"**Expression** - an address, in the same syntax as a condition (see "
+"[Conditions](#conditions)): `HL`, `0x5C3A`, `IX + 5`, `[0x5C53]`, a "
+"label. The {icon}`label` button beside it opens the list of labels; a "
+"label picked there goes into the field."
+msgstr ""
+"**Expression** — адреса в тому самому синтаксисі, що й умова (див. "
+"[Умови](#conditions)): `HL`, `0x5C3A`, `IX + 5`, `[0x5C53]`, мітка. "
+"Кнопка {icon}`label` поруч відкриває список міток; вибрана там мітка "
+"потрапляє в поле."
+
+#, python-brace-format
+msgid ""
+"{icon}`checkbox` **OK** takes it only when the expression is right. The "
+"first row of a watch shows its type and expression, and its value as an "
+"address; the second row the 13 bytes that start at that address. `??` "
+"means the expression cannot be worked out at the moment."
+msgstr ""
+"{icon}`checkbox` **OK** приймає його лише тоді, коли вираз правильний. "
+"Перший рядок спостереження показує його тип і вираз, а також значення як "
+"адресу; другий рядок — 13 байтів, що починаються з цієї адреси. `??` "
+"означає, що вираз зараз неможливо обчислити."
+
+msgid "The watches are not kept when the program closes."
+msgstr "Спостереження не зберігаються після закриття програми."
+
+msgid "Watched ports"
+msgstr "Відстежувані порти"
+
+msgid ""
+"The **PORTS** block of the **MEMMAP** panel shows the last value on the "
+"ports you choose. See [Watched ports](debugger.md#watched-ports)."
+msgstr ""
+"Блок **PORTS** панелі **MEMMAP** показує останнє значення на вибраних "
+"вами портах. Див. [Відстежувані порти](debugger.md#watched-ports)."
+
+msgid "Stop when the program writes to the screen"
+msgstr "Зупинитися, коли програма пише на екран"
+
+#, python-brace-format
+msgid ""
+"In the **Breakpoints** panel, press {icon}`add` add (the plus sign). The "
+"editor opens on a **CPU address** with **Fetch** ticked."
+msgstr ""
+"На панелі **Breakpoints** натисніть {icon}`add` додати (знак плюс). "
+"Редактор відкриється з **CPU address** і позначеним **Fetch**."
+
+msgid "Untick **Fetch**, tick **Write**."
+msgstr "Зніміть позначку **Fetch**, позначте **Write**."
+
+msgid ""
+"Type `4000` into **Address** and `5AFF` into **to**. The line under them "
+"says `4000-5AFF`."
+msgstr ""
+"Введіть `4000` в **Address** і `5AFF` в **to**. Рядок під ними показує "
+"`4000-5AFF`."
+
+#, python-brace-format
+msgid "Press {icon}`ok-apply` **OK** and close the Debugger."
+msgstr "Натисніть {icon}`ok-apply` **OK** і закрийте Debugger."
+
+msgid ""
+"The row says `CPU:4000-5AFF` with a tick under **W**. The first time "
+"anything writes to the screen, the Debugger opens. The machine stops "
+"after the instruction that wrote; in the listing it is usually the line "
+"above the cursor."
+msgstr ""
+"Рядок показує `CPU:4000-5AFF` з позначкою під **W**. Щойно щось уперше "
+"запише на екран, відкриється Debugger. Машина зупиняється після "
+"інструкції, яка записала; у лістингу це зазвичай рядок над курсором."
+
+msgid "Stop when the border color changes"
+msgstr "Зупинитися, коли змінюється колір бордюру"
+
+msgid "The border color is set by an OUT to the ULA's port, `FE`."
+msgstr "Колір бордюру задається інструкцією OUT у порт ULA, `FE`."
+
+#, python-brace-format
+msgid "In the **Breakpoints** panel, press {icon}`add` add."
+msgstr "На панелі **Breakpoints** натисніть {icon}`add` додати."
+
+msgid "Set **Type** to **I/O port**."
+msgstr "Задайте **Type** як **I/O port**."
+
+msgid "Tick **Write**."
+msgstr "Позначте **Write**."
+
+msgid ""
+"Type `00FE` into **Port** and `0001` into **mask**, so every even port "
+"counts, as on the real machine."
+msgstr ""
+"Введіть `00FE` в **Port** і `0001` в **mask**, щоб враховувався кожен "
+"парний порт, як на справжній машині."
+
+msgid ""
+"The row says `IO:00FE mask 0001`. The Debugger opens on every OUT to the "
+"port. A program that makes sound writes the same port all the time, for "
+"the speaker; to stop only when the border turns red, put `(VAL & 7) == 2`"
+" into **Condition**."
+msgstr ""
+"Рядок показує `IO:00FE mask 0001`. Debugger відкривається на кожній OUT у"
+" цей порт. Програма, що видає звук, увесь час пише в цей самий порт для "
+"динаміка; щоб зупинитися лише тоді, коли бордюр стане червоним, введіть "
+"`(VAL & 7) == 2` у **Condition**."
+
+msgid "Log every call to a routine without stopping"
+msgstr "Записувати кожен виклик підпрограми в журнал без зупинки"
+
+msgid ""
+"In the Debugger, put the cursor on the first line of the routine and "
+"press Shift+Space."
+msgstr ""
+"У Debugger поставте курсор на перший рядок підпрограми і натисніть "
+"Shift+Space."
+
+#, python-brace-format
+msgid ""
+"Select the new row in the **Breakpoints** panel and press {icon}`edit` "
+"edit (the pencil)."
+msgstr ""
+"Виберіть новий рядок на панелі **Breakpoints** і натисніть {icon}`edit` "
+"змінити (олівець)."
+
+#, python-brace-format
+msgid ""
+"Set **Action** to **Counter** and tick **Log**. To log only some values, "
+"type them into the field beside it, such as `A, HL, M(HL)`. Press {icon"
+"}`ok-apply` **OK**."
+msgstr ""
+"Задайте **Action** як **Counter** і позначте **Log**. Щоб записувати лише"
+" деякі значення, введіть їх у поле поруч, як-от `A, HL, M(HL)`. Натисніть"
+" {icon}`ok-apply` **OK**."
+
+msgid "Close the Debugger."
+msgstr "Закрийте Debugger."
+
+msgid ""
+"The machine runs on as before. **Cnt** in the list counts the calls, and "
+"every call adds a line to the breakpoint log. **Open breakpoint log** in "
+"the right-click menu of the list shows it."
+msgstr ""
+"Машина працює далі, як і раніше. **Cnt** у списку рахує виклики, а кожен "
+"виклик додає рядок у журнал точок зупинки. **Open breakpoint log** у меню"
+" правої кнопки списку показує його."
+
+msgid "Stop when A is 0 at a given address"
+msgstr "Зупинитися, коли A дорівнює 0 на певній адресі"
+
+msgid "Put the cursor on the line in the listing and press Shift+Space."
+msgstr "Поставте курсор на рядок у лістингу і натисніть Shift+Space."
+
+#, python-brace-format
+msgid ""
+"Select the new row in the **Breakpoints** panel and press {icon}`edit` "
+"edit."
+msgstr ""
+"Виберіть новий рядок на панелі **Breakpoints** і натисніть {icon}`edit` "
+"змінити."
+
+msgid "Type `A == 0` into **Condition**. The line under it says **ok: (A == 0)**."
+msgstr "Введіть `A == 0` в **Condition**. Рядок під ним показує **ok: (A == 0)**."
+
+msgid ""
+"The **Cond** column shows `A == 0`. The machine runs through that line as"
+" long as A is not 0, and stops on it, before it runs, the first time A is"
+" 0 there."
+msgstr ""
+"Стовпець **Cond** показує `A == 0`. Машина проходить цей рядок, поки A не"
+" 0, і зупиняється на ньому, перед його виконанням, коли A там уперше "
+"дорівнює 0."
+
+msgid "Stop on the 50th pass"
+msgstr "Зупинитися на 50-му проході"
+
+msgid "Make a breakpoint on the line as above."
+msgstr "Створіть точку зупинки на рядку, як описано вище."
+
+msgid "Put `HITS == 50` into its **Condition**."
+msgstr "Введіть `HITS == 50` в її **Condition**."
+
+msgid ""
+"The machine stops the 50th time the CPU gets to the line. **Reset "
+"counter** in the right-click menu of the list starts the count again."
+msgstr ""
+"Машина зупиняється, коли CPU уп'ятдесяте доходить до рядка. **Reset "
+"counter** у меню правої кнопки списку починає відлік наново."
+
+msgid "Time a routine"
+msgstr "Виміряти час підпрограми"
+
+msgid ""
+"Here the routine starts at the label `START`, and `DONE` is the last "
+"instruction of one pass."
+msgstr ""
+"Тут підпрограма починається з мітки `START`, а `DONE` — остання "
+"інструкція одного проходу."
+
+#, python-brace-format
+msgid ""
+"In the **Breakpoints** panel, press {icon}`add` add. Type `START` into "
+"**Address**; the line under it says `8000, START`. Set **Span** to "
+"**Opens a span** and **Action** to **Counter**. Press {icon}`ok-apply` "
+"**OK**."
+msgstr ""
+"На панелі **Breakpoints** натисніть {icon}`add` додати. Введіть `START` в"
+" **Address**; рядок під ним показує `8000, START`. Задайте **Span** як "
+"**Opens a span**, а **Action** — як **Counter**. Натисніть {icon}`ok-"
+"apply` **OK**."
+
+msgid ""
+"Press add again. Type `DONE` into **Address**, set **Span** to **Closes a"
+" span** and **Action** to **Counter**. Press **OK**."
+msgstr ""
+"Знову натисніть «додати». Введіть `DONE` в **Address**, задайте **Span** "
+"як **Closes a span**, а **Action** — як **Counter**. Натисніть **OK**."
+
+msgid "Close the Debugger and let the program run for a while."
+msgstr "Закрийте Debugger і дайте програмі попрацювати якийсь час."
+
+msgid "Open the Debugger and hold the mouse over `CPU:8000` in the list."
+msgstr "Відкрийте Debugger і наведіть мишу на `CPU:8000` у списку."
+
+msgid ""
+"The tip says how many passes there were and how long they took: `938 "
+"spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`."
+msgstr ""
+"Підказка показує, скільки було проходів і скільки часу вони тривали: `938"
+" spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`."
+
+msgid ""
+"To stop on a pass that is too slow, open the `DONE` breakpoint again, set"
+" **Action** to **Debugger** and type `DT > 11400` into **Condition**. The"
+" machine stops at the end of such a pass."
+msgstr ""
+"Щоб зупинитися на надто повільному проході, знову відкрийте точку зупинки"
+" `DONE`, задайте **Action** як **Debugger** і введіть `DT > 11400` в "
+"**Condition**. Машина зупиниться в кінці такого проходу."
+
+msgid "Check a program from a script"
+msgstr "Перевірити програму зі скрипту"
+
+msgid ""
+"The same two breakpoints, as a file `timing.xbrk`, with the labels of the"
+" program in `timing.lab`. The closing breakpoint also writes `HL` and "
+"`BC` to the log:"
+msgstr ""
+"Ті самі дві точки зупинки у файлі `timing.xbrk`, з мітками програми в "
+"`timing.lab`. Закривальна точка зупинки ще й пише `HL` і `BC` у журнал:"
+
+msgid ""
+"The machine runs two frames with no window. With `--brk-log -` the log "
+"comes to the standard output, before the speed line and the spans:"
+msgstr ""
+"Машина виконує два кадри без вікна. З `--brk-log -` журнал іде у "
+"стандартний вивід, перед рядком швидкості та інтервалами:"
+
+msgid ""
+"The exit code is 0. With the action **Debugger** and `DT > 11400` on "
+"`DONE`, the run would stop on the first slow pass and exit with 2, so a "
+"script can tell a slow build of the program from a fast one."
+msgstr ""
+"Код виходу — 0. З дією **Debugger** і `DT > 11400` на `DONE` прогін "
+"зупинився б на першому повільному проході і завершився б із кодом 2, тож "
+"скрипт може відрізнити повільну збірку програми від швидкої."
+
+msgid "breakpoint"
+msgstr "точка зупинки"
+
+msgid "watchpoint"
+msgstr "точка спостереження"
+
+msgid "CPU address"
+msgstr "CPU address"
+
+msgid "I/O port"
+msgstr "I/O port"
+
+msgid "RAM cell"
+msgstr "RAM cell"
+
+msgid "ROM cell"
+msgstr "ROM cell"
+
+msgid "Slot cell"
+msgstr "Slot cell"
+
+msgid "Interrupt"
+msgstr "Interrupt"
+
+msgid "Fetch"
+msgstr "Fetch"
+
+msgid "Read"
+msgstr "Read"
+
+msgid "Write"
+msgstr "Write"
+
+msgid "setting"
+msgstr "встановлення"
+
+msgid "Breakpoints panel"
+msgstr "панель Breakpoints"
+
+msgid "Reset counter"
+msgstr "Reset counter"
+
+msgid "Breakpoint Editor"
+msgstr "Breakpoint Editor"
+
+msgid "address"
+msgstr "адреса"
+
+msgid "port mask"
+msgstr "маска порту"
+
+msgid "Expression Syntax"
+msgstr "Expression Syntax"
+
+msgid "condition"
+msgstr "умова"
+
+msgid "operators"
+msgstr "оператори"
+
+msgid "operands"
+msgstr "операнди"
+
+msgid "RD"
+msgstr "RD"
+
+msgid "WR"
+msgstr "WR"
+
+msgid "MDT"
+msgstr "MDT"
+
+msgid "IN"
+msgstr "IN"
+
+msgid "OUT"
+msgstr "OUT"
+
+msgid "VAL"
+msgstr "VAL"
+
+msgid "DOS"
+msgstr "DOS"
+
+msgid "SLOT0"
+msgstr "SLOT0"
+
+msgid "FRAME"
+msgstr "FRAME"
+
+msgid "RAYX"
+msgstr "RAYX"
+
+msgid "RAYY"
+msgstr "RAYY"
+
+msgid "RAY"
+msgstr "RAY"
+
+msgid "global condition"
+msgstr "глобальна умова"
+
+msgid "Condition (global)"
+msgstr "Condition (global)"
+
+msgid "On change"
+msgstr "On change"
+
+msgid "action"
+msgstr "дія"
+
+msgid "Counter"
+msgstr "Counter"
+
+msgid "Screen dump"
+msgstr "Screen dump"
+
+msgid "span"
+msgstr "інтервал"
+
+msgid "timing"
+msgstr "хронометраж"
+
+msgid "breakpoint log"
+msgstr "журнал точок зупинки"
+
+msgid "log"
+msgstr "журнал"
+
+msgid "Open breakpoint log"
+msgstr "Open breakpoint log"
+
+msgid ".xbrk"
+msgstr ".xbrk"
+
+msgid "file"
+msgstr "файл"
+
+msgid "--bp"
+msgstr "--bp"
+
+msgid "--brk"
+msgstr "--brk"
+
+msgid "--brk-log"
+msgstr "--brk-log"
+
+msgid "Watcher"
+msgstr "Watcher"
+
+msgid "watch"
+msgstr "спостереження"
+
+msgid "Watcher Editor"
+msgstr "Watcher Editor"
+

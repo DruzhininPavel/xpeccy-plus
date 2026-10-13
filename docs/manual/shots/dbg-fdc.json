@@ -1,0 +1,48 @@
+{
+  "files": {
+    "FIRENICE.TRD": {
+      "url": "https://spectrumcomputing.co.uk/pub/sinclair/trdos/games/f/FireNIce.trd.zip",
+      "sha256": "73c8e85be2c26eab76c52f22fb78f9f5f9e724b691bc26a0301e487775da1985",
+      "member": "Fire&Ice.trd"
+    }
+  },
+  "args": [
+    "-m",
+    "pent",
+    "{media}/FIRENICE.TRD"
+  ],
+  "steps": [
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "run-action key.debuger"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "run",
+      "show-panel FDCWIDGET"
+    ],
+    [
+      "wait",
+      700
+    ]
+  ],
+  "crop": {
+    "widget": "FDCWIDGET",
+    "pad": 0
+  }
+}

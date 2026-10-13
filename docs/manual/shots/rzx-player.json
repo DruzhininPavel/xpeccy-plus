@@ -1,0 +1,4 @@
+{
+  "steps": [["wait", 3000], ["run", "run-action key.rzxwin"], ["wait", 1000], ["run", "activate-window RZX Player"], ["wait", 800]],
+  "frames": []
+}

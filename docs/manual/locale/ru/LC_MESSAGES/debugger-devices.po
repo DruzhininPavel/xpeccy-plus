@@ -1,0 +1,2243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 19:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Device panels"
+msgstr "Панели устройств"
+
+msgid ""
+"Besides the CPU and the memory, the Debugger shows the state of the "
+"machine's devices: the screen, the sound chips, the tape, the floppy disk"
+" controller, the clock chip and the palette, and on a ZX Evolution its "
+"video hardware. Each is a panel of its own, on a tab behind "
+"**Breakpoints** or **DUMP** (see [The panels](debugger.md#the-panels)). "
+"Like every panel, they show the state the machine stopped in and change "
+"with each step."
+msgstr ""
+"Кроме CPU и памяти, Debugger показывает состояние устройств машины: "
+"экрана, звуковых микросхем, ленты, контроллера дисковода, микросхемы "
+"часов и палитры, а на ZX Evolution — её видеооборудования. У каждого своя"
+" панель на вкладке за **Breakpoints** или **DUMP** (см. "
+"[Панели](debugger.md#the-panels)). Как и все панели, они показывают "
+"состояние, в котором машина остановилась, и меняются с каждым шагом."
+
+msgid ""
+"The **Screen** and **Sound Chip** panels can also be windows of their own"
+" that work while the machine runs: see [Screen and Sound Chips windows"
+"](#screen-and-sound-chips-windows). So can the **ZX Evo** panel: see [The"
+" ZX Evolution window](#the-zx-evolution-window)."
+msgstr ""
+"Панели **Screen** и **Sound Chip** могут также быть отдельными окнами, "
+"которые работают, пока машина идёт: см. [Окна Screen и Sound Chips"
+"](#screen-and-sound-chips-windows). Как и панель **ZX Evo**: см. [Окно ZX"
+" Evolution](#the-zx-evolution-window)."
+
+msgid "Panel"
+msgstr "Панель"
+
+msgid "Shown on"
+msgstr "Где есть"
+
+msgid "Use it to"
+msgstr "Для чего"
+
+msgid "**Screen**"
+msgstr "**Screen**"
+
+msgid "every machine"
+msgstr "на любой машине"
+
+msgid "see a screen in memory and find the address of a dot"
+msgstr "посмотреть экран в памяти и найти адрес точки"
+
+msgid "**Sound Chip**"
+msgstr "**Sound Chip**"
+
+msgid "read and change the registers of the AY and YM chips"
+msgstr "читать и менять регистры микросхем AY и YM"
+
+msgid "**Tape**"
+msgstr "**Tape**"
+
+msgid "see the tape signal around the current position"
+msgstr "посмотреть сигнал ленты вокруг текущей позиции"
+
+msgid "**FDC**"
+msgstr "**FDC**"
+
+msgid "a machine with a disk interface"
+msgstr "на машине с дисковым интерфейсом"
+
+msgid "see the registers of the disk controller and the drive"
+msgstr "посмотреть регистры контроллера дисковода и сам дисковод"
+
+msgid "**FDD**"
+msgstr "**FDD**"
+
+msgid "read the raw bytes of a disk track"
+msgstr "читать сырые байты дорожки диска"
+
+msgid "**CMOS**"
+msgstr "**CMOS**"
+
+msgid "a machine with a clock chip"
+msgstr "на машине с микросхемой часов"
+
+msgid "read and change the memory of the clock chip"
+msgstr "читать и менять память микросхемы часов"
+
+msgid "**Palette**"
+msgstr "**Palette**"
+
+msgid "every machine but the ZX Evolution"
+msgstr "на любой машине, кроме ZX Evolution"
+
+msgid "see the colors of the machine's palette"
+msgstr "посмотреть цвета палитры машины"
+
+msgid "**ZX Evo**"
+msgstr "**ZX Evo**"
+
+msgid "a ZX Evolution, with TSConf or BaseConf"
+msgstr "на ZX Evolution, с TSConf или BaseConf"
+
+msgid "see what its video and memory hardware is set to, and hide TSConf layers"
+msgstr ""
+"посмотреть, как настроено её оборудование видео и памяти, и скрыть слои "
+"TSConf"
+
+msgid ""
+"**ZX Evo** is the one panel for one machine only. On a ZX Evolution it "
+"takes the place of **Palette**, and has a **Palette** tab of its own."
+msgstr ""
+"**ZX Evo** — единственная панель только для одной машины. На ZX Evolution"
+" она стоит вместо **Palette** и имеет собственную вкладку **Palette**."
+
+msgid "Screen"
+msgstr "Screen"
+
+msgid "![The Screen panel](images/dbg-screen.png)"
+msgstr "![Панель Screen](images/dbg-screen.png)"
+
+msgid "The Screen panel"
+msgstr "Панель Screen"
+
+msgid ""
+"**Mode** - **Auto**, **Main**, **Shadow**, **Both** or **Custom**: which "
+"screen is drawn."
+msgstr ""
+"**Mode** — **Auto**, **Main**, **Shadow**, **Both** или **Custom**: какой"
+" экран рисуется."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Screen** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносит панель в окно "
+"**Screen**."
+
+msgid ""
+"**Picture** - the screen, with a strip of the border color around it and "
+"its name above it."
+msgstr ""
+"**Изображение** — экран с полосой цвета бордюра вокруг и его названием "
+"сверху."
+
+msgid ""
+"**View** - the zoom and four check boxes that change how the picture is "
+"drawn."
+msgstr "**Вид** — масштаб и четыре флажка, меняющие то, как рисуется изображение."
+
+msgid "**Readout** - where the dot under the mouse is and which bytes hold it."
+msgstr "**Показания** — где точка под мышью и в каких байтах она хранится."
+
+msgid "**Page** and **Offset** - only in **Custom** mode: which memory to draw."
+msgstr "**Page** и **Offset** — только в режиме **Custom**: какую память рисовать."
+
+msgid ""
+"The panel draws a ZX screen of 256 x 192 dots from memory: 6144 bytes of "
+"pixels and 768 bytes of attributes, in the standard layout. It draws that"
+" layout whatever video mode the machine is in, so it always shows what a "
+"ZX screen at that place in memory would look like."
+msgstr ""
+"Панель рисует из памяти экран ZX 256 x 192 точки: 6144 байта пикселей и "
+"768 байт атрибутов в стандартном расположении. Она рисует это "
+"расположение в любом видеорежиме машины, поэтому всегда показывает, как "
+"выглядел бы экран ZX в этом месте памяти."
+
+msgid "Which screen"
+msgstr "Какой экран"
+
+msgid "Button"
+msgstr "Кнопка"
+
+msgid "What it draws"
+msgstr "Что рисует"
+
+msgid "**Auto**"
+msgstr "**Auto**"
+
+msgid ""
+"the screen the machine is showing now; it follows a program that flips "
+"between two screens"
+msgstr ""
+"экран, который машина показывает сейчас; следит за программой, "
+"переключающей два экрана"
+
+msgid "**Main**"
+msgstr "**Main**"
+
+msgid "the normal screen, RAM page 5"
+msgstr "обычный экран, страница RAM 5"
+
+msgid "**Shadow**"
+msgstr "**Shadow**"
+
+msgid "the second screen of a 128K, RAM page 7"
+msgstr "второй экран 128K, страница RAM 7"
+
+msgid "**Both**"
+msgstr "**Both**"
+
+msgid "page 5 and page 7 side by side, or one above the other in a tall panel"
+msgstr "страницы 5 и 7 рядом или одна над другой в высокой панели"
+
+msgid "**Custom**"
+msgstr "**Custom**"
+
+msgid "any 16K page, from any offset in it"
+msgstr "любая 16K-страница с любого смещения в ней"
+
+msgid ""
+"**Shadow** and **Both** are grayed out on a machine with no page 7, such "
+"as the 48K."
+msgstr ""
+"**Shadow** и **Both** недоступны на машине без страницы 7, например на "
+"48K."
+
+msgid ""
+"The name above a picture says where it comes from: **Main (5)**, **Shadow"
+" (7)**, or **Page** with a number for any other page. In **Custom** mode "
+"it is **Custom** with the page number. The name of the screen the machine"
+" is showing is in the **Header** color of the **Debugger** page of "
+"**Options**; the other one is plain."
+msgstr ""
+"Название над изображением говорит, откуда оно: **Main (5)**, **Shadow "
+"(7)** или **Page** с номером для любой другой страницы. В режиме "
+"**Custom** это **Custom** с номером страницы. Название экрана, который "
+"показывает машина, выделено цветом **Header** со страницы **Debugger** "
+"окна **Options**; другое — обычным."
+
+msgid ""
+"In **Custom** mode, type the page into **Page** and the place in the page"
+" where the screen starts into **Offset**, both in hex. **Offset** goes "
+"from 0000 to 3FFF. Use it to look at a picture a program keeps elsewhere "
+"in memory, for example one it copies to the screen later."
+msgstr ""
+"В режиме **Custom** введите страницу в **Page**, а место в странице, где "
+"начинается экран, в **Offset**, оба шестнадцатеричными. **Offset** — от "
+"0000 до 3FFF. Так можно посмотреть картинку, которую программа хранит в "
+"другом месте памяти, например ту, что она позже скопирует на экран."
+
+msgid "How it is drawn"
+msgstr "Как рисуется"
+
+msgid "Setting"
+msgstr "Настройка"
+
+msgid "What it does"
+msgstr "Что делает"
+
+msgid "**Zoom Fit**"
+msgstr "**Zoom Fit**"
+
+msgid "fills the panel; whole pixels per dot as soon as there is room for them"
+msgstr ""
+"заполняет панель; целое число пикселей на точку, как только для них "
+"хватает места"
+
+msgid "**Zoom x1** to **Zoom x4**"
+msgstr "от **Zoom x1** до **Zoom x4**"
+
+msgid "a fixed number of pixels per dot"
+msgstr "фиксированное число пикселей на точку"
+
+msgid "**no pixels**"
+msgstr "**no pixels**"
+
+msgid ""
+"attributes only: each cell is its paper color with a small dot of ink in "
+"the middle"
+msgstr ""
+"только атрибуты: каждое знакоместо закрашено цветом фона с маленькой "
+"точкой цвета чернил посередине"
+
+msgid "**no colors**"
+msgstr "**no colors**"
+
+msgid "pixels only, white on black"
+msgstr "только пиксели, белым по чёрному"
+
+msgid "**no flash**"
+msgstr "**no flash**"
+
+msgid "holds flashing cells still; grayed out while ULA+ is in use"
+msgstr "останавливает мигающие знакоместа; недоступно, пока используется ULA+"
+
+msgid "**show grid**"
+msgstr "**show grid**"
+
+msgid "dims every other 8 x 8 cell, so the character cells can be counted"
+msgstr "затемняет каждое второе знакоместо 8 x 8, чтобы их можно было сосчитать"
+
+msgid "Finding a dot"
+msgstr "Поиск точки"
+
+msgid "Move the mouse over the picture. The readout shows:"
+msgstr "Наведите мышь на изображение. Показания:"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "What it shows"
+msgstr "Что показывает"
+
+msgid "**XY:**"
+msgstr "**XY:**"
+
+msgid ""
+"the dot, in pixels from the top left corner: 0 to 255 across, 0 to 191 "
+"down"
+msgstr ""
+"точка в пикселях от левого верхнего угла: от 0 до 255 по горизонтали, от "
+"0 до 191 по вертикали"
+
+msgid "**Char:**"
+msgstr "**Char:**"
+
+msgid "the character cell, 0 to 31 across, 0 to 23 down"
+msgstr "знакоместо, от 0 до 31 по горизонтали, от 0 до 23 по вертикали"
+
+msgid "**Screen:**"
+msgstr "**Screen:**"
+
+msgid ""
+"the address of the byte that holds the dot, and after it the bit: `.7` is"
+" the leftmost dot of the byte"
+msgstr ""
+"адрес байта, в котором точка, а после него бит: `.7` — самая левая точка "
+"байта"
+
+msgid "**Attr:**"
+msgstr "**Attr:**"
+
+msgid "the address of the attribute byte that colors the dot's cell"
+msgstr "адрес байта атрибутов, который раскрашивает знакоместо точки"
+
+msgid ""
+"The addresses are the ones the CPU uses. Page 5 is counted from 4000, the"
+" way it always sits in memory. Any other page is counted from C000, where"
+" a 128K pages it in."
+msgstr ""
+"Адреса — те, что использует CPU. Страница 5 считается от 4000, где она "
+"всегда стоит в памяти. Любая другая страница считается от C000, куда её "
+"подключает 128K."
+
+msgid ""
+"Click the picture to hold the readout on a dot: the cell is marked, and "
+"the numbers stay while you move the mouse away. Click again to let go."
+msgstr ""
+"Щёлкните изображение, чтобы закрепить показания на точке: знакоместо "
+"отмечается, а числа остаются, когда вы уводите мышь. Щёлкните снова, "
+"чтобы отпустить."
+
+msgid ""
+"Right-click the picture for **Copy screen address** and **Copy attribute "
+"address**. They copy the address of the dot under the mouse, or of the "
+"held dot, as four hex digits."
+msgstr ""
+"Щёлкните изображение правой кнопкой, чтобы выбрать **Copy screen "
+"address** и **Copy attribute address**. Они копируют адрес точки под "
+"мышью или закреплённой точки четырьмя шестнадцатеричными цифрами."
+
+msgid ""
+"It works the other way too: type an address into **Screen:** or **Attr:**"
+" and the cell it belongs to is marked on the picture. Move the mouse back"
+" over the picture to make the readout follow the mouse again."
+msgstr ""
+"Работает и наоборот: введите адрес в **Screen:** или **Attr:**, и "
+"знакоместо, к которому он относится, отметится на изображении. Наведите "
+"мышь обратно на изображение, чтобы показания снова следовали за мышью."
+
+msgid "Sound Chip"
+msgstr "Sound Chip"
+
+msgid "![The Sound Chip panel](images/dbg-sound.png)"
+msgstr "![Панель Sound Chip](images/dbg-sound.png)"
+
+msgid "The Sound Chip panel"
+msgstr "Панель Sound Chip"
+
+msgid "**Chips** - a tab for each sound chip of the machine."
+msgstr "**Микросхемы** — по вкладке на каждую звуковую микросхему машины."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Sound Chips** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносит панель в окно "
+"**Sound Chips**."
+
+msgid "**Regs** - the 16 registers of the chip."
+msgstr "**Regs** — 16 регистров микросхемы."
+
+msgid ""
+"**Channels** - the tone channels A, B and C, the noise N and the envelope"
+" E."
+msgstr "**Каналы** — тональные каналы A, B и C, шум N и огибающая E."
+
+msgid "**Envelope** - the shape of the envelope."
+msgstr "**Огибающая** — форма огибающей."
+
+msgid ""
+"**Wave** - the peak level, the time span, and the **Fit** and **Log** "
+"check boxes."
+msgstr "**Wave** — пиковый уровень, отрезок времени и флажки **Fit** и **Log**."
+
+msgid "**Beeper** - the level of the beeper."
+msgstr "**Beeper** — уровень бипера."
+
+msgid "**Wave box** - the sound the machine puts out."
+msgstr "**Осциллограмма** — звук, который выдаёт машина."
+
+msgid ""
+"In the picture the title tune of Cybernoid (Dave Rogers, Hewson, 1988) "
+"plays."
+msgstr "На рисунке играет заглавная мелодия Cybernoid (Dave Rogers, Hewson, 1988)."
+
+msgid ""
+"The tabs are named **PSG1**, **PSG2** and so on, one for each AY or YM "
+"chip: a TurboSound machine has two. A chip with an FM part, as in "
+"TurboSound FM, has an **FM** tab beside its **PSG** tab. A machine with "
+"no sound chip has no tabs."
+msgstr ""
+"Вкладки называются **PSG1**, **PSG2** и так далее, по одной на каждую "
+"микросхему AY или YM: у машины с TurboSound их две. У микросхемы с "
+"FM-частью, как в TurboSound FM, рядом с вкладкой **PSG** есть вкладка "
+"**FM**. У машины без звуковой микросхемы вкладок нет."
+
+msgid "The PSG page"
+msgstr "Страница PSG"
+
+msgid ""
+"**Regs** shows the 16 registers in two rows: `#00` holds registers 0 to "
+"7, `#08` holds registers 8 to 15. Click a register and type a new value "
+"in hex. It goes to the chip the way an OUT to the chip's port would, so "
+"the rest of the page changes with it."
+msgstr ""
+"**Regs** показывает 16 регистров в двух строках: в `#00` регистры с 0 по "
+"7, в `#08` — с 8 по 15. Щёлкните регистр и введите новое значение в "
+"шестнадцатеричном виде. Оно попадает в микросхему так же, как через OUT в"
+" порт микросхемы, поэтому остальная страница меняется вместе с ним."
+
+msgid "The table below it shows the same registers by channel:"
+msgstr "Таблица под ними показывает те же регистры по каналам:"
+
+msgid "Column"
+msgstr "Столбец"
+
+msgid "**Period**"
+msgstr "**Period**"
+
+msgid ""
+"the tone period of A, B and C (up to FFF), the noise period of N (up to "
+"1F), the envelope period of E (up to FFFF)"
+msgstr ""
+"период тона A, B и C (до FFF), период шума N (до 1F), период огибающей E "
+"(до FFFF)"
+
+msgid "**Vol**"
+msgstr "**Vol**"
+
+msgid ""
+"the volume of A, B and C, 0 to F; on the E row, the level the envelope is"
+" at now"
+msgstr "громкость A, B и C, от 0 до F; в строке E — текущий уровень огибающей"
+
+msgid "**Mixer**"
+msgstr "**Mixer**"
+
+msgid ""
+"what the channel mixes: `T` tone, `N` noise, `E` the envelope in place of"
+" the volume; `-` for off"
+msgstr ""
+"что смешивает канал: `T` — тон, `N` — шум, `E` — огибающая вместо "
+"громкости; `-` — выключено"
+
+msgid "**Lev**"
+msgstr "**Lev**"
+
+msgid "how loud the channel is, as a bar"
+msgstr "громкость канала в виде полосы"
+
+msgid "**State**"
+msgstr "**State**"
+
+msgid "the output of the tone or noise generator, 0 or 1"
+msgstr "выход генератора тона или шума, 0 или 1"
+
+msgid "**Mute**"
+msgstr "**Mute**"
+
+msgid "tick to silence the channel"
+msgstr "отметьте, чтобы заглушить канал"
+
+msgid ""
+"**Period** and **Vol** can be changed as the registers can: click and "
+"type in hex."
+msgstr ""
+"**Period** и **Vol** можно менять, как и регистры: щёлкните и введите "
+"шестнадцатеричное значение."
+
+msgid ""
+"**Lev** is green, amber near the top and red at the end. While the "
+"machine runs, the bar shows the loudest the channel was since the last "
+"refresh. While it stands still, the bar and the number on it show exactly"
+" what the channel puts out at that moment."
+msgstr ""
+"**Lev** зелёная, у верха янтарная, в конце красная. Пока машина работает,"
+" полоса показывает самую большую громкость канала с последнего "
+"обновления. Пока машина стоит, полоса и число на ней показывают точно то,"
+" что канал выдаёт в этот момент."
+
+msgid ""
+"**State** is shown only while the machine stands still. A tone generator "
+"flips much too fast to be read while the machine runs, so the column "
+"shows `-` then."
+msgstr ""
+"**State** показывается, только пока машина стоит. Генератор тона "
+"переключается слишком быстро, чтобы его прочитать на ходу, поэтому тогда "
+"в столбце `-`."
+
+msgid ""
+"**Mute** silences a channel without touching the chip: the program goes "
+"on writing the same registers, and the other channels play as before. Use"
+" it to pick one voice out of a tune."
+msgstr ""
+"**Mute** глушит канал, не трогая микросхему: программа продолжает писать "
+"те же регистры, а остальные каналы играют, как раньше. Так можно выделить"
+" один голос из мелодии."
+
+msgid ""
+"The E row draws the envelope shape set in register 13: two rounds of it, "
+"so the eight shapes can be told apart."
+msgstr ""
+"Строка E рисует форму огибающей, заданную в регистре 13: два её периода, "
+"чтобы восемь форм можно было различить."
+
+msgid "The FM page"
+msgstr "Страница FM"
+
+msgid "The FM page shows the FM part of a YM2203 chip. Across the top:"
+msgstr "Страница FM показывает FM-часть микросхемы YM2203. Вверху:"
+
+msgid "**Timer A**, **Timer B**"
+msgstr "**Timer A**, **Timer B**"
+
+msgid "the timer values in hex, and **on** or **off**"
+msgstr "значения таймеров в шестнадцатеричном виде и **on** или **off**"
+
+msgid "**Ch3**"
+msgstr "**Ch3**"
+
+msgid "the mode of channel 3: **off**, **special** or **CSM**"
+msgstr "режим канала 3: **off**, **special** или **CSM**"
+
+msgid "**1**, **2**, **3**"
+msgstr "**1**, **2**, **3**"
+
+msgid "tabs for the three FM channels"
+msgstr "вкладки трёх FM-каналов"
+
+msgid "**off**"
+msgstr "**off**"
+
+msgid "tick to silence this FM channel"
+msgstr "отметьте, чтобы заглушить этот FM-канал"
+
+msgid "**Alg**, **Fb**"
+msgstr "**Alg**, **Fb**"
+
+msgid "the algorithm and the feedback of the channel"
+msgstr "алгоритм и обратная связь канала"
+
+msgid "**Bk/Fq**"
+msgstr "**Bk/Fq**"
+
+msgid "the block and frequency of the channel"
+msgstr "блок и частота канала"
+
+msgid "**Out**"
+msgstr "**Out**"
+
+msgid "the channel's output now"
+msgstr "текущий выход канала"
+
+msgid ""
+"Under them is a row for each operator, **Op1** to **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** and "
+"**EG** are the operator's register fields: click one and type a new value"
+" in hex. **St** is the state of the operator's envelope (**OFF**, "
+"**ATK**, **DEC**, **SUS** or **REL**), **Bk/Fq** its block and frequency,"
+" and **Lev** its envelope level, where a bigger number is louder. A `*` "
+"in the last column marks the operators that reach the output in the "
+"channel's algorithm."
+msgstr ""
+"Под ними по строке на каждый оператор, с **Op1** по **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** и **EG** "
+"— поля регистров оператора: щёлкните поле и введите новое значение в "
+"шестнадцатеричном виде. **St** — состояние огибающей оператора (**OFF**, "
+"**ATK**, **DEC**, **SUS** или **REL**), **Bk/Fq** — его блок и частота, "
+"**Lev** — уровень его огибающей, где большее число громче. `*` в "
+"последнем столбце отмечает операторы, которые в алгоритме канала идут на "
+"выход."
+
+msgid "Wave and Beeper"
+msgstr "Wave и Beeper"
+
+msgid ""
+"The wave box at the bottom shows the sound the machine puts out, all "
+"sources mixed: the sound chips, the beeper and the rest. While the "
+"machine runs it holds the last 40 milliseconds, enough to see a tune "
+"move. While the machine stands still it holds the last 2 milliseconds, "
+"fine enough to count the edges of a beeper routine one step at a time."
+msgstr ""
+"Осциллограмма внизу показывает звук, который выдаёт машина, все источники"
+" вместе: звуковые микросхемы, бипер и остальное. Пока машина работает, в "
+"ней последние 40 миллисекунд — достаточно, чтобы видеть, как идёт "
+"мелодия. Пока машина стоит, в ней последние 2 миллисекунды — достаточно "
+"подробно, чтобы считать фронты бипер-процедуры по шагам."
+
+msgid ""
+"The figure beside **Wave** is the highest level in the box, in hex, "
+"followed by the time the box holds. The scale at the left marks the "
+"levels."
+msgstr ""
+"Число рядом с **Wave** — наибольший уровень на осциллограмме в "
+"шестнадцатеричном виде, за ним — время, которое она охватывает. Шкала "
+"слева отмечает уровни."
+
+msgid ""
+"**Fit** - centers the wave and scales the box to it, so quiet sound fills"
+" it too. Off, the box keeps one fixed scale."
+msgstr ""
+"**Fit** — центрирует волну и масштабирует под неё осциллограмму, так что "
+"и тихий звук её заполняет. Когда выключено, масштаб один и постоянный."
+
+msgid ""
+"**Log** - draws the wave on a curve, so a quiet tune is still visible "
+"beside a loud one."
+msgstr ""
+"**Log** — рисует волну по кривой, так что тихая мелодия видна рядом с "
+"громкой."
+
+msgid "**Beeper** is a bar of the beeper's level."
+msgstr "**Beeper** — полоса уровня бипера."
+
+msgid "Tape"
+msgstr "Tape"
+
+msgid "![The Tape panel](images/dbg-tape.png)"
+msgstr "![Панель Tape](images/dbg-tape.png)"
+
+msgid "The Tape panel"
+msgstr "Панель Tape"
+
+msgid ""
+"The **Tape** panel draws the tape signal around the place the tape is at."
+" The red vertical line is now: on its left is the signal that has played,"
+" on its right what comes next. The picture covers about two milliseconds "
+"of tape at the machine's speed. In the picture Exolon is loading, with "
+"fast loading off."
+msgstr ""
+"Панель **Tape** рисует сигнал ленты вокруг места, где сейчас лента. "
+"Красная вертикальная линия — это «сейчас»: слева от неё сигнал, который "
+"уже проигран, справа — что будет дальше. Изображение охватывает около "
+"двух миллисекунд ленты на скорости машины. На рисунке загружается Exolon,"
+" быстрая загрузка выключена."
+
+msgid "**Pos**"
+msgstr "**Pos**"
+
+msgid ""
+"the number of the pulse in the current block; `--` while the tape is "
+"stopped"
+msgstr "номер импульса в текущем блоке; `--`, пока лента стоит"
+
+msgid "**Current**"
+msgstr "**Current**"
+
+msgid "how much of the current pulse is left; empty while the tape is stopped"
+msgstr "сколько осталось от текущего импульса; пусто, пока лента стоит"
+
+msgid "**play**, **rec** or **stop**"
+msgstr "**play**, **rec** или **stop**"
+
+msgid "**Tape in**"
+msgstr "**Tape in**"
+
+msgid "the level the tape plays into the machine's EAR input"
+msgstr "уровень, который лента подаёт на вход EAR машины"
+
+msgid "**Tape out**"
+msgstr "**Tape out**"
+
+msgid "the bit the machine sends to the tape: the bar is full while it is 1"
+msgstr "бит, который машина посылает на ленту: полоса полная, пока он равен 1"
+
+msgid ""
+"Use it while you step through a loader, to see which pulse it is reading "
+"and what comes next. The tape itself is worked from the **Tape Player** "
+"(see [Tapes](tapes.md))."
+msgstr ""
+"Пользуйтесь ей, проходя загрузчик по шагам, чтобы видеть, какой импульс "
+"он читает и что будет дальше. Самой лентой управляет **Tape Player** (см."
+" [Ленты](tapes.md))."
+
+msgid "FDC"
+msgstr "FDC"
+
+msgid "![The FDC panel](images/dbg-fdc.png)"
+msgstr "![Панель FDC](images/dbg-fdc.png)"
+
+msgid "The FDC panel"
+msgstr "Панель FDC"
+
+msgid ""
+"The **FDC** panel shows the floppy disk controller in its left and middle"
+" columns and the drive it works with in the right one. It is there only "
+"on a machine with a disk interface (see [Disks and drives](disks.md)). "
+"All numbers are hex; a flag is 1 or 0. In the picture Fire 'n Ice "
+"(n-Discovery, 2003) is loading from a TR-DOS disk: the controller reads a"
+" sector, command 80."
+msgstr ""
+"Панель **FDC** показывает контроллер дисковода в левом и среднем столбцах"
+" и дисковод, с которым он работает, в правом. Она есть только на машине с"
+" дисковым интерфейсом (см. [Диски и дисководы](disks.md)). Все числа "
+"шестнадцатеричные; флаг — 1 или 0. На рисунке Fire 'n Ice (n-Discovery, "
+"2003) загружается с диска TR-DOS: контроллер читает сектор, команда 80."
+
+msgid "**BUSY**"
+msgstr "**BUSY**"
+
+msgid "1 while the controller carries out a command"
+msgstr "1, пока контроллер выполняет команду"
+
+msgid "**COM**"
+msgstr "**COM**"
+
+msgid "the command it carries out; `--` when it is idle"
+msgstr "выполняемая команда; `--`, когда контроллер свободен"
+
+msgid "**IRQ**"
+msgstr "**IRQ**"
+
+msgid "the controller's interrupt request: the command has ended"
+msgstr "запрос прерывания контроллера: команда завершилась"
+
+msgid "**DRQ**"
+msgstr "**DRQ**"
+
+msgid "the data request: a byte is waiting to be read or written"
+msgstr "запрос данных: байт ждёт чтения или записи"
+
+msgid "**HEAD**"
+msgstr "**HEAD**"
+
+msgid "the side of the disk, 0 or 1"
+msgstr "сторона диска, 0 или 1"
+
+msgid "**TRK**, **SEC**, **DATA**"
+msgstr "**TRK**, **SEC**, **DATA**"
+
+msgid "the track, sector and data registers"
+msgstr "регистры дорожки, сектора и данных"
+
+msgid "**SR**"
+msgstr "**SR**"
+
+msgid "the status register"
+msgstr "регистр состояния"
+
+msgid "**SR0**, **SR1**, **SR2**"
+msgstr "**SR0**, **SR1**, **SR2**"
+
+msgid "the result registers of the +3's controller"
+msgstr "регистры результата контроллера +3"
+
+msgid "**CRC**"
+msgstr "**CRC**"
+
+msgid "the checksum the controller has worked out so far"
+msgstr "контрольная сумма, которую контроллер насчитал на данный момент"
+
+msgid "**INT**"
+msgstr "**INT**"
+
+msgid "an interrupt waiting on the +3's controller"
+msgstr "ожидающее прерывание контроллера +3"
+
+msgid "**DMA**"
+msgstr "**DMA**"
+
+msgid "the DMA mode of the +3's controller"
+msgstr "режим DMA контроллера +3"
+
+msgid "**IE**"
+msgstr "**IE**"
+
+msgid "interrupts from the disk interface enabled"
+msgstr "прерывания от дискового интерфейса разрешены"
+
+msgid "**FLP**"
+msgstr "**FLP**"
+
+msgid "the drive the controller works with, **A** to **D**"
+msgstr "дисковод, с которым работает контроллер, от **A** до **D**"
+
+msgid "**RDY**"
+msgstr "**RDY**"
+
+msgid "a disk is in the drive"
+msgstr "в дисководе есть диск"
+
+msgid "**MOT**"
+msgstr "**MOT**"
+
+msgid "the drive motor is on"
+msgstr "мотор дисковода включён"
+
+msgid "**TRK**"
+msgstr "**TRK**"
+
+msgid "the track the head stands on"
+msgstr "дорожка, на которой стоит головка"
+
+msgid "**POS**"
+msgstr "**POS**"
+
+msgid "the place on the track under the head, in bytes from its start"
+msgstr "место на дорожке под головкой, в байтах от её начала"
+
+msgid "**DATA**"
+msgstr "**DATA**"
+
+msgid "the byte under the head; `--` with no disk"
+msgstr "байт под головкой; `--` без диска"
+
+msgid "**IDX**"
+msgstr "**IDX**"
+
+msgid "the index hole is passing: the start of the track"
+msgstr "проходит индексное отверстие: начало дорожки"
+
+msgid ""
+"Use it to follow a disk loader: step over the OUT that gives a command, "
+"then watch **BUSY**, **DRQ** and the registers as the command runs."
+msgstr ""
+"Пользуйтесь ей, чтобы следить за дисковым загрузчиком: шагните через OUT,"
+" который подаёт команду, а затем следите за **BUSY**, **DRQ** и "
+"регистрами, пока команда выполняется."
+
+msgid "FDD"
+msgstr "FDD"
+
+msgid "![The FDD panel](images/dbg-fdd.png)"
+msgstr "![Панель FDD](images/dbg-fdd.png)"
+
+msgid "The FDD panel"
+msgstr "Панель FDD"
+
+msgid ""
+"The **FDD** panel shows a whole track of a floppy disk as it lies on the "
+"disk: the gaps, the sector headers, the data and the checksums, byte by "
+"byte. It is on a tab beside **DUMP**, and only on a machine with a disk "
+"interface."
+msgstr ""
+"Панель **FDD** показывает целую дорожку дискеты так, как она лежит на "
+"диске: промежутки, заголовки секторов, данные и контрольные суммы, байт "
+"за байтом. Она на вкладке рядом с **DUMP** и есть только на машине с "
+"дисковым интерфейсом."
+
+msgid "**Drive** - the drive, **A** to **D**."
+msgstr "**Drive** — дисковод, от **A** до **D**."
+
+msgid ""
+"**Track** - the track to show, counted with both sides: 0 is the first "
+"track on side 0, 1 the same track on side 1, 2 the next track on side 0, "
+"and so on. On a single-sided drive it steps by 2."
+msgstr ""
+"**Track** — показываемая дорожка, считая обе стороны: 0 — первая дорожка "
+"на стороне 0, 1 — та же дорожка на стороне 1, 2 — следующая дорожка на "
+"стороне 0 и так далее. На одностороннем дисководе шаг — 2."
+
+msgid "**Bytes per row** - **Auto**, **8/row**, **12/row** or **16/row**."
+msgstr "**Bytes per row** — **Auto**, **8/row**, **12/row** или **16/row**."
+
+#, python-brace-format
+msgid ""
+"{icon}`target` The target button - jumps to the drive, the track and the "
+"byte the head is at now."
+msgstr ""
+"{icon}`target` Кнопка-мишень — переходит к дисководу, дорожке и байту, "
+"где сейчас головка."
+
+msgid ""
+"Each row starts with the track and the place on the track, in hex: "
+"`02:0040`. The byte under the head is in bold. Sector headers are in the "
+"**ID / Label** color of the **Debugger** page of **Options**, sector data"
+" in the **Data** color and the checksums in the **CRC** color. With no "
+"disk in the drive every byte reads `FF`. The panel cannot be edited; to "
+"change a disk's files, use the **Disk Manager** (see [Disks and "
+"drives](disks.md))."
+msgstr ""
+"Каждая строка начинается с дорожки и места на дорожке в шестнадцатеричном"
+" виде: `02:0040`. Байт под головкой выделен жирным. Заголовки секторов "
+"окрашены цветом **ID / Label** со страницы **Debugger** окна **Options**,"
+" данные секторов — цветом **Data**, контрольные суммы — цветом **CRC**. "
+"Без диска в дисководе каждый байт читается как `FF`. Панель нельзя "
+"редактировать; чтобы изменить файлы диска, используйте **Disk Manager** "
+"(см. [Диски и дисководы](disks.md))."
+
+msgid ""
+"Use it to see how a disk is laid out: how many sectors a track has, how "
+"long they are, and whether a protected disk has a header or a checksum "
+"that is wrong on purpose."
+msgstr ""
+"Пользуйтесь ей, чтобы увидеть устройство диска: сколько секторов на "
+"дорожке, какой они длины и нет ли на защищённом диске заголовка или "
+"контрольной суммы, нарочно испорченных."
+
+msgid "CMOS"
+msgstr "CMOS"
+
+msgid "![The CMOS panel](images/dbg-cmos.png)"
+msgstr "![Панель CMOS](images/dbg-cmos.png)"
+
+msgid "The CMOS panel"
+msgstr "Панель CMOS"
+
+msgid ""
+"The **CMOS** panel shows the 256 bytes of the clock chip's memory, eight "
+"to a row. The number at the start of a row is the address of its first "
+"byte. It is on a tab beside **DUMP**, and only on a machine that has a "
+"clock chip:"
+msgstr ""
+"Панель **CMOS** показывает 256 байт памяти микросхемы часов, по восемь в "
+"строке. Число в начале строки — адрес её первого байта. Она на вкладке "
+"рядом с **DUMP** и есть только на машине с микросхемой часов:"
+
+msgid "**ZX Evolution (BaseConf)** and **ZX Evolution (TSConf)**;"
+msgstr "**ZX Evolution (BaseConf)** и **ZX Evolution (TSConf)**;"
+
+msgid "**Pentagon 1024 SL**;"
+msgstr "**Pentagon 1024 SL**;"
+
+msgid "**Profi v5**;"
+msgstr "**Profi v5**;"
+
+msgid ""
+"any machine with the **SMUC** hard disk interface, such as the **Scorpion"
+" ZS 256 Turbo+**."
+msgstr ""
+"любая машина с интерфейсом жёсткого диска **SMUC**, например **Scorpion "
+"ZS 256 Turbo+**."
+
+msgid "Double-click a byte and type a new value in hex to change it."
+msgstr ""
+"Дважды щёлкните байт и введите новое значение в шестнадцатеричном виде, "
+"чтобы изменить его."
+
+msgid ""
+"The time and date in bytes 00 to 09 are not kept here. When the machine "
+"reads them, it gets the time of your computer's clock, so the panel shows"
+" only what a program wrote there. The settings a BIOS keeps in the clock "
+"chip are in the bytes from 0E on."
+msgstr ""
+"Время и дата в байтах с 00 по 09 здесь не хранятся. Когда машина их "
+"читает, она получает время часов вашего компьютера, поэтому панель "
+"показывает только то, что туда записала программа. Настройки, которые "
+"BIOS хранит в микросхеме часов, лежат в байтах начиная с 0E."
+
+msgid "Use it to see which settings a BIOS has stored, or to change one by hand."
+msgstr ""
+"Пользуйтесь ей, чтобы увидеть, какие настройки сохранил BIOS, или "
+"изменить какую-то вручную."
+
+msgid "Palette"
+msgstr "Palette"
+
+msgid "![The Palette panel](images/dbg-palette.png)"
+msgstr "![Панель Palette](images/dbg-palette.png)"
+
+msgid "The Palette panel"
+msgstr "Панель Palette"
+
+msgid ""
+"The **Palette** panel shows the machine's palette as it is now: 256 "
+"squares, 16 to a row. Click a square to see its **Index** (0 to 255), its"
+" **Red**, **Green** and **Blue** levels (0 to 255 each) and the **Color**"
+" itself. The panel only shows the colors; it cannot change them."
+msgstr ""
+"Панель **Palette** показывает текущую палитру машины: 256 квадратов, по "
+"16 в строке. Щёлкните квадрат, чтобы увидеть его **Index** (от 0 до 255),"
+" уровни **Red**, **Green** и **Blue** (от 0 до 255 каждый) и сам "
+"**Color**. Панель только показывает цвета; изменить их она не может."
+
+msgid ""
+"A plain ZX uses the first 16 squares. With ULA+ in use, the first 64 are "
+"the colors the program set. The ATM Turbo 2+ and the Profi v5 set their "
+"colors through ports, and the colors a program sets show here as it sets "
+"them."
+msgstr ""
+"Обычный ZX использует первые 16 квадратов. Когда используется ULA+, "
+"первые 64 — цвета, заданные программой. ATM Turbo 2+ и Profi v5 задают "
+"цвета через порты, и цвета, которые задаёт программа, появляются здесь по"
+" мере их задания."
+
+msgid ""
+"On a ZX Evolution this panel is not there: the **Palette** tab of the "
+"**ZX Evo** panel shows the colors instead (see [The Palette tab](#the-"
+"palette-tab))."
+msgstr ""
+"На ZX Evolution этой панели нет: цвета вместо неё показывает вкладка "
+"**Palette** панели **ZX Evo** (см. [Вкладка Palette](#the-palette-tab))."
+
+msgid ""
+"Use it to check the colors a program has set, for example after a fade to"
+" black."
+msgstr ""
+"Пользуйтесь ей, чтобы проверить цвета, заданные программой, например "
+"после затемнения до чёрного."
+
+msgid "ZX Evo"
+msgstr "ZX Evo"
+
+msgid "![The ZX Evo panel in its own window, on TSConf](images/dbg-evo-regs.png)"
+msgstr "![Панель ZX Evo в отдельном окне, на TSConf](images/dbg-evo-regs.png)"
+
+msgid "The ZX Evo panel in its own window, on TSConf"
+msgstr "Панель ZX Evo в отдельном окне, на TSConf"
+
+msgid "**Tabs** - the pages of the panel; which there are depends on the machine."
+msgstr "**Вкладки** — страницы панели; какие из них есть, зависит от машины."
+
+msgid "**Layers hidden** - shown while a TSConf layer is kept out of the picture."
+msgstr ""
+"**Layers hidden** — показывается, пока какой-то слой TSConf убран из "
+"изображения."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**ZX Evolution** window; pressed in here, as the panel is in it."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносит панель в окно **ZX"
+" Evolution**; здесь кнопка нажата, потому что панель в этом окне."
+
+msgid "**Show** - the six layer switches of TSConf."
+msgstr "**Show** — шесть переключателей слоёв TSConf."
+
+msgid "**Register list** - the registers in groups, each with what it means."
+msgstr "**Список регистров** — регистры по группам, у каждого — что он значит."
+
+msgid ""
+"The pictures show the panel in its own window, with Uwol: Quest for Money"
+" (The Mojon Twins, TSConf version by Blade and Shiru) on its first level,"
+" and layer **S2** switched off."
+msgstr ""
+"На рисунках панель в отдельном окне, с Uwol: Quest for Money (The Mojon "
+"Twins, версия для TSConf — Blade и Shiru) на первом уровне и выключенным "
+"слоем **S2**."
+
+msgid ""
+"The **ZX Evo** panel shows what the video and memory hardware of a ZX "
+"Evolution is set to. It is there only on the **ZX Evolution (TSConf)** "
+"and **ZX Evolution (BaseConf)** machines, on a tab beside "
+"**Breakpoints**. Its tab shows the NedoPC logo, and its title bar says "
+"**ZX Evo**."
+msgstr ""
+"Панель **ZX Evo** показывает, как настроено оборудование видео и памяти "
+"ZX Evolution. Она есть только на машинах **ZX Evolution (TSConf)** и **ZX"
+" Evolution (BaseConf)**, на вкладке рядом с **Breakpoints**. На её "
+"вкладке логотип NedoPC, а в заголовке написано **ZX Evo**."
+
+msgid "Machine"
+msgstr "Машина"
+
+msgid "Tabs"
+msgstr "Вкладки"
+
+msgid "**ZX Evolution (TSConf)**"
+msgstr "**ZX Evolution (TSConf)**"
+
+msgid "**Registers**, **Sprites**, **Tiles**, **Palette**, **DMA**"
+msgstr "**Registers**, **Sprites**, **Tiles**, **Palette**, **DMA**"
+
+msgid "**ZX Evolution (BaseConf)**"
+msgstr "**ZX Evolution (BaseConf)**"
+
+msgid "**Ports**, **Palette**"
+msgstr "**Ports**, **Palette**"
+
+msgid ""
+"In the lists of registers a value that changed since the last step is in "
+"the **Changed** color, as in the **CPU** panel."
+msgstr ""
+"В списках регистров значение, изменившееся с прошлого шага, окрашено "
+"цветом **Changed**, как на панели **CPU**."
+
+msgid ""
+"Right-click a list of registers, or its header, and choose **In words** "
+"or **Field names**. **In words** says in the last column, **Means**, what"
+" a value sets. **Field names** names the bit fields instead, the way the "
+"TSConf and BaseConf documents name them, for example `VM=ZX "
+"RRES=256x192`, and the column is called **Fields**. The choice holds for "
+"every list of the panel and is kept for the next time."
+msgstr ""
+"Щёлкните правой кнопкой список регистров или его заголовок и выберите "
+"**In words** или **Field names**. С **In words** последний столбец, "
+"**Means**, говорит, что задаёт значение. **Field names** вместо этого "
+"называет битовые поля так, как их называют документы TSConf и BaseConf, "
+"например `VM=ZX RRES=256x192`, а столбец называется **Fields**. Выбор "
+"действует на все списки панели и сохраняется до следующего раза."
+
+msgid "The Registers tab"
+msgstr "Вкладка Registers"
+
+msgid ""
+"The **Registers** tab lists the TSConf registers, the ones a program sets"
+" through the ports that end in AF. They are in five groups: **Video**, "
+"**Tiles and sprites**, **Memory**, **System** and **DMA**."
+msgstr ""
+"Вкладка **Registers** перечисляет регистры TSConf — те, что программа "
+"задаёт через порты, оканчивающиеся на AF. Они разбиты на пять групп: "
+"**Video**, **Tiles and sprites**, **Memory**, **System** и **DMA**."
+
+msgid "**Port**"
+msgstr "**Port**"
+
+msgid "the port the register is written through, such as `00AF`"
+msgstr "порт, через который пишется регистр, например `00AF`"
+
+msgid "**Register**"
+msgstr "**Register**"
+
+msgid "the name of the register, such as **VConfig**"
+msgstr "имя регистра, например **VConfig**"
+
+msgid "**Value**"
+msgstr "**Value**"
+
+msgid "the value, in hex"
+msgstr "значение в шестнадцатеричном виде"
+
+msgid "**Means**"
+msgstr "**Means**"
+
+msgid "what the value sets"
+msgstr "что задаёт значение"
+
+msgid ""
+"Some registers, such as **VConfig**, **VPage**, **PalSel** and "
+"**GXOffs**, take a new value only at the start of the next line. While a "
+"new value waits, **Value** shows the one in use and the one that comes, "
+"as in `00 > 01`, and **Means** describes the one that comes."
+msgstr ""
+"Некоторые регистры, например **VConfig**, **VPage**, **PalSel** и "
+"**GXOffs**, принимают новое значение только с начала следующей строки. "
+"Пока новое значение ждёт, **Value** показывает текущее и будущее, как в "
+"`00 > 01`, а **Means** описывает будущее."
+
+msgid ""
+"The **DMA** group is the same as at the top of the **DMA** tab: see [The "
+"DMA tab](#the-dma-tab)."
+msgstr ""
+"Группа **DMA** — та же, что вверху вкладки **DMA**: см. [Вкладка DMA"
+"](#the-dma-tab)."
+
+msgid "Hiding layers"
+msgstr "Скрытие слоёв"
+
+msgid ""
+"TSConf builds its picture from six layers. The switches in the **Show** "
+"row at the top of the **Registers** tab take each of them out of the "
+"picture and put it back:"
+msgstr ""
+"TSConf строит изображение из шести слоёв. Переключатели в строке **Show**"
+" вверху вкладки **Registers** убирают каждый из них из изображения и "
+"возвращают обратно:"
+
+msgid "Switch"
+msgstr "Переключатель"
+
+msgid "Layer"
+msgstr "Слой"
+
+msgid "**S0**"
+msgstr "**S0**"
+
+msgid "the sprites under tile layer 0"
+msgstr "спрайты под слоем тайлов 0"
+
+msgid "**T0**"
+msgstr "**T0**"
+
+msgid "tile layer 0"
+msgstr "слой тайлов 0"
+
+msgid "**S1**"
+msgstr "**S1**"
+
+msgid "the sprites between the tile layers"
+msgstr "спрайты между слоями тайлов"
+
+msgid "**T1**"
+msgstr "**T1**"
+
+msgid "tile layer 1"
+msgstr "слой тайлов 1"
+
+msgid "**S2**"
+msgstr "**S2**"
+
+msgid "the sprites over both tile layers"
+msgstr "спрайты над обоими слоями тайлов"
+
+msgid "**Bitmap**"
+msgstr "**Bitmap**"
+
+msgid "the bitmap screen"
+msgstr "растровый экран"
+
+msgid ""
+"Use them to find which layer draws something on the screen, or to see "
+"what a layer covers."
+msgstr ""
+"Пользуйтесь ими, чтобы найти, какой слой рисует что-то на экране, или "
+"увидеть, что закрывает слой."
+
+msgid ""
+"A switch changes only what you see. The program runs exactly as before, "
+"with the same timing and the same memory, whether a layer is hidden or "
+"not."
+msgstr ""
+"Переключатель меняет только то, что вы видите. Программа работает точно "
+"так же, с теми же таймингами и той же памятью, скрыт слой или нет."
+
+msgid ""
+"While the machine runs, the change shows from the next line on. While the"
+" machine is stopped in the Debugger, the main window draws the frame "
+"again at once with the layers as they are now set, as far as the machine "
+"had drawn it."
+msgstr ""
+"Пока машина работает, изменение видно со следующей строки. Пока машина "
+"остановлена в Debugger, главное окно сразу перерисовывает кадр с текущими"
+" слоями — настолько, насколько машина успела его нарисовать."
+
+msgid ""
+"To draw the frame again, the machine runs it once more from a copy of its"
+" start. When that cannot be done, a note under the switches says why: "
+"**Shown from the next frame:** followed by the reason, such as **the tape"
+" or a disk command is running** or **an RZX is playing or recording**. "
+"The layers then change once the machine runs on. The copies are made only"
+" after the Debugger or the **ZX Evolution** window has been open on "
+"TSConf once, so the first stop may have none yet: the reason is then **no"
+" snapshot of the frame before**."
+msgstr ""
+"Чтобы перерисовать кадр, машина прогоняет его ещё раз из копии его "
+"начала. Когда это невозможно, надпись под переключателями говорит почему:"
+" **Shown from the next frame:** и причина, например **the tape or a disk "
+"command is running** или **an RZX is playing or recording**. Тогда слои "
+"меняются, когда машина пойдёт дальше. Копии делаются только после того, "
+"как Debugger или окно **ZX Evolution** хоть раз были открыты на TSConf, "
+"поэтому при первой остановке копии может ещё не быть: тогда причина — "
+"**no snapshot of the frame before**."
+
+msgid ""
+"While any layer is hidden, **Layers hidden** shows at the top of the "
+"panel, on every tab. The layers stay hidden after you close the Debugger,"
+" until you tick them again."
+msgstr ""
+"Пока хоть один слой скрыт, вверху панели на каждой вкладке видна надпись "
+"**Layers hidden**. Слои остаются скрытыми и после закрытия Debugger, пока"
+" вы снова их не отметите."
+
+msgid "The Sprites tab"
+msgstr "Вкладка Sprites"
+
+msgid "![The Sprites tab](images/dbg-evo-sprites.png)"
+msgstr "![Вкладка Sprites](images/dbg-evo-sprites.png)"
+
+msgid "The **Sprites** tab lists the 85 sprites of TSConf, a row each."
+msgstr "Вкладка **Sprites** перечисляет 85 спрайтов TSConf, по строке на каждый."
+
+msgid "**#**"
+msgstr "**#**"
+
+msgid "the number of the sprite, 0 to 84"
+msgstr "номер спрайта, от 0 до 84"
+
+msgid "**Layer**"
+msgstr "**Layer**"
+
+msgid ""
+"the layer it is on: **S0**, **S1** or **S2**; `-` after the third layer "
+"has ended"
+msgstr ""
+"слой, на котором он: **S0**, **S1** или **S2**; `-` после конца третьего "
+"слоя"
+
+msgid "**X**, **Y**"
+msgstr "**X**, **Y**"
+
+msgid "where it is, in dots"
+msgstr "где он, в точках"
+
+msgid "**Size**"
+msgstr "**Size**"
+
+msgid "its width and height in dots, such as `16x16`"
+msgstr "его ширина и высота в точках, например `16x16`"
+
+msgid "**Tile**"
+msgstr "**Tile**"
+
+msgid "the number of its tile in the sprite graphics"
+msgstr "номер его тайла в графике спрайтов"
+
+msgid "**Pal**"
+msgstr "**Pal**"
+
+msgid "the palette row its colors come from, 0 to 15"
+msgstr "строка палитры, из которой его цвета, от 0 до 15"
+
+msgid "**Flags**"
+msgstr "**Flags**"
+
+msgid ""
+"`ACT` active; `XF`, `YF` flipped across or down; `LEAP` the next sprite "
+"is on the next layer"
+msgstr ""
+"`ACT` — активен; `XF`, `YF` — отражён по горизонтали или по вертикали; "
+"`LEAP` — следующий спрайт на следующем слое"
+
+msgid ""
+"A sprite that is not drawn, because it is not active or comes after the "
+"third layer, is grayed. **Active only**, ticked out of the box, leaves "
+"out the sprites that are not active."
+msgstr ""
+"Спрайт, который не рисуется, потому что не активен или идёт после "
+"третьего слоя, показан серым. **Active only**, отмеченный изначально, "
+"скрывает неактивные спрайты."
+
+msgid ""
+"Click a sprite to see it under the list, in the colors it has now and as "
+"large as the room allows. The dots that are transparent show a checker. "
+"Beside the sprite are its size and place, the row and column of its tile "
+"in the sprite graphics page, and the colors of its palette row. Drag the "
+"line between the list and the sprite to share the room differently."
+msgstr ""
+"Щёлкните спрайт, чтобы увидеть его под списком, в его текущих цветах и "
+"настолько крупно, насколько позволяет место. Прозрачные точки показаны "
+"шахматкой. Рядом со спрайтом — его размер и место, строка и столбец его "
+"тайла на странице графики спрайтов и цвета его строки палитры. Перетащите"
+" линию между списком и спрайтом, чтобы поделить место иначе."
+
+msgid "The Tiles tab"
+msgstr "Вкладка Tiles"
+
+msgid "![The Tiles tab](images/dbg-evo-tiles.png)"
+msgstr "![Вкладка Tiles](images/dbg-evo-tiles.png)"
+
+msgid ""
+"The **Tiles** tab draws a tile map or a page of tile graphics, 512 x 512 "
+"dots: 64 x 64 tiles of 8 x 8 dots. Choose what it draws in the list at "
+"the top left:"
+msgstr ""
+"Вкладка **Tiles** рисует карту тайлов или страницу графики тайлов, 512 x "
+"512 точек: 64 x 64 тайла по 8 x 8 точек. Выберите, что рисовать, в списке"
+" слева вверху:"
+
+msgid ""
+"**Map, layer 0** and **Map, layer 1** - the tile map of a tile layer, "
+"drawn with its tiles and colors. A box in the **Header** color outlines "
+"the part of the map the picture shows. Where that part runs past an edge "
+"of the map it goes on at the other edge, so the box can be in two or four"
+" pieces."
+msgstr ""
+"**Map, layer 0** и **Map, layer 1** — карта тайлов слоя тайлов, "
+"нарисованная его тайлами и цветами. Рамка цвета **Header** обводит часть "
+"карты, которую показывает изображение. Где эта часть выходит за край "
+"карты, она продолжается у другого края, поэтому рамка может быть из двух "
+"или четырёх кусков."
+
+msgid ""
+"**Graphics** - a page of tile graphics with all its 4096 tiles in order. "
+"**Page** is the RAM page it starts at, in hex; its arrows step by 8, the "
+"length of a graphics page. **Palette** is the palette row the tiles are "
+"drawn with, 0 to 15. Both are grayed out while a map is shown."
+msgstr ""
+"**Graphics** — страница графики тайлов со всеми 4096 тайлами по порядку. "
+"**Page** — страница RAM, с которой она начинается, в шестнадцатеричном "
+"виде; её стрелки шагают на 8, длину страницы графики. **Palette** — "
+"строка палитры, которой рисуются тайлы, от 0 до 15. Оба поля недоступны, "
+"пока показана карта."
+
+msgid ""
+"**T0G**, **T1G** and **SG** switch to **Graphics** and set **Page** to "
+"the page that **T0GPage**, **T1GPage** or **SGPage** points at."
+msgstr ""
+"**T0G**, **T1G** и **SG** переключают на **Graphics** и ставят в **Page**"
+" страницу, на которую указывает **T0GPage**, **T1GPage** или **SGPage**."
+
+msgid ""
+"A checker shows where nothing is drawn: a dot of color 0, which is "
+"transparent, and on a map a cell with tile 0 on a layer that does not "
+"draw tile 0."
+msgstr ""
+"Шахматка показывает, где ничего не рисуется: точка цвета 0, который "
+"прозрачен, а на карте — знакоместо с тайлом 0 на слое, который не рисует "
+"тайл 0."
+
+msgid ""
+"Move the mouse over the picture to see the cell or the tile under it in "
+"the column on the right. For a map:"
+msgstr ""
+"Наведите мышь на изображение, чтобы увидеть знакоместо или тайл под ней в"
+" столбце справа. Для карты:"
+
+msgid "Row"
+msgstr "Строка"
+
+msgid "**TMPage**"
+msgstr "**TMPage**"
+
+msgid "the page the tile maps are in"
+msgstr "страница, где лежат карты тайлов"
+
+msgid "**Cell**"
+msgstr "**Cell**"
+
+msgid "the cell, across and down, 0 to 63"
+msgstr "знакоместо по горизонтали и вертикали, от 0 до 63"
+
+msgid "**Address**"
+msgstr "**Address**"
+
+msgid "where the cell's entry is: page and offset, in hex"
+msgstr "где запись знакоместа: страница и смещение в шестнадцатеричном виде"
+
+msgid "**Entry**"
+msgstr "**Entry**"
+
+msgid "the entry, in hex"
+msgstr "запись в шестнадцатеричном виде"
+
+msgid "the tile it holds"
+msgstr "тайл, который в ней"
+
+msgid "**Row**, **Column**"
+msgstr "**Row**, **Column**"
+
+msgid "where that tile is in the graphics page"
+msgstr "где этот тайл на странице графики"
+
+msgid "**Colors**"
+msgstr "**Colors**"
+
+msgid "the 16 colors the cell is drawn with, such as `10..1F`"
+msgstr "16 цветов, которыми рисуется знакоместо, например `10..1F`"
+
+msgid "**Flip**"
+msgstr "**Flip**"
+
+msgid "`XF`, `YF`, or `-` when the tile is not flipped"
+msgstr "`XF`, `YF` или `-`, если тайл не отражён"
+
+msgid "**Hole**"
+msgstr "**Hole**"
+
+msgid "**yes** when the cell is not drawn and the layer under it shows through"
+msgstr "**yes**, когда знакоместо не рисуется и сквозь него виден нижний слой"
+
+msgid ""
+"For a graphics page the column shows the **Page**, the **Tile** with its "
+"**Row** and **Column**, the **Address** of the tile's first line, and the"
+" **Line step**: the bytes from one line of a tile to the next, in hex."
+msgstr ""
+"Для страницы графики столбец показывает **Page**, **Tile** с его **Row** "
+"и **Column**, **Address** первой линии тайла и **Line step**: число байт "
+"от одной линии тайла до следующей, в шестнадцатеричном виде."
+
+msgid "The Palette tab"
+msgstr "Вкладка Palette"
+
+msgid ""
+"On TSConf the **Palette** tab shows the 256 colors of the palette memory,"
+" 16 to a row. The rows are named by their first color, `00` to `F0`, and "
+"the columns `0` to `F`. On BaseConf it shows the 16 palette cells in one "
+"row."
+msgstr ""
+"На TSConf вкладка **Palette** показывает 256 цветов памяти палитры, по 16"
+" в строке. Строки названы по первому цвету, от `00` до `F0`, столбцы — от"
+" `0` до `F`. На BaseConf она показывает 16 ячеек палитры в одной строке."
+
+msgid ""
+"The columns **B**, **T0**, **T1** and **S** on the right of the TSConf "
+"grid mark the rows that the bitmap, tile layer 0, tile layer 1 and the "
+"sprites take their colors from now. The color of the border is framed "
+"with a dashed line."
+msgstr ""
+"Столбцы **B**, **T0**, **T1** и **S** справа от сетки TSConf отмечают "
+"строки, из которых сейчас берут цвета растр, слой тайлов 0, слой тайлов 1"
+" и спрайты. Цвет бордюра обведён пунктиром."
+
+msgid ""
+"Move the mouse over a color to see it in the column beside the grid. "
+"Click a color to keep it there while the mouse is elsewhere; it is framed"
+" in white and black."
+msgstr ""
+"Наведите мышь на цвет, чтобы увидеть его в столбце рядом с сеткой. "
+"Щёлкните цвет, чтобы он оставался там, когда мышь в другом месте; он "
+"обводится белым и чёрным."
+
+msgid "**Index**"
+msgstr "**Index**"
+
+msgid "the number of the color, in hex"
+msgstr "номер цвета в шестнадцатеричном виде"
+
+msgid "**CRAM**"
+msgstr "**CRAM**"
+
+msgid "on TSConf, its address in the palette memory"
+msgstr "на TSConf — его адрес в памяти палитры"
+
+msgid "**Word**"
+msgstr "**Word**"
+
+msgid "on TSConf, the word that holds it, in hex"
+msgstr "на TSConf — слово, в котором он хранится, в шестнадцатеричном виде"
+
+msgid "**#FF**"
+msgstr "**#FF**"
+
+msgid "on BaseConf, the byte written for this cell through port FF"
+msgstr "на BaseConf — байт, записанный для этой ячейки через порт FF"
+
+msgid "**R**, **G**, **B**"
+msgstr "**R**, **G**, **B**"
+
+msgid "the red, green and blue levels"
+msgstr "уровни красного, зелёного и синего"
+
+msgid "**VDAC_MODE**"
+msgstr "**VDAC_MODE**"
+
+msgid "on TSConf, the top bit of the word"
+msgstr "на TSConf — старший бит слова"
+
+msgid "**RGB**"
+msgstr "**RGB**"
+
+msgid "the color as it is shown, in hex"
+msgstr "цвет так, как он показывается, в шестнадцатеричном виде"
+
+msgid "**Used by**"
+msgstr "**Used by**"
+
+msgid "the layers whose row it is in, and **border** for the border color"
+msgstr "слои, в чьей строке он стоит, и **border** для цвета бордюра"
+
+msgid ""
+"On TSConf the levels go from 0 to 31. As the note under the grid says, "
+"with **VDAC_MODE** 0 a level is at full brightness from 24 on."
+msgstr ""
+"На TSConf уровни идут от 0 до 31. Как сказано в надписи под сеткой, при "
+"**VDAC_MODE** 0 уровень имеет полную яркость начиная с 24."
+
+msgid "The DMA tab"
+msgstr "Вкладка DMA"
+
+msgid ""
+"The **DMA** tab shows the DMA of TSConf, which copies memory and fills it"
+" without the CPU. At the top are its registers:"
+msgstr ""
+"Вкладка **DMA** показывает DMA TSConf, который копирует и заполняет "
+"память без CPU. Вверху его регистры:"
+
+msgid "Register"
+msgstr "Регистр"
+
+msgid "**DMASAddr**, **DMADAddr**"
+msgstr "**DMASAddr**, **DMADAddr**"
+
+msgid "the source and the destination: page and offset, in hex"
+msgstr "источник и приёмник: страница и смещение в шестнадцатеричном виде"
+
+msgid "**DMALen**"
+msgstr "**DMALen**"
+
+msgid "the length of a burst, in words"
+msgstr "длина пакета в словах"
+
+msgid "**DMANum**"
+msgstr "**DMANum**"
+
+msgid "the number of bursts"
+msgstr "число пакетов"
+
+msgid "**DMACtrl**"
+msgstr "**DMACtrl**"
+
+msgid "the kind of transfer, such as `RAM > RAM` or `RAM > CRAM`, and its options"
+msgstr "вид передачи, например `RAM > RAM` или `RAM > CRAM`, и её параметры"
+
+msgid "**DMAStatus**"
+msgstr "**DMAStatus**"
+
+msgid "**running** or **idle**"
+msgstr "**running** или **idle**"
+
+msgid "**Source now**, **Dest now**, **Done**"
+msgstr "**Source now**, **Dest now**, **Done**"
+
+msgid "while a transfer runs, how far it has got"
+msgstr "пока идёт передача — как далеко она продвинулась"
+
+msgid ""
+"The address registers get their new values only when a transfer ends, so "
+"while one runs, **Source now** and **Dest now** show where it is and "
+"**Done** which burst and word it is at."
+msgstr ""
+"Регистры адресов получают новые значения только по окончании передачи, "
+"поэтому, пока она идёт, **Source now** и **Dest now** показывают, где она"
+" сейчас, а **Done** — на каком она пакете и слове."
+
+msgid ""
+"Under them, **Started this frame and the last** lists each transfer the "
+"program started in the frame the machine is in and in the frame before:"
+msgstr ""
+"Под ними **Started this frame and the last** перечисляет каждую передачу,"
+" которую программа запустила в текущем кадре машины и в предыдущем:"
+
+msgid "**Frame**"
+msgstr "**Frame**"
+
+msgid "**this** or **last**"
+msgstr "**this** или **last**"
+
+msgid "**Line:dot**"
+msgstr "**Line:dot**"
+
+msgid "where the beam was when it started"
+msgstr "где был луч, когда она началась"
+
+msgid "**Transfer**"
+msgstr "**Transfer**"
+
+msgid "the kind of transfer"
+msgstr "вид передачи"
+
+msgid "**From**, **To**"
+msgstr "**From**, **To**"
+
+msgid "words a burst x bursts, such as `256 x 4`"
+msgstr "слов в пакете x пакетов, например `256 x 4`"
+
+msgid "**Took**"
+msgstr "**Took**"
+
+msgid ""
+"how long it took, in T-states and in lines; **running** while it is not "
+"done; **cut short** when the program started the next transfer before it "
+"ended"
+msgstr ""
+"сколько она длилась, в тактах и в строках; **running**, пока не "
+"закончена; **cut short**, когда программа запустила следующую передачу до"
+" её конца"
+
+msgid ""
+"Use it to see when a program moves its graphics during the frame, and how"
+" long it takes."
+msgstr ""
+"Пользуйтесь ей, чтобы видеть, когда программа перемещает графику в "
+"течение кадра и сколько это занимает."
+
+msgid "The Ports tab"
+msgstr "Вкладка Ports"
+
+msgid ""
+"On BaseConf the **Ports** tab shows the ports that set the memory and the"
+" screen, in four groups:"
+msgstr ""
+"На BaseConf вкладка **Ports** показывает порты, которые настраивают "
+"память и экран, в четырёх группах:"
+
+msgid "**Ports** - `7FFD`, `EFF7`, `77` and `BF`, each with what it sets."
+msgstr "**Ports** — `7FFD`, `EFF7`, `77` и `BF`, у каждого — что он задаёт."
+
+msgid ""
+"**Windows** - the four 16K windows of the CPU's memory, `#0000` to "
+"`#C000`, with the RAM or ROM page in each."
+msgstr ""
+"**Windows** — четыре 16K-окна памяти CPU, от `#0000` до `#C000`, со "
+"страницей RAM или ROM в каждом."
+
+msgid ""
+"**Pager** - the eight pager registers, two for each window, written "
+"through ports `0FF7`, `4FF7`, `8FF7` and `CFF7`. One of each pair is used"
+" while the ROM signal is off (**ROM=0**), the other while it is on "
+"(**ROM=1**); a `*` marks the ones in use now."
+msgstr ""
+"**Pager** — восемь регистров пейджера, по два на окно, записываются через"
+" порты `0FF7`, `4FF7`, `8FF7` и `CFF7`. Один из каждой пары используется,"
+" пока сигнал ROM выключен (**ROM=0**), другой — пока включён (**ROM=1**);"
+" `*` отмечает используемые сейчас."
+
+msgid ""
+"**System** - the DOS and NMI state, the CPU clock, the trap address, the "
+"border color, the virtual drives and ports `2F`, `4F`, `6F` and `8F`."
+msgstr ""
+"**System** — состояние DOS и NMI, тактовая частота CPU, адрес ловушки, "
+"цвет бордюра, виртуальные дисководы и порты `2F`, `4F`, `6F` и `8F`."
+
+msgid "The ZX Evolution window"
+msgstr "Окно ZX Evolution"
+
+#, python-brace-format
+msgid ""
+"The button at the top right of the panel, {icon}`display` **Show in its "
+"own window**, moves the panel into a window of its own, **ZX Evolution**."
+" In the window the button is pressed in; click it again, or close the "
+"window, to put the panel back in the Debugger. While the panel is out, "
+"its tab in the Debugger says so, with a **Bring it back** button. Unlike "
+"the **Screen** and **Sound Chips** windows, this one has no command in "
+"the **Debug** menu."
+msgstr ""
+"Кнопка справа вверху панели, {icon}`display` **Show in its own window**, "
+"переносит панель в отдельное окно **ZX Evolution**. В окне кнопка нажата;"
+" щёлкните её снова или закройте окно, чтобы вернуть панель в Debugger. "
+"Пока панель вынесена, её вкладка в Debugger сообщает об этом и показывает"
+" кнопку **Bring it back**. В отличие от окон **Screen** и **Sound "
+"Chips**, у этого окна нет команды в меню **Debug**."
+
+msgid ""
+"The window works without the Debugger: it follows the machine while it "
+"runs, once a frame (in fast mode, once in ten frames), and its layer "
+"switches work as in the panel. The window keeps its place and size, and a"
+" window that was open when you quit opens again at the next start. On a "
+"machine that is not a ZX Evolution it shows **Nothing to show on this "
+"machine**."
+msgstr ""
+"Окно работает без Debugger: оно следит за машиной, пока та работает, раз "
+"за кадр (в быстром режиме — раз в десять кадров), и его переключатели "
+"слоёв действуют, как на панели. Окно запоминает своё место и размер, а "
+"окно, открытое при выходе, снова открывается при следующем запуске. На "
+"машине, которая не ZX Evolution, оно показывает **Nothing to show on this"
+" machine**."
+
+msgid "Screen and Sound Chips windows"
+msgstr "Окна Screen и Sound Chips"
+
+msgid "![The Screen window](images/dbg-screen-window.png)"
+msgstr "![Окно Screen](images/dbg-screen-window.png)"
+
+msgid "The Screen window"
+msgstr "Окно Screen"
+
+msgid ""
+"**Debug > Screen** and **Debug > Sound Chips** move the **Screen** and "
+"**Sound Chip** panels out of the Debugger into windows of their own. The "
+"same command again puts the panel back. In the Classic preset the keys "
+"are Alt+S and Alt+A; the Modern preset has no keys for them."
+msgstr ""
+"**Debug > Screen** и **Debug > Sound Chips** выносят панели **Screen** и "
+"**Sound Chip** из Debugger в отдельные окна. Та же команда ещё раз "
+"возвращает панель обратно. В наборе Classic для них есть клавиши Alt+S и "
+"Alt+A; в наборе Modern клавиш нет."
+
+#, python-brace-format
+msgid ""
+"The button at the top right of each panel, {icon}`display` **Show in its "
+"own window**, does the same. In the window it is pressed in; click it "
+"again, or close the window, to put the panel back in the Debugger. While "
+"the panel is out, its tab in the Debugger says so, with a **Bring it "
+"back** or **Bring them back** button."
+msgstr ""
+"Кнопка справа вверху каждой панели, {icon}`display` **Show in its own "
+"window**, делает то же самое. В окне она нажата; щёлкните её снова или "
+"закройте окно, чтобы вернуть панель в Debugger. Пока панель вынесена, её "
+"вкладка в Debugger сообщает об этом и показывает кнопку **Bring it back**"
+" или **Bring them back**."
+
+msgid ""
+"The windows work without the Debugger: they follow the machine while it "
+"runs, one picture a frame (in fast mode, one in ten frames). The settings"
+" are the same as in the panel. Each window keeps its place and size, and "
+"a window that was open when you quit opens again at the next start."
+msgstr ""
+"Окна работают без Debugger: они следят за машиной, пока та работает, одно"
+" изображение за кадр (в быстром режиме — одно за десять кадров). "
+"Настройки те же, что на панели. Каждое окно запоминает своё место и "
+"размер, а окно, открытое при выходе, снова открывается при следующем "
+"запуске."
+
+msgid "Examples"
+msgstr "Примеры"
+
+msgid "See which screen a 128K program draws to"
+msgstr "Посмотреть, на какой экран рисует программа для 128K"
+
+msgid ""
+"A 128K has two screens, in RAM pages 5 and 7. Many programs draw on the "
+"screen that is not shown and then flip, so that the picture never shows "
+"half drawn."
+msgstr ""
+"У 128K два экрана, в страницах RAM 5 и 7. Многие программы рисуют на "
+"экран, который не показывается, а потом переключают экраны, чтобы "
+"изображение никогда не было видно недорисованным."
+
+msgid "Choose a 128K machine and load the program."
+msgstr "Выберите машину 128K и загрузите программу."
+
+msgid "Choose **Debug > Screen**. The **Screen** window opens."
+msgstr "Выберите **Debug > Screen**. Откроется окно **Screen**."
+
+msgid "Click **Both**. The window shows **Main (5)** and **Shadow (7)** together."
+msgstr "Щёлкните **Both**. Окно покажет **Main (5)** и **Shadow (7)** вместе."
+
+msgid ""
+"Let the program run. The name of the screen the machine shows is in the "
+"**Header** color; when the program flips, the other name takes that "
+"color."
+msgstr ""
+"Дайте программе поработать. Название экрана, который показывает машина, "
+"окрашено цветом **Header**; когда программа переключает экраны, этот цвет"
+" переходит к другому названию."
+
+msgid ""
+"You see the hidden screen being drawn while the other one is shown. Click"
+" **Auto** to see only the screen the machine shows, the way the main "
+"window does."
+msgstr ""
+"Вы видите, как рисуется скрытый экран, пока показывается другой. Щёлкните"
+" **Auto**, чтобы видеть только экран, который показывает машина, как в "
+"главном окне."
+
+msgid "![Both screens of a 128K](images/dbg-example-screens.png)"
+msgstr "![Оба экрана 128K](images/dbg-example-screens.png)"
+
+msgid "Both screens of a 128K"
+msgstr "Оба экрана 128K"
+
+msgid "Find the bytes behind a spot on the screen"
+msgstr "Найти байты, стоящие за местом на экране"
+
+msgid "Open the Debugger and click the **Screen** tab."
+msgstr "Откройте Debugger и щёлкните вкладку **Screen**."
+
+msgid ""
+"Move the mouse onto the spot and click: the cell is marked and the "
+"readout holds."
+msgstr ""
+"Наведите мышь на это место и щёлкните: знакоместо отмечено, показания "
+"закреплены."
+
+msgid ""
+"Read **Screen:** for the byte of pixels and **Attr:** for its colors, for"
+" example `#4000` and `#5800` for the top left corner."
+msgstr ""
+"Прочитайте **Screen:** — байт пикселей и **Attr:** — его цвета, например "
+"`#4000` и `#5800` для левого верхнего угла."
+
+msgid "Right-click the picture and choose **Copy screen address**."
+msgstr "Щёлкните изображение правой кнопкой и выберите **Copy screen address**."
+
+msgid ""
+"With the address in hand, look at the byte in the **DUMP** panel (see "
+"[Memory](debugger-memory.md)), or set a **Write** breakpoint on it to "
+"stop the machine when the program draws there (see [Breakpoints and "
+"watching](debugger-breakpoints.md))."
+msgstr ""
+"Зная адрес, посмотрите этот байт на панели **DUMP** (см. [Память"
+"](debugger-memory.md)) или поставьте на него точку останова **Write**, "
+"чтобы машина остановилась, когда программа рисует там (см. [Точки "
+"останова и наблюдение](debugger-breakpoints.md))."
+
+msgid "Watch the AY registers while music plays"
+msgstr "Следить за регистрами AY, пока играет музыка"
+
+msgid "Choose **ZX Spectrum 128K** and pick **128 BASIC** in its menu."
+msgstr "Выберите **ZX Spectrum 128K** и в его меню выберите **128 BASIC**."
+
+msgid ""
+"Choose **Debug > Sound Chips**. The **Sound Chips** window opens on "
+"**PSG1**."
+msgstr ""
+"Выберите **Debug > Sound Chips**. Окно **Sound Chips** откроется на "
+"**PSG1**."
+
+msgid "Type `PLAY \"cdefgab\"` and press Enter."
+msgstr "Наберите `PLAY \"cdefgab\"` и нажмите Enter."
+
+msgid ""
+"Watch channel A: its **Period** changes with each note, its **Mixer** "
+"starts with `T` for the tone, and its **Lev** bar rises and falls. The "
+"wave box shows the square wave of the tone."
+msgstr ""
+"Следите за каналом A: его **Period** меняется с каждой нотой, его "
+"**Mixer** начинается с `T` — тон, а полоса **Lev** поднимается и "
+"опускается. Осциллограмма показывает прямоугольную волну тона."
+
+msgid ""
+"Tick **Mute** on the A row and play again: the notes go on in the "
+"registers, but you hear nothing."
+msgstr ""
+"Отметьте **Mute** в строке A и сыграйте снова: ноты идут в регистрах, но "
+"вы ничего не слышите."
+
+msgid "Untick **Mute** to hear the channel again."
+msgstr "Снимите **Mute**, чтобы снова слышать канал."
+
+msgid "Screen panel"
+msgstr "панель Screen"
+
+msgid "shadow screen"
+msgstr "теневой экран"
+
+msgid "which screen"
+msgstr "какой экран"
+
+msgid "zoom"
+msgstr "масштаб"
+
+msgid "screen address"
+msgstr "адрес экрана"
+
+msgid "attribute address"
+msgstr "адрес атрибутов"
+
+msgid "Copy screen address"
+msgstr "Copy screen address"
+
+msgid "Copy attribute address"
+msgstr "Copy attribute address"
+
+msgid "Sound Chip panel"
+msgstr "панель Sound Chip"
+
+msgid "AY"
+msgstr "AY"
+
+msgid "registers"
+msgstr "регистры"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "FM"
+msgstr "FM"
+
+msgid "YM2203"
+msgstr "YM2203"
+
+msgid "wave box"
+msgstr "осциллограмма"
+
+msgid "beeper"
+msgstr "бипер"
+
+msgid "level"
+msgstr "уровень"
+
+msgid "Tape panel"
+msgstr "панель Tape"
+
+msgid "tape signal"
+msgstr "сигнал ленты"
+
+msgid "FDC panel"
+msgstr "панель FDC"
+
+msgid "floppy disk controller"
+msgstr "контроллер дисковода"
+
+msgid "FDD panel"
+msgstr "панель FDD"
+
+msgid "track"
+msgstr "дорожка"
+
+msgid "raw bytes"
+msgstr "сырые байты"
+
+msgid "CMOS panel"
+msgstr "панель CMOS"
+
+msgid "clock chip"
+msgstr "микросхема часов"
+
+msgid "RTC"
+msgstr "RTC"
+
+msgid "Palette panel"
+msgstr "панель Palette"
+
+msgid "palette"
+msgstr "палитра"
+
+msgid "ZX Evo panel"
+msgstr "панель ZX Evo"
+
+msgid "ZX Evolution"
+msgstr "ZX Evolution"
+
+msgid "Debugger panel"
+msgstr "панель в Debugger"
+
+msgid "TSConf"
+msgstr "TSConf"
+
+msgid "BaseConf"
+msgstr "BaseConf"
+
+msgid "layers"
+msgstr "слои"
+
+msgid "layer"
+msgstr "слой"
+
+msgid "hiding"
+msgstr "скрытие"
+
+msgid "Layers hidden"
+msgstr "Layers hidden"
+
+msgid "sprites"
+msgstr "спрайты"
+
+msgid "sprite"
+msgstr "спрайт"
+
+msgid "tiles"
+msgstr "тайлы"
+
+msgid "tile map"
+msgstr "карта тайлов"
+
+msgid "DMA"
+msgstr "DMA"
+
+msgid "ports"
+msgstr "порты"
+
+msgid "pager"
+msgstr "пейджер"
+
+msgid "ZX Evolution window"
+msgstr "окно ZX Evolution"
+
+msgid "Show in its own window"
+msgstr "Show in its own window"
+
+msgid "Screen window"
+msgstr "окно Screen"
+
+msgid "Sound Chips window"
+msgstr "окно Sound Chips"
+
+#~ msgid ""
+#~ "Besides the CPU and the memory, "
+#~ "the Debugger shows the state of "
+#~ "the machine's devices: the screen, the"
+#~ " sound chips, the tape, the floppy"
+#~ " disk controller, the clock chip and"
+#~ " the palette. Each is a panel "
+#~ "of its own, on a tab behind "
+#~ "**Breakpoints** or **DUMP** (see [The "
+#~ "panels](debugger.md#the-panels)). Like every "
+#~ "panel, they show the state the "
+#~ "machine stopped in and change with "
+#~ "each step."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The **Screen** and **Sound Chip** panels"
+#~ " can also be windows of their "
+#~ "own that work while the machine "
+#~ "runs: see [Screen and Sound Chips "
+#~ "windows](#screen-and-sound-chips-windows)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "There are no panels for one "
+#~ "machine only: a ZX Evolution with "
+#~ "TSConf or BaseConf uses the same "
+#~ "panels as any other machine."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The **Tape** panel draws the tape "
+#~ "signal around the place the tape "
+#~ "is at. The red vertical line is"
+#~ " now: on its left is the signal"
+#~ " that has played, on its right "
+#~ "what comes next. The picture covers "
+#~ "about two milliseconds of tape at "
+#~ "the machine's speed."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The **FDC** panel shows the floppy "
+#~ "disk controller in its left and "
+#~ "middle columns and the drive it "
+#~ "works with in the right one. It"
+#~ " is there only on a machine "
+#~ "with a disk interface (see [Disks "
+#~ "and drives](disks.md)). All numbers are "
+#~ "hex; a flag is 1 or 0."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A plain ZX uses the first 16 "
+#~ "squares. With ULA+ in use, the "
+#~ "first 64 are the colors the "
+#~ "program set. The ZX Evolution with "
+#~ "TSConf fills all 256 from its own"
+#~ " palette memory. The ATM Turbo 2+,"
+#~ " the ZX Evolution with BaseConf and"
+#~ " the Profi v5 set their colors "
+#~ "through ports, and the colors a "
+#~ "program sets show here as it sets"
+#~ " them."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Show in its own window** - moves"
+#~ " the panel into the **Screen** "
+#~ "window."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Show in its own window** - moves"
+#~ " the panel into the **Sound Chips**"
+#~ " window."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The target button - jumps to the"
+#~ " drive, the track and the byte "
+#~ "the head is at now."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Show in its own window** - moves"
+#~ " the panel into the **ZX Evolution**"
+#~ " window; pressed in here, as the "
+#~ "panel is in it."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The button at the top right of "
+#~ "the panel, **Show in its own "
+#~ "window**, moves the panel into a "
+#~ "window of its own, **ZX Evolution**. "
+#~ "In the window the button is "
+#~ "pressed in; click it again, or "
+#~ "close the window, to put the panel"
+#~ " back in the Debugger. While the "
+#~ "panel is out, its tab in the "
+#~ "Debugger says so, with a **Bring "
+#~ "it back** button. Unlike the **Screen**"
+#~ " and **Sound Chips** windows, this "
+#~ "one has no command in the "
+#~ "**Debug** menu."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The button at the top right of "
+#~ "each panel, **Show in its own "
+#~ "window**, does the same. In the "
+#~ "window it is pressed in; click it"
+#~ " again, or close the window, to "
+#~ "put the panel back in the "
+#~ "Debugger. While the panel is out, "
+#~ "its tab in the Debugger says so,"
+#~ " with a **Bring it back** or "
+#~ "**Bring them back** button."
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-screen.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/display.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-sound.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-tape.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-fdc.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-fdd.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/target.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-cmos.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-palette.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-evo-regs.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-evo-sprites.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-evo-tiles.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-screen-window.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-example-screens.png"
+#~ msgstr ""
+

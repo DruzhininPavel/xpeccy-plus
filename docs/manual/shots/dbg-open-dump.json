@@ -1,0 +1,32 @@
+{
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "run-action key.debuger"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "run",
+      "menu-action @tbSaveDasm/Load dump"
+    ],
+    [
+      "wait",
+      1200
+    ]
+  ]
+}

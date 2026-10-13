@@ -1,0 +1,1128 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 19:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Memory"
+msgstr "Память"
+
+msgid ""
+"The Debugger shows memory byte by byte in the **DUMP** panel, and the "
+"bytes the registers point at in **REG-DUMP**. **MEMMAP** shows which "
+"memory the CPU sees, and lets you page in another. The tools around them "
+"find bytes, fill memory, show it as pictures, save it to a file and load "
+"it back, and the **Heat map** shows which memory the program uses and "
+"how."
+msgstr ""
+"Debugger показывает память байт за байтом на панели **DUMP**, а байты, на"
+" которые указывают регистры, — на **REG-DUMP**. **MEMMAP** показывает, "
+"какую память видит CPU, и позволяет включить другую. Инструменты вокруг "
+"них ищут байты, заполняют память, показывают её как картинку, сохраняют в"
+" файл и загружают обратно, а **Heat map** показывает, какую память "
+"программа использует и как."
+
+msgid "The DUMP panel"
+msgstr "Панель DUMP"
+
+msgid "![The DUMP panel](images/dbg-dump.png)"
+msgstr "![Панель DUMP](images/dbg-dump.png)"
+
+msgid ""
+"**View** - **CPU**, **RAM** or **ROM**, and for the last two the page, "
+"its address and how much of it to show."
+msgstr ""
+"**View** — **CPU**, **RAM** или **ROM**, а для двух последних — страница,"
+" её адрес и какую её часть показывать."
+
+msgid "**Bytes per row** - **Auto**, **8/row**, **12/row** or **16/row**."
+msgstr "**Bytes per row** — **Auto**, **8/row**, **12/row** или **16/row**."
+
+msgid ""
+"**Code page** - **WIN1251**, **CP866** or **KOI8R**: how bytes from 128 "
+"to 255 show as letters in the text column."
+msgstr ""
+"**Code page** — **WIN1251**, **CP866** или **KOI8R**: как байты от 128 до"
+" 255 показываются буквами в текстовом столбце."
+
+msgid ""
+"**Dump** - the address, the bytes in groups of four, and the same bytes "
+"as text."
+msgstr "**Дамп** — адрес, байты группами по четыре и те же байты в виде текста."
+
+msgid "**Scrollbar** - drag it to move through memory."
+msgstr "**Полоса прокрутки** — перетаскивайте её, чтобы перемещаться по памяти."
+
+msgid ""
+"The title of the panel shows the address of the byte under the cursor: "
+"**DUMP | 00C000**."
+msgstr "Заголовок панели показывает адрес байта под курсором: **DUMP | 00C000**."
+
+msgid ""
+"In the text column a byte below 32 shows as a dot. **Auto** puts as many "
+"groups of four bytes on a row as the panel is wide enough for."
+msgstr ""
+"В текстовом столбце байт меньше 32 показывается точкой. **Auto** помещает"
+" в строку столько групп по четыре байта, сколько позволяет ширина панели."
+
+msgid "Moving around"
+msgstr "Перемещение"
+
+msgid "Key"
+msgstr "Клавиша"
+
+msgid "What it does"
+msgstr "Что делает"
+
+msgid "Up, Down"
+msgstr "Up, Down"
+
+msgid "the cursor one row; at the edge the dump scrolls by one row"
+msgstr "курсор на строку; у края дамп прокручивается на одну строку"
+
+msgid "PageUp, PageDown"
+msgstr "PageUp, PageDown"
+
+msgid "a page back or on"
+msgstr "страница назад или вперёд"
+
+msgid "mouse wheel"
+msgstr "колесо мыши"
+
+msgid "scroll by one row"
+msgstr "прокрутка на одну строку"
+
+msgid ""
+"These keys are the same in both presets, and can be changed on the "
+"**Hotkeys** page of **Options** (see [Debugger keys](hotkeys.md#debugger-"
+"keys)):"
+msgstr ""
+"Эти клавиши одинаковы в обоих наборах, их можно поменять на странице "
+"**Hotkeys** окна **Options** (см. [Клавиши Debugger](hotkeys.md#debugger-"
+"keys)):"
+
+msgid "Command"
+msgstr "Команда"
+
+msgid "Goes to"
+msgstr "Куда переходит"
+
+msgid "**Go to address**"
+msgstr "**Go to address**"
+
+msgid "G"
+msgstr "G"
+
+msgid "the address cell of the top row opens for typing"
+msgstr "ячейка адреса верхней строки открывается для ввода"
+
+msgid "**Go to (PC)**"
+msgstr "**Go to (PC)**"
+
+msgid "Ctrl+P"
+msgstr "Ctrl+P"
+
+msgid "the address in PC"
+msgstr "адрес из PC"
+
+msgid "**Go to (SP)**"
+msgstr "**Go to (SP)**"
+
+msgid "Ctrl+S"
+msgstr "Ctrl+S"
+
+msgid "the top of the stack"
+msgstr "вершина стека"
+
+msgid "**Go to (BC)**"
+msgstr "**Go to (BC)**"
+
+msgid "Ctrl+B"
+msgstr "Ctrl+B"
+
+msgid "the address in BC"
+msgstr "адрес из BC"
+
+msgid "**Go to (DE)**"
+msgstr "**Go to (DE)**"
+
+msgid "Ctrl+D"
+msgstr "Ctrl+D"
+
+msgid "the address in DE"
+msgstr "адрес из DE"
+
+msgid "**Go to (HL)**"
+msgstr "**Go to (HL)**"
+
+msgid "Ctrl+H"
+msgstr "Ctrl+H"
+
+msgid "the address in HL"
+msgstr "адрес из HL"
+
+msgid "**Go to (IX)**"
+msgstr "**Go to (IX)**"
+
+msgid "Ctrl+X"
+msgstr "Ctrl+X"
+
+msgid "the address in IX"
+msgstr "адрес из IX"
+
+msgid "**Go to (IY)**"
+msgstr "**Go to (IY)**"
+
+msgid "Ctrl+Y"
+msgstr "Ctrl+Y"
+
+msgid "the address in IY"
+msgstr "адрес из IY"
+
+msgid ""
+"A right-click on a register's name in the **CPU** panel moves the dump to"
+" the address the register holds."
+msgstr ""
+"Правый щелчок по имени регистра на панели **CPU** переводит дамп на адрес"
+" из этого регистра."
+
+msgid ""
+"To go to an address, double-click the address of any row, or select it "
+"and press Enter, and type it. The dump scrolls so that the address lands "
+"on that row. An address can be hex (`8000`, `#8000`, `0x8000`), a label, "
+"or a register with a dot in front, as `.HL`. The labels are offered as "
+"you type, as in the listing (see [Labels offered as you type](debugger-"
+"code.md#labels-offered-as-you-type))."
+msgstr ""
+"Чтобы перейти к адресу, дважды щёлкните адрес любой строки или выделите "
+"его и нажмите Enter, затем введите адрес. Дамп прокрутится так, что адрес"
+" окажется на этой строке. Адрес может быть шестнадцатеричным (`8000`, "
+"`#8000`, `0x8000`), меткой или регистром с точкой впереди, как `.HL`. "
+"Метки подсказываются при вводе, как в листинге (см. [Подсказка меток при "
+"вводе](debugger-code.md#labels-offered-as-you-type))."
+
+msgid "Editing"
+msgstr "Правка"
+
+msgid ""
+"Double-click a byte, or select it and press Enter, and type the new "
+"value: two hex digits. Enter writes it. The text column cannot be edited."
+msgstr ""
+"Дважды щёлкните байт или выделите его и нажмите Enter, затем введите "
+"новое значение: две шестнадцатеричные цифры. Enter его записывает. "
+"Текстовый столбец не редактируется."
+
+#, python-brace-format
+msgid ""
+"ROM is protected: a byte in ROM is written only with **Allow ROM wr** "
+"ticked in the {icon}`settings` **Options** menu of the **Disasm** panel. "
+"A cartridge is never written."
+msgstr ""
+"ROM защищён: байт в ROM записывается, только если отмечен **Allow ROM "
+"wr** в меню {icon}`settings` **Options** панели **Disasm**. В картридж "
+"запись не идёт никогда."
+
+msgid "CPU, RAM and ROM"
+msgstr "CPU, RAM и ROM"
+
+msgid ""
+"**CPU** shows the 64K the CPU sees now, with whatever pages are in it. "
+"**RAM** and **ROM** show one 16K page, whether the CPU sees it or not:"
+msgstr ""
+"**CPU** показывает 64K, которые сейчас видит CPU, с теми страницами, что "
+"в них включены. **RAM** и **ROM** показывают одну страницу 16K, видит её "
+"CPU или нет:"
+
+msgid "**Pg** - the number of the page;"
+msgstr "**Pg** — номер страницы;"
+
+msgid ""
+"the address field - the address the first byte of the page is shown at: "
+"C000 for RAM and 0000 for ROM, as they are set when you switch the view;"
+msgstr ""
+"поле адреса — по какому адресу показывается первый байт страницы: C000 "
+"для RAM и 0000 для ROM — так они ставятся при переключении вида;"
+
+msgid ""
+"the size - how much of the page the dump goes through, from 256 bytes to "
+"the whole 16KB."
+msgstr "размер — какую часть страницы проходит дамп, от 256 байт до всех 16 КБ."
+
+msgid "The rows then show the page and the address, as `07:C000`."
+msgstr "Строки тогда показывают страницу и адрес, как `07:C000`."
+
+msgid "Selecting and breakpoints"
+msgstr "Выделение и точки останова"
+
+msgid ""
+"Drag over the bytes to select a block, or Ctrl+click its first byte and "
+"Shift+click its last; a click with the middle button clears it. The "
+"**DUMP** and the **Disasm** listing share one selection, so a block "
+"selected here is ready for **View**, **Fill...** and the other block "
+"commands of the listing (see [Selecting a block](debugger-"
+"code.md#selecting-a-block)). The selection shows in the **CPU** view "
+"only."
+msgstr ""
+"Проведите мышью по байтам, чтобы выделить блок, или щёлкните с Ctrl его "
+"первый байт и с Shift — последний; щелчок средней кнопкой снимает "
+"выделение. **DUMP** и листинг **Disasm** используют одно выделение, "
+"поэтому блок, выделенный здесь, готов для **View**, **Fill...** и других "
+"блочных команд листинга (см. [Выделение блока](debugger-"
+"code.md#selecting-a-block)). Выделение видно только в виде **CPU**."
+
+msgid ""
+"A right-click on a byte opens a menu of **Fetch break**, **Read break** "
+"and **Write break**: tick one to stop when the CPU runs, reads or writes "
+"that byte. See [Breakpoints and watching](debugger-breakpoints.md)."
+msgstr ""
+"Правый щелчок по байту открывает меню из **Fetch break**, **Read break** "
+"и **Write break**: отметьте один из пунктов, чтобы остановиться, когда "
+"CPU выполняет, читает или пишет этот байт. См. [Точки останова и "
+"наблюдение](debugger-breakpoints.md)."
+
+msgid "REG-DUMP"
+msgstr "REG-DUMP"
+
+msgid "![The REG-DUMP panel](images/dbg-regdump.png)"
+msgstr "![Панель REG-DUMP](images/dbg-regdump.png)"
+
+msgid "The REG-DUMP panel"
+msgstr "Панель REG-DUMP"
+
+msgid ""
+"**REG-DUMP** shares a place with the **DUMP**: click its tab. It has a "
+"row for each register that can point into memory - PC, BC, DE, HL, SP, "
+"BC', DE', HL', IX and IY. Each row starts with the register and its "
+"value, `HL (5CB0):`, and goes on with the bytes from that address, as "
+"many as fit. It changes with every step, so you see at once what an "
+"instruction is about to read. It cannot be edited."
+msgstr ""
+"**REG-DUMP** делит место с **DUMP**: щёлкните её вкладку. В ней по строке"
+" на каждый регистр, который может указывать в память, — PC, BC, DE, HL, "
+"SP, BC', DE', HL', IX и IY. Каждая строка начинается с регистра и его "
+"значения, `HL (5CB0):`, и продолжается байтами с этого адреса, сколько "
+"поместится. Она меняется с каждым шагом, так что сразу видно, что команда"
+" собирается прочитать. Её нельзя редактировать."
+
+msgid "MEMMAP"
+msgstr "MEMMAP"
+
+msgid "![The MEMMAP panel](images/dbg-memmap.png)"
+msgstr "![Панель MEMMAP](images/dbg-memmap.png)"
+
+msgid "The MEMMAP panel"
+msgstr "Панель MEMMAP"
+
+msgid ""
+"The four rows at the top of the **MEMMAP** panel are the four 16K windows"
+" of the CPU's memory: 0000-3FFF, 4000-7FFF, 8000-BFFF and C000-FFFF. Hold"
+" the mouse over a row to see its addresses. Each row says what is in that"
+" window now, **ROM** or **RAM**, and the number of the page."
+msgstr ""
+"Четыре строки вверху панели **MEMMAP** — четыре окна памяти CPU по 16K: "
+"0000-3FFF, 4000-7FFF, 8000-BFFF и C000-FFFF. Наведите мышь на строку, "
+"чтобы увидеть её адреса. Каждая строка говорит, что сейчас в этом окне, "
+"**ROM** или **RAM**, и номер страницы."
+
+msgid ""
+"Change a row to put another page in: pick **ROM** or **RAM** and type the"
+" page number. The **DUMP**, the listing and the CPU itself then see that "
+"page there. A window you changed has its type in bold and its page number"
+" lit. It stays that way until the program pages that window itself."
+msgstr ""
+"Измените строку, чтобы включить другую страницу: выберите **ROM** или "
+"**RAM** и введите номер страницы. **DUMP**, листинг и сам CPU после этого"
+" видят там эту страницу. У изменённого вами окна тип выделен жирным, а "
+"номер страницы подсвечен. Так остаётся, пока программа сама не переключит"
+" это окно."
+
+msgid ""
+"Right-click the rows, or the **MEMMAP** title, and choose **Restore "
+"mapping** to put back all four windows as they were when the Debugger "
+"opened."
+msgstr ""
+"Щёлкните правой кнопкой строки или заголовок **MEMMAP** и выберите "
+"**Restore mapping**, чтобы вернуть все четыре окна в то состояние, в "
+"котором они были при открытии Debugger."
+
+msgid ""
+"The rest of the panel - ports, signals, frames and the beam - is "
+"described in [The Debugger](debugger.md)."
+msgstr ""
+"Остальная часть панели — порты, сигналы, кадры и луч — описана в главе "
+"[Debugger](debugger.md)."
+
+msgid "Memory Finder"
+msgstr "Memory Finder"
+
+msgid "![The Memory Finder](images/dbg-finder.png)"
+msgstr "![Memory Finder](images/dbg-finder.png)"
+
+msgid "The Memory Finder"
+msgstr "Memory Finder"
+
+#, python-brace-format
+msgid ""
+"**Search** in the {icon}`other` **Tools** menu of the **Disasm** panel "
+"opens it, as does the **Find pattern** key: Ctrl+F in both presets."
+msgstr ""
+"Его открывает **Search** в меню {icon}`other` **Tools** панели "
+"**Disasm**, а также клавиша **Find pattern**: Ctrl+F в обоих наборах."
+
+msgid "**Bytes** - up to 8 bytes in hex, separated by colons: `3E:05:C9`."
+msgstr ""
+"**Bytes** — до 8 байт в шестнадцатеричном виде через двоеточие: "
+"`3E:05:C9`."
+
+msgid ""
+"**Mask** - for each byte, the bits that must match: `FF` all of them, "
+"`00` none, so that any byte will do there, `0F` only the low four bits. "
+"Bytes with no mask must match whole."
+msgstr ""
+"**Mask** — для каждого байта биты, которые должны совпасть: `FF` — все, "
+"`00` — ни одного, то есть там подойдёт любой байт, `0F` — только младшие "
+"четыре бита. Байты без маски должны совпасть целиком."
+
+msgid ""
+"**Text** - up to 8 characters. Typing text fills **Bytes** with its "
+"codes, and typing bytes shows them here as text. Upper and lower case "
+"count."
+msgstr ""
+"**Text** — до 8 символов. Введённый текст заполняет **Bytes** своими "
+"кодами, а введённые байты показываются здесь как текст. Регистр букв "
+"учитывается."
+
+#, python-brace-format
+msgid ""
+"{icon}`search` **Find** goes through the 64K the CPU sees, starting from "
+"the address at the top of the listing. The line under the fields says "
+"**Found @** and the address, or **Not found**. The listing and the "
+"**DUMP** go to the place found."
+msgstr ""
+"{icon}`search` **Find** просматривает 64K, которые видит CPU, начиная с "
+"адреса в верхней строке листинга. Строка под полями показывает **Found "
+"@** и адрес или **Not found**. Листинг и **DUMP** переходят к найденному "
+"месту."
+
+msgid "Memory Filler"
+msgstr "Memory Filler"
+
+msgid "![The Memory Filler](images/dbg-filler.png)"
+msgstr "![Memory Filler](images/dbg-filler.png)"
+
+msgid "The Memory Filler"
+msgstr "Memory Filler"
+
+#, python-brace-format
+msgid ""
+"**Fill...** in the {icon}`other` **Tools** menu opens it. With a block "
+"selected, it starts with the block's addresses."
+msgstr ""
+"Его открывает **Fill...** в меню {icon}`other` **Tools**. Если выделен "
+"блок, окно открывается с адресами блока."
+
+msgid "**Start address**, **End address** - the memory to fill, ends included."
+msgstr "**Start address**, **End address** — заполняемая память, включая границы."
+
+msgid "**Pattern** - up to 8 bytes, separated by colons. They repeat to the end."
+msgstr "**Pattern** — до 8 байт через двоеточие. Они повторяются до конца."
+
+msgid "**Mask** - for **Mask** only: the bits of each byte that the pattern sets."
+msgstr "**Mask** — только для **Mask**: биты каждого байта, которые задаёт шаблон."
+
+msgid "How the pattern goes in:"
+msgstr "Как шаблон записывается:"
+
+msgid "Method"
+msgstr "Способ"
+
+msgid "Each byte becomes"
+msgstr "Каждый байт становится"
+
+msgid "**Mask**"
+msgstr "**Mask**"
+
+msgid "the pattern in the bits of the mask, the old byte in the rest"
+msgstr "шаблоном в битах маски и старым байтом в остальных"
+
+msgid "**Put**"
+msgstr "**Put**"
+
+msgid "the pattern"
+msgstr "шаблоном"
+
+msgid "**Or**"
+msgstr "**Or**"
+
+msgid "the old byte OR the pattern"
+msgstr "старый байт OR шаблон"
+
+msgid "**And**"
+msgstr "**And**"
+
+msgid "the old byte AND the pattern"
+msgstr "старый байт AND шаблон"
+
+msgid "**Xor**"
+msgstr "**Xor**"
+
+msgid "the old byte XOR the pattern"
+msgstr "старый байт XOR шаблон"
+
+#, python-brace-format
+msgid ""
+"{icon}`fill` **Fill** writes the memory the CPU sees and closes the "
+"window. ROM is written only with **Allow ROM wr** ticked."
+msgstr ""
+"{icon}`fill` **Fill** пишет в память, которую видит CPU, и закрывает "
+"окно. В ROM запись идёт, только если отмечен **Allow ROM wr**."
+
+msgid "Memory Sprite Scanner"
+msgstr "Memory Sprite Scanner"
+
+msgid "![The Memory Sprite Scanner](images/dbg-sprite-scanner.png)"
+msgstr "![Memory Sprite Scanner](images/dbg-sprite-scanner.png)"
+
+msgid "The Memory Sprite Scanner"
+msgstr "Memory Sprite Scanner"
+
+#, python-brace-format
+msgid ""
+"**Sprite scanner** in the {icon}`other` **Tools** menu opens it. It shows"
+" memory as a picture, one bit a pixel, so that sprites, fonts and screens"
+" can be found by eye. In the picture it shows Exolon (Raffaele Cecco, "
+"Hewson, 1987): with **Width** 3, the frames of its hero running stand one"
+" under another, and **Columns** puts the memory after them side by side."
+msgstr ""
+"Его открывает **Sprite scanner** в меню {icon}`other` **Tools**. Он "
+"показывает память как картинку, бит на пиксель, чтобы спрайты, шрифты и "
+"экраны можно было найти на глаз. На иллюстрации — Exolon (Raffaele Cecco,"
+" Hewson, 1987): при **Width** 3 кадры бегущего героя стоят один под "
+"другим, а **Columns** выводит память за ними рядом."
+
+msgid ""
+"**Page** - the RAM page read for the addresses from C000 to FFFF. It "
+"starts at the page the CPU has there."
+msgstr ""
+"**Page** — страница RAM, читаемая для адресов от C000 до FFFF. Изначально"
+" это страница, которая там у CPU."
+
+msgid "**Addr** - the first byte shown."
+msgstr "**Addr** — первый показанный байт."
+
+msgid "**Width** - how many bytes make one line of the picture, 8 pixels each."
+msgstr ""
+"**Width** — сколько байтов составляют одну строку картинки, по 8 пикселей"
+" каждый."
+
+msgid "**Height** - how many rows of 8 lines the picture has."
+msgstr "**Height** — сколько рядов по 8 строк в картинке."
+
+msgid "**Inversion** - swaps black and white."
+msgstr "**Inversion** — меняет местами чёрное и белое."
+
+msgid ""
+"**Columns** - when **Width** is narrow, the memory that follows is drawn "
+"in more columns side by side, in turn in another color, to fill the "
+"picture."
+msgstr ""
+"**Columns** — когда **Width** узкая, следующая память рисуется в "
+"дополнительных столбцах рядом, поочерёдно другим цветом, чтобы заполнить "
+"картинку."
+
+msgid ""
+"**Grid** - shades every other 8 x 8 square, to see where the bytes and "
+"rows fall."
+msgstr ""
+"**Grid** — затеняет каждый второй квадрат 8 x 8, чтобы видеть, где "
+"проходят границы байтов и рядов."
+
+msgid ""
+"**ZX screen** - reads the memory the way the ZX screen lays it out: 6144 "
+"bytes from **Addr**."
+msgstr ""
+"**ZX screen** — читает память так, как её раскладывает экран ZX: 6144 "
+"байта от **Addr**."
+
+#, python-brace-format
+msgid ""
+"The scrollbar at the right and the mouse wheel move the address by one "
+"row of 8 lines. The {icon}`floppy` button with the floppy disk saves the "
+"bytes shown - **Width** x **Height** x 8 of them, or 6144 with **ZX "
+"screen** - to a file, as they are in memory."
+msgstr ""
+"Полоса прокрутки справа и колесо мыши сдвигают адрес на один ряд из 8 "
+"строк. Кнопка {icon}`floppy` с дискетой сохраняет показанные байты — "
+"**Width** x **Height** x 8 штук или 6144 при **ZX screen** — в файл, как "
+"они лежат в памяти."
+
+msgid ""
+"The scanner stays open when you leave the Debugger, and comes back with "
+"it."
+msgstr ""
+"Сканер остаётся открытым, когда вы выходите из Debugger, и возвращается "
+"вместе с ним."
+
+msgid "Saving and loading memory"
+msgstr "Сохранение и загрузка памяти"
+
+#, python-brace-format
+msgid ""
+"**Save dump** and **Load dump** are in the {icon}`floppy` floppy disk "
+"menu at the right of the **Disasm** toolbar. Each has a key of its own: "
+"see [Debugger keys](hotkeys.md#debugger-keys)."
+msgstr ""
+"**Save dump** и **Load dump** находятся в меню {icon}`floppy` с дискетой "
+"справа на панели инструментов **Disasm**. У каждого своя клавиша: см. "
+"[Клавиши Debugger](hotkeys.md#debugger-keys)."
+
+msgid "![The Save RAM Dump window](images/dbg-save-dump.png)"
+msgstr "![Окно Save RAM Dump](images/dbg-save-dump.png)"
+
+msgid "The Save RAM Dump window"
+msgstr "Окно Save RAM Dump"
+
+#, python-brace-format
+msgid ""
+"**Save RAM Dump** saves a part of the memory the CPU sees. Fill in "
+"**Start** and **End**, or **Start** and **Length**, in hex: the third "
+"follows. Then pick from {icon}`save_all` **Save as...**:"
+msgstr ""
+"**Save RAM Dump** сохраняет часть памяти, которую видит CPU. Заполните "
+"**Start** и **End** или **Start** и **Length** в шестнадцатеричном виде: "
+"третье вычисляется само. Затем выберите пункт в {icon}`save_all` **Save "
+"as...**:"
+
+msgid "**...as bin** - the bytes as they are, into a file you name;"
+msgstr "**...as bin** — байты как есть, в файл с указанным вами именем;"
+
+msgid ""
+"**...as Hobeta** - a `.$C` file: a TR-DOS code file named after the start"
+" address, that loads back to the same address;"
+msgstr ""
+"**...as Hobeta** — файл `.$C`: кодовый файл TR-DOS с именем по начальному"
+" адресу, который загружается обратно по тому же адресу;"
+
+msgid ""
+"**...to disk A** to **...to disk D** - a code file on the TR-DOS disk in "
+"that drive. A drive with no disk gets a new, formatted one. Up to FF00 "
+"bytes go on a disk."
+msgstr ""
+"**...to disk A** — **...to disk D** — кодовый файл на диске TR-DOS в этом"
+" дисководе. В пустой дисковод вставляется новый отформатированный диск. "
+"На диск помещается до FF00 байт."
+
+msgid "![The Open RAM Dump window](images/dbg-open-dump.png)"
+msgstr "![Окно Open RAM Dump](images/dbg-open-dump.png)"
+
+msgid "The Open RAM Dump window"
+msgstr "Окно Open RAM Dump"
+
+#, python-brace-format
+msgid ""
+"**Open RAM Dump** loads a file into memory. The {icon}`fileopen` button "
+"beside **File** picks the file; a file can be up to FF00 bytes long. "
+"**Start** is where it goes, C000 to begin with, and **Length** and "
+"**End** show how far it reaches. A file that would run past FFFF is moved"
+" down to end there. {icon}`ok-apply` **OK** writes it into the memory the"
+" CPU sees, ROM only with **Allow ROM wr** ticked."
+msgstr ""
+"**Open RAM Dump** загружает файл в память. Кнопка {icon}`fileopen` рядом "
+"с **File** выбирает файл; файл может быть длиной до FF00 байт. **Start** "
+"— куда он ляжет, изначально C000, а **Length** и **End** показывают, "
+"докуда он дойдёт. Файл, который вышел бы за FFFF, сдвигается вниз, чтобы "
+"закончиться там. {icon}`ok-apply` **OK** записывает его в память, которую"
+" видит CPU, а в ROM — только если отмечен **Allow ROM wr**."
+
+msgid "Heat map"
+msgstr "Heat map"
+
+msgid "![The Heat map panel](images/dbg-heatmap.png)"
+msgstr "![Панель Heat map](images/dbg-heatmap.png)"
+
+msgid "The Heat map panel"
+msgstr "Панель Heat map"
+
+msgid ""
+"What the picture covers - **CPU**, **RAM** or **ROM** - and the page for "
+"the last two."
+msgstr ""
+"Что охватывает картинка — **CPU**, **RAM** или **ROM** — и страница для "
+"двух последних."
+
+msgid "The counter shown - **All**, **Read**, **Write** or **Exec**."
+msgstr "Показываемый счётчик — **All**, **Read**, **Write** или **Exec**."
+
+#, python-brace-format
+msgid ""
+"**Collect**, and the buttons that {icon}`refresh` reset the counters and "
+"{icon}`save_all` export them."
+msgstr ""
+"**Collect** и кнопки, которые {icon}`refresh` сбрасывают счётчики и "
+"{icon}`save_all` экспортируют их."
+
+msgid "The picture."
+msgstr "Картинка."
+
+msgid "The address under the mouse, and the legend with its counts."
+msgstr "Адрес под мышью и легенда со счётчиками."
+
+msgid ""
+"The **Heat map** counts, for every byte of RAM and ROM, how many times "
+"the program has read it, written it and run it. Click its tab, under the "
+"**DUMP**, and tick **Collect**: counting starts and goes on while the "
+"machine runs, also with the Debugger closed, until you untick it. With "
+"**Collect** off the picture says **collecting is off**."
+msgstr ""
+"**Heat map** считает для каждого байта RAM и ROM, сколько раз программа "
+"его прочитала, записала и выполнила. Щёлкните её вкладку под **DUMP** и "
+"отметьте **Collect**: подсчёт начинается и идёт, пока машина работает, в "
+"том числе с закрытым Debugger, пока вы не снимете отметку. Когда "
+"**Collect** выключен, на картинке написано **collecting is off**."
+
+msgid ""
+"Each counter has its color: **Read** green, **Write** red, **Exec** blue."
+" A byte nothing has touched is gray. With **All**, each cell takes the "
+"color of the counter that wins: blue when it was run more often than read"
+" and written together, else red when written more than read, else green. "
+"**Exec** counts every byte the CPU takes as part of an instruction, "
+"operands included; **Read** counts only the data it reads."
+msgstr ""
+"У каждого счётчика свой цвет: **Read** — зелёный, **Write** — красный, "
+"**Exec** — синий. Байт, которого ничто не касалось, серый. При **All** "
+"каждая клетка получает цвет победившего счётчика: синий, если её "
+"выполняли чаще, чем читали и писали вместе, иначе красный, если писали "
+"чаще, чем читали, иначе зелёный. **Exec** считает каждый байт, который "
+"CPU берёт как часть команды, включая операнды; **Read** считает только "
+"читаемые данные."
+
+msgid ""
+"So the picture reads like a map of the program: blue is code, red is what"
+" it changes - the screen, the variables, the stack - and green is what it"
+" only reads, such as graphics, fonts and tables."
+msgstr ""
+"Поэтому картинка читается как карта программы: синее — код, красное — то,"
+" что она меняет: экран, переменные, стек, — а зелёное — то, что она "
+"только читает, например графика, шрифты и таблицы."
+
+msgid ""
+"**CPU** shows the 64K the CPU sees now as four squares, one for each 16K "
+"window, each cell 4 bytes. **RAM** and **ROM** show one 16K page, a cell "
+"a byte, and scroll when the panel is too small."
+msgstr ""
+"**CPU** показывает 64K, которые сейчас видит CPU, четырьмя квадратами, по"
+" одному на окно 16K, в каждой клетке 4 байта. **RAM** и **ROM** "
+"показывают одну страницу 16K, клетка на байт, и прокручиваются, если "
+"панель слишком мала."
+
+msgid ""
+"Hold the mouse over a cell to see its address, the memory and page it is "
+"in, and its counts: **Read:**, **Write:**, **Exec:**. Double-click a cell"
+" and the listing goes there, when the CPU can see it."
+msgstr ""
+"Наведите мышь на клетку, чтобы увидеть её адрес, память и страницу, где "
+"она находится, и её счётчики: **Read:**, **Write:**, **Exec:**. Дважды "
+"щёлкните клетку — листинг перейдёт туда, если CPU её видит."
+
+#, python-brace-format
+msgid ""
+"The {icon}`refresh` button with the circular arrows resets all counters, "
+"after asking. Loading a snapshot resets them too. The {icon}`save_all` "
+"button beside it saves all counters to a CSV file: one line per byte of "
+"RAM and then of ROM, with the columns `type,page,offset,read,write,exec`,"
+" untouched bytes included, for a spreadsheet or a script of your own."
+msgstr ""
+"Кнопка {icon}`refresh` с круговыми стрелками после вопроса сбрасывает все"
+" счётчики. Загрузка снапшота тоже их сбрасывает. Кнопка {icon}`save_all` "
+"рядом сохраняет все счётчики в файл CSV: по строке на каждый байт RAM, "
+"затем ROM, со столбцами `type,page,offset,read,write,exec`, включая "
+"нетронутые байты, — для электронной таблицы или своего скрипта."
+
+msgid "Example: find where the score is kept"
+msgstr "Пример: найти, где хранится счёт"
+
+msgid ""
+"Play the game until the score shows a number you can recognize, such as "
+"150."
+msgstr "Играйте, пока счёт не покажет узнаваемое число, например 150."
+
+msgid "Open the Debugger: **Debug > Debugger**."
+msgstr "Откройте Debugger: **Debug > Debugger**."
+
+#, python-brace-format
+msgid ""
+"Open the **Memory Finder** (**Tools > Search**). Many games keep the "
+"score as digits: type the digits in **Text** as the game shows them, "
+"leading zeros included, such as `000150`. Click {icon}`search` **Find**."
+msgstr ""
+"Откройте **Memory Finder** (**Tools > Search**). Многие игры хранят счёт "
+"цифрами: введите в **Text** цифры так, как их показывает игра, включая "
+"ведущие нули, например `000150`. Нажмите {icon}`search` **Find**."
+
+msgid "**Found @** gives the address, and the **DUMP** shows the digits there."
+msgstr "**Found @** даёт адрес, и **DUMP** показывает там эти цифры."
+
+msgid ""
+"To check it, change a digit in the **DUMP** - `31` to `39` turns a 1 into"
+" a 9 - and close the Debugger. The next time the game draws its score, it"
+" shows the change."
+msgstr ""
+"Чтобы проверить, измените цифру в **DUMP** — `31` на `39` превращает 1 в "
+"9 — и закройте Debugger. Когда игра в следующий раз нарисует счёт, будет "
+"видно изменение."
+
+msgid ""
+"If the text is not found, the game keeps the score in another form. Try "
+"the number as bytes: `01:50` for 150 kept as decimal digits two to a "
+"byte, or `96:00` for 150 as a word, low byte first. To find the code that"
+" adds the points, put a **Write break** on the score (see [Breakpoints "
+"and watching](debugger-breakpoints.md))."
+msgstr ""
+"Если текст не найден, игра хранит счёт в другом виде. Попробуйте число "
+"как байты: `01:50` для 150, хранимого десятичными цифрами по две в байте,"
+" или `96:00` для 150 в виде слова, младший байт первым. Чтобы найти код, "
+"который начисляет очки, поставьте на счёт **Write break** (см. [Точки "
+"останова и наблюдение](debugger-breakpoints.md))."
+
+msgid "Example: save the screen memory to a file"
+msgstr "Пример: сохранить память экрана в файл"
+
+#, python-brace-format
+msgid ""
+"In the {icon}`floppy` floppy disk menu of the **Disasm** toolbar, choose "
+"**Save dump**."
+msgstr ""
+"В меню {icon}`floppy` с дискетой на панели инструментов **Disasm** "
+"выберите **Save dump**."
+
+msgid "Type `4000` in **Start** and `1B00` in **Length**. **End** shows `5AFF`."
+msgstr "Введите `4000` в **Start** и `1B00` в **Length**. **End** покажет `5AFF`."
+
+#, python-brace-format
+msgid ""
+"Click {icon}`save_all` **Save as...** and choose **...as bin**. Name the "
+"file, such as `picture.scr`."
+msgstr ""
+"Нажмите {icon}`save_all` **Save as...** и выберите **...as bin**. Дайте "
+"файлу имя, например `picture.scr`."
+
+msgid ""
+"The file holds the 6912 bytes of the screen, the picture and then its "
+"colors, in the same layout as a `.scr` screenshot (see [Screenshots and "
+"recording](capture.md))."
+msgstr ""
+"Файл содержит 6912 байт экрана, сначала изображение, затем его цвета, в "
+"том же расположении, что и снимок экрана `.scr` (см. [Снимки экрана и "
+"запись](capture.md))."
+
+msgid ""
+"The second screen of a 128K is in RAM page 7. To save it, put page 7 in "
+"the C000 window in **MEMMAP** and save from C000 instead; **Restore "
+"mapping** puts the memory back."
+msgstr ""
+"Второй экран 128K находится в странице RAM 7. Чтобы сохранить его, "
+"включите в **MEMMAP** страницу 7 в окно C000 и сохраняйте с C000; "
+"**Restore mapping** вернёт память на место."
+
+msgid "DUMP panel"
+msgstr "панель DUMP"
+
+msgid "Bytes per row"
+msgstr "Bytes per row"
+
+msgid "Code page"
+msgstr "Code page"
+
+msgid "hex dump"
+msgstr "шестнадцатеричный дамп"
+
+msgid "Go to address"
+msgstr "Go to address"
+
+msgid "go to address"
+msgstr "переход к адресу"
+
+msgid "editing"
+msgstr "правка"
+
+msgid "Allow ROM wr"
+msgstr "Allow ROM wr"
+
+msgid "memory page"
+msgstr "страница памяти"
+
+msgid "RAM and ROM view"
+msgstr "вид RAM и ROM"
+
+msgid "Fetch break"
+msgstr "Fetch break"
+
+msgid "Read break"
+msgstr "Read break"
+
+msgid "Write break"
+msgstr "Write break"
+
+msgid "REG-DUMP panel"
+msgstr "панель REG-DUMP"
+
+msgid "MEMMAP panel"
+msgstr "панель MEMMAP"
+
+msgid "paging in"
+msgstr "включение страницы"
+
+msgid "Restore mapping"
+msgstr "Restore mapping"
+
+msgid "paging"
+msgstr "переключение страниц"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Find pattern"
+msgstr "Find pattern"
+
+msgid "Fill"
+msgstr "Fill"
+
+msgid "Sprite scanner"
+msgstr "Sprite scanner"
+
+msgid "sprite"
+msgstr "спрайт"
+
+msgid "finding"
+msgstr "поиск"
+
+msgid "Save dump"
+msgstr "Save dump"
+
+msgid "Load dump"
+msgstr "Load dump"
+
+msgid "Save RAM Dump"
+msgstr "Save RAM Dump"
+
+msgid "Open RAM Dump"
+msgstr "Open RAM Dump"
+
+msgid "Hobeta"
+msgstr "Hobeta"
+
+msgid "CSV export"
+msgstr "экспорт в CSV"
+
+msgid "Collect"
+msgstr "Collect"
+
+#~ msgid ""
+#~ "**Sprite scanner** in the **Tools** menu"
+#~ " opens it. It shows memory as a"
+#~ " picture, one bit a pixel, so "
+#~ "that sprites, fonts and screens can "
+#~ "be found by eye."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "ROM is protected: a byte in ROM"
+#~ " is written only with **Allow ROM "
+#~ "wr** ticked in the **Options** menu "
+#~ "of the **Disasm** panel. A cartridge "
+#~ "is never written."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Search** in the **Tools** menu of "
+#~ "the **Disasm** panel opens it, as "
+#~ "does the **Find pattern** key: Ctrl+F"
+#~ " in both presets."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Find** goes through the 64K the "
+#~ "CPU sees, starting from the address "
+#~ "at the top of the listing. The "
+#~ "line under the fields says **Found "
+#~ "@** and the address, or **Not "
+#~ "found**. The listing and the **DUMP**"
+#~ " go to the place found."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Fill...** in the **Tools** menu opens"
+#~ " it. With a block selected, it "
+#~ "starts with the block's addresses."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Fill** writes the memory the CPU "
+#~ "sees and closes the window. ROM is"
+#~ " written only with **Allow ROM wr**"
+#~ " ticked."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Sprite scanner** in the **Tools** menu"
+#~ " opens it. It shows memory as a"
+#~ " picture, one bit a pixel, so "
+#~ "that sprites, fonts and screens can "
+#~ "be found by eye. In the picture"
+#~ " it shows Exolon (Raffaele Cecco, "
+#~ "Hewson, 1987): with **Width** 3, the "
+#~ "frames of its hero running stand "
+#~ "one under another, and **Columns** puts"
+#~ " the memory after them side by "
+#~ "side."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The scrollbar at the right and the"
+#~ " mouse wheel move the address by "
+#~ "one row of 8 lines. The button "
+#~ "with the floppy disk saves the "
+#~ "bytes shown - **Width** x **Height** "
+#~ "x 8 of them, or 6144 with "
+#~ "**ZX screen** - to a file, as "
+#~ "they are in memory."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Save dump** and **Load dump** are "
+#~ "in the floppy disk menu at the "
+#~ "right of the **Disasm** toolbar. Each"
+#~ " has a key of its own: see "
+#~ "[Debugger keys](hotkeys.md#debugger-keys)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Save RAM Dump** saves a part of"
+#~ " the memory the CPU sees. Fill "
+#~ "in **Start** and **End**, or **Start**"
+#~ " and **Length**, in hex: the third"
+#~ " follows. Then pick from **Save "
+#~ "as...**:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Open RAM Dump** loads a file "
+#~ "into memory. The button beside **File**"
+#~ " picks the file; a file can be"
+#~ " up to FF00 bytes long. **Start** "
+#~ "is where it goes, C000 to begin"
+#~ " with, and **Length** and **End** "
+#~ "show how far it reaches. A file"
+#~ " that would run past FFFF is "
+#~ "moved down to end there. **OK** "
+#~ "writes it into the memory the CPU"
+#~ " sees, ROM only with **Allow ROM "
+#~ "wr** ticked."
+#~ msgstr ""
+
+#~ msgid "**Collect**, and the buttons that reset the counters and export them."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The button with the circular arrows "
+#~ "resets all counters, after asking. "
+#~ "Loading a snapshot resets them too. "
+#~ "The other button saves all counters "
+#~ "to a CSV file: one line per "
+#~ "byte of RAM and then of ROM, "
+#~ "with the columns `type,page,offset,read,write,exec`,"
+#~ " untouched bytes included, for a "
+#~ "spreadsheet or a script of your "
+#~ "own."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Open the **Memory Finder** (**Tools >"
+#~ " Search**). Many games keep the score"
+#~ " as digits: type the digits in "
+#~ "**Text** as the game shows them, "
+#~ "leading zeros included, such as "
+#~ "`000150`. Click **Find**."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In the floppy disk menu of the "
+#~ "**Disasm** toolbar, choose **Save dump**."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Click **Save as...** and choose **...as"
+#~ " bin**. Name the file, such as "
+#~ "`picture.scr`."
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-dump.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/settings.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-regdump.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-memmap.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-finder.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/other.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/search.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-filler.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/fill.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-sprite-scanner.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/floppy.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-save-dump.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/save_all.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-open-dump.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/fileopen.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/ok-apply.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: images/dbg-heatmap.png"
+#~ msgstr ""
+
+#~ msgid ".. image:: ../../images/refresh.png"
+#~ msgstr ""
+

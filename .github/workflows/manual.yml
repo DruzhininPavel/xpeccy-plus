@@ -1,0 +1,50 @@
+name: Manual
+
+# Puts the user manual of a release on GitHub Pages, every language: what
+# Help > Manual opens in a build that carries no manual of its own.
+# The site follows releases, not main, so it says what the released program does.
+#
+# Pages has to be set to "GitHub Actions" once, in the repository's settings
+# (Settings > Pages > Source). Started by hand: "gh workflow run manual.yml --ref <tag>".
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build
+        run: |
+          python3 -m venv "$RUNNER_TEMP/docs"
+          "$RUNNER_TEMP/docs/bin/python3" -m pip install --disable-pip-version-check -r docs/manual/requirements.txt
+          "$RUNNER_TEMP/docs/bin/python3" tools/manual.py html
+          "$RUNNER_TEMP/docs/bin/python3" tools/manual.py check
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/manual
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

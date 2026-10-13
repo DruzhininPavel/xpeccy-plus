@@ -4,6 +4,7 @@
 #   ./make-appimage.sh              # incremental
 #   CLEAN=1 ./make-appimage.sh      # from scratch
 #   RELEASE=1 ./make-appimage.sh    # release version string
+#   MANUAL=1 ./make-appimage.sh     # with the user manual (docs/manual/README.md)
 #
 # What goes into the AppDir is defined by the install() rules in CMakeLists.txt;
 # this script only drives cmake and linuxdeploy. Run packaging/linux-setup.sh
@@ -42,6 +43,13 @@ echo "src   $SRC_DIR"
 echo "build $BUILD_DIR"
 
 [ -n "$CLEAN" ] && rm -rf "$BUILD_DIR"
+
+# always said, so a build without MANUAL does not install one a previous run built
+MANUAL_DIR=
+if [ -n "$MANUAL" ]; then
+	python3 "$SRC_DIR/tools/manual.py" html
+	MANUAL_DIR="$SRC_DIR/build/manual"
+fi
 
 cmake -S "$SRC_DIR" -B "$BUILD_DIR" \
 	-DCMAKE_BUILD_TYPE=Release \

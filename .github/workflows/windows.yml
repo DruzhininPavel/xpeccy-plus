@@ -106,6 +106,14 @@ jobs:
       - name: Fetch SDL2
         run: packaging\fetch-deps.ps1
 
+      # make-dist -Manual runs tools/manual.py with the python found first
+      - name: Install the manual's tools
+        run: |
+          python -m venv "$env:RUNNER_TEMP\docs"
+          & "$env:RUNNER_TEMP\docs\Scripts\python.exe" -m pip install --disable-pip-version-check -r docs\manual\requirements.txt
+          if ($LASTEXITCODE -ne 0) { throw 'pip install failed' }
+          "$env:RUNNER_TEMP\docs\Scripts" >> $env:GITHUB_PATH
+
       - name: Build and stage
         run: |
           # a hashtable, not an array: splatting an array passes the elements
@@ -113,6 +121,7 @@ jobs:
           $opts = @{
             Preset = '${{ matrix.preset }}'
             Zip = $true
+            Manual = $true
             Jobs = $env:NUMBER_OF_PROCESSORS
             QtDir = $env:QT_DIR
             MinGW = $env:MINGW_DIR

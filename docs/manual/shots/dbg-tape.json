@@ -1,0 +1,52 @@
+{
+  "config": {
+    "TAPE": {
+      "fast": "no"
+    }
+  },
+  "files": {
+    "EXOLON.TAP": {
+      "url": "https://spectrumcomputing.co.uk/pub/sinclair/games/e/Exolon.tap.zip",
+      "sha256": "e07e09ba7b401e9b5b296930496cdc2020d761157a4284b250bf2ba117ca2214"
+    }
+  },
+  "args": [
+    "-m",
+    "zx48",
+    "{media}/EXOLON.TAP"
+  ],
+  "steps": [
+    [
+      "wait",
+      9000
+    ],
+    [
+      "run",
+      "run-action key.debuger"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "run",
+      "show-panel TAPEWIDGET"
+    ],
+    [
+      "wait",
+      700
+    ]
+  ],
+  "crop": {
+    "widget": "TAPEWIDGET",
+    "pad": 0
+  }
+}

@@ -1,0 +1,320 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Getting started"
+msgstr "Primeros pasos"
+
+msgid "Download"
+msgstr "Descarga"
+
+msgid ""
+"Every release is on the [releases page](https://github.com/dotkoval"
+"/xpeccy-plus/releases). Pick the file for your system:"
+msgstr ""
+"Todas las versiones están en la [página de "
+"versiones](https://github.com/dotkoval/xpeccy-plus/releases). Elige el "
+"archivo para tu sistema:"
+
+msgid "System"
+msgstr "Sistema"
+
+msgid "File"
+msgstr "Archivo"
+
+msgid "Windows 10 or 11"
+msgstr "Windows 10 u 11"
+
+msgid "`xpeccy-plus-<version>-win-x64-qt6.zip`"
+msgstr "`xpeccy-plus-<version>-win-x64-qt6.zip`"
+
+msgid "Older Windows"
+msgstr "Windows anteriores"
+
+msgid "`xpeccy-plus-<version>-win-x64.zip`"
+msgstr "`xpeccy-plus-<version>-win-x64.zip`"
+
+msgid "64-bit"
+msgstr "64 bits"
+
+msgid "`xpeccy-plus-<version>-win-x86.zip`"
+msgstr "`xpeccy-plus-<version>-win-x86.zip`"
+
+msgid "32-bit"
+msgstr "32 bits"
+
+msgid "Linux"
+msgstr "Linux"
+
+msgid "`xpeccy-plus-<version>-linux-x86_64.AppImage`"
+msgstr "`xpeccy-plus-<version>-linux-x86_64.AppImage`"
+
+msgid "macOS"
+msgstr "macOS"
+
+msgid "`xpeccy-plus-<version>-macos-arm64-qt6.dmg`"
+msgstr "`xpeccy-plus-<version>-macos-arm64-qt6.dmg`"
+
+msgid "Apple silicon"
+msgstr "Apple silicon"
+
+msgid ""
+"Nothing has to be installed besides. Machines, ROM images and settings "
+"come with the program, so it runs right away."
+msgstr ""
+"No hay que instalar nada más. Las máquinas, las imágenes de ROM y los "
+"ajustes vienen con el programa, así que funciona desde el primer momento."
+
+msgid ""
+"**Windows.** Unpack the archive anywhere you can write to, and run "
+"`xpeccy-plus.exe`."
+msgstr ""
+"**Windows.** Descomprime el archivo en cualquier lugar donde puedas "
+"escribir y ejecuta `xpeccy-plus.exe`."
+
+msgid ""
+"**Linux.** Allow the file to run (`chmod +x`, or the file's properties), "
+"then run it. It needs a distribution no older than Ubuntu 22.04 (glibc "
+"2.35)."
+msgstr ""
+"**Linux.** Permite que el archivo se ejecute (`chmod +x`, o las "
+"propiedades del archivo) y ejecútalo. Necesita una distribución no "
+"anterior a Ubuntu 22.04 (glibc 2.35)."
+
+msgid ""
+"**macOS.** Open the disk image and drag **xpeccy-plus** into "
+"Applications. The program is not signed by a registered developer, so the"
+" first start is refused: open **System Settings > Privacy & Security**, "
+"find the message about Xpeccy+ and click **Open Anyway**."
+msgstr ""
+"**macOS.** Abre la imagen de disco y arrastra **xpeccy-plus** a "
+"Aplicaciones. El programa no está firmado por un desarrollador "
+"registrado, así que el primer arranque se rechaza: abre **Ajustes del "
+"Sistema > Privacidad y seguridad**, busca el mensaje sobre Xpeccy+ y haz "
+"clic en **Abrir igualmente**."
+
+msgid "The first start"
+msgstr "El primer arranque"
+
+msgid "The first start asks which machine to run:"
+msgstr "El primer arranque pregunta qué máquina ejecutar:"
+
+msgid "**Which machine to start?** - any of the built-in machines."
+msgstr "**Which machine to start?** — cualquiera de las máquinas incorporadas."
+
+msgid ""
+"**Next time** - **Start the last one chosen**, **Ask again**, or **Start "
+"this one**."
+msgstr ""
+"**Next time** — **Start the last one chosen**, **Ask again** o **Start "
+"this one**."
+
+msgid ""
+"You can change the answer later on the **Application** page of "
+"**Options**."
+msgstr ""
+"Puedes cambiar la respuesta más tarde en la página **Application** de "
+"**Options**."
+
+msgid "Run a program"
+msgstr "Ejecutar un programa"
+
+msgid "Open a file in any of these ways:"
+msgstr "Abre un archivo de cualquiera de estas formas:"
+
+msgid "**File > Open...**;"
+msgstr "**File > Open...**;"
+
+msgid "drop the file onto the window;"
+msgstr "suelta el archivo sobre la ventana;"
+
+msgid "give its name on the command line: `xpeccy-plus game.tzx`."
+msgstr "da su nombre en la línea de comandos: `xpeccy-plus game.tzx`."
+
+msgid ""
+"A snapshot (`.szx`, `.z80`, `.sna`) continues straight away from where it"
+" was saved."
+msgstr ""
+"Una instantánea (`.szx`, `.z80`, `.sna`) continúa directamente desde "
+"donde se guardó."
+
+msgid ""
+"A tape or a disk can be **run** or just **mounted**. Run resets the "
+"machine and starts the program on it; Mount only puts the tape or disk "
+"in, as if into a real recorder or drive. The first time, Xpeccy+ asks "
+"which one you want. Tick **Remember my choice** to stop the question; the"
+" **File types** page of **Options** sets it again. To be asked about one "
+"file only, hold Shift as you open or drop it."
+msgstr ""
+"Una cinta o un disco se puede **ejecutar** o solo **montar**. Run "
+"reinicia la máquina y arranca el programa en ella; Mount solo inserta la "
+"cinta o el disco, como en un magnetófono o una unidad reales. La primera "
+"vez, Xpeccy+ pregunta cuál quieres. Marca **Remember my choice** para que"
+" no vuelva a preguntar; la página **File types** de **Options** lo cambia"
+" de nuevo. Para que te pregunte solo por un archivo, mantén pulsado Shift"
+" al abrirlo o soltarlo."
+
+msgid ""
+"If the current machine cannot run the file (a +3 disk on a Pentagon, for "
+"instance), Xpeccy+ switches to one that can - the machine the file names,"
+" when it names one. The next file your own machine can run switches back "
+"to it."
+msgstr ""
+"Si la máquina actual no puede ejecutar el archivo (un disco de +3 en un "
+"Pentagon, por ejemplo), Xpeccy+ cambia a una que pueda — la máquina que "
+"indica el archivo, si indica alguna. El siguiente archivo que pueda "
+"ejecutar tu propia máquina vuelve a ella."
+
+msgid "The **File types** page of **Options** sets this for each kind of file:"
+msgstr ""
+"La página **File types** de **Options** lo define para cada tipo de "
+"archivo:"
+
+msgid "**Auto** - switch only when needed, then back to your machine;"
+msgstr "**Auto** — cambiar solo cuando haga falta, y después volver a tu máquina;"
+
+msgid ""
+"**Ask** - when this machine cannot run the file, the **Choose a Machine**"
+" window lists the machines that can: **Switch** to the one picked, "
+"**Keep** the current one, or **Cancel** and not open the file;"
+msgstr ""
+"**Ask** — cuando esta máquina no puede ejecutar el archivo, la ventana "
+"**Choose a Machine** lista las máquinas que pueden: **Switch** a la "
+"elegida, **Keep** la actual, o **Cancel** y no abrir el archivo;"
+
+msgid "**Keep current** - never switch the machine;"
+msgstr "**Keep current** — no cambiar nunca de máquina;"
+
+msgid "or one machine that always opens this kind of file."
+msgstr "o una máquina concreta que siempre abre este tipo de archivo."
+
+msgid "Where the settings are"
+msgstr "Dónde están los ajustes"
+
+msgid "Folder"
+msgstr "Carpeta"
+
+msgid "Windows"
+msgstr "Windows"
+
+msgid "`config` beside `xpeccy-plus.exe`"
+msgstr "`config` junto a `xpeccy-plus.exe`"
+
+msgid "Linux, macOS"
+msgstr "Linux, macOS"
+
+msgid "`~/.config/xpeccy-plus` (or `$XDG_CONFIG_HOME/xpeccy-plus`)"
+msgstr "`~/.config/xpeccy-plus` (o `$XDG_CONFIG_HOME/xpeccy-plus`)"
+
+msgid ""
+"Everything you change is kept there: `config.conf` holds the settings, "
+"`roms` holds the ROM images. A file put in `roms` under the name of a "
+"built-in image replaces that image."
+msgstr ""
+"Todo lo que cambias se guarda ahí: `config.conf` contiene los ajustes, "
+"`roms` contiene las imágenes de ROM. Un archivo puesto en `roms` con el "
+"nombre de una imagen incorporada sustituye a esa imagen."
+
+msgid ""
+"On Windows the whole folder can be moved or copied, settings and all. To "
+"run with a different settings folder, start the program with `--confdir "
+"<folder>`."
+msgstr ""
+"En Windows se puede mover o copiar la carpeta entera, con todos los "
+"ajustes. Para usar otra carpeta de ajustes, arranca el programa con "
+"`--confdir <folder>`."
+
+msgid "This manual"
+msgstr "Este manual"
+
+msgid ""
+"**Help > Manual** opens this manual from the program's own files, so it "
+"needs no network. It opens in the language of your system when the manual"
+" has that language, and in English when it does not. Switch the language "
+"at the top of the left column."
+msgstr ""
+"**Help > Manual** abre este manual desde los propios archivos del "
+"programa, así que no necesita red. Se abre en el idioma de tu sistema si "
+"el manual lo tiene, y en inglés si no. Cambia el idioma en la parte "
+"superior de la columna izquierda."
+
+msgid "download"
+msgstr "descarga"
+
+msgid "installation"
+msgstr "instalación"
+
+msgid "AppImage"
+msgstr "AppImage"
+
+msgid "first start"
+msgstr "primer arranque"
+
+msgid "Which machine to start?"
+msgstr "Which machine to start?"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "Run"
+msgstr "Run"
+
+msgid "Mount"
+msgstr "Mount"
+
+msgid "Remember my choice"
+msgstr "Remember my choice"
+
+msgid "drag and drop"
+msgstr "arrastrar y soltar"
+
+msgid "media"
+msgstr "soportes"
+
+msgid "run or mount"
+msgstr "ejecutar o montar"
+
+msgid "machine"
+msgstr "máquina"
+
+msgid "switched by a file"
+msgstr "cambiada por un archivo"
+
+msgid "Choose a Machine"
+msgstr "Choose a Machine"
+
+msgid "settings folder"
+msgstr "carpeta de ajustes"
+
+msgid "config.conf"
+msgstr "config.conf"
+
+msgid "roms folder"
+msgstr "carpeta roms"
+
+msgid "--confdir"
+msgstr "--confdir"
+
+msgid "configuration folder"
+msgstr "carpeta de configuración"
+
+msgid "Manual"
+msgstr "Manual"
+

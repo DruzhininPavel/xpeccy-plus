@@ -1,0 +1,6 @@
+# what tools/manual.py builds the manual with: pip install -r docs/manual/requirements.txt
+# Sphinx 8.1 is the last one that runs on Python 3.10, which the Linux build has
+sphinx==8.1.3
+myst-parser==4.0.1
+furo==2025.12.19
+sphinx-intl==2.4.0

@@ -1,0 +1,5 @@
+{
+  "args": ["--no-autostart", "{media}/demo.tap"],
+  "steps": [["wait", 3000], ["run", "run-action key.tapewin"], ["wait", 1000], ["run", "activate-window Tape Player"], ["wait", 800]],
+  "frames": []
+}

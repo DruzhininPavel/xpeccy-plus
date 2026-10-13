@@ -1,0 +1,1057 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Keyboard, joystick and mouse"
+msgstr "Teclado, joystick y ratón"
+
+msgid ""
+"Type on the PC keyboard and the machine gets the keys. A gamepad, or a "
+"few keys of the PC keyboard, can be a joystick; the PC mouse can be a "
+"Kempston mouse. The **Input** menu has the commands for all of this: "
+"**Grab Keyboard**, **Grab Mouse**, **Keymap** and **Gamepads**."
+msgstr ""
+"Escribe en el teclado del PC y la máquina recibe las teclas. Un mando, o "
+"unas cuantas teclas del teclado del PC, pueden hacer de joystick; el "
+"ratón del PC puede ser un ratón Kempston. El menú **Input** tiene los "
+"comandos para todo esto: **Grab Keyboard**, **Grab Mouse**, **Keymap** y "
+"**Gamepads**."
+
+msgid "The keyboard"
+msgstr "El teclado"
+
+msgid ""
+"The Spectrum keys are where they are on the PC: letters, digits, Space "
+"and Enter. The two shift keys of the Spectrum are on the left of the PC "
+"keyboard:"
+msgstr ""
+"Las teclas del Spectrum están donde están en el PC: letras, dígitos, "
+"Space y Enter. Las dos teclas de mayúsculas del Spectrum están a la "
+"izquierda del teclado del PC:"
+
+msgid "PC key"
+msgstr "Tecla del PC"
+
+msgid "Spectrum key"
+msgstr "Tecla del Spectrum"
+
+msgid "Left Shift"
+msgstr "Shift izquierdo"
+
+msgid "Caps Shift"
+msgstr "Caps Shift"
+
+msgid "Left Ctrl"
+msgstr "Ctrl izquierdo"
+
+msgid "Symbol Shift"
+msgstr "Symbol Shift"
+
+msgid ""
+"The other PC keys give what a Spectrum makes with two keys pressed "
+"together:"
+msgstr ""
+"Las demás teclas del PC dan lo que un Spectrum hace con dos teclas "
+"pulsadas a la vez:"
+
+msgid "Spectrum keys"
+msgstr "Teclas del Spectrum"
+
+msgid "Gives"
+msgstr "Da"
+
+msgid "Backspace"
+msgstr "Backspace"
+
+msgid "Caps Shift + 0"
+msgstr "Caps Shift + 0"
+
+msgid "DELETE"
+msgstr "DELETE"
+
+msgid "arrows"
+msgstr "flechas"
+
+msgid "Caps Shift + 5, 6, 7, 8"
+msgstr "Caps Shift + 5, 6, 7, 8"
+
+msgid "cursor left, down, up, right"
+msgstr "cursor izquierda, abajo, arriba, derecha"
+
+msgid "Esc, Tab"
+msgstr "Esc, Tab"
+
+msgid "Caps Shift + Space"
+msgstr "Caps Shift + Space"
+
+msgid "BREAK"
+msgstr "BREAK"
+
+msgid "Caps Lock"
+msgstr "Caps Lock"
+
+msgid "Caps Shift + 2"
+msgstr "Caps Shift + 2"
+
+msgid "CAPS LOCK"
+msgstr "CAPS LOCK"
+
+msgid "Page Up"
+msgstr "Page Up"
+
+msgid "Caps Shift + 3"
+msgstr "Caps Shift + 3"
+
+msgid "TRUE VIDEO"
+msgstr "TRUE VIDEO"
+
+msgid "Page Down"
+msgstr "Page Down"
+
+msgid "Caps Shift + 4"
+msgstr "Caps Shift + 4"
+
+msgid "INV. VIDEO"
+msgstr "INV. VIDEO"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Caps Shift + 9"
+msgstr "Caps Shift + 9"
+
+msgid "GRAPHICS"
+msgstr "GRAPHICS"
+
+msgid "`` ` `` and `\\`"
+msgstr "`` ` `` y `\\`"
+
+msgid "Caps Shift + Symbol Shift"
+msgstr "Caps Shift + Symbol Shift"
+
+msgid "extended mode"
+msgstr "modo extendido"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Symbol Shift + Q"
+msgstr "Symbol Shift + Q"
+
+msgid "<="
+msgstr "<="
+
+msgid "End"
+msgstr "End"
+
+msgid "Symbol Shift + E"
+msgstr "Symbol Shift + E"
+
+msgid ">="
+msgstr ">="
+
+msgid "`[` and `]`"
+msgstr "`[` y `]`"
+
+msgid "Symbol Shift + 8, 9"
+msgstr "Symbol Shift + 8, 9"
+
+msgid "( and )"
+msgstr "( y )"
+
+msgid "`;`"
+msgstr "`;`"
+
+msgid "Symbol Shift + O"
+msgstr "Symbol Shift + O"
+
+msgid ";"
+msgstr ";"
+
+msgid "`'`"
+msgstr "`'`"
+
+msgid "Symbol Shift + P"
+msgstr "Symbol Shift + P"
+
+msgid "\""
+msgstr "\""
+
+msgid "`-`"
+msgstr "`-`"
+
+msgid "Symbol Shift + J"
+msgstr "Symbol Shift + J"
+
+msgid "-"
+msgstr "-"
+
+msgid "`=`"
+msgstr "`=`"
+
+msgid "Symbol Shift + K"
+msgstr "Symbol Shift + K"
+
+msgid "+"
+msgstr "+"
+
+msgid "`,` and `.`"
+msgstr "`,` y `.`"
+
+msgid "Symbol Shift + N, M"
+msgstr "Symbol Shift + N, M"
+
+msgid ", and ."
+msgstr ", y ."
+
+msgid "`/`"
+msgstr "`/`"
+
+msgid "Symbol Shift + C"
+msgstr "Symbol Shift + C"
+
+msgid "?"
+msgstr "?"
+
+msgid ""
+"The F-keys, Alt, Insert, the right Shift and Ctrl and the numeric keypad "
+"press nothing on the machine."
+msgstr ""
+"Las teclas F, Alt, Insert, Shift y Ctrl derechos y el teclado numérico no"
+" pulsan nada en la máquina."
+
+msgid ""
+"A key that is a hotkey does its command instead of reaching the machine. "
+"Which keys those are depends on the set of hotkeys you use: in Modern, "
+"Delete, Home, End and Insert are hotkeys, while Esc is left to the "
+"machine as BREAK. See [Hotkeys](hotkeys.md). To give the machine every "
+"key, grab the keyboard."
+msgstr ""
+"Una tecla que es un atajo de teclado ejecuta su comando en lugar de "
+"llegar a la máquina. Qué teclas son depende del juego de atajos que uses:"
+" en Modern, Delete, Home, End e Insert son atajos, mientras que Esc se "
+"deja a la máquina como BREAK. Consulta [Atajos de teclado](hotkeys.md). "
+"Para dar a la máquina todas las teclas, captura el teclado."
+
+msgid ""
+"On Windows and Linux a key counts by its place on the keyboard, not by "
+"the letter the system layout puts on it, so a Cyrillic or another layout "
+"switched on in the system changes nothing."
+msgstr ""
+"En Windows y Linux una tecla cuenta por su posición en el teclado, no por"
+" la letra que le asigna la distribución del sistema, así que una "
+"distribución cirílica u otra activada en el sistema no cambia nada."
+
+msgid "Keymaps"
+msgstr "Mapas de teclado"
+
+msgid ""
+"A keymap says which PC keys the Spectrum keys sit on. Pick one in **Input"
+" > Keymap**, or in the **Keymap** list on the **Input** page of "
+"**Options**:"
+msgstr ""
+"Un mapa de teclado indica en qué teclas del PC están las teclas del "
+"Spectrum. Elige uno en **Input > Keymap**, o en la lista **Keymap** de la"
+" página **Input** de **Options**:"
+
+msgid "**Default** - the keys described above;"
+msgstr "**Default** — las teclas descritas arriba;"
+
+msgid ""
+"**ZX Spectrum 48K.map** - Caps Shift on both left Shift and left Ctrl, "
+"Symbol Shift on both right Shift and right Ctrl, as the two keys sit on a"
+" 48K. The `` ` `` key is EDIT (Caps Shift + 1) and `\\` is GRAPHICS (Caps"
+" Shift + 9);"
+msgstr ""
+"**ZX Spectrum 48K.map** — Caps Shift en Shift izquierdo y en Ctrl "
+"izquierdo, Symbol Shift en Shift derecho y en Ctrl derecho, como están "
+"las dos teclas en un 48K. La tecla `` ` `` es EDIT (Caps Shift + 1) y "
+"`\\` es GRAPHICS (Caps Shift + 9);"
+
+msgid ""
+"**ZX Spectrum 128K.map** - Caps Shift on both Shift keys, Symbol Shift on"
+" both Ctrl keys. The `` ` `` key is EDIT."
+msgstr ""
+"**ZX Spectrum 128K.map** — Caps Shift en las dos teclas Shift, Symbol "
+"Shift en las dos teclas Ctrl. La tecla `` ` `` es EDIT."
+
+msgid ""
+"A keymap changes only the keys it names; all the others stay as in "
+"Default."
+msgstr ""
+"Un mapa de teclado solo cambia las teclas que nombra; todas las demás "
+"quedan como en Default."
+
+msgid ""
+"On macOS the left and right Shift are one key to the program, and so are "
+"the left and right Ctrl. The 48K keymap then has no Symbol Shift: use "
+"Default or the 128K one there."
+msgstr ""
+"En macOS, Shift izquierdo y derecho son una sola tecla para el programa, "
+"y lo mismo Ctrl izquierdo y derecho. El mapa 48K se queda entonces sin "
+"Symbol Shift: usa allí Default o el de 128K."
+
+msgid "Your own keymap"
+msgstr "Tu propio mapa de teclado"
+
+msgid ""
+"A keymap is a text file with the extension `.map`, put in the `keymaps` "
+"folder of the settings folder (see [Where the settings are](getting-"
+"started.md#where-the-settings-are)). It shows in the **Keymap** menu the "
+"next time the menu is opened. A file with the name of a built-in keymap "
+"is used instead of that one."
+msgstr ""
+"Un mapa de teclado es un archivo de texto con la extensión `.map`, puesto"
+" en la carpeta `keymaps` de la carpeta de ajustes (consulta [Dónde están "
+"los ajustes](getting-started.md#where-the-settings-are)). Aparece en el "
+"menú **Keymap** la próxima vez que se abre el menú. Un archivo con el "
+"nombre de un mapa incorporado se usa en lugar de este."
+
+msgid ""
+"Each line is one PC key, then the Spectrum keys it presses, all separated"
+" by tabs:"
+msgstr ""
+"Cada línea es una tecla del PC y después las teclas del Spectrum que "
+"pulsa, todo separado por tabuladores:"
+
+msgid ""
+"The first line makes the `` ` `` key press Caps Shift and 1 together, "
+"which is EDIT. A line with a PC key alone makes that key press nothing."
+msgstr ""
+"La primera línea hace que la tecla `` ` `` pulse a la vez Caps Shift y 1,"
+" que es EDIT. Una línea con una tecla del PC sola hace que esa tecla no "
+"pulse nada."
+
+msgid ""
+"PC keys are named `1` to `0`, `A` to `Z`, `ENT`, `SPC`, `LS` and `RS` "
+"(left and right Shift), `LC` and `RC` (Ctrl), `LA` and `RA` (Alt), `TAB`,"
+" `CAPS`, `BSP`, `ESC`, `F1` to `F11`, `UP`, `DOWN`, `LEFT`, `RIGHT`, "
+"`HOME`, `END`, `INS`, `DEL`, `PGUP`, `PGDN`, the symbol keys `` ` ``, "
+"`\\`, `[`, `]`, `;`, `\"` (the quote key), `-`, `+` (the = key), `,`, "
+"`.`, `/`, and on the numeric keypad `N0` to `N9`, `NDOT`, `NENT`, "
+"`NPLUS`, `NMINUS`, `NMUL`, `NSLASH`, `NLOCK`."
+msgstr ""
+"Las teclas del PC se llaman `1` a `0`, `A` a `Z`, `ENT`, `SPC`, `LS` y "
+"`RS` (Shift izquierdo y derecho), `LC` y `RC` (Ctrl), `LA` y `RA` (Alt), "
+"`TAB`, `CAPS`, `BSP`, `ESC`, `F1` a `F11`, `UP`, `DOWN`, `LEFT`, `RIGHT`,"
+" `HOME`, `END`, `INS`, `DEL`, `PGUP`, `PGDN`, las teclas de símbolos `` `"
+" ``, `\\`, `[`, `]`, `;`, `\"` (la tecla de comillas), `-`, `+` (la tecla"
+" =), `,`, `.`, `/`, y en el teclado numérico `N0` a `N9`, `NDOT`, `NENT`,"
+" `NPLUS`, `NMINUS`, `NMUL`, `NSLASH`, `NLOCK`."
+
+msgid ""
+"Spectrum keys are one character each: `1` to `0`, the letters in lower "
+"case `a` to `z`, `E` for Enter, `C` for Caps Shift, `S` for Symbol Shift,"
+" and a space for Space."
+msgstr ""
+"Las teclas del Spectrum son un carácter cada una: `1` a `0`, las letras "
+"en minúscula `a` a `z`, `E` para Enter, `C` para Caps Shift, `S` para "
+"Symbol Shift y un espacio para Space."
+
+msgid ""
+"A PC key can also move the Kempston joystick: `JU`, `JD`, `JL`, `JR` for "
+"up, down, left and right, `JF` for fire, `J2` to `J4` for the extra "
+"buttons."
+msgstr ""
+"Una tecla del PC también puede mover el joystick Kempston: `JU`, `JD`, "
+"`JL`, `JR` para arriba, abajo, izquierda y derecha, `JF` para disparo, "
+"`J2` a `J4` para los botones extra."
+
+msgid "Grab Keyboard"
+msgstr "Grab Keyboard"
+
+msgid ""
+"**Input > Grab Keyboard** gives the whole PC keyboard to the machine. "
+"While it is on:"
+msgstr ""
+"**Input > Grab Keyboard** da todo el teclado del PC a la máquina. "
+"Mientras está activado:"
+
+msgid "every key reaches the machine, Esc and the F-keys included;"
+msgstr "todas las teclas llegan a la máquina, incluidas Esc y las teclas F;"
+
+msgid ""
+"the hotkeys stop working, except the key of **Grab Keyboard** itself "
+"(ScrollLock or Alt+G in Modern, Alt+G in Classic);"
+msgstr ""
+"los atajos de teclado dejan de funcionar, salvo la tecla del propio "
+"**Grab Keyboard** (ScrollLock o Alt+G en Modern, Alt+G en Classic);"
+
+msgid ""
+"a keyboard player set up in **Gamepads** no longer takes its keys: they "
+"go to the machine as keys;"
+msgstr ""
+"un jugador de teclado configurado en **Gamepads** ya no toma sus teclas: "
+"van a la máquina como teclas;"
+
+msgid "the commands in the menus and on the toolbar still work."
+msgstr ""
+"los comandos de los menús y de la barra de herramientas siguen "
+"funcionando."
+
+msgid ""
+"To let the keyboard go, press the **Grab Keyboard** key again, or press "
+"Ctrl and Alt together and release them with no other key between (Ctrl "
+"and Cmd on a Mac). A short message on the picture says when the keyboard "
+"is grabbed and released."
+msgstr ""
+"Para soltar el teclado, pulsa otra vez la tecla de **Grab Keyboard**, o "
+"pulsa Ctrl y Alt a la vez y suéltalas sin ninguna otra tecla entre medias"
+" (Ctrl y Cmd en un Mac). Un breve mensaje sobre la imagen indica cuándo "
+"se captura y se suelta el teclado."
+
+msgid "Machines with a keyboard of their own"
+msgstr "Máquinas con teclado propio"
+
+msgid ""
+"**Profi.** A Profi has a PC-style keyboard of its own. With the keyboard "
+"grabbed, the PC keyboard works as that keyboard: the keys type the "
+"characters printed on them, Shift included, and F1 to F10, Home, End, "
+"Page Up, Page Down, Insert and Delete give the Profi's own keys. Not "
+"grabbed, it is the Spectrum keyboard described above."
+msgstr ""
+"**Profi.** Un Profi tiene su propio teclado de estilo PC. Con el teclado "
+"capturado, el teclado del PC funciona como ese teclado: las teclas "
+"escriben los caracteres impresos en ellas, Shift incluido, y F1 a F10, "
+"Home, End, Page Up, Page Down, Insert y Delete dan las teclas propias del"
+" Profi. Sin capturar, es el teclado del Spectrum descrito arriba."
+
+msgid ""
+"**ATM Turbo 2+ and ZX Evolution.** These machines read a PC keyboard "
+"beside the Spectrum one, and every key you press reaches both. The **PC "
+"keyboard** row in the **Input** group of the **Machine** page of "
+"**Options** sets the scan codes the machine gets: **As the machine has "
+"it**, **Scanset 1 (XT)**, **Scanset 2 (AT)** or **Scanset 3 (PS/2)**. "
+"Leave it as the machine has it unless a program asks for another set."
+msgstr ""
+"**ATM Turbo 2+ y ZX Evolution.** Estas máquinas leen un teclado de PC "
+"además del del Spectrum, y cada tecla que pulsas llega a los dos. La fila"
+" **PC keyboard** del grupo **Input** de la página **Machine** de "
+"**Options** fija los códigos de escaneo que recibe la máquina: **As the "
+"machine has it**, **Scanset 1 (XT)**, **Scanset 2 (AT)** o **Scanset 3 "
+"(PS/2)**. Déjalo como lo tiene la máquina, salvo que un programa pida "
+"otro juego."
+
+msgid "Virtual Keyboard"
+msgstr "Virtual Keyboard"
+
+msgid "![The Virtual Keyboard](images/virtual-keyboard.png)"
+msgstr "![El Virtual Keyboard](images/virtual-keyboard.png)"
+
+msgid "The Virtual Keyboard"
+msgstr "El Virtual Keyboard"
+
+msgid ""
+"**View > Virtual Keyboard** opens a picture of the Spectrum keyboard. The"
+" keys the machine has down light up, whether they come from the PC "
+"keyboard, a joystick on keys or a click here."
+msgstr ""
+"**View > Virtual Keyboard** abre una imagen del teclado del Spectrum. Las"
+" teclas que la máquina tiene pulsadas se iluminan, vengan del teclado del"
+" PC, de un joystick en teclas o de un clic aquí."
+
+msgid "Left button on a key - holds the key down while the button is held."
+msgstr ""
+"Botón izquierdo sobre una tecla — mantiene la tecla pulsada mientras se "
+"mantiene el botón."
+
+msgid ""
+"Right button on a key - locks the key down; a second right click lets it "
+"go. Lock Caps Shift, then click a digit, to get a cursor key."
+msgstr ""
+"Botón derecho sobre una tecla — bloquea la tecla pulsada; un segundo clic"
+" derecho la suelta. Bloquea Caps Shift y luego haz clic en un dígito para"
+" obtener una tecla de cursor."
+
+msgid "Middle button on a key - lets all the keys go."
+msgstr "Botón central sobre una tecla — suelta todas las teclas."
+
+msgid "Right-click beside the keys for a menu:"
+msgstr "Haz clic derecho junto a las teclas para ver un menú:"
+
+msgid ""
+"**Zoom x1**, **Zoom x1.5**, **Zoom x2**, **Zoom x3** - the size of the "
+"window. You can also drag its edge; the picture keeps its shape."
+msgstr ""
+"**Zoom x1**, **Zoom x1.5**, **Zoom x2**, **Zoom x3** — el tamaño de la "
+"ventana. También puedes arrastrar su borde; la imagen conserva su forma."
+
+msgid ""
+"**Dock under the emulator** - the keyboard loses its frame and sits under"
+" the main window, as wide as it, and moves with it. In fullscreen, or "
+"when there is no room below, it lies over the bottom of the picture."
+msgstr ""
+"**Dock under the emulator** — el teclado pierde su marco y se coloca bajo"
+" la ventana principal, con su mismo ancho, y se mueve con ella. En "
+"pantalla completa, o si no hay sitio debajo, queda sobre la parte "
+"inferior de la imagen."
+
+msgid "**Release all keys** - lets every key go."
+msgstr "**Release all keys** — suelta todas las teclas."
+
+msgid ""
+"Keys typed while the window is in front go to the machine. Esc closes the"
+" window."
+msgstr ""
+"Las teclas pulsadas mientras la ventana está delante van a la máquina. "
+"Esc cierra la ventana."
+
+msgid "Joysticks"
+msgstr "Joysticks"
+
+msgid ""
+"The joystick interface of the machine is set on the **Machine** page of "
+"**Options**, in the **Input** group: **Joystick** is **None**, **Kempston"
+" 5-bit** or **Kempston 8-bit**. The 8-bit one has three more fire "
+"buttons, **Fire 2** to **Fire 4**."
+msgstr ""
+"La interfaz de joystick de la máquina se fija en la página **Machine** de"
+" **Options**, en el grupo **Input**: **Joystick** es **None**, **Kempston"
+" 5-bit** o **Kempston 8-bit**. El de 8 bits tiene tres botones de disparo"
+" más, de **Fire 2** a **Fire 4**."
+
+msgid ""
+"Sinclair, cursor and QAOP joysticks are keys on the Spectrum keyboard, so"
+" they need no interface: the **Gamepads** window presses those keys for "
+"you."
+msgstr ""
+"Los joysticks Sinclair, cursor y QAOP son teclas del teclado del "
+"Spectrum, así que no necesitan interfaz: la ventana **Gamepads** pulsa "
+"esas teclas por ti."
+
+msgid ""
+"The ALF TV Game consoles have no keyboard: there the arrows with Space or"
+" Enter are the first joystick, and W, A, S, D with left Shift or left "
+"Ctrl are the second."
+msgstr ""
+"Las consolas ALF TV Game no tienen teclado: allí las flechas con Space o "
+"Enter son el primer joystick, y W, A, S, D con Shift izquierdo o Ctrl "
+"izquierdo son el segundo."
+
+msgid "Gamepads"
+msgstr "Gamepads"
+
+msgid "![The Gamepads window](images/gamepads.png)"
+msgstr "![La ventana Gamepads](images/gamepads.png)"
+
+msgid "The Gamepads window"
+msgstr "La ventana Gamepads"
+
+msgid ""
+"**Input > Gamepads > Manage...** opens the **Gamepads** window. It has a "
+"tab for each of two players, **Player 1** and **Player 2**. A change "
+"works at once; there is nothing to apply."
+msgstr ""
+"**Input > Gamepads > Manage...** abre la ventana **Gamepads**. Tiene una "
+"pestaña para cada uno de los dos jugadores, **Player 1** y **Player 2**. "
+"Un cambio funciona al instante; no hay nada que aplicar."
+
+msgid "**Device** - what the player holds:"
+msgstr "**Device** — lo que tiene el jugador en la mano:"
+
+msgid "**None**;"
+msgstr "**None**;"
+
+msgid "**Keyboard: arrows + Ctrl** - the arrows, and either Ctrl for fire;"
+msgstr ""
+"**Keyboard: arrows + Ctrl** — las flechas, y cualquiera de los Ctrl para "
+"disparar;"
+
+msgid "**Keyboard: WASD + Space**;"
+msgstr "**Keyboard: WASD + Space**;"
+
+msgid ""
+"a gamepad connected to the PC, or one used before and now unplugged, "
+"marked **(not connected)**."
+msgstr ""
+"un mando conectado al PC, o uno usado antes y ahora desconectado, marcado"
+" como **(not connected)**."
+
+msgid ""
+"Under it, a line shows what the last button or key pressed does, so you "
+"can try the pad right there. A gamepad plugged in for the first time goes"
+" to a player with no device, and the window opens by itself to show it "
+"(not in fullscreen)."
+msgstr ""
+"Debajo, una línea muestra qué hace el último botón o tecla pulsado, para "
+"que puedas probar el mando allí mismo. Un mando conectado por primera vez"
+" va a un jugador sin dispositivo, y la ventana se abre sola para "
+"mostrarlo (no en pantalla completa)."
+
+msgid "**Joystick** - what the player's joystick is to the Spectrum:"
+msgstr "**Joystick** — qué es el joystick del jugador para el Spectrum:"
+
+msgid "Joystick"
+msgstr "Joystick"
+
+msgid "Up, down, left, right, fire"
+msgstr "Arriba, abajo, izquierda, derecha, disparo"
+
+msgid "**Kempston**"
+msgstr "**Kempston**"
+
+msgid "the Kempston interface"
+msgstr "la interfaz Kempston"
+
+msgid "**Sinclair / Interface II**"
+msgstr "**Sinclair / Interface II**"
+
+msgid "keys 9, 8, 6, 7, 0"
+msgstr "teclas 9, 8, 6, 7, 0"
+
+msgid "**Sinclair port 2 (left)**"
+msgstr "**Sinclair port 2 (left)**"
+
+msgid "keys 4, 3, 1, 2, 5"
+msgstr "teclas 4, 3, 1, 2, 5"
+
+msgid "**Cursor/Protek/AGF**"
+msgstr "**Cursor/Protek/AGF**"
+
+msgid "keys 7, 6, 5, 8, 0"
+msgstr "teclas 7, 6, 5, 8, 0"
+
+msgid "**QAOP**"
+msgstr "**QAOP**"
+
+msgid "keys Q, A, O, P, and Space or M for fire, picked in the list beside it"
+msgstr ""
+"teclas Q, A, O, P, y Space o M para disparar, elegido en la lista de al "
+"lado"
+
+msgid "**Custom**"
+msgstr "**Custom**"
+
+msgid "Spectrum keys of your own; it starts as QAOP and Space"
+msgstr "teclas del Spectrum elegidas por ti; empieza como QAOP y Space"
+
+msgid ""
+"Picking **Kempston** switches the machine's Kempston joystick on if it is"
+" off. The rows **Fire 2** to **Fire 4** show when the machine has the "
+"8-bit Kempston."
+msgstr ""
+"Elegir **Kempston** activa el joystick Kempston de la máquina si está "
+"desactivado. Las filas de **Fire 2** a **Fire 4** aparecen cuando la "
+"máquina tiene el Kempston de 8 bits."
+
+msgid ""
+"The table lists what the player can do. The first rows, in bold, are the "
+"joystick: **Up**, **Down**, **Left**, **Right**, **Fire**. The second "
+"column shows the buttons or keys that press each one. On a gamepad the "
+"directions are the D-pad and the left stick, shown as **Gamepad up** and "
+"so on, and **Fire** is every face button no other row uses."
+msgstr ""
+"La tabla muestra lo que puede hacer el jugador. Las primeras filas, en "
+"negrita, son el joystick: **Up**, **Down**, **Left**, **Right**, "
+"**Fire**. La segunda columna muestra los botones o teclas que pulsan cada"
+" una. En un mando, las direcciones son la cruceta y el stick izquierdo, "
+"que se muestran como **Gamepad up**, etc., y **Fire** es cada botón "
+"frontal que no usa ninguna otra fila."
+
+msgid ""
+"Double-click a row, or right-click it and choose **Change...**, to set "
+"its buttons."
+msgstr ""
+"Haz doble clic en una fila, o clic derecho y elige **Change...**, para "
+"fijar sus botones."
+
+#, python-brace-format
+msgid ""
+"{icon}`add` **Add mapping**, or **Add...** on the right-click menu, adds "
+"a row of your own."
+msgstr ""
+"{icon}`add` **Add mapping**, o **Add...** en el menú del clic derecho, "
+"añade una fila propia."
+
+msgid ""
+"Right-click a row of your own and choose **Delete** to remove it; on a "
+"joystick row the same place has **Back to defaults**."
+msgstr ""
+"Haz clic derecho en una fila propia y elige **Delete** para quitarla; en "
+"una fila del joystick, en el mismo sitio está **Back to defaults**."
+
+msgid ""
+"Tick **Turbo** on a row to make it repeat while the button is held. "
+"**Turbo rate** sets how fast, from 1 to 25 times a second."
+msgstr ""
+"Marca **Turbo** en una fila para que se repita mientras se mantiene el "
+"botón. **Turbo rate** fija la rapidez, de 1 a 25 veces por segundo."
+
+msgid ""
+"**Stick dead zone** - how far a stick has to move before it counts. A "
+"keyboard player has no stick, and the setting is grayed."
+msgstr ""
+"**Stick dead zone** — cuánto tiene que moverse un stick antes de que "
+"cuente. Un jugador de teclado no tiene stick, y el ajuste aparece en "
+"gris."
+
+msgid "Binding a row"
+msgstr "Asignar una fila"
+
+#, python-brace-format
+msgid ""
+"The binding window has two sides. The right side, **Gamepad** or **PC "
+"Keyboard**, lists what presses the row: press the buttons on the pad, or "
+"click in the box and press the keys. The first one replaces what the row "
+"had, the next ones are added. {icon}`add` **Add from list** picks a pad "
+"input by name, with no pad needed. **Clear** empties the list, "
+"**Defaults** puts back the joystick row's own buttons."
+msgstr ""
+"La ventana de asignación tiene dos lados. El derecho, **Gamepad** o **PC "
+"Keyboard**, muestra lo que pulsa la fila: pulsa los botones del mando, o "
+"haz clic en el cuadro y pulsa las teclas. El primero sustituye lo que "
+"tenía la fila, los siguientes se añaden. {icon}`add` **Add from list** "
+"elige una entrada del mando por su nombre, sin necesidad de mando. "
+"**Clear** vacía la lista, **Defaults** devuelve los botones propios de la"
+" fila del joystick."
+
+msgid ""
+"The left side, **Spectrum**, says what the row presses. On a joystick row"
+" it is fixed by the **Joystick** choice, except on **Custom**, where you "
+"pick the key. A row of your own can press:"
+msgstr ""
+"El lado izquierdo, **Spectrum**, indica qué pulsa la fila. En una fila "
+"del joystick lo fija la elección de **Joystick**, salvo con **Custom**, "
+"donde eliges la tecla. Una fila propia puede pulsar:"
+
+msgid ""
+"**Joystick** - up, down, left, right or fire of the player's joystick, "
+"whichever it is;"
+msgstr ""
+"**Joystick** — arriba, abajo, izquierda, derecha o disparo del joystick "
+"del jugador, sea cual sea;"
+
+msgid ""
+"**Key** - a Spectrum key from the list, or click **Press** and press the "
+"PC key it is on. **Modifier** adds Caps Shift or Symbol Shift held with "
+"it;"
+msgstr ""
+"**Key** — una tecla del Spectrum de la lista, o haz clic en **Press** y "
+"pulsa la tecla del PC en la que está. **Modifier** añade Caps Shift o "
+"Symbol Shift pulsado con ella;"
+
+msgid "**Kempston** - a Kempston direction or fire button;"
+msgstr "**Kempston** — una dirección o un botón de disparo Kempston;"
+
+msgid ""
+"**Mouse** - a Kempston mouse move, button or wheel turn. A move gets "
+"faster the longer it lasts;"
+msgstr ""
+"**Mouse** — un movimiento, botón o giro de rueda del ratón Kempston. Un "
+"movimiento se acelera cuanto más dura;"
+
+msgid "**Action** - any command of the emulator, as its hotkey would."
+msgstr ""
+"**Action** — cualquier comando del emulador, como lo haría su atajo de "
+"teclado."
+
+#, python-brace-format
+msgid ""
+"**Turbo: repeats while held** is the row's **Turbo** box. {icon}`ok-"
+"apply` **OK** keeps the binding."
+msgstr ""
+"**Turbo: repeats while held** es la casilla **Turbo** de la fila. {icon"
+"}`ok-apply` **OK** conserva la asignación."
+
+msgid "Saving the bindings"
+msgstr "Guardar las asignaciones"
+
+#, python-brace-format
+msgid ""
+"{icon}`floppy` **Save as...** writes the player's table to a `.pad` file;"
+" {icon}`fileopen` **Load...** reads one back. It lists the last eight "
+"files loaded or saved, by name, with a check by the one the table "
+"matches, and **Browse...** below them for any other file; with none yet, "
+"it opens the file dialog at once. {icon}`refresh` **Reset** takes the "
+"player back to the joystick's defaults and drops the rows of your own."
+msgstr ""
+"{icon}`floppy` **Save as...** escribe la tabla del jugador en un archivo "
+"`.pad`; {icon}`fileopen` **Load...** vuelve a leer uno. Muestra los ocho "
+"últimos archivos cargados o guardados, por nombre, con una marca junto al"
+" que coincide con la tabla, y **Browse...** debajo para cualquier otro "
+"archivo; si aún no hay ninguno, abre directamente el diálogo de archivos."
+" {icon}`refresh` **Reset** devuelve al jugador a los valores por defecto "
+"del joystick y descarta las filas propias."
+
+#, python-brace-format
+msgid ""
+"**Game bindings.** When the box **Game bindings** on the **Input** page "
+"of **Options** is ticked, opening a tape, disk or snapshot looks for a "
+"`.pad` file of the same name beside it: `Exolon.tzx` takes `Exolon.pad`. "
+"Player 1 uses those bindings until the next file is opened, and the "
+"window says **From Exolon.pad, until the next image** beside a "
+"{icon}`cancel` **Revert** button, which goes back to your own bindings. "
+"**Save as...** offers that name and place, so saving a table for a game "
+"is one click."
+msgstr ""
+"**Game bindings.** Con la casilla **Game bindings** de la página "
+"**Input** de **Options** marcada, al abrir una cinta, un disco o una "
+"instantánea se busca a su lado un archivo `.pad` con el mismo nombre: "
+"`Exolon.tzx` toma `Exolon.pad`. El jugador 1 usa esas asignaciones hasta "
+"que se abre el siguiente archivo, y la ventana dice **From Exolon.pad, "
+"until the next image** junto a un botón {icon}`cancel` **Revert**, que "
+"vuelve a tus propias asignaciones. **Save as...** propone ese nombre y "
+"ese lugar, así que guardar una tabla para un juego cuesta un clic."
+
+#, python-brace-format
+msgid ""
+"When you change player 1's bindings while a game's file is in use, the "
+"program asks where the change goes: **Game config** saves it into the "
+"game's `.pad` file, **User config** makes the table your own, "
+"**Temporary** keeps it until the next file. {icon}`cancel` **Cancel**, "
+"Esc or closing the question takes the change back."
+msgstr ""
+"Si cambias las asignaciones del jugador 1 mientras está en uso el archivo"
+" de un juego, el programa pregunta adónde va el cambio: **Game config** "
+"lo guarda en el archivo `.pad` del juego, **User config** hace tuya la "
+"tabla, **Temporary** lo mantiene hasta el siguiente archivo. "
+"{icon}`cancel` **Cancel**, Esc o cerrar la pregunta deshacen el cambio."
+
+msgid "Quick switch"
+msgstr "Cambio rápido"
+
+msgid ""
+"**Input > Gamepads** also lists the joysticks for player 1, with the "
+"device in use above them, so you can switch from Kempston to Sinclair "
+"mid-game without opening the window. Below them, **Saved presets** are "
+"the files of **Load...**, and **Reset to defaults** goes back to the "
+"joystick's defaults. The **Input** page of **Options** shows what each "
+"player has, with a **Gamepads...** button that opens the window."
+msgstr ""
+"**Input > Gamepads** también muestra los joysticks del jugador 1, con el "
+"dispositivo en uso encima, para que puedas pasar de Kempston a Sinclair "
+"en plena partida sin abrir la ventana. Debajo, **Saved presets** son los "
+"archivos de **Load...**, y **Reset to defaults** vuelve a los valores por"
+" defecto del joystick. La página **Input** de **Options** muestra lo que "
+"tiene cada jugador, con un botón **Gamepads...** que abre la ventana."
+
+msgid "Mouse"
+msgstr "Ratón"
+
+#, python-brace-format
+msgid ""
+"To use the PC mouse as a Kempston mouse, set **Mouse** to **Kempston "
+"mouse** in the **Input** group of the **Machine** page of **Options**. "
+"The {icon}`settings` button beside it opens its settings:"
+msgstr ""
+"Para usar el ratón del PC como ratón Kempston, pon **Mouse** en "
+"**Kempston mouse** en el grupo **Input** de la página **Machine** de "
+"**Options**. El botón {icon}`settings` de al lado abre sus ajustes:"
+
+msgid ""
+"**Sensitivity** - how fast the pointer moves. In the middle it keeps up "
+"with the PC one."
+msgstr ""
+"**Sensitivity** — a qué velocidad se mueve el puntero. En el centro va al"
+" ritmo del del PC."
+
+msgid "**Wheel** - the wheel is read too, as on the extended Kempston mouse."
+msgstr "**Wheel** — también se lee la rueda, como en el ratón Kempston extendido."
+
+msgid "**Swap buttons** - the left and right buttons trade places."
+msgstr "**Swap buttons** — los botones izquierdo y derecho se intercambian."
+
+msgid ""
+"The mouse belongs to the machine only while it is grabbed. Grab it in one"
+" of these ways:"
+msgstr ""
+"El ratón pertenece a la máquina solo mientras está capturado. Captúralo "
+"de una de estas formas:"
+
+msgid "click the picture with the middle button;"
+msgstr "haz clic en la imagen con el botón central;"
+
+msgid "click it with the left button, while a program reads the mouse;"
+msgstr ""
+"haz clic en ella con el botón izquierdo, mientras un programa lee el "
+"ratón;"
+
+msgid "**Input > Grab Mouse**."
+msgstr "**Input > Grab Mouse**."
+
+msgid ""
+"While the mouse is grabbed, the PC pointer is hidden and the buttons go "
+"to the machine, the wheel too when **Wheel** is ticked. A move of the "
+"hand takes the Spectrum pointer the same distance whatever size the "
+"picture is drawn at. To let the mouse go, click the middle button again, "
+"use **Grab Mouse** again, or press Ctrl and Alt together and release them"
+" (Ctrl and Cmd on a Mac)."
+msgstr ""
+"Mientras el ratón está capturado, el puntero del PC se oculta y los "
+"botones van a la máquina, y también la rueda si **Wheel** está marcado. "
+"Un movimiento de la mano lleva el puntero del Spectrum la misma distancia"
+" sea cual sea el tamaño al que se dibuja la imagen. Para soltar el ratón,"
+" vuelve a hacer clic con el botón central, usa otra vez **Grab Mouse**, o"
+" pulsa Ctrl y Alt a la vez y suéltalas (Ctrl y Cmd en un Mac)."
+
+msgid "Input Overlay"
+msgstr "Input Overlay"
+
+msgid ""
+"**View > Input Overlay** draws the keys, the joystick and the mouse over "
+"the picture, lit while they are pressed. It is marked **EXPERIMENTAL** in"
+" the menu."
+msgstr ""
+"**View > Input Overlay** dibuja las teclas, el joystick y el ratón sobre "
+"la imagen, iluminados mientras están pulsados. En el menú está marcado "
+"como **EXPERIMENTAL**."
+
+msgid "**Show** - the overlay on or off."
+msgstr "**Show** — activa o desactiva la superposición."
+
+msgid ""
+"**Keyboard**, **Joystick**, **Mouse** - which parts to draw: the 40 "
+"Spectrum keys, the Kempston joystick with its fire buttons, the Kempston "
+"mouse with its buttons and wheel. A joystick or mouse the machine does "
+"not have is drawn faint."
+msgstr ""
+"**Keyboard**, **Joystick**, **Mouse** — qué partes dibujar: las 40 teclas"
+" del Spectrum, el joystick Kempston con sus botones de disparo, el ratón "
+"Kempston con sus botones y su rueda. Un joystick o un ratón que la "
+"máquina no tiene se dibuja tenue."
+
+msgid ""
+"**Source** - where the overlay takes the input from: **Auto: replay "
+"reads, host otherwise** - what the program read while an RZX replay "
+"plays, and what you press the rest of the time; **What the program "
+"reads** - only the keys and buttons a program has read; **What is pressed"
+" on the host** - everything you press, read or not."
+msgstr ""
+"**Source** — de dónde toma la superposición la entrada: **Auto: replay "
+"reads, host otherwise** — lo que el programa leyó mientras se reproduce "
+"un RZX, y lo que pulsas el resto del tiempo; **What the program reads** —"
+" solo las teclas y botones que ha leído un programa; **What is pressed on"
+" the host** — todo lo que pulsas, se lea o no."
+
+msgid ""
+"**Position** - **Bottom left**, **Bottom**, **Bottom right** (the "
+"default), **Top left**, **Top** or **Top right**."
+msgstr ""
+"**Position** — **Bottom left**, **Bottom**, **Bottom right** (por "
+"defecto), **Top left**, **Top** o **Top right**."
+
+msgid "**Size** - **Small**, **Medium** or **Large**."
+msgstr "**Size** — **Small**, **Medium** o **Large**."
+
+msgid "**Opacity** - from **40%** to **100%**."
+msgstr "**Opacity** — de **40%** a **100%**."
+
+msgid "keyboard"
+msgstr "teclado"
+
+msgid "system layout"
+msgstr "distribución del sistema"
+
+msgid "keymap"
+msgstr "mapa de teclado"
+
+msgid "own"
+msgstr "de usuario"
+
+msgid "MAP"
+msgstr "MAP"
+
+msgid "grabbing"
+msgstr "captura"
+
+msgid "Profi"
+msgstr "Profi"
+
+msgid "PC keyboard"
+msgstr "PC keyboard"
+
+msgid "scan code set"
+msgstr "juego de códigos de escaneo"
+
+msgid "Dock under the emulator"
+msgstr "Dock under the emulator"
+
+msgid "joystick"
+msgstr "joystick"
+
+msgid "Kempston"
+msgstr "Kempston"
+
+msgid "Kempston joystick"
+msgstr "joystick Kempston"
+
+msgid "ALF TV Game"
+msgstr "ALF TV Game"
+
+msgid "joysticks"
+msgstr "joysticks"
+
+msgid "gamepad"
+msgstr "mando"
+
+msgid "Sinclair"
+msgstr "Sinclair"
+
+msgid "Cursor"
+msgstr "Cursor"
+
+msgid "QAOP"
+msgstr "QAOP"
+
+msgid "Custom"
+msgstr "Custom"
+
+msgid "joypad"
+msgstr "joypad"
+
+msgid "autofire"
+msgstr "disparo automático"
+
+msgid "Turbo rate"
+msgstr "Turbo rate"
+
+msgid "Stick dead zone"
+msgstr "Stick dead zone"
+
+msgid "binding"
+msgstr "asignación"
+
+msgid "PAD"
+msgstr "PAD"
+
+msgid "saving bindings"
+msgstr "guardar asignaciones"
+
+msgid "presets"
+msgstr "preajustes"
+
+msgid "Game bindings"
+msgstr "Game bindings"
+
+msgid "quick switch"
+msgstr "cambio rápido"
+
+msgid "Kempston mouse"
+msgstr "ratón Kempston"
+
+msgid "mouse"
+msgstr "ratón"
+
+msgid "sensitivity"
+msgstr "sensibilidad"
+
+msgid "Grab Mouse"
+msgstr "Grab Mouse"
+

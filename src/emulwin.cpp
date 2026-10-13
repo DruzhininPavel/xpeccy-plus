@@ -28,6 +28,7 @@
 #include <QSet>
 #include <QStyleOption>
 #include <QApplication>
+#include <QLocale>
 
 #include <QDebug>
 
@@ -2127,6 +2128,8 @@ void MainWin::initMenuBar() {
 	QMenu* help = new xMenu("Help", this);
 	helpMenu = help;
 	bar->addMenu(help);
+	help->addAction("Manual", this, &MainWin::openManual);
+	help->addSeparator();
 	help->addAction("Project Page", this, []() {
 		QDesktopServices::openUrl(QUrl("https://github.com/dotkoval/xpeccy-plus"));
 	});
@@ -2308,6 +2311,25 @@ void MainWin::fillRecent() {
 		recentMenu->addSeparator();
 		recentMenu->addAction("Clear", this, []() {conf.recentList.clear();});
 	}
+}
+
+// The manual the package carries, in the system's language when it has that
+// one; a build without it (a plain dev build) opens the copy on the web.
+void MainWin::openManual() {
+#if defined(__APPLE__)
+	QString dir = QCoreApplication::applicationDirPath() + "/../Resources/doc/manual";
+#elif defined(__linux) || defined(__BSD)
+	QString dir = QCoreApplication::applicationDirPath() + "/../share/doc/" XPKGNAME "/manual";
+#else
+	QString dir = QCoreApplication::applicationDirPath() + "/manual";
+#endif
+	QString lang = QLocale::system().uiLanguages().value(0).left(2).toLower();
+	if (!QFileInfo::exists(QString("%0/%1/index.html").arg(dir, lang)))
+		lang = "en";
+	QString page = QString("%0/%1/index.html").arg(dir, lang);
+	QDesktopServices::openUrl(QFileInfo::exists(page)
+		? QUrl::fromLocalFile(QFileInfo(page).absoluteFilePath())
+		: QUrl("https://dotkoval.github.io/xpeccy-plus/" + lang + "/"));
 }
 
 // not modal: the machine goes on, and a second ask brings the open one forward

@@ -416,6 +416,7 @@ typedef struct {
 		void fsReveal(int y);
 		void fsHide();
 		void showAbout();
+		void openManual();
 		void favManage();
 		void calcCoords(QMouseEvent*);
 		QPoint winCenter();		// the middle of the window, on the screen
