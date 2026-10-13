@@ -30,6 +30,12 @@ html {
 	}
 }
 
+/* the title over the sidebar on one line in every language: "Руководство Xpeccy+" is
+   the longest */
+.sidebar-brand-text {
+	font-size: 1.25rem;
+}
+
 /* language switcher under the search box: a globe and a list */
 .xp-languages {
 	display: flex;
