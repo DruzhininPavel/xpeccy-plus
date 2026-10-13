@@ -36,7 +36,7 @@ A command that has a key shows it in the menu. The keys are set on the **Hotkeys
 ```{index} toolbar, toolbar; customizing, Restore Default Buttons, Icon Size
 ```
 
-Out of the box it has {icon}`fileopen` **Open**, {icon}`save_all` **Save**,
+By default the toolbar has {icon}`fileopen` **Open**, {icon}`save_all` **Save**,
 {icon}`shutdown` **Reset**, {icon}`model-zx48` **Model**, {icon}`tape` **Tape Player**,
 {icon}`fdd_disk` **Disk Manager**, {icon}`fullscreen_icon_16` **Fullscreen**,
 {icon}`vkeys` **Virtual Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debug**,
@@ -48,7 +48,7 @@ Out of the box it has {icon}`fileopen` **Open**, {icon}`save_all` **Save**,
 Right-click the toolbar to change it:
 
 - **Buttons** - every command that can be a button, by group; tick the ones you want.
-- **Remove** - takes away the button you clicked.
+- **Remove** - removes the button you right-clicked.
 - **Add Separator Here**, **Add Space Here** - a line or a gap between groups.
 - **Icon Size** - 16 x 16 or 24 x 24.
 - **Restore Default Buttons** - back to the set above.
@@ -71,12 +71,12 @@ changes the volume too.
 
 1. the name of the running machine; a click or a right-click on it opens the list of
    machines;
-2. {icon}`tapeYellow` **tape** - its light and the block being played, `3/7`; it shows
-   when a tape is in. Yellow: playing, red: recording, gray: stopped;
+2. {icon}`tapeYellow` **tape** - the tape light and the block being played, `3/7`; shown
+   only while a tape is in. Yellow: playing, red: recording, gray: stopped;
 3. {icon}`diskGreen` **A: B: C: D:** - a light for each floppy drive the machine has.
    Green: reading, red: writing, blue: a disk is in, gray: empty;
-4. {icon}`joystick` **joystick** and {icon}`mouse` **mouse** - lit while the program
-   reads them;
+4. {icon}`joystick` **joystick** and {icon}`mouse` **mouse** - lit while the running
+   program reads them;
 5. the CPU clock in MHz;
 6. frames per second, or **paused**.
 
@@ -101,7 +101,8 @@ on a click as well as opening their submenu: **Reset** resets the machine, **Deb
 opens the debugger.
 
 - Drop a file onto the picture to open it (see [Run a program](getting-started.md#run-a-program)).
-- The middle button grabs the mouse for a program that uses one, and lets it go again.
+- A click with the middle button grabs the mouse for a program that uses one; another
+  click lets the mouse go.
 - Alt with the mouse wheel changes the volume.
 
 ## Fullscreen

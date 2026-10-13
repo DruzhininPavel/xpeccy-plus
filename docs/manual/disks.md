@@ -34,7 +34,7 @@ A machine with no disk interface of its own can be given one. Open the **Machine
 **+3 (uPD765)**. The **Hard disk** row does the same for an IDE interface: **NemoIDE**,
 **NemoIDE A8**, **NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** or **Profi**. An interface that
 is part of the machine's board cannot be changed: the list is grayed out, and its tooltip
-says **Built into this board**. The +2A and +3 cannot take a Beta Disk.
+says **Built into this board**. A Beta Disk cannot be added to the +2A and +3.
 
 ## Floppy disks
 
@@ -52,15 +52,16 @@ Open a disk image with **File > Open...**, or drop it onto the window: it goes i
 
 ![Media > Floppy Drives](images/menu-floppy.png)
 
-**Media > Floppy Drives** has a submenu for each drive the machine has. Its name is the disk
-in the drive, or **(empty)**; the drive letter is on its icon. A star after the name means
-the disk has been changed and not saved yet. Each submenu has:
+**Media > Floppy Drives** has a submenu for each drive the machine has. The submenu is named
+after the disk in the drive, or **(empty)**; the drive letter is on its icon. A star after
+the name means the disk has been changed and not saved yet. Each submenu has:
 
 - **Open...** - put a disk image into this drive. It is only mounted: nothing starts, and
   the machine stays the same.
-- **New** - an empty disk. On a Beta Disk machine you are asked **Format for TR-DOS?**:
-  {icon}`ok-apply` **Yes** gives an empty TR-DOS disk ready for files, {icon}`cancel` **No**
-  an unformatted one, for a program that formats it itself.
+- **New** - put an empty disk into this drive. On a Beta Disk machine you are asked
+  **Format for TR-DOS?**: {icon}`ok-apply` **Yes** gives an empty TR-DOS disk ready for
+  files, {icon}`cancel` **No** gives an unformatted one, for a program that formats it
+  itself.
 - **Save** - write the disk back to the file it came from.
 - **Save As...** - write the disk to a new file; you pick the name and the format.
 - **Eject** - take the disk out.
@@ -98,8 +99,8 @@ into several parts.
 
 Most TR-DOS disks start with a file named `boot`, which the machine runs when it boots from
 the disk. When a TR-DOS disk has no `boot` of its own, Xpeccy+ adds one as the disk is opened,
-so the disk starts by itself and shows a menu of its files. The disk is not counted as
-changed for that, and the image file is not touched unless you save the disk.
+so the disk starts by itself and shows a menu of its files. Adding this file does not count
+as a change to the disk, and the image file is not touched unless you save the disk.
 
 To stop this, open the **Machine** page of **Options**, click the {icon}`settings` gear in
 the **Disk** row and clear **Add boot loader**. The file added is `boot.$B` in the
@@ -118,7 +119,7 @@ The {icon}`settings` gear in the **Disk** row of the **Machine** page opens
 - **Add boot loader** - see [The boot file](#the-boot-file).
 - **TR-DOS ROM** - which ROM image the Beta Disk runs.
 - **Interleave** - the order of sectors on each track of a `.trd` or `.scl` image, set when
-  it is opened. TR-DOS formats its own disks as 1, 9, 2, 10...
+  the image is opened. TR-DOS formats its own disks as 1, 9, 2, 10...
 - **Number of drives** - from one (A) to four (A to D); a +3 has two at most. A drive left
   out is not there at all, and programs find it missing.
 - **Drives** - for each drive, **80 cylinders** and **Double side**.
@@ -128,7 +129,7 @@ The {icon}`settings` gear in the **Disk** row of the **Machine** page opens
 ```{index} Fast Disk Access
 ```
 
-Real drives spend time moving the head and waiting for the sector to come round.
+Real drives spend time moving the head and waiting for the sector to come around.
 **Media > Fast Disk Access** skips those waits, so disks load much faster. The same switch
 is in the **Disk Manager** and in **Machine: Disk**.
 
@@ -141,10 +142,11 @@ What the machine writes to a disk stays in memory: the image file changes only w
 save the disk.
 
 **File > Save Changed Disks** asks about each drive whose disk was changed:
-**Disk A: game.trd has been changed. Do you want to save it?** **Yes** writes it to its
-file, **No** leaves it, **Cancel** stops asking. A new disk that has no file yet asks for a
-name, and so does a disk opened from a format Xpeccy+ reads but does not write, such as
-`.td0`, `.fdi` or `.ima`. A save that fails says why, and the disk stays changed.
+**Disk A: game.trd has been changed. Do you want to save it?** **Yes** writes the disk to its
+file, **No** goes on without saving it, **Cancel** stops asking. For a new disk that has no
+file yet you are asked for a file name. The same happens for a disk opened from a format
+Xpeccy+ reads but does not write, such as `.td0`, `.fdi` or `.ima`. When a save fails, a
+message says why, and the disk stays changed.
 
 Before a changed disk is ejected or replaced, and when you close Xpeccy+, you are asked the
 same question. **Cancel** keeps the disk in the drive, or keeps the program open.
@@ -180,13 +182,13 @@ Select one or more files in the catalog (Ctrl or Shift for several) and use the 
 the right:
 
 - {icon}`tape` **Copy to tape** - add the files to the tape in the [Tape Player](tapes.md),
-  as BASIC programs or code blocks. A file whose length does not match the sectors it takes
-  (several files joined into one) is skipped.
+  as BASIC programs or code blocks. A file whose length does not match the number of sectors
+  it occupies (several files joined into one) is skipped.
 - {icon}`dollar` **Save as Hobeta** - write each file to a folder you pick as a Hobeta file
   (`name.$C`).
 - {icon}`filebin` **Save as RAW** - write each file's bare data, with no header (`name.C`).
 
-The window follows the drives as the machine runs: a file the program writes shows up in
+The window is kept up to date as the machine runs: a file the program writes shows up in
 the catalog straight away.
 
 ### +3DOS disks
@@ -211,11 +213,11 @@ header, or the whole file when it has none.
 ```{index} SD card, --sdcard
 ```
 
-The two ZX Evolution machines have an SD card slot. **Media > SD Card** shows the card that
-is in, or **(no card)**, and has:
+The two ZX Evolution machines have an SD card slot. **Media > SD Card** shows the card in
+the slot, or **(no card)**, and has:
 
-- **Open Image...** - an image file of a card.
-- **Open Folder...** - a folder on your computer, served to the machine as a card. See
+- **Open Image...** - insert a card from an image file.
+- **Open Folder...** - use a folder on your computer as the card. See
   [A folder as a disk](#a-folder-as-a-disk).
 - **Eject** - take the card out.
 - **Write Protect** - the card's lock switch. It is always on for a folder.
@@ -237,11 +239,11 @@ of **Options**, click the {icon}`settings` gear in the **Hard disk** row and set
 (and **Slave**, if you want two) to **HDD (ATA)**.
 
 **Media > Drives** then has a submenu for each connected device, named **Master:** or
-**Slave:** and the image in it:
+**Slave:** followed by the name of the image in it:
 
-- **Open Image...** - a hard disk image: `.hdi`, or a plain image of the disk under any
-  other name.
-- **Open Folder...** - a folder on your computer, served as a disk. See
+- **Open Image...** - open a hard disk image: `.hdi`, or a plain image of the disk with any
+  other extension.
+- **Open Folder...** - use a folder on your computer as the disk. See
   [A folder as a disk](#a-folder-as-a-disk).
 - **Eject** - take the image out.
 - **Properties...** - the window **Hard Disk: Master** (or **Slave**): the image, its
@@ -267,8 +269,8 @@ programs into the folder and open it.
   **Apply** in **Options**. Files added later show up only then.
 - The disk is made just big enough for the folder: from 512 MB up to 32 GB. A larger folder
   is not opened, and the message **folder too big for a disk** says so.
-- Left out: files of 4 GB and over, folders more than 16 levels deep, more than 65536
-  entries in one folder, and anything past 200000 entries in all. The message
+- These are left out: files of 4 GB and over, folders more than 16 levels deep, entries
+  past 65536 in one folder, and anything past 200000 entries in all. The message
   **folder: not all of it fits** says when something was left out.
 - On a hard disk, a folder that holds NedoOS with its `ZXLDR` file in the top level can
   boot NedoOS.
@@ -278,9 +280,9 @@ programs into the folder and open it.
 ```{index} cartridge, Interface 2
 ```
 
-The ZX Spectrum 48K takes an Interface 2 ROM cartridge, and the ALF TV Game consoles their
-game cartridges. **Media > Cartridge** shows the cartridge that is in, or **(empty)**, and
-has:
+The ZX Spectrum 48K has a slot for an Interface 2 ROM cartridge, and the ALF TV Game consoles
+have a slot for their own game cartridges. **Media > Cartridge** shows the cartridge in the
+slot, or **(empty)**, and has:
 
 - **Open...** - a cartridge image, `.rom` or `.bin`, up to 4 MB. The machine is reset with
   the cartridge in.

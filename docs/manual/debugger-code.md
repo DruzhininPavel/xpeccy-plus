@@ -39,7 +39,7 @@ named place is shown as the name plus the offset: `LD A,(table + 2)`.
 
 Some rows are not instructions:
 
-- a **label** row, in bold on a tinted ground, names the address of the row under it;
+- a **label** row, in bold on a tinted background, names the address of the row under it;
 - a **comment** row, in gray, starts with `;`;
 - an `EQU` row follows an instruction when a label points inside it: `NAME` with
   `EQU $-2` says the label is two bytes before the next instruction. Programs that change
@@ -56,9 +56,9 @@ The last column says more about the instruction at PC:
 
 - for an instruction that reads or writes memory, such as `LD A,(HL)` or `LD (#5C3A),HL`,
   the byte or word at that address now;
-- for a conditional jump, call or return whose condition is met, an arrow: down when it
-  goes to a higher address, up when it goes to a lower one. The row it goes to, if it is
-  in view, gets an arrow too.
+- for a conditional jump, call or return whose condition is met, an arrow: down when the
+  jump goes to a higher address, up when it goes to a lower one. The row the jump goes to,
+  if that row is in view, gets an arrow too.
 
 ## Moving around
 
@@ -69,9 +69,9 @@ The listing follows the cursor:
 
 | Key | What it does |
 |---|---|
-| Up, Down | the cursor one row; at the edge the listing scrolls by one instruction |
+| Up, Down | move the cursor one row; at the edge the listing scrolls by one instruction |
 | Ctrl+Up, Ctrl+Down | scroll by one byte, to line up instructions that start elsewhere |
-| PageUp, PageDown | a page back or on |
+| PageUp, PageDown | scroll one page up or down |
 | mouse wheel | scroll by one instruction; with Ctrl, by one byte |
 
 These commands have keys of their own, listed in
@@ -87,8 +87,8 @@ These commands have keys of their own, listed in
   every **Jump to operand**, typed address, label picked in the **Labels List** and
   register clicked in the **CPU** panel.
 - **Bookmark 1** to **Bookmark 5** remember the address at the top of the listing;
-  **Go to bookmark 1** to **Go to bookmark 5** bring it back. Bookmarks are not kept when
-  the program closes.
+  **Go to bookmark 1** to **Go to bookmark 5** take the listing back to that address.
+  Bookmarks are not kept when the program closes.
 
 A click on a register's name in the **CPU** panel takes the listing to the address the
 register holds. A right-click on the name does the same for the **DUMP** panel (see
@@ -117,7 +117,7 @@ A name that is not a label yet makes a new label instead: see
 ```{index} listing; editing, assembler; in the listing
 ```
 
-Double-click a cell, or select it and press Enter, to change it. Enter puts the change in,
+Double-click a cell, or select it and press Enter, to change it. Enter applies the change,
 Esc leaves the cell as it was.
 
 **Bytes** - type the new bytes in hex, two digits each, with no spaces: `3E05` writes `3E`
@@ -130,7 +130,7 @@ Labels can be used in the instruction, alone or in a sum: `jp loop`, `ld hl,tabl
 `ld a,(ix+offset)`. An instruction that cannot be assembled writes nothing, though the
 cursor still moves down: check the row before you go on.
 
-The command column also takes data:
+You can also type data in the command column:
 
 | You type | It writes |
 |---|---|
@@ -155,23 +155,24 @@ place of the addresses in the instructions, and they can be typed wherever an ad
 asked for: in the listing, in the **DUMP** panel, in breakpoints.
 
 To add a label, double-click the address of the row and type the name. A name starts with
-a letter or `_`, and has no spaces and no `$`. A row that already has a label gets the new
-name instead. A name that reads as a hex number, such as `FADE` or `C0DE`, is taken as an
-address: start such a name with `_`.
+a letter or `_`, and has no spaces and no `$`. If the row already has a label, that label
+gets the new name. A name that reads as a hex number, such as `FADE` or `C0DE`, is taken as
+an address: start such a name with `_`.
 
 To add a comment, type `;` and the text in the address cell: `; draws the score`. The
 comment shows on a gray row above the address.
 
-To remove a label or a comment, open the address cell of its own row, clear it and press
-Enter.
+To remove a label or a comment, open the address cell of the row it is shown on, clear the
+cell and press Enter.
 
 ```{index} Show labels, Switch labels, Load labels, Save labels
 ```
 
 The {icon}`label` Labels menu of the toolbar has:
 
-- **Show labels** - the label rows in the listing. The names in the instructions stay
-  either way. The **Switch labels** key does the same: Ctrl+L in both presets.
+- **Show labels** - shows or hides the label rows in the listing. The names inside the
+  instructions are shown either way. The **Switch labels** key does the same: Ctrl+L in
+  both presets.
 - **Load labels** - reads a labels file.
 - **Save labels** - writes the labels in effect to a file.
 - **Labels list** - opens the **Labels List**.
@@ -182,8 +183,8 @@ The {icon}`label` Labels menu of the toolbar has:
 ```
 
 When you type a name in the address or command column, after the second letter a list of
-the labels that contain those letters drops down. Enter takes the first one, or pick
-another with the arrow keys or the mouse. The same list helps in the
+the labels that contain those letters drops down. Enter picks the first one, or pick
+another with the arrow keys or the mouse. The same list appears in the
 [Breakpoint Editor](debugger-breakpoints.md).
 
 ### Label files
@@ -199,7 +200,7 @@ name:
 00:DA00 level_data
 ```
 
-SjASMPlus writes such a file with its `LABELSLIST` directive. Only the place inside the
+SjASMPlus writes such a file with its `LABELSLIST` directive. Only the offset inside the
 page counts, so `02:0010` is the same label as `02:8010`. A line can also leave the page
 out, as in `:8010 print_score`: the page is then 5 for an address from 4000 to 7FFF, 2 from
 8000 to BFFF and 0 from C000 to FFFF.
@@ -217,9 +218,10 @@ when there is none.
 ```
 
 A program can also come with its labels. With **Auto-load labels** ticked on the
-**Debugger** page of **Options**, opening a file loads the `.labels` file of the same name
-beside it, until the next file is opened. See [Opening a file](files.md). From the command
-line, `-l` loads a labels file (see [Command line](command-line.md#debugging)).
+**Debugger** page of **Options**, opening a file also loads the `.labels` file of the same
+name from the same folder. These labels are in effect until the next file is opened. See
+[Opening a file](files.md). From the command line, `-l` loads a labels file (see
+[Command line](command-line.md#debugging)).
 
 ### The Labels List
 
@@ -229,12 +231,12 @@ line, `-l` loads a labels file (see [Command line](command-line.md#debugging)).
 ![The Labels List](images/dbg-labels-list.png)
 
 **Labels list** in the {icon}`label` Labels menu, or in the right-click menu of the listing,
-opens it.
+opens the **Labels List**.
 
 - **Group** - the set of labels in effect. The buttons beside it: {icon}`edit` renames the
-  set, {icon}`add` adds a new empty one and {icon}`cancel` deletes it.
+  set, {icon}`add` adds a new empty set and {icon}`cancel` deletes the set.
 - The field under it filters the list: only labels that contain what you type are shown.
-  Upper and lower case count.
+  The case of the letters matters.
 - The list shows each label's address and name. Double-click a label, or select it and
   press Enter, and the listing goes there.
 - **Convert address to CPU address space** - shows where the CPU sees each label now, as
@@ -253,17 +255,18 @@ Many commands work on a block of memory rather than one row:
 - a click with the middle button clears the selection.
 
 A block takes in the rows from the first byte of the first row to the first byte of the
-last row. The **DUMP** panel shares the same selection. It is cleared each time the
-Debugger opens.
+last row. The **DUMP** panel shares the same selection. The selection is cleared each time
+the Debugger opens.
 
 With a block selected:
 
-- {icon}`bars` **View** changes every byte of the block, when the cursor row is inside it;
+- {icon}`bars` **View** marks every byte of the block, if the cursor row is inside the
+  block;
 - **Disasm to file** saves just the block;
 - Ctrl+C copies the block as assembler text, ready to paste into a source file. With no
   block, it copies the cursor row;
-- **Fill...** in the {icon}`other` Tools menu starts with the block's addresses (see
-  [Memory](debugger-memory.md)).
+- **Fill...** in the {icon}`other` Tools menu opens with the block's start and end filled
+  in (see [Memory](debugger-memory.md)).
 
 ## How memory is shown
 
@@ -296,8 +299,8 @@ the page wherever it is paged in. Labels and comments belong to the memory the s
 runs: every byte the CPU runs as an instruction becomes **Opcode**, and every byte it reads
 or writes as data and that has no mark yet becomes **Byte**. It works while the machine
 runs, after the Debugger is closed. Play the program for a while, open the Debugger again,
-and the data shows as data. **Clear mapping** takes every mark away, yours too, after
-asking.
+and the data shows as data. **Clear mapping** removes every mark, the ones you set too,
+after asking.
 
 The marks, the labels and the comments are kept together in a memory map file: see
 [Memory maps](#memory-maps).
@@ -314,7 +317,7 @@ The marks, the labels and the comments are kept together in a memory map file: s
 | {icon}`bars` **View** | **Opcode**, **Byte**, **ASCII**, **Word**, **Address** |
 | {icon}`arrGreen` **Trace** | running the program step by step, see [The Debugger](debugger.md) |
 | {icon}`other` **Tools** | **Search**, **Fill...**, **Sprite scanner** (see [Memory](debugger-memory.md)), **Keyboard**, **Watcher** |
-| {icon}`settings` **Options** | how the listing looks and works, below |
+| {icon}`settings` **Options** | how the listing looks and works, see below |
 | {icon}`refresh` (circular arrows) | **Reload snapshot & labels** |
 | {icon}`floppy` (floppy disk) | **Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save map** |
 
@@ -329,11 +332,11 @@ A right-click on the listing opens a shorter menu: **Breakpoints**, **View**,
 ```
 
 - **Dim address** - the addresses in a paler color, so the instructions stand out.
-- **Dim opcodes** - the bytes in a paler color. On out of the box.
+- **Dim opcodes** - the bytes in a paler color. On by default.
 - **Syntax colors** - numbers in their own color and labels in bold, inside the
-  instructions. On out of the box. The color is **Const** on the **Debugger** page of
+  instructions. On by default. The color is **Const** on the **Debugger** page of
   **Options**.
-- **Block separator** - the empty row after each return and jump. On out of the box.
+- **Block separator** - the empty row after each return and jump. On by default.
 - **Show segment** - addresses as the memory and page they are in: `RAM:05:0000` is the
   first byte of RAM page 5, `ROM:00:0038` a byte of ROM page 0. Off each time the program
   starts.
@@ -353,7 +356,7 @@ between sessions.
 **Disasm to file** in the {icon}`floppy` floppy disk menu writes the listing to a text file
 you name: the selected block, or all 64K with nothing selected. The file starts with an
 `ORG` line; labels are written as `name:`, comments as they are, instructions after a tab.
-It can go back into an assembler.
+An assembler can read the file back.
 
 Ctrl+C copies the same text for the block, without the first line.
 
@@ -383,10 +386,10 @@ From the command line, `--xmap` loads a map at start (see
 ```
 
 The {icon}`refresh` button with the circular arrows opens the last file again, the way it
-was opened (see [Opening a file](files.md)), and reads the labels file you loaded again.
+was opened (see [Opening a file](files.md)), and reads again the labels file you loaded.
 Then the listing goes to PC. Use it after building a new version of your program: the new
-code and its new labels come in with one click. The **Reload file** key does the same; it
-has no key out of the box.
+code and its new labels come in with one click. The **Reload file** hotkey does the same;
+no key is set for it by default.
 
 ## Example: label your own routine
 
@@ -414,8 +417,8 @@ data:
 3. Right-click inside the block and choose **View > Byte**.
 
 The rows become `DB #nn,#nn,...`, eight bytes a row. If the end of the table still shows as
-an instruction, the last row was a longer instruction that ended past the first byte:
-select the rows still wrong and choose **View > Byte** again. A table of addresses reads
-better as **View > Address**, and a message as **View > ASCII**.
+an instruction, the last row you selected was an instruction of several bytes, and only its
+first byte was marked: select the rows still wrong and choose **View > Byte** again. A
+table of addresses reads better as **View > Address**, and a message as **View > ASCII**.
 
 Save a memory map (**Save map**) to keep the marks for the next time.

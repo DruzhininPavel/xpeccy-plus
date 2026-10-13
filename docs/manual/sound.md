@@ -19,7 +19,8 @@ brings it back. The arrow beside the **Mute** button opens a slider for the volu
 
 Alt with the mouse wheel over the picture turns the volume up or down by 5%. The slider
 under the **Mute** button shows the new volume for a moment; when the toolbar is hidden,
-the picture shows it. While the mouse is grabbed, the wheel goes to the machine instead.
+the volume is shown over the picture. While the mouse is grabbed, the wheel goes to the
+machine instead.
 
 This volume is the same as **Master** on the **Sound** page, and both mute and volume
 are kept for the next start.
@@ -34,27 +35,28 @@ are kept for the next start.
 **Output** - how the sound reaches your speakers:
 
 - **Driver** - **SDL** plays the sound; **NULL** plays nothing.
-- **Rate** - the sample rate: **Auto** takes the rate your computer's sound device
-  uses and shows which one it is, or **48000** or **44100**.
-- **Latency** - how much sound is kept ready ahead of playback, from 10 to 150 ms. Less
-  makes the sound follow the picture and the keys more closely; too little and the
-  sound clicks. With **Auto adjust** ticked (the default) the program finds the value
-  by itself: it raises the latency when the sound runs short and lowers it again after a
-  long clean spell. The slider then shows the value it has settled on.
+- **Rate** - the sample rate: **Auto** uses the rate of your computer's sound device
+  and shows that rate; **48000** and **44100** set a fixed rate.
+- **Latency** - how much sound is kept ready ahead of playback, from 10 to 150 ms. A
+  lower value makes the sound follow the picture and the keys more closely; a value too
+  low makes the sound click. With **Auto adjust** ticked (the default) the program finds
+  the value by itself: it raises the latency when the sound runs short and lowers it
+  again after a long time with no gaps. The slider then shows the value the program has
+  settled on.
 
 ```{index} Low cut (DC), High cut (anti-alias), anti-alias filter
 ```
 
-The group beside it has three switches:
+The **Sound** group beside **Output** has three switches:
 
 - **Enabled** - with it off, the program plays silence. The machine still runs at its
   normal speed.
 - **Low cut (DC)** - takes out the lowest frequencies. The chips' output sits above zero
   rather than around it, and that offset only takes loudness away from the rest of the
-  sound. On out of the box.
+  sound. On by default.
 - **High cut (anti-alias)** - takes out the frequencies too high for the output rate.
   Without it they come back as false notes, which is heard most in beeper music as a
-  harsh crunch. On out of the box; it costs a little CPU time.
+  harsh crunch. On by default; it costs a little CPU time.
 
 ```{index} Volumes, Master
 ```
@@ -79,10 +81,10 @@ The **Sound** page is the same for every machine.
 ```
 
 The **Sound** group on the **Machine** page of **Options** lists the sound devices of
-the running machine. Each machine keeps its own: a change here goes with this machine
-only. The button with the {icon}`settings` gear at the end of a row opens the device's
-further settings. See [The Machine page](machines.md#the-machine-page) for the rest of the
-page.
+the running machine. Each machine keeps its own devices: a change here applies to this
+machine only. The button with the {icon}`settings` gear at the end of a row opens the
+device's further settings. See [The Machine page](machines.md#the-machine-page) for the
+rest of the page.
 
 ### PSG
 
@@ -92,7 +94,8 @@ page.
 ```{index} see: sound chip; PSG
 ```
 
-The sound chips most music on the Spectrum is written for. The **PSG** row says how many:
+The PSG is the sound chip most music on the Spectrum is written for. The **PSG** row sets
+how many of them the machine has:
 
 | Choice | What you get |
 |---|---|
@@ -111,10 +114,11 @@ same.
 The {icon}`settings` gear opens **Machine: PSG**:
 
 - **Chip** - **AY-3-8910** or **YM2149**. The two sound alike; the YM2149 plays volume
-  envelopes in finer steps. **YM2203** is the chip of TurboSound FM and is chosen with it.
+  envelopes in finer steps. **YM2203** is the chip of TurboSound FM: choosing
+  **x2 - TurboSound FM** sets it, and the list is then grayed out.
 - **Clock** - the chip's clock in MHz, which sets the pitch. **Auto** is half the
-  machine's base CPU clock, as the boards divide it, and the list shows what that comes
-  to. **1.773447** is the clock of the ZX Spectrum 128, +2 and +3; **1.75** that of
+  machine's base CPU clock, as the boards divide it, and the list shows the resulting
+  value. **1.773447** is the clock of the ZX Spectrum 128, +2 and +3; **1.75** that of
   most clones. Music written for one of them sounds a little out of tune on the other.
   You can also type a clock of your own.
 - **Stereo** - **Mono**, or the order of the three voices from left to right: **ABC**,
@@ -168,8 +172,8 @@ in the machine.
 
 The beeper is the machine's own speaker, and every machine has it. Its volume is
 **Beeper** on the **Sound** page. **MIC in the beeper**, in the **ULA** group of
-**Machine: Advanced Settings**, mixes in the signal the machine sends to the tape too,
-a tenth as loud, as a machine with a ULA does (see
+**Machine: Advanced Settings**, also mixes the signal the machine sends to the tape into
+the beeper sound, a tenth as loud, as a machine with a ULA does (see
 [Advanced settings](machines.md#advanced-settings)).
 
 ## Recording the sound

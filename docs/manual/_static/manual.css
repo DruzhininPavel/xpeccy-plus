@@ -3,24 +3,66 @@ html {
 	font-size: 93.75%;
 }
 
-/* wider text column where the screen has room for it */
-@media (min-width: 82em) {
+/* The text column on every page: wide enough to show a window's picture at 1:1 (the
+   Debugger, 977 px, is the widest), narrower when the browser is. The left sidebar takes
+   what is left over half and half, so the column stays in the middle as Furo has it.
+   The width is the text's; the column adds its 3em margins. The 20px is a scroll bar,
+   which 100vw counts; 30em are the two sidebars, the right one gone below 82em. */
+:root {
+	--xp-content: min(980px, calc(100vw - 36em - 20px));
+}
+@media (max-width: 82em) {
+	:root {
+		--xp-content: min(980px, calc(100vw - 21em - 20px));
+	}
+}
+@media (min-width: 63em) {
 	.content {
-		width: 52em;
+		width: var(--xp-content);
+	}
+	.sidebar-drawer {
+		width: max(15em, calc(50% - var(--xp-content) / 2 - 3em));
+	}
+}
+@media (max-width: 63em) {
+	.content {
+		width: 100%;
 	}
 }
 
-/* language switcher under the search box */
+/* the title over the sidebar on one line in every language: "Руководство Xpeccy+" is
+   the longest */
+.sidebar-brand-text {
+	font-size: 1.25rem;
+}
+
+/* language switcher under the search box: a globe and a list */
 .xp-languages {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem 0.75rem;
+	align-items: center;
+	gap: 0.5rem;
 	padding: 0.5rem var(--sidebar-item-spacing-horizontal);
 	font-size: var(--sidebar-item-font-size);
 	border-bottom: 1px solid var(--color-sidebar-search-border);
 }
-.xp-lang-current {
-	font-weight: bold;
+.xp-lang-icon {
+	width: 1.1em;
+	height: 1.1em;
+	flex: none;
+	fill: none;
+	stroke: var(--color-foreground-secondary);
+	stroke-width: 1.6;
+}
+.xp-lang-select {
+	flex: 1;
+	min-width: 0;
+	font: inherit;
+	color: var(--color-foreground-primary);
+	background: var(--color-background-primary);
+	border: 1px solid var(--color-sidebar-search-border);
+	border-radius: 4px;
+	padding: 0.2em 0.3em;
+	cursor: pointer;
 }
 
 /* Tables: names, keys and values never break over two lines - only the last

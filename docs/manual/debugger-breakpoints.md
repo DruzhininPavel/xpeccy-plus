@@ -8,12 +8,12 @@
 
 A breakpoint tells the machine to stop at a place or on an event: when the CPU runs an
 instruction at an address, reads or writes a memory cell, uses a port, gets an interrupt,
-or when an expression comes true. Instead of stopping, a breakpoint can also count, save
-the screen or write a line to the breakpoint log, and two of them can time the code between
-them. The **Watcher** window and the watched ports show values while the machine runs.
+or when an expression comes true. Instead of stopping, a breakpoint can also count its
+hits, save the screen or write a line to the breakpoint log, and two of them can time the
+code between them. The **Watcher** window and the watched ports show values while the machine runs.
 
-Breakpoints work while the machine runs. A step taken in the Debugger does not stop on one
-(see [Running and stepping](debugger.md#running-and-stepping)).
+Breakpoints work while the machine runs. A step taken in the Debugger does not stop on a
+breakpoint (see [Running and stepping](debugger.md#running-and-stepping)).
 
 ## Kinds of breakpoint
 
@@ -33,7 +33,7 @@ Breakpoints work while the machine runs. A step taken in the Debugger does not s
 ```{index} breakpoint; Fetch, breakpoint; Read, breakpoint; Write
 ```
 
-A memory breakpoint has three flags, and any of them can be on:
+A memory breakpoint has three flags, and any number of them can be on:
 
 - **Fetch** - the CPU is about to run the instruction there. The machine stops before it
   runs, with the instruction under the cursor in the listing.
@@ -41,19 +41,20 @@ A memory breakpoint has three flags, and any of them can be on:
 - **Write** - the CPU writes the byte.
 
 A port breakpoint has **Read** (IN) and **Write** (OUT). A read, write or port breakpoint
-stops after the instruction that did it has run to its end.
+stops after the instruction that made the access has run to its end.
 
 **CPU address** and **RAM cell** differ on a machine that pages its memory. A breakpoint
-on CPU address `C000` stops whatever page is at `C000`. A breakpoint on a RAM cell stops
-only for that byte of that page, at whatever address the page is seen.
+on CPU address `C000` stops the machine whatever page is at `C000`. A breakpoint on a RAM
+cell stops only for that byte of that page, at whatever CPU address the page is mapped.
 
 ## Setting breakpoints from the listing
 
 ```{index} breakpoint; setting
 ```
 
-The quickest way is a key on a line of the **Disasm** listing. Each key switches its
-breakpoint on and off again. The keys are the same in both presets:
+The quickest way is to press a key on a line of the **Disasm** listing. Each key switches
+its breakpoint on; the same key again switches it off. The keys are the same in both
+presets:
 
 | Key | Breakpoint on the line under the cursor |
 |---|---|
@@ -62,13 +63,13 @@ breakpoint on and off again. The keys are the same in both presets:
 | Ctrl+Space | **Write**, on the memory cell |
 | Alt+Shift+Space | **Read**, on the memory cell |
 
-A line with a breakpoint is drawn in its own color. The keys can be changed on the
+A line with a breakpoint is drawn in a different color. The keys can be changed on the
 **Hotkeys** page of **Options**, as **Disasm: Breakpoint**, **Disasm: Breakpoint on read**,
 **Disasm: Breakpoint on write** and **Disasm: Breakpoint on CPU address** (see
 [Hotkeys](hotkeys.md)).
 
-The {icon}`stop` **Breakpoints** button over the listing, and **Breakpoints** in the menu a
-right-click on the listing opens, hold **Fetch break**, **Read break** and **Write break**.
+The {icon}`stop` **Breakpoints** button over the listing has **Fetch break**, **Read break**
+and **Write break**, and so has **Breakpoints** in the right-click menu of the listing.
 They work on the selected block when the cursor is inside it, or else on the line under the
 cursor, and make a memory cell breakpoint. To select a block, drag over the lines with the
 left button.
@@ -97,12 +98,12 @@ one breakpoint:
 | Column | What it shows |
 |---|---|
 | **On** | a tick: the breakpoint works; no tick: it stays in the list but does nothing |
-| **F**, **R**, **W** | the **Fetch**, **Read** and **Write** flags; a port has no **F**, an interrupt and a global condition have none |
+| **F**, **R**, **W** | the **Fetch**, **Read** and **Write** flags; a port has no **F**, an interrupt and a global condition have no flags |
 | **Addr** | the kind and the address, see below |
 | **Cond** | the condition |
 | **Cnt** | how many times it fired |
 
-Click a box in the first four columns to switch that flag. Click a column title to sort
+Click a box in the first four columns to switch it on or off. Click a column title to sort
 the list by it.
 
 **Addr** names the kind of breakpoint:
@@ -117,7 +118,7 @@ the list by it.
 | `COND`, `COND, on change` | **Condition (global)** |
 
 Double-click a row of an address, RAM or ROM breakpoint to show that place in the listing;
-a RAM or ROM cell shows only while its page is mapped in.
+for a RAM or ROM cell this works only while its page is mapped in.
 
 The buttons at the right:
 
@@ -130,10 +131,11 @@ The buttons at the right:
 
 The right-click menu of the list has:
 
-- **Reset counter** - sets **Cnt** of the selected breakpoints back to 0, together with the
-  hit count that `HITS` reads and what their spans measured;
+- **Reset counter** - sets **Cnt** of the selected breakpoints back to 0, and also clears
+  the hit count that `HITS` reads and what their spans measured;
 - **Open breakpoint log** - opens the [breakpoint log](#the-breakpoint-log) in the
-  program your system opens `.log` files with. It is grayed out until the log is written.
+  program your system opens `.log` files with. It is grayed out until something is written
+  to the log.
 
 Hold the mouse over the row of a breakpoint that opens a span to see what the span
 measured (see [Spans](#spans)).
@@ -147,9 +149,9 @@ The list is not kept when the program closes. Save it to a file to use it again.
 
 ![The Breakpoint Editor](images/dbg-brk-editor.png)
 
-The editor shows only the fields the chosen **Type** needs. Here it holds a breakpoint
-that opens a span and logs two registers on every hit; the line beside **Span** is what the
-span has measured so far.
+The editor shows only the fields the chosen **Type** needs. In the picture it holds a
+breakpoint that opens a span and logs two registers on every hit; the line beside **Span**
+is what the span has measured so far.
 
 | Field | What it sets |
 |---|---|
@@ -168,26 +170,26 @@ span has measured so far.
 ```
 
 The **Address** fields take a hex number, with or without `#`, `$` or `0x` in front, or a
-label name. A label wins over a number written the same way: if there is a label `BEEF`,
-`BEEF` is that label and `#BEEF` the number.
+label name. A label takes priority over a number written the same way: if there is a label
+`BEEF`, `BEEF` is that label and `#BEEF` the number.
 
 ![A RAM cell in the editor](images/dbg-brk-editor-cell.png)
 
-A cell of RAM, ROM or the slot can be given four ways:
+A cell of RAM, ROM or the slot can be given in four ways:
 
 - an offset in the page, `0000` to `3FFF`, with the page in **Page**;
 - the page and the offset together, `05:1800`. The page is hex here, while **Page** counts
   in decimal;
 - a CPU address of `4000` or more, such as `5800`: the cell is the one mapped there now, and
-  **Page** moves to its page. This works when the memory there is of the kind the type
-  watches; otherwise the address is taken as an offset in **Page**;
-- a label. For a RAM cell the label brings its page with it.
+  **Page** changes to that cell's page. This works when the memory there is of the kind
+  that **Type** names; otherwise the address is taken as an offset in **Page**;
+- a label. For a RAM cell the label also sets **Page**.
 
 The line under the fields shows how the address was read: `8000, START` for a CPU address
 with its label; `RAM 05:1800-1AFF, at 5800 now` for a cell, or `not mapped now` when its
 page is not in the memory at the moment. When it cannot be read, the line says why in red,
 such as **the range ends before it starts** or **the end is in another page**, and
-{icon}`ok-apply` **OK** does not take it.
+{icon}`ok-apply` **OK** does not accept it.
 
 ```{index} port mask
 ```
@@ -204,13 +206,14 @@ is every port the Spectrum's ULA answers.
 
 The line under **Condition** checks the expression as you type it. It shows **ok:** and
 the expression as it was understood, with brackets for the priorities and hex numbers with
-`0x`; or what is wrong and at which character. {icon}`ok-apply` **OK** does not take a
-broken condition. The **?** button opens **Expression Syntax**, a short reference of the
+`0x`; or what is wrong and at which character. {icon}`ok-apply` **OK** does not accept a
+broken condition. The **?** button opens **Expression Syntax**, a short version of the
 next section.
 
-**Log** has a field beside it, for what a logged hit writes: expressions split by commas,
-such as `A, HL, M(SP)`, in the syntax of a condition. Empty, the line has every register.
-A wrong expression keeps the editor open, with what is wrong under **Condition**.
+In the field beside **Log**, type what each logged hit writes: expressions split by
+commas, such as `A, HL, M(SP)`, in the syntax of a condition. When the field is empty, the
+line has every register. With a wrong expression, **OK** keeps the editor open and shows
+what is wrong under **Condition**.
 
 Label names are completed as you type in the address fields, **Condition** and **Log**.
 {icon}`cancel` **Cancel** closes the editor and changes nothing. Editing a breakpoint keeps
@@ -288,7 +291,8 @@ prefix.
 ```{index} condition; RD, condition; WR, condition; MDT, condition; IN, condition; OUT, condition; VAL
 ```
 
-The last memory or port access of the instruction. Each is `FFFFFFFF` when there was none.
+These variables hold the last memory or port access of the instruction. Each is `FFFFFFFF`
+when there was none.
 
 | Variable | Meaning |
 |---|---|
@@ -311,10 +315,10 @@ The state of the machine:
 | `FRAME` | frames since the last reset, as the **FRAME** counter of the **MEMMAP** panel |
 | `RAYX`, `RAYY` | where the beam is between two instructions, as the **RAY** counter of the **MEMMAP** panel |
 | `HITS` | how many times this breakpoint was hit, see below |
-| `DT` | T-states since the span opened, or since this breakpoint's hit before, see [Spans](#spans) |
+| `DT` | T-states since the span opened, or since the previous hit of this breakpoint, see [Spans](#spans) |
 
 A port is 16 bits wide, and the Spectrum decodes only part of it. `IN` and `OUT` hold the
-whole 16 bits, so ask for the keyboard port as `(IN & 0xFF) == 0xFE`, not as one exact
+whole 16 bits, so test for the keyboard port as `(IN & 0xFF) == 0xFE`, not as one exact
 value. When a program always uses the same full port, as 128K paging uses `7FFD`, plain
 `OUT == 0x7FFD` is enough.
 
@@ -329,7 +333,7 @@ the frame, for example `RAYY == 100 && RAYX >= 200`.
 ```
 
 `RAY(x, y)` is for one exact dot. The beam moves 8 to 46 dots during one instruction, so
-`RAYX == 200` is almost never true between two of them; `RAY(200, 100)` asks whether the
+`RAYX == 200` is almost never true between two instructions; `RAY(200, 100)` asks whether the
 beam passed that dot while the instruction ran, and is true once a frame. The machine
 stops right after that instruction. Both arguments can be expressions, such as
 `RAY(200 + B, RAYY)`. A plain number outside the frame is refused while you type it; a
@@ -350,9 +354,9 @@ the condition says. `HITS > 30` lets the first 30 hits pass and stops on the 31s
 
 On a global condition there is no address to count, so `HITS` counts the times the
 condition itself fired. It can limit a condition (`HITS < 3` stops the first three times)
-but not skip: `PC == 0x8000 && HITS > 30` never comes true, because `HITS` only moves when
-the whole condition is true. To let an address pass a number of times, make it an address
-breakpoint with the condition `HITS > 30`. The editor warns about this in amber.
+but cannot skip hits: `PC == 0x8000 && HITS > 30` never comes true, because `HITS` only
+grows when the whole condition is true. To let an address pass a number of times, make it
+an address breakpoint with the condition `HITS > 30`. The editor warns about this in amber.
 
 ### DT
 
@@ -361,12 +365,14 @@ breakpoint with the condition `HITS > 30`. The editor warns about this in amber.
 
 On a breakpoint that closes a span, `DT` is how long that span took, in T-states:
 `DT > 12000` in its condition fires only on a pass that ran too long. On any other
-breakpoint with an address it is the time since its own hit before. It is 0 when there is
-nothing to measure from, such as on the first hit, and on a global condition.
+breakpoint with an address it is the time since the previous hit of the same breakpoint.
+It is 0 when there is nothing to measure from, such as on the first hit, and on a global
+condition.
 
 ### Good to know
 
-- An address holds one breakpoint, so it has one condition. Join several with `||`.
+- An address holds one breakpoint, so it has one condition. Join several conditions with
+  `||`.
 - A condition that cannot be worked out when it runs, such as one with a label that is no
   longer loaded, fires, so the mistake does not go unnoticed.
 
@@ -397,11 +403,11 @@ A breakpoint of type **Condition (global)** has no address. Its expression is ch
 after every instruction, so it finds things no single address can: "A became 0 somewhere",
 "the stack went below `5B00`".
 
-Out of the box it fires on every instruction while the expression is true, just as the
+By default it fires on every instruction while the expression is true, just as the
 condition of an address breakpoint does. Tick **On change** to make it fire only when the
 expression becomes true: once, and again only after it was false in between. `A == 0`
-without **On change** stops on every instruction while A stays 0; with it, only on the
-instruction that made it 0.
+without **On change** stops on every instruction while A stays 0; with **On change**, only
+on the instruction that made A 0.
 
 Several global conditions can come true on the same instruction; each one then does its
 own action.
@@ -414,8 +420,8 @@ own action.
 | Action | What happens |
 |---|---|
 | **Debugger** | the machine stops and the Debugger opens |
-| **Counter** | the machine goes on; only **Cnt** in the list grows |
-| **Screen dump** | the machine goes on; the 6912 bytes of the main screen (RAM page 5) are saved as an `.scr` file |
+| **Counter** | the machine keeps running; only **Cnt** in the list grows |
+| **Screen dump** | the machine keeps running; the 6912 bytes of the main screen (RAM page 5) are saved as an `.scr` file |
 
 A screen dump goes into the screenshots folder (the **Output** of the **Screenshots** group
 on the **Video** page of **Options**, see [Screenshots](capture.md#screenshots)), named
@@ -431,15 +437,15 @@ after the time, such as `xpeccy_153012_250_0.scr`.
 
 Two breakpoints can time the code between them. Set **Span** of the first to **Opens a
 span** and of the second to **Closes a span**. Each time the machine gets to the first and
-then to the second, the T-states between them make one span. The opening breakpoint keeps
+then to the second, the T-states between them make one span. The opening breakpoint stores
 how many spans there were, the shortest, the average and the longest, and how many of them
 had an interrupt in the middle.
 
 - The span is opened and closed on every hit, whatever the condition says. The condition
   and the action decide only whether the hit stops, counts or logs.
-- A close takes the span opened last, whichever breakpoint opened it. So spans can nest: a
-  routine called from a timed routine can be timed too, each on its own.
-- A close with no span open measures nothing.
+- A closing breakpoint closes the span opened last, whichever breakpoint opened it. So
+  spans can nest: a routine called from a timed routine can be timed too, each on its own.
+- A closing breakpoint with no span open measures nothing.
 - A routine with several ways out needs a closing breakpoint on each of them.
 - Any breakpoint with an address can open or close a span, and so can **Interrupt**; a
   global condition cannot.
@@ -463,7 +469,7 @@ interrupt.
 
 Spans of the same code differ for a reason: on a Spectrum the CPU waits when it uses the
 memory the screen is read from at that moment, so the same loop takes longer while the beam
-draws the picture. **Reset counter** in the right-click menu of the list starts them again.
+draws the picture. **Reset counter** in the right-click menu of the list clears them.
 
 ## The breakpoint log
 
@@ -474,11 +480,11 @@ Tick **Log** in the **Breakpoint Editor** and every time the breakpoint fires, a
 to the breakpoint log, whatever its action is. With the action **Counter** this logs every
 hit without stopping.
 
-The log is a file of its own. It is made at the first hit that logs, with nothing to switch
-on first: `xpeccy-plus-<date>-<time>-brk.log`, in `logs/<date>/` beside the program, or in
-the **Folder** of the **Log** group on the **Application** page of **Options**. Where that
-cannot be written to, it goes to the settings folder. **Open breakpoint log** in the
-right-click menu of the **Breakpoints** list opens it; `--brk-log` on the command line
+The log is a file of its own. The file is created at the first logged hit, with nothing
+else to switch on: `xpeccy-plus-<date>-<time>-brk.log`, in `logs/<date>/` beside the
+program, or in the **Folder** of the **Log** group on the **Application** page of
+**Options**. If that folder cannot be written to, the log goes to the settings folder.
+**Open breakpoint log** in the right-click menu of the **Breakpoints** list opens it; `--brk-log` on the command line
 sends it elsewhere (see [Command line](command-line.md#debugging)).
 
 Apart from the date in its first line, the log has no time of day in it, only the
@@ -495,7 +501,7 @@ F00000000 T034459 t=5758 CPU:8006 RAM:02:0006 F n=1/129 stop DT=42 cond=HL == 0x
 |---|---|
 | `F00000000 T034459` | the frame since the last reset, and the T-state in it |
 | `t=5758` | T-states since the machine was made |
-| `CPU:8006 RAM:02:0006` | where it fired: the breakpoint's own address, then the same place the other way - page and offset for a CPU address, the CPU address for a cell |
+| `CPU:8006 RAM:02:0006` | where it fired: the breakpoint's own address, then the same place written the other way - page and offset for a CPU address, the CPU address for a cell |
 | `F` | what was done there: `F` a fetch, `RD 5C3A=FF` a read, `WR 4000=00` a write, `IN=BF` or `OUT=07` on a port |
 | `n=1/129` | how many times it fired, and how many times it was hit |
 | `stop` | the action is **Debugger**: the machine stopped here |
@@ -551,9 +557,9 @@ CPU:DONE::F]:DBG:DT > 11400
 A line can stop after the condition; the last two fields can be empty.
 
 An address in a list is hex without a prefix, as **Save** writes it, or a label of the
-labels loaded at the time: `CPU:START`, `CPU:START-DONE`. A label wins over hex written
-the same way; `#`, `$` or `0x` in front makes it a number. A RAM label carries its page,
-so the page field can be left empty: `RAM::SCREEN_BUF:W:CNT:`. **Save** writes the
+labels loaded at the time: `CPU:START`, `CPU:START-DONE`. A label takes priority over hex
+written the same way; `#`, `$` or `0x` in front makes it a number. A RAM label carries its
+page, so the page field can be left empty: `RAM::SCREEN_BUF:W:CNT:`. **Save** writes the
 addresses as numbers.
 
 A line that cannot be read is left out and named in the log. A condition or a log
@@ -567,13 +573,13 @@ Options of the command line set breakpoints at start (see
 [Command line](command-line.md#debugging)):
 
 - `--bp ADR` - a **Fetch** breakpoint on a CPU address or a label;
-- `--brk FILE` - loads a `.xbrk` file, added to the ones loaded before it;
+- `--brk FILE` - loads a `.xbrk` file; its breakpoints are added to those loaded before;
 - `--brk-log FILE` - writes the breakpoint log to that file, or with `-` to the standard
   output.
 
-The labels of `-l` are loaded first, wherever it stands on the command line. Together with
-`--bench` this runs a test from a script with no window, which ends on the first breakpoint
-with the action **Debugger** (see
+The labels given with `-l` are loaded first, wherever `-l` stands on the command line.
+Together with `--bench`, these options run a test from a script with no window; the run ends
+on the first breakpoint with the action **Debugger** (see
 [Running with no window](command-line.md#running-with-no-window)).
 
 ## The Watcher
@@ -607,15 +613,15 @@ Right-click the **MEMORY** list and choose **Add watcher** to add a watch, or
 
 The **Watcher Editor** has:
 
-- **Type** - **CPU addr**, **RAM addr** or **ROM addr**, written before the watch;
+- **Type** - **CPU addr**, **RAM addr** or **ROM addr**, shown before the watch in the list;
 - **Expression** - an address, in the same syntax as a condition (see
   [Conditions](#conditions)): `HL`, `0x5C3A`, `IX + 5`, `[0x5C53]`, a label. The
   {icon}`label` button beside it opens the list of labels; a label picked there goes into
   the field.
 
-{icon}`checkbox` **OK** takes it only when the expression is right. The first row of a watch
-shows its type and expression, and its value as an address; the second row the 13 bytes that
-start at that address. `??` means the expression cannot be worked out at the moment.
+{icon}`checkbox` **OK** accepts the watch only when the expression is right. The first row
+of a watch shows its type and expression, and its value as an address; the second row the
+13 bytes that start at that address. `??` means the expression cannot be worked out at the moment.
 
 The watches are not kept when the program closes.
 
@@ -674,7 +680,7 @@ shows it.
 4. Press {icon}`ok-apply` **OK** and close the Debugger.
 
 The **Cond** column shows `A == 0`. The machine runs through that line as long as A is not
-0, and stops on it, before it runs, the first time A is 0 there.
+0, and stops on it, before the instruction runs, the first time A is 0 there.
 
 ### Stop on the 50th pass
 
@@ -697,7 +703,7 @@ pass.
 3. Close the Debugger and let the program run for a while.
 4. Open the Debugger and hold the mouse over `CPU:8000` in the list.
 
-The tip says how many passes there were and how long they took:
+The tooltip says how many passes there were and how long they took:
 `938 spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`.
 
 To stop on a pass that is too slow, open the `DONE` breakpoint again, set **Action** to
@@ -718,7 +724,7 @@ CPU:DONE::FL]:CNT::HL, BC
 xpeccy-plus -m zx48 -l timing.lab --brk timing.xbrk --brk-log - -a 0x8000 -f timing.bin --pc 0x8000 --bench 2
 ```
 
-The machine runs two frames with no window. With `--brk-log -` the log comes to the
+The machine runs two frames with no window. With `--brk-log -` the log goes to the
 standard output, before the speed line and the spans:
 
 ```

@@ -10,7 +10,7 @@
 says what each one holds and where the manual explains it.
 
 {icon}`ok-apply` **OK** applies the changes and closes the window, **Apply** applies them
-and keeps it open, {icon}`cancel` **Cancel** drops them. Hold the mouse over a setting to
+and keeps it open, {icon}`cancel` **Cancel** discards them. Hold the mouse over a setting to
 see what it does.
 
 ## Machine
@@ -20,9 +20,9 @@ see what it does.
 
 ![The Machine page](images/options-machine.png)
 
-The running machine: **Model**, **Memory**, **ROM** and the **Speed** slider at the top,
-then its devices in four groups - **Storage**, **Input**, **Sound** and **Board**. The
-{icon}`settings` gear beside a device opens the rest of its settings. See
+This page sets up the running machine: **Model**, **Memory**, **ROM** and the **Speed**
+slider at the top, then its devices in four groups - **Storage**, **Input**, **Sound** and
+**Board**. The {icon}`settings` gear beside a device opens the rest of its settings. See
 [The Machine page](machines.md#the-machine-page).
 
 What you change here is kept for this machine only. {icon}`save_all` **Save machine...**,
@@ -60,7 +60,8 @@ in [Your own machines](machines.md#your-own-machines).
 
 ![The Input page](images/options-input.png)
 
-The keymap, the two gamepad players and the **Gamepads...** window, and **Game bindings**.
+The keymap; the gamepads of **Player 1** and **Player 2**, with the **Gamepads...** button
+that opens their window; and **Game bindings**.
 See [Keyboard, joystick and mouse](input.md).
 
 ## File types
@@ -101,7 +102,7 @@ The font, the colors and what the Debugger shows. See [The Debugger page of Opti
 
 ![The Hotkeys page](images/options-hotkeys.png)
 
-Every key of the program, in the Modern or Classic layout or one of your own. See
+The keys of every command, in the Modern or Classic preset or one of your own. See
 [Hotkeys](hotkeys.md).
 
 ## Appearance
@@ -113,7 +114,7 @@ Every key of the program, in the Modern or Classic layout or one of your own. Se
 
 - **Interface** - **Style**: **System** (the look of your system) or one of seven bundled
   styles.
-- **Indicators** - the signs over the picture: which are shown. See
+- **Indicators** - which signs are shown over the picture. See
   [Indicators on the picture](picture.md#indicators-on-the-picture).
 
 ## Application
@@ -131,7 +132,7 @@ Every key of the program, in the Modern or Classic layout or one of your own. Se
 - {icon}`star` **Manage favorites...** - see [Favorites](files.md#favorites).
 - {icon}`save_all` **Export settings...**, {icon}`fileopen` **Import settings...** - keep all
   your settings, your own machines included, in one file, and bring them back.
-- {icon}`refresh` **Reset to defaults** - the settings back to how they ship. Your own
-  machines stay.
+- {icon}`refresh` **Reset to defaults** - puts every setting back to its default value. Your
+  own machines stay.
 - **Log** - a log file of what the program does, for reporting a problem: **Write a log
   file**, **To the console**, **Level**, **Folder**.

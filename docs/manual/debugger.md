@@ -55,8 +55,8 @@ Open the Debugger in any of these ways:
 While the Debugger is open, the machine stands still. There is no sound, fast mode is
 switched off, and keys pressed in the main window do not reach the machine. The picture in
 the main window shows the frame as far as the machine had drawn it; the part not drawn yet
-is the frame before, darkened. A click on the main window brings the Debugger back to the
-front.
+shows the previous frame, darkened. A click on the main window brings the Debugger back to
+the front.
 
 To let the machine run on, close the Debugger: press Esc, press the **Debugger** hotkey
 again, or close the window. The machine goes on from the instruction the Debugger shows.
@@ -107,16 +107,16 @@ one too, from the {icon}`display` button at the top right of the panel. See
 ```
 
 Drag a panel by its title bar and drop it where you want it: beside another panel, above
-or below it, or onto it to make the two tabs. Drop it at the far left or far right edge of
-the window to give it a column of its own. Drag the line between two panels to share the
-room differently.
+or below it, or onto it to put the two panels on tabs. Drop it at the far left or far right
+edge of the window to give it a column of its own. Drag the line between two panels to
+share the room differently.
 
 A panel cannot be closed, and it cannot leave the window.
 
 The arrangement is kept: the next time the Debugger opens, and the next time the program
 starts. To get the arrangement it ships with, choose **Reset panel layout** from the
-{icon}`settings` **Options** button over the listing. It also brings the window back to
-its first size.
+{icon}`settings` **Options** button over the listing. This command also brings the window
+back to its original size.
 
 ## The buttons over the listing
 
@@ -162,23 +162,25 @@ marked.
 ```
 
 **Step in** runs the instruction at PC, the line marked in the listing. Hold the key down
-to keep stepping: it works as **Trace** until you let go.
+to keep stepping: the Debugger traces, as with **Trace**, until you release the key.
 
-**Step over** treats a few instructions as one: CALL, RST, DJNZ, HALT and the repeating
-block instructions LDIR, LDDR, CPIR, CPDR, INIR, INDR, OTIR and OTDR. The Debugger closes,
-the machine runs at full speed until it reaches the next instruction, and the Debugger
-opens again there. Any other instruction is one step, as with **Step in**.
+**Step over** runs some instructions to their end in one step: CALL, RST, DJNZ, HALT and
+the repeating block instructions LDIR, LDDR, CPIR, CPDR, INIR, INDR, OTIR and OTDR. The
+Debugger closes, the machine runs at full speed until it reaches the instruction that
+follows in memory, and the Debugger opens again there. Any other instruction is one step,
+as with **Step in**.
 
 **Step out** lets the machine run until the subroutine it is in returns. Calls and
-interrupts made on the way are counted, so the RET that ends this subroutine is the one
-that stops it. The Debugger opens after that RET.
+interrupts made on the way are counted, so only the RET that ends this subroutine stops
+the machine. The Debugger opens after that RET.
 
 **Stop here** runs the machine at full speed until PC reaches the line the cursor is on
 in the listing. Click the line first, so the listing has the focus.
 
 **Step over**, **Step out** and **Stop here** let the machine run with the Debugger
-closed. If a breakpoint stops it first, or you open the Debugger yourself, the place they
-were waiting for is forgotten. If the program never gets there, the machine just runs on.
+closed. If a breakpoint stops the machine first, or you open the Debugger yourself, the
+place where the machine was to stop is forgotten. If the program never gets there, the
+machine just runs on.
 
 While you step or trace, breakpoints are not checked. They work again once the machine
 runs with the Debugger closed.
@@ -191,7 +193,7 @@ runs with the Debugger closed.
 Trace runs the program one instruction after another, and the panels show each step as it
 happens. Press any key to stop it. Trace is much slower than the machine at full speed.
 
-The {icon}`arrGreen` **Trace** button over the listing has four kinds:
+The {icon}`arrGreen` **Trace** button over the listing holds four kinds of trace:
 
 - **Trace** - until you press a key;
 - **Trace and stop here** - until PC reaches the line the cursor is on. It is also in the
@@ -230,7 +232,7 @@ Above the listing, on the right, are two numbers:
   since the last frame interrupt.
 
 Tick **Accumulate T** to add the steps up: the left number keeps growing from step to step
-until you untick it. Ticking it starts it again from 0.
+until you untick it. Ticking it starts the count again from 0.
 
 The count is the real time on the machine, with memory contention and the interrupts that
 came in between.
@@ -257,13 +259,14 @@ marked: after an instruction that changes only A, only the A half of AF lights u
 
 Click a value and type over it in hex. The change takes effect at once. In a value field:
 
-- Up and Down, or the mouse wheel, add or take 1;
-- PgUp and PgDn add or take 256;
+- Up and Down, or the mouse wheel, add or subtract 1;
+- PgUp and PgDn add or subtract 256;
 - X switches the field between hex and decimal.
 
 IFF1 and IFF2 are check boxes. Tick or untick a flag to change it in F.
 
-Click the name of a register to see the code at the address it holds in the listing.
+Click the name of a register to see, in the listing, the code at the address the register
+holds.
 Right-click the name to see that address in the **DUMP** panel.
 
 ### Layouts
@@ -272,17 +275,18 @@ Right-click the name to see that address in the **DUMP** panel.
 ```
 
 Right-click the panel's title bar to choose how the registers are laid out. A small dot in
-the corner of a title bar says it has such a menu.
+the corner of a title bar shows that the panel has such a menu.
 
 ![The registers layout menu](images/dbg-cpu-menu.png)
 
 - **Auto** (the default) - one column when the panel is narrow, two when it is wide enough.
-  It also takes two columns when two panels stand side by side under it.
+  **Auto** also uses two columns when two panels stand side by side under the **CPU**
+  panel.
 - **1 column** - a register on each line.
 - **2 columns** - two on a line, each beside its pair: AF beside AF', PC beside SP.
 - **Wide** - a column for each kind: AF, BC, DE, HL; the alternate set; PC, SP, IX, IY; and
   IR, IM, IFF1, IFF2. The flags are one more column beside them, under the title **Flags**.
-- **Split pairs** - mark only the byte that changed, as above. On out of the box.
+- **Split pairs** - mark only the byte that changed, as above. On by default.
 
 ![The CPU panel in the Wide layout](images/dbg-cpu-wide.png)
 
@@ -300,7 +304,7 @@ many lines as fit in its height.
 
 The two arrows at the top move the lines by a word. The first line can be from 16 bytes
 before SP to 16 bytes after it. Where the panel starts is the **Stack offset** on the **Debugger** page of **Options**:
-`-2` out of the box, so the word just above SP is in view too.
+`-2` by default, so the word just above SP is in view too.
 
 ## The MEMMAP panel
 
@@ -316,9 +320,10 @@ The four rows at the top are the four 16K banks of the Z80's memory, with what i
 ROM or RAM and the page number. You can put another page into a bank from here. See
 [Memory](debugger-memory.md).
 
-**PORTS** lists the watched ports and the last value on each. For a port the machine keeps
-a register of its own, such as `7FFD` on a 128K, that is the register's value; for any
-other port it is the last byte read from it or written to it, and `--` until it is used.
+**PORTS** lists the watched ports and the last value on each. For a port whose value the
+machine keeps in a register, such as `7FFD` on a 128K, the value shown is that register's;
+for any other port it is the last byte read from it or written to it, and `--` until the
+port is used.
 
 ```{index} SIGNALS
 ```
@@ -357,11 +362,11 @@ list.
 Each line is a port in hex. Four digits are a full address, matched as it is; two digits
 are a byte port, matched on the low byte alone. Untick a port to stop showing it while
 keeping it in the list. Of the buttons beside the list, {icon}`add` adds a port and
-{icon}`cancel` drops the selected one. Double-click a port to change it.
+{icon}`cancel` removes the selected one. Double-click a port to change it.
 
-The ports the machine itself keeps are in the list by themselves; untick them if you do
-not need them. The list is kept for the machine that is running. The **Ports** group of
-the **Debugger** page of **Options** is the same list.
+The ports whose values the machine keeps in registers are added to the list automatically;
+untick them if you do not need them. The list is kept for the machine that is running. The
+**Ports** group of the **Debugger** page of **Options** is the same list.
 
 ## The Debugger page of Options
 
@@ -381,7 +386,8 @@ the **Debugger** page of **Options** is the same list.
   [The STACK panel](#the-stack-panel).
 
 **State info** - which blocks the **MEMMAP** panel shows: **Ports**, **Signals**, **Frame**
-and **Ray**. **Memmap** is always on, since the panel is dragged by its title.
+and **Ray**. **Memmap** cannot be switched off: the panel's title bar, which you drag the
+panel by, is part of it.
 
 **Ports** - the watched ports of the machine that is running. See
 [Watched ports](#watched-ports).

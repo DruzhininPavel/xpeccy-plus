@@ -1,17 +1,17 @@
 # Picture
 
 How big the picture is, how much border it shows, and how it is drawn: the colors, a
-shader, anti-flicker. The quick switches are in the **View** menu; everything is on the
-**Video** page of **Options**.
+shader, anti-flicker. The quick switches are in the **View** menu; all the settings are on
+the **Video** page of **Options**.
 
 ## Window size
 
 ```{index} window size, scale
 ```
 
-**View > Size** has **x1** to **x6**: how many screen pixels each pixel of the machine
-takes. The window is always a whole number of pixels per machine pixel, so every pixel
-of the picture is the same size and nothing is blurred. At **x1** the picture is drawn
+**View > Size** has **x1** to **x6**: each pixel of the machine is drawn as a square of
+1 x 1 to 6 x 6 screen pixels. The scale is always a whole number, so every pixel of the
+picture is the same size and nothing is blurred. At **x1** the picture is drawn
 as it is, without a shader.
 
 The window cannot be resized by dragging its edges. Its size follows from the scale and
@@ -72,24 +72,25 @@ the built-in palette; the others are listed by their file names, without the ext
 To change the colors of a palette, pick it in **Options > Video** and click the
 {icon}`edit` edit button beside the list. The **Palette Editor** shows the 16 colors in four
 rows: the eight normal colors in the top two rows, the eight bright ones below them. Click a
-color to choose another one, then click **OK**. The change waits for **Apply** or
-{icon}`ok-apply` **OK** in **Options**, and {icon}`cancel` **Cancel** there drops it. The
+color to choose another one, then click **OK**. The change takes effect only after
+**Apply** or {icon}`ok-apply` **OK** in **Options**; {icon}`cancel` **Cancel** there
+discards it. The
 edited palette is saved under the same name in the `palettes` folder of the settings folder
 (see [Where the settings are](getting-started.md#where-the-settings-are)), and from then on
 that file is used instead of the bundled one. The built-in **Xpeccy+** palette cannot
 be edited: the edit button is grayed out for it.
 
 When a bundled palette has been edited, a second button, {icon}`refresh`, appears beside the
-edit button. It drops your copy, after asking, and the palette is again as it came with the
-program.
+edit button. After asking, it deletes your edited copy, and the palette is again the one
+that came with the program.
 
 ```{index} palette; own
 ```
 
 A palette of your own is a text file in the same `palettes` folder: 16 lines, one color
 on each, written as `#RRGGBB` - black, blue, red, magenta, green, cyan, yellow, white,
-then the same eight bright. A file with fewer than 16 colors is not used; the built-in
-palette is shown instead.
+then the same eight colors bright. A file with fewer than 16 colors is not used; the
+built-in palette is shown instead.
 
 ```{index} Gray scale
 ```
@@ -99,7 +100,7 @@ palette is shown instead.
 ```{index} ULA+, ULA plus
 ```
 
-A machine with ULA+ can show 64 colors when a program asks for them. It is switched on
+A machine with ULA+ can show 64 colors when a program asks for them. ULA+ is switched on
 with **ULA plus** in the machine's advanced settings (see
 [Advanced settings](machines.md#advanced-settings)).
 
@@ -114,7 +115,7 @@ with **ULA plus** in the machine's advanced settings (see
 A shader changes the look of the picture after it is drawn: scan lines, the mask of a
 CRT tube, a curved screen, the blur of a TV signal. Pick one in **View > Shaders**, or in
 the **Shader** list of **Options > Video**; **None** turns it off. The program comes with
-twenty shaders built in, and one of them is on out of the box.
+twenty shaders built in, and one of them is on by default.
 
 The shader is not used at **x1**, where there is no room for its effect. When the
 computer's graphics cannot run shaders, the list holds **None** only.
@@ -123,18 +124,19 @@ computer's graphics cannot run shaders, the list holds **None** only.
 ```
 
 Your own shaders go in the `shaders` folder of the settings folder, as `.txt` files.
-A file there with the name of a built-in shader replaces it. The file holds two parts in
-GLSL: a line `vertex:` followed by the vertex shader, and a line `fragment:` followed by
+A file there with the name of a built-in shader replaces that shader. The file holds two
+parts in GLSL: a line `vertex:` followed by the vertex shader, and a line `fragment:` followed by
 the fragment shader. The picture comes in as the texture `rubyTexture`, with its size in
 `rubyInputSize` and `rubyTextureSize`; the size of the picture on the screen is in
-`rubyOutputSize`. When a shader is picked, the picture says **shader compiled** or,
-if it does not work, **shader error**, and the picture goes back to no shader.
+`rubyOutputSize`. When a shader is picked, the message **shader compiled** appears on the
+picture. If the shader does not work, the message is **shader error**, and the picture is
+shown without a shader.
 
 ```{index} Reload Shader
 ```
 
 The **Reload Shader** action reads the shader file again, so you can see a change you
-have just saved. It has no key out of the box; give it one on the **Hotkeys** page of
+have just saved. It has no key by default; give it one on the **Hotkeys** page of
 **Options** (see [Hotkeys](hotkeys.md)).
 
 ## Anti-flicker
@@ -144,11 +146,11 @@ have just saved. It has no key out of the box; give it one on the **Hotkeys** pa
 
 Some programs show more colors than the machine has by switching between two or three
 pictures every frame. On a CRT television this looked like one steady picture; on a
-modern screen it flickers. Anti-flicker blends the frames together again. It is in the
-**Anti-flicker** group of **Options > Video**:
+modern screen it flickers. Anti-flicker blends the frames together again. Its settings are
+in the **Anti-flicker** group of **Options > Video**:
 
-- **Intensity** - how much of the frames before is mixed into the picture. **0% (off)**
-  turns anti-flicker off; it is off out of the box.
+- **Intensity** - how much of the previous frames is mixed into the picture. **0% (off)**
+  turns anti-flicker off; it is off by default.
 - **Mode** - which pixels are blended, and how many frames; see the table below.
 - **Gamma** - how the colors are mixed. 2.2 is close to a CRT; 1.0 mixes them linearly.
   Values from 1.8 to 2.4 are usual.
@@ -160,13 +162,13 @@ modern screen it flickers. Anti-flicker blends the frames together again. It is 
 
 | Mode | What it does |
 |---|---|
-| **2-frames (fullscreen)** | Every pixel that changed since the last frame is mixed with it, all over the picture. Good for a still two-frame picture; a moving picture gets trails. |
+| **2-frames (fullscreen)** | Every pixel that changed since the last frame is mixed with its color in that frame, all over the picture. Good for a still two-frame picture; a moving picture gets trails. |
 | **2-frames (adaptive)** | Only the pixels that keep alternating between the same two colors for several frames are mixed. Moving parts stay sharp. |
 | **3-frames (fullscreen)** | The last three frames are mixed everywhere, for pictures made of three frames in turn (red, green and blue). |
 | **2-/3-frames (adaptive)** | Finds both kinds by itself - three-frame pictures and two-frame flicker - and leaves everything else alone. The default. |
 
 The **Anti-flicker** action switches the intensity in turn between 50%, 100% and off,
-and the picture shows which one. It is set on the **Hotkeys** page of **Options**.
+and the picture shows which one. Its key is set on the **Hotkeys** page of **Options**.
 
 Anti-flicker is not applied in fast mode.
 
@@ -188,11 +190,12 @@ over the picture. Tick the ones you want:
 | **FPS** | frames per second, top right |
 | **HALT** | the T-states up to the HALT and in the whole frame, bottom right |
 | **CPU clock** | the clock in MHz, bottom right, while the CPU is not on its base clock - turbo or overclock |
-| **Messages** | what the program has just done, bottom left: "size x3", "quick save" and so on |
+| **Messages** | what Xpeccy+ has just done, bottom left: "size x3", "quick save" and so on |
 | **Fade out** | signs and messages fade away instead of vanishing at once |
 
 **Joystick**, **Mouse**, **Tape**, **Disk** and **FPS** are drawn on the picture only
-while the status bar is hidden; with the status bar shown, they are there instead (see
+while the status bar is hidden; with the status bar shown, they are in the status bar
+instead (see
 [Status bar](main-window.md#status-bar)).
 
 In the top right corner a sign also shows the speed mode, in the manner of a video

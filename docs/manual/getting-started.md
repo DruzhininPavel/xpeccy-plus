@@ -16,7 +16,7 @@ Pick the file for your system:
 | Linux | `xpeccy-plus-<version>-linux-x86_64.AppImage` | |
 | macOS | `xpeccy-plus-<version>-macos-arm64-qt6.dmg` | Apple silicon |
 
-Nothing has to be installed besides. Machines, ROM images and settings come with the
+Nothing else has to be installed. Machines, ROM images and settings come with the
 program, so it runs right away.
 
 **Windows.** Unpack the archive anywhere you can write to, and run `xpeccy-plus.exe`.
@@ -25,7 +25,7 @@ program, so it runs right away.
 needs a distribution no older than Ubuntu 22.04 (glibc 2.35).
 
 **macOS.** Open the disk image and drag **xpeccy-plus** into Applications. The program is not
-signed by a registered developer, so the first start is refused: open
+signed by a registered developer, so macOS refuses to start it the first time: open
 **System Settings > Privacy & Security**, find the message about Xpeccy+ and click
 **Open Anyway**.
 
@@ -57,15 +57,16 @@ A snapshot (`.szx`, `.z80`, `.sna`) continues straight away from where it was sa
 A tape or a disk can be **run** or just **mounted**. Run resets the machine and starts
 the program on it; Mount only puts the tape or disk in, as if into a real recorder or
 drive. The first time, Xpeccy+ asks which one you want. Tick **Remember my choice** to stop
-the question; the **File types** page of **Options** sets it again. To be asked about one
-file only, hold Shift as you open or drop it.
+the question; to change the choice later, use the **File types** page of **Options**. To be
+asked about one file only, hold Shift as you open or drop it.
 
 ```{index} machine; switched by a file
 ```
 
 If the current machine cannot run the file (a +3 disk on a Pentagon, for instance),
-Xpeccy+ switches to one that can - the machine the file names, when it names one. The next
-file your own machine can run switches back to it.
+Xpeccy+ switches to a machine that can - to the machine named in the file, if the file
+names one. When you next open a file that your own machine can run, Xpeccy+ switches back
+to your machine.
 
 ```{index} Choose a Machine
 ```
@@ -95,7 +96,8 @@ The **File types** page of **Options** sets this for each kind of file:
 Everything you change is kept there: `config.conf` holds the settings, `roms` holds the
 ROM images. A file put in `roms` under the name of a built-in image replaces that image.
 
-On Windows the whole folder can be moved or copied, settings and all. To run with a
+On Windows the settings are in the program's folder, so the program can be moved or
+copied together with its settings. To run with a
 different settings folder, start the program with `--confdir <folder>`.
 
 ## This manual

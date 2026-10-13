@@ -1,9 +1,15 @@
-{# the same page in the other languages; a one-language manual shows nothing #}
+{# the same page in the other languages; a one-language manual shows nothing. A list, so
+   that any number of names fits the sidebar's width on one line #}
 {%- if lang_links and lang_links|length > 1 %}
 <div class="xp-languages">
-  {%- for name, url, current in lang_links %}
-  {%- if current %}<span class="xp-lang-current">{{ name }}</span>
-  {%- else %}<a href="{{ url }}">{{ name }}</a>{% endif %}
-  {%- endfor %}
+  <svg class="xp-lang-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z"/></svg>
+  <select class="xp-lang-select" aria-label="Language" onchange="location.href = this.value">
+    {%- for name, url, current in lang_links %}
+    <option value="{{ url }}"{% if current %} selected{% endif %}>{{ name }}</option>
+    {%- endfor %}
+  </select>
+  <noscript>
+    {%- for name, url, current in lang_links %}{% if not current %} <a href="{{ url }}">{{ name }}</a>{% endif %}{% endfor %}
+  </noscript>
 </div>
 {%- endif %}

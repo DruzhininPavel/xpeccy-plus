@@ -1,8 +1,8 @@
 # Memory
 
 The Debugger shows memory byte by byte in the **DUMP** panel, and the bytes the registers
-point at in **REG-DUMP**. **MEMMAP** shows which memory the CPU sees, and lets you page
-in another. The tools around them find bytes, fill memory, show it as pictures, save it
+point at in **REG-DUMP**. **MEMMAP** shows which memory pages the CPU sees, and lets you
+page in others. The tools around them find bytes, fill memory, show it as pictures, save it
 to a file and load it back, and the **Heat map** shows which memory the program uses and
 how.
 
@@ -36,16 +36,16 @@ bytes on a row as the panel is wide enough for.
 
 | Key | What it does |
 |---|---|
-| Up, Down | the cursor one row; at the edge the dump scrolls by one row |
-| PageUp, PageDown | a page back or on |
+| Up, Down | move the cursor one row; at the edge the dump scrolls by one row |
+| PageUp, PageDown | scroll one page up or down |
 | mouse wheel | scroll by one row |
 
-These keys are the same in both presets, and can be changed on the **Hotkeys** page of
-**Options** (see [Debugger keys](hotkeys.md#debugger-keys)):
+These keys can be changed on the **Hotkeys** page of **Options**; the two presets differ only in
+**Go to address**, which the Modern preset also gives Ctrl+G (see [Debugger keys](hotkeys.md#debugger-keys)):
 
 | Command | Key | Goes to |
 |---|---|---|
-| **Go to address** | G | the address cell of the top row opens for typing |
+| **Go to address** | G (Modern: also Ctrl+G) | the address cell of the top row opens for typing |
 | **Go to (PC)** | Ctrl+P | the address in PC |
 | **Go to (SP)** | Ctrl+S | the top of the stack |
 | **Go to (BC)** | Ctrl+B | the address in BC |
@@ -58,9 +58,9 @@ A right-click on a register's name in the **CPU** panel moves the dump to the ad
 register holds.
 
 To go to an address, double-click the address of any row, or select it and press Enter, and
-type it. The dump scrolls so that the address lands on that row. An address can be hex
-(`8000`, `#8000`, `0x8000`), a label, or a register with a dot in front, as `.HL`. The
-labels are offered as you type, as in the listing (see
+type the address to go to. The dump scrolls so that the address lands on that row. An
+address can be hex (`8000`, `#8000`, `0x8000`), a label, or a register with a dot in front,
+as `.HL`. The labels are offered as you type, as in the listing (see
 [Labels offered as you type](debugger-code.md#labels-offered-as-you-type)).
 
 ### Editing
@@ -83,9 +83,9 @@ ROM is protected: a byte in ROM is written only with **Allow ROM wr** ticked in 
 show one 16K page, whether the CPU sees it or not:
 
 - **Pg** - the number of the page;
-- the address field - the address the first byte of the page is shown at: C000 for RAM
-  and 0000 for ROM, as they are set when you switch the view;
-- the size - how much of the page the dump goes through, from 256 bytes to the whole 16KB.
+- the address field - the address the first byte of the page is shown at. Switching the
+  view sets it to C000 for RAM and 0000 for ROM;
+- the size - how much of the page the dump shows, from 256 bytes to the whole 16KB.
 
 The rows then show the page and the address, as `07:C000`.
 
@@ -95,14 +95,14 @@ The rows then show the page and the address, as `07:C000`.
 ```
 
 Drag over the bytes to select a block, or Ctrl+click its first byte and Shift+click its
-last; a click with the middle button clears it. The **DUMP** and the **Disasm** listing
-share one selection, so a block selected here is ready for **View**, **Fill...** and the
-other block commands of the listing (see
+last; a click with the middle button clears the selection. The **DUMP** and the **Disasm**
+listing share one selection, so a block selected here is ready for **View**, **Fill...** and
+the other block commands of the listing (see
 [Selecting a block](debugger-code.md#selecting-a-block)). The selection shows in the
 **CPU** view only.
 
 A right-click on a byte opens a menu of **Fetch break**, **Read break** and **Write break**:
-tick one to stop when the CPU runs, reads or writes that byte. See
+tick one to stop the machine when the CPU runs, reads or writes that byte. See
 [Breakpoints and watching](debugger-breakpoints.md).
 
 ## REG-DUMP
@@ -132,8 +132,8 @@ number of the page.
 
 Change a row to put another page in: pick **ROM** or **RAM** and type the page number. The
 **DUMP**, the listing and the CPU itself then see that page there. A window you changed has
-its type in bold and its page number lit. It stays that way until the program pages that
-window itself.
+its type in bold and its page number highlighted. The page stays there until the program
+itself pages that window.
 
 Right-click the rows, or the **MEMMAP** title, and choose **Restore mapping** to put back
 all four windows as they were when the Debugger opened.
@@ -148,14 +148,14 @@ The rest of the panel - ports, signals, frames and the beam - is described in
 
 ![The Memory Finder](images/dbg-finder.png)
 
-**Search** in the {icon}`other` **Tools** menu of the **Disasm** panel opens it, as does the
-**Find pattern** key: Ctrl+F in both presets.
+**Search** in the {icon}`other` **Tools** menu of the **Disasm** panel opens the
+**Memory Finder**, as does the **Find pattern** key: Ctrl+F in both presets.
 
 - **Bytes** - up to 8 bytes in hex, separated by colons: `3E:05:C9`.
 - **Mask** - for each byte, the bits that must match: `FF` all of them, `00` none, so that
   any byte will do there, `0F` only the low four bits. Bytes with no mask must match whole.
 - **Text** - up to 8 characters. Typing text fills **Bytes** with its codes, and typing
-  bytes shows them here as text. Upper and lower case count.
+  bytes shows them here as text. The case of the letters matters.
 
 {icon}`search` **Find** goes through the 64K the CPU sees, starting from the address at the
 top of the listing. The line under the fields says **Found @** and the address, or
@@ -168,13 +168,14 @@ top of the listing. The line under the fields says **Found @** and the address, 
 
 ![The Memory Filler](images/dbg-filler.png)
 
-**Fill...** in the {icon}`other` **Tools** menu opens it. With a block selected, it starts
-with the block's addresses.
+**Fill...** in the {icon}`other` **Tools** menu opens the **Memory Filler**. With a block
+selected, the window opens with the block's start and end filled in.
 
 - **Start address**, **End address** - the memory to fill, ends included.
-- **Pattern** - up to 8 bytes, separated by colons. They repeat to the end.
-- **Mask** - for **Mask** only: the bits of each byte that the pattern sets.
-- How the pattern goes in:
+- **Pattern** - up to 8 bytes, separated by colons. The pattern repeats up to the end
+  address.
+- **Mask** - used by the **Mask** method only: the bits of each byte that the pattern sets.
+- The method, how the pattern is written:
 
 | Method | Each byte becomes |
 |---|---|
@@ -194,20 +195,20 @@ only with **Allow ROM wr** ticked.
 
 ![The Memory Sprite Scanner](images/dbg-sprite-scanner.png)
 
-**Sprite scanner** in the {icon}`other` **Tools** menu opens it. It shows memory as a
-picture, one bit a pixel, so that sprites, fonts and screens can be found by eye. In the
-picture it shows Exolon (Raffaele Cecco, Hewson, 1987): with **Width** 3, the frames of its
-hero running stand one under another, and **Columns** puts the memory after them side by
-side.
+**Sprite scanner** in the {icon}`other` **Tools** menu opens the **Memory Sprite Scanner**.
+The scanner shows memory as a picture, one bit a pixel, so that sprites, fonts and screens
+can be found by eye. The picture here shows Exolon (Raffaele Cecco, Hewson, 1987): with
+**Width** 3, the frames of the running hero stand one under another, and **Columns** draws
+the memory that follows them in more columns side by side.
 
-- **Page** - the RAM page read for the addresses from C000 to FFFF. It starts at the page
-  the CPU has there.
+- **Page** - the RAM page read for the addresses from C000 to FFFF. At first it is the
+  page the CPU has there.
 - **Addr** - the first byte shown.
 - **Width** - how many bytes make one line of the picture, 8 pixels each.
 - **Height** - how many rows of 8 lines the picture has.
 - **Inversion** - swaps black and white.
 - **Columns** - when **Width** is narrow, the memory that follows is drawn in more columns
-  side by side, in turn in another color, to fill the picture.
+  side by side, every second column in green, to fill the picture.
 - **Grid** - shades every other 8 x 8 square, to see where the bytes and rows fall.
 - **ZX screen** - reads the memory the way the ZX screen lays it out: 6144 bytes from
   **Addr**.
@@ -216,7 +217,7 @@ The scrollbar at the right and the mouse wheel move the address by one row of 8 
 The {icon}`floppy` button with the floppy disk saves the bytes shown - **Width** x
 **Height** x 8 of them, or 6144 with **ZX screen** - to a file, as they are in memory.
 
-The scanner stays open when you leave the Debugger, and comes back with it.
+The scanner window hides when you close the Debugger, and opens again with the Debugger.
 
 ## Saving and loading memory
 
@@ -230,22 +231,23 @@ the **Disasm** toolbar. Each has a key of its own: see
 ![The Save RAM Dump window](images/dbg-save-dump.png)
 
 **Save RAM Dump** saves a part of the memory the CPU sees. Fill in **Start** and **End**,
-or **Start** and **Length**, in hex: the third follows. Then pick from
+or **Start** and **Length**, in hex: the third field is filled in by itself. Then pick from
 {icon}`save_all` **Save as...**:
 
 - **...as bin** - the bytes as they are, into a file you name;
 - **...as Hobeta** - a `.$C` file: a TR-DOS code file named after the start address,
   that loads back to the same address;
 - **...to disk A** to **...to disk D** - a code file on the TR-DOS disk in that drive.
-  A drive with no disk gets a new, formatted one. Up to FF00 bytes go on a disk.
+  A drive with no disk gets a new, formatted one. A file saved this way can be up to FF00
+  bytes long.
 
 ![The Open RAM Dump window](images/dbg-open-dump.png)
 
 **Open RAM Dump** loads a file into memory. The {icon}`fileopen` button beside **File**
-picks the file; a file can be up to FF00 bytes long. **Start** is where it goes, C000 to
-begin with, and **Length** and **End** show how far it reaches. A file that would run past
-FFFF is moved down to end there. {icon}`ok-apply` **OK** writes it into the memory the CPU
-sees, ROM only with **Allow ROM wr** ticked.
+picks the file; a file can be up to FF00 bytes long. **Start** is the address the file is
+loaded at, C000 at first, and **Length** and **End** show how far the file reaches. A file
+that would run past FFFF is moved down to end there. {icon}`ok-apply` **OK** writes the file
+into the memory the CPU sees, ROM only with **Allow ROM wr** ticked.
 
 ## Heat map
 
@@ -262,27 +264,28 @@ sees, ROM only with **Allow ROM wr** ticked.
 5. The address under the mouse, and the legend with its counts.
 
 The **Heat map** counts, for every byte of RAM and ROM, how many times the program has
-read it, written it and run it. Click its tab, under the **DUMP**, and tick **Collect**:
+read it, written it and run it. Click the **Heat map** tab, under the **DUMP**, and tick
+**Collect**:
 counting starts and goes on while the machine runs, also with the Debugger closed, until
 you untick it. With **Collect** off the picture says **collecting is off**.
 
 Each counter has its color: **Read** green, **Write** red, **Exec** blue. A byte nothing
 has touched is gray. With **All**, each cell takes the color of the counter that wins:
 blue when it was run more often than read and written together, else red when written
-more than read, else green. **Exec** counts every byte the CPU takes as part of an
+more than read, else green. **Exec** counts every byte the CPU reads as part of an
 instruction, operands included; **Read** counts only the data it reads.
 
 So the picture reads like a map of the program: blue is code, red is what it changes - the
 screen, the variables, the stack - and green is what it only reads, such as graphics,
 fonts and tables.
 
-**CPU** shows the 64K the CPU sees now as four squares, one for each 16K window, each cell
-4 bytes. **RAM** and **ROM** show one 16K page, a cell a byte, and scroll when the panel is
-too small.
+**CPU** shows the 64K the CPU sees now as four squares, one for each 16K window, with one
+cell for 4 bytes. **RAM** and **ROM** show one 16K page, with one cell for each byte, and
+scroll when the panel is too small.
 
 Hold the mouse over a cell to see its address, the memory and page it is in, and its
 counts: **Read:**, **Write:**, **Exec:**. Double-click a cell and the listing goes there,
-when the CPU can see it.
+if the CPU can see that memory now.
 
 The {icon}`refresh` button with the circular arrows resets all counters, after asking.
 Loading a snapshot resets them too. The {icon}`save_all` button beside it saves all counters
