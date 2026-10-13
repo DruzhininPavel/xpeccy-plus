@@ -4,6 +4,7 @@
 #include "../ldbytes.h"
 #include "../filetypes/filetypes.h"
 #include "../cpu/Z80/z80.h"
+#include "zx_step.h"
 
 int compflags = 0;
 
@@ -26,25 +27,7 @@ void zx128_map_mem(Computer* comp, int extMask) {
 // INT handle/check
 
 void zx_sync(Computer* comp, int ns) {
-	// devices. This runs once per instruction, so the ones that are idle or
-	// not there at all are asked by the flag they check first, not by a call
-	if (comp->dif->fdc->plan || comp->dif->doors)
-		difSync(comp->dif, ns);
-	if (comp->gs->enable)
-		gsSync(comp->gs, ns);
-	if (comp->saa->enabled)
-		saaSync(comp->saa, ns);
-	tsSync(comp->ts, ns);
-	tapSync(comp->tape, ns);
-	bcSync(comp->beep, ns);
-	if (comp->keyb->per) kbd_sync(comp->keyb, ns);		// a key is held: ps/2 auto-repeat
-	// nmi
-	if ((comp->cpu->regPC > 0x3fff) && comp->flgNMIRQ) {
-		comp->cpu->intrq |= Z80_NMI;	// request nmi
-		comp->flgDOS = 1;			// set dos page
-		comp->flgROM = 1;
-		comp->hw->mapMem(comp);
-	}
+	zx_sync_in(comp, ns);
 }
 
 
@@ -143,24 +126,8 @@ void zx_irq(Computer* comp, int t) {
 	}
 }
 
-// INT sampled at the end of every instruction
 void zx_irq_ack(Computer* comp) {
-	// an instruction that ends in an i/o cycle leaves the video at its
-	// end, a tick past the one the cpu samples INT in: a pulse that
-	// began inside that tick is not there yet
-	int ahead = res4 - comp->cpu->t;
-	// lazy: dots still counted cross no event, so they leave intFRAME
-	// zero or not as it is, and a step back (ahead) walks them first
-	comp_vid_to_t(comp);
-	int act = comp->vid->intFRAME;
-	if (act && (ahead > 0) && (comp->vid->intlen - act < ahead * comp->nsPerTickFixed / comp->vid->nsPerDotFixed))
-		act = 0;
-	comp->cpu->flgACK = !!act && !comp->rzx.play;
-	// INT is a level: taken early in the pulse, it is taken again as soon
-	// as interrupts are back on and the pulse is still there (fuse does
-	// the same from EI). Butler's 128K timing tests count on it.
-	if (act && !comp->rzx.play)
-		comp->cpu->intrq |= Z80_INT;
+	zx_irq_ack_in(comp);
 }
 
 int zx_ack(Computer* comp) {

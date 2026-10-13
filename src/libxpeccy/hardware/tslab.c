@@ -1,14 +1,15 @@
 #include "hardware.h"
 #include "../xlog.h"
 #include "../cpu/Z80/z80.h"
+#include "zx_step.h"
 
 #include <stdio.h>
 #include <string.h>
 
 #define flgMEN	flag[0]		// 15AF[4] = FM_EN
-#define flgVDOS	flag[1]
-#define flgLINT	flag[2]		// 1 on vid->intLINE, 0 on line int ack
-#define flgDINT	flag[3]		// (same for dma int)
+#define flgVDOS	TSL_FLG_VDOS
+#define flgLINT	TSL_FLG_LINT
+#define flgDINT	TSL_FLG_DINT
 
 #define regMADR	reg[16]		// 15AF[0..3] = MapAddr
 #define dmaLen	reg[17]
@@ -692,7 +693,7 @@ static void ts_dma_run(Computer* comp, int ns) {
 }
 
 void ts_sync(Computer* comp, int ns) {
-	zx_sync(comp, ns);
+	zx_sync_in(comp, ns);
 	if (comp->tsconf.dma.act)
 		ts_dma_run(comp, ns);
 	comp->tsconf.cpuDram = 0;
@@ -978,14 +979,7 @@ void ts_irq(Computer* comp, int t) {
 		case IRQ_NMI:				// the NMI line is tied off on TSConf (top.v)
 			break;
 		case IRQ_CPU_ACK:
-			zx_irq(comp, t);
-			// line and dma hold until acked; the cpu drops INT on every ack it takes
-			if (comp->flgLINT || comp->flgDINT) {
-				comp->cpu->flgACK = 1;
-				comp->cpu->intrq |= Z80_INT;
-			}
-			if (comp->flgVDOS)
-				comp->cpu->flgACK = 0;
+			ts_irq_ack_in(comp);
 			break;
 		default:
 			zx_irq(comp, t);

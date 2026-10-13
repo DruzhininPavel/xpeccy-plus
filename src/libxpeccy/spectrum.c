@@ -7,6 +7,7 @@
 #include "spectrum.h"
 #include "filetypes/filetypes.h"
 #include "cpu/Z80/z80.h"
+#include "hardware/zx_step.h"
 #include "input/inview.h"
 #include "xreplay.h"
 
@@ -483,7 +484,9 @@ static void comp_wr_sync(CPU* cpu) {
 static void comp_end(CPU* cpu) {
 	Computer* comp = (Computer*)cpu->xptr;
 	if (comp->hw->irq == zx_irq)
-		zx_irq_ack(comp);
+		zx_irq_ack_in(comp);
+	else if (comp->hw->irq == ts_irq)
+		ts_irq_ack_in(comp);
 	else if (comp->hw->irq)
 		comp->hw->irq(comp, IRQ_CPU_ACK);
 }
@@ -988,8 +991,11 @@ static int comp_step_end(Computer* comp, int unsynced, int t) {
 	comp->tickCount += t;
 	comp->tickTotal += t;
 	comp->frmtCount += t;
-	if (comp->hw->sync)
-		comp->hw->sync(comp, nsTime);
+	cbHwSnc sync = comp->hw->sync;
+	if (sync == zx_sync)
+		zx_sync_in(comp, nsTime);
+	else if (sync)
+		sync(comp, nsTime);
 	if (comp->vid->newFrame) {
 		comp->vid->newFrame = 0;
 		comp->flgFRM = 1;
@@ -1138,7 +1144,23 @@ int comp_exec_quiet(Computer* comp) {
 	comp->flgBRKPRE = 0;
 	res4 = 0;
 	comp_mem_direct(comp);
-	res2 = cpu_exec(comp->cpu);
+	CPU* cpu = comp->cpu;
+	cbHwIrq irq = comp->hw->irq;
+	if (cpu->core && (cpu->core->exec == z80_exec) && (cpu->xend == comp_end) && ((irq == zx_irq) || (irq == ts_irq))) {
+		// comp_end() inline
+		int end;
+		res2 = z80_exec_open(cpu, &end);
+		if (end) {
+			cpu->t--;
+			if (irq == zx_irq)
+				zx_irq_ack_in(comp);
+			else
+				ts_irq_ack_in(comp);
+			cpu->t++;
+		}
+	} else {
+		res2 = cpu_exec(cpu);
+	}
 	comp->cpu->rdp = NULL;
 	comp->cpu->m1p = NULL;
 	comp->cpu->wrp = NULL;

@@ -189,8 +189,9 @@ int z80_int(CPU* cpu) {
 	return res;
 }
 
-int z80_exec(CPU* cpu) {
+static inline __attribute__((always_inline)) int z80_exec_in(CPU* cpu, int* end) {
 	int res = 0;
+	*end = 0;
 	if (cpu->intrq & cpu->inten) {
 		res = z80_int(cpu);
 	}
@@ -220,6 +221,19 @@ int z80_exec(CPU* cpu) {
 			cpu->op->exec(cpu);
 		} while (cpu->op->flag & OF_PREFIX);
 		res = cpu->t;
+		*end = 1;
+	}
+	return res;
+}
+
+int z80_exec_open(CPU* cpu, int* end) {
+	return z80_exec_in(cpu, end);
+}
+
+int z80_exec(CPU* cpu) {
+	int end;
+	int res = z80_exec_in(cpu, &end);
+	if (end) {
 		cpu->t--;
 		cpu->xend(cpu);
 		cpu->t++;
