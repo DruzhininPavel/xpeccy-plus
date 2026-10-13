@@ -93,9 +93,19 @@ typedef struct {
 	// how many it drew; 0 leaves the whole run to the dot callback.
 	int (*run)(Video*, int);
 	// Its dots leave nothing the machine can see but the border latch and
-	// atrbyte (vid_atrbyte()), so an undrawn frame skips them (vid_skips()).
+	// what latch says, so an undrawn frame skips them (vid_skips()).
 	int blind;
+	int latch;		// VL_*: a byte of the drawing the machine reads back
 } xVideoMode;
+
+// What a mode's dots leave behind that the machine can read: worked out from
+// the memory where the dots are skipped (vid_atrbyte, vid_fntbyte)
+enum {
+	VL_NONE = 0,
+	VL_ATR_ZX,		// atrbyte: the ZX attribute of the cell, 0xff on the border
+	VL_FNT_ATM,		// fntbyte: the font byte of ATM text
+	VL_FNT_EVO		// fntbyte: ...of ZX Evo text
+};
 
 struct Video {
 	unsigned nogfx:1;	// tsl : nogfx flag, pc98xx:disable display
@@ -109,6 +119,8 @@ struct Video {
 	unsigned nodraw:1;	// emulate the raster but put no pixels out; set at a frame start,
 				// since a blind mode's fetch counter stands still meanwhile
 	int nodrawNext;		// nodraw for the next frame, taken as it starts; -1: keep
+	int latchFrm;		// where atrbyte/fntbyte were last taken in an undrawn frame:
+	int latchPos;		// fcnt and the dot (vid_latch)
 	unsigned debug:1;
 	unsigned upd:1;
 	unsigned tail:1;
@@ -327,6 +339,13 @@ static inline int vid_cont_hit(Video* vid, int adr, int mreq) {
 int vid_snow(Video*, int, int);			// cpu refresh cycle: disturb the ULA if it is fetching now
 int vid_float_bus(Video*, int*);		// the byte the ULA has on the bus now, -1 if none
 int vid_atrbyte(Video*);			// the attribute the ULA last fetched, 0xff on the border
+int vid_fntbyte(Video*);			// the font byte text mode last fetched
+// In an undrawn frame the bytes the dots would have fetched are worked out when
+// read, from the memory as it is then. Anything about to change that memory, the
+// page or the mode first has them taken here, as the dots would have had them.
+void vid_latch(Video*);
+// ...and whether a write to this ram address (bank << 14 | offset) is one of those
+int vid_latch_hit(Video*, int);
 void vid_dark_tail(Video*);
 
 void vid_clear_image(void);

@@ -241,6 +241,33 @@ int vidTSLRenderSprites(Video* vid, int ln) {
 	return res;
 }
 
+// A line of an undrawn frame: what the two above fetch, counted and not drawn.
+// The DRAM cycles they take are what the cpu and the DMA see of the TSU.
+static int ts_tiles_count(Video* vid, int ln, int lay, unsigned short yoffs, unsigned short xoffs) {
+	int ys = (ln & 31) + (yoffs & 7);
+	unsigned short* row = vid->tsconf.tmb[lay][(ys >> 3) & 3];
+	int zen = vid->tsconf.tconfig & (lay ? 8 : 4);
+	int ntiles = (vid->tsconf.tsSize.x >> 3) + 2;
+	int res = 0;
+	for (int a = 0; a < 64; a++)
+		if ((((a - (xoffs >> 3)) & 63) < ntiles) && ((row[a] & 0xfff) || zen))
+			res += 2;
+	return res;
+}
+
+static int ts_sprites_count(Video* vid, int ln) {
+	TSpr spr;
+	int res = 0;
+	while (sadr < (0x200 - 6)) {
+		ts_spr_parse(&vid->tsconf.sfile[sadr], &spr);
+		if (spr.act && (((ln - spr.y) & 0x1ff) < ((spr.ys + 1) << 3)))
+			res += (spr.xs + 1) << 1;
+		sadr += 6;
+		if (spr.leap) break;
+	}
+	return res;
+}
+
 // for the debugger: a sprite and its dots, the way the TSU reads and draws them
 
 void tsl_get_sprite(Video* vid, int idx, tsSprite* s) {
@@ -395,22 +422,29 @@ static const unsigned char tsLayerOn[5] = {0x80, 0x20, 0x80, 0x40, 0x80};
 // prefetch, a word per 4 tile/sprite pixels
 int vidTSRender(Video* vid) {
 	int res = 0;
+	// In an undrawn frame the fetches are only counted. The tiles and sprites are
+	// for the line after this one, which is the next frame's first at the end of
+	// one: drawn when that frame is.
+	int draw = !vid->nodraw;
+	int next = draw;
+	if ((vid->ray.y + 1 >= vid->full.y) && (vid->nodrawNext >= 0))
+		next = !vid->nodrawNext;
 // this line's tiles and sprites were drawn during the line before
-	memcpy(vid->line, vid->tsconf.tsNext, 0x200);
+	if (draw) memcpy(vid->line, vid->tsconf.tsNext, 0x200);
 	vid->tsconf.layNext ^= 1;			// and so were its layers
 // the bitmap has a window of its own
 	int gfx = (vid->ray.y >= vid->tsconf.yPos) && (vid->ray.y < vid->tsconf.yPos + vid->scrsize.y);
-	memset(vid->linb,0x00,0x200);
+	if (draw) memset(vid->linb,0x00,0x200);
 // bitplane/text (render to vid->linb)
 	if (gfx) switch(vid->vmode) {
 		case VID_TSL_16:
-			res += vidTSLRender16c(vid);
+			res += draw ? vidTSLRender16c(vid) : (vid->scrsize.x >> 2);
 			break;
 		case VID_TSL_256:
-			res += vidTSLRender256c(vid);
+			res += draw ? vidTSLRender256c(vid) : (vid->scrsize.x >> 1);
 			break;
 		case VID_TSL_TEXT:
-			res += vidTSLRenderText(vid);		// rendered as double-density
+			res += draw ? vidTSLRenderText(vid) : (vid->scrsize.x >> 1);	// rendered as double-density
 			break;
 	}
 	if (gfx && (vid->vmode == VID_TSL_NORMAL)) res += 32;	// ZX: 1 of 8 over 256 dots
@@ -430,7 +464,7 @@ int vidTSRender(Video* vid) {
 		if (vid->tsconf.layUsed[n] & (1 << i)) memset(lay[i], 0x00, 0x200);
 	vid->tsconf.layUsed[n] = apart ? 0 : TSL_LAY_WHOLE;
 	tsl = vid->tsconf.tsNext;
-	if (!apart || (ln < 0) || (ln >= vid->tsconf.tsSize.y)) memset(tsl, 0x00, 0x200);
+	if (next && (!apart || (ln < 0) || (ln >= vid->tsconf.tsSize.y))) memset(tsl, 0x00, 0x200);
 	if ((ln < 0) || (ln >= vid->tsconf.tsSize.y)) return res;
 	sadr = 0x000;					// adr inside SFILE
 	int used = 0;					// a sprite layer with no sprite on the line stays clear
@@ -438,14 +472,21 @@ int vidTSRender(Video* vid) {
 		if (!(vid->tsconf.tconfig & tsLayerOn[i])) continue;
 		if (apart) tsl = lay[i];
 		int t = i >> 1;
-		int r = (i & 1) ? vidTSLRenderTiles(vid, ln, t, t ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset,
-				t ? vid->tsconf.T1XOffset : vid->tsconf.T0XOffset, t ? vid->tsconf.T1GPage : vid->tsconf.T0GPage,
-				t ? vid->tsconf.T1Pal76 : vid->tsconf.T0Pal76)
-			: vidTSLRenderSprites(vid, ln);
+		int r;
+		if (!next) {
+			r = (i & 1) ? ts_tiles_count(vid, ln, t, t ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset,
+					t ? vid->tsconf.T1XOffset : vid->tsconf.T0XOffset)
+				: ts_sprites_count(vid, ln);
+		} else {
+			r = (i & 1) ? vidTSLRenderTiles(vid, ln, t, t ? vid->tsconf.T1YOffset : vid->tsconf.T0YOffset,
+					t ? vid->tsconf.T1XOffset : vid->tsconf.T0XOffset, t ? vid->tsconf.T1GPage : vid->tsconf.T0GPage,
+					t ? vid->tsconf.T1Pal76 : vid->tsconf.T0Pal76)
+				: vidTSLRenderSprites(vid, ln);
+		}
 		res += r;
 		if (r || (i & 1)) used |= 1 << i;
 	}
-	if (apart) {
+	if (apart && next) {
 		vid->tsconf.layUsed[n] = used;
 		ts_compose(vid->tsconf.tsNext, lay, used & ~vid->tsconf.hide);
 	}

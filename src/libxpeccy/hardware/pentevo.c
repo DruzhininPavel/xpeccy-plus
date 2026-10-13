@@ -315,7 +315,7 @@ int evoInCfg(Computer* comp, int port) {
 			// with pal444 the low colour bits (video_palframe.v palcolor)
 			case 0x0d00: res = (((comp->regBF & 0x20) ? comp->regPalLo(comp->vid->nextbrd & 0x0f)
 					: comp->regPal(comp->vid->nextbrd & 0x0f)) & 0xf3) | 0x0c; break;
-			case 0x0e00: res = comp->vid->fntbyte; break;	// font byte the text mode is showing
+			case 0x0e00: res = vid_fntbyte(comp->vid); break;	// font byte the text mode is showing
 			case 0x0f00: res = comp->vid->nextbrd & 0x0f; break;	// last one written
 			case 0x1000: res = comp->xregBRKA.l; break;
 			case 0x1100: res = comp->xregBRKA.h; break;

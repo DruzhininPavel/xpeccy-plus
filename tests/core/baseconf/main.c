@@ -17,7 +17,8 @@
 // first; HDD=img puts an image on the IDE master; SDCARD=img mounts a card;
 // PIX="x,y ..." prints palette indexes of dots of the last frame (PIXH: in
 // half dots); PAL=1 the 16 cells; TICKS=1 the T taken; DOTS=1 the same in
-// dots; RESETAFTER=1 the state a reset leaves; DUMP=f.ppm writes the frame.
+// dots; RESETAFTER=1 the state a reset leaves; DUMP=f.ppm writes the frame;
+// NODRAW=1 draws no frame at all.
 
 #include "../bench.h"
 
@@ -97,6 +98,7 @@ int main(int argc, char** argv) {
 		ideSetImage(comp->ide, IDE_MASTER, hdd);
 	}
 	cpu_start(comp);
+	if (getenv("NODRAW")) vid_set_nodraw(comp->vid, 1);	// no frame drawn: the machine must not see it
 
 	int fstart = comp->vid->fcnt;
 	int tick0 = comp->tickCount;

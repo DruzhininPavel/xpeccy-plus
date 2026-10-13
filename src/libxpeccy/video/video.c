@@ -100,7 +100,7 @@ void vid_clear_image(void) {
 
 // end of a raster line: move to the next row of the buffer
 void vid_line(Video* vid) {
-	if (vid->linedbl) {
+	if (vid->linedbl && !vid->nodraw) {
 		memcpy(vid->ray.lptr + bytesPerLine, vid->ray.lptr, bytesPerLine);
 		vid->ray.lptr += bytesPerLine;
 	}
@@ -822,9 +822,128 @@ int vid_float_bus(Video* vid, int* age) {
 	return vid->mrd(MADR(vid->vidPage, atr), vid->xptr) & 0xff;
 }
 
+// An undrawn frame of a mode marked blind moves the ray and nothing else
+static inline int vid_skips(Video* vid) {
+	return vid->nodraw && vid->cb && vid->cb->blind;
+}
+
+// The dot the ray passed last, and the frame it was in: back 1 is the one before
+static void vid_last_dot(Video* vid, int* x, int* y, int* back) {
+	*x = vid->ray.x - 1;
+	*y = vid->ray.y;
+	*back = 0;
+	if (*x < 0) {
+		*x = vid->full.x - 1;
+		if (--(*y) < 0) {
+			*y = vid->full.y - 1;
+			*back = 1;
+		}
+	}
+}
+
+// the bytes latched were taken at or after raster dot x, y of the frame back frames ago
+static int vid_latched_since(Video* vid, int back, int x, int y) {
+	int frm = vid->fcnt - back;
+	int pos = y * vid->full.x + x;
+	return (vid->latchFrm > frm) || ((vid->latchFrm == frm) && (vid->latchPos >= pos));
+}
+
+// VL_ATR_ZX: what vidDrawNormal() leaves in atrbyte - 0xff from a border dot, the
+// attribute of the cell, read at its first dot, from a screen one
+static int vid_atr_skipped(Video* vid) {
+	int x, y, back, pix, atr;
+	vid_last_dot(vid, &x, &y, &back);
+	int xs = x - vid->bord.x;
+	int ys = y - vid->bord.y;
+	if ((ys < 0) || (ys >= vid->scrn.y) || (xs < 0) || (xs >= vid->scrn.x)) return 0xff;
+	if (vid_latched_since(vid, back, (xs & ~7) + vid->bord.x, y)) return vid->atrbyte;
+	vid_scr_adr(0, xs & ~7, ys, &pix, &atr);
+	return vid->mrd(MADR(vid->vidPage, atr), vid->xptr) & 0xff;
+}
+
+// VL_FNT_*: the font byte the text modes fetch at the start of every 4 dots of
+// their 320x200 window (vidDrawATMtext, vidDrawEvoText), kept outside it
+static int vid_fnt_skipped(Video* vid) {
+	int x, y, back;
+	vid_last_dot(vid, &x, &y, &back);
+	int gx = x - vid->bord.x + 32;		// vid_atm_org()
+	int gy = y - vid->bord.y + 4;
+	if ((gy >= 0) && (gy < 200) && (gx < 0)) {	// left of the window: the line above's last
+		gx = 320;
+		gy--;
+	}
+	if (gy < 0) {				// above it: the last line of the frame before
+		gy = 199;
+		gx = 320;
+		back++;
+	} else if (gy >= 200) {
+		gy = 199;
+		gx = 320;
+	}
+	gx = (gx >= 320) ? 316 : (gx & ~3);
+	if (vid_latched_since(vid, back, gx - 32 + vid->bord.x, gy - 4 + vid->bord.y)) return vid->fntbyte;
+	int adr = 0x1c0 + ((gy & 0xf8) << 3) + (gx >> 3);
+	int code;
+	if (vid->cb->latch == VL_FNT_EVO) {
+		code = vid->mrd(MADR(vid->vidPage + 3, (gx & 7) ? adr + 0x1000 : adr), vid->xptr);
+	} else {
+		code = vid->mrd(MADR(vid->vidPage, (gx & 7) ? adr ^ 0x2000 : adr), vid->xptr);
+	}
+	return vid_fnt_rd(vid, ((code & 0xff) << 3) | (gy & 7)) & 0xff;
+}
+
+static void vid_latch_mark(Video* vid) {
+	int x, y, back;
+	vid_last_dot(vid, &x, &y, &back);
+	vid->latchFrm = vid->fcnt - back;
+	vid->latchPos = y * vid->full.x + x;
+}
+
+// The latch with the ray where it stands: for the callbacks inside the walk
+static void vid_latch_at(Video* vid) {
+	if (vid_skips(vid)) {
+		switch (vid->cb->latch) {
+			case VL_ATR_ZX:
+				vid->atrbyte = vid_atr_skipped(vid);
+				break;
+			case VL_FNT_ATM:
+			case VL_FNT_EVO:
+				vid->fntbyte = vid_fnt_skipped(vid);
+				break;
+		}
+	}
+	vid_latch_mark(vid);
+}
+
+void vid_latch(Video* vid) {
+	vid_settle(vid);
+	vid_latch_at(vid);
+}
+
+int vid_latch_hit(Video* vid, int padr) {
+	if (!vid_skips(vid)) return 0;
+	switch (vid->cb->latch) {
+		case VL_ATR_ZX:
+			return ((padr >> 14) == vid->vidPage) && ((padr & 0x3fff) >= 0x1800) && ((padr & 0x3fff) < 0x1b00);
+		case VL_FNT_ATM:
+		case VL_FNT_EVO:
+			return 1;		// the font is written through the memory as well
+	}
+	return 0;
+}
+
+// Drawn or not from here: whichever side keeps the bytes from now on gets them
+// as they stand
+static void vid_nodraw_to(Video* vid, int on) {
+	on = on ? 1 : 0;
+	if (on == vid->nodraw) return;
+	vid_latch_at(vid);
+	vid->nodraw = on;
+}
+
 void vid_set_nodraw(Video* vid, int on) {
 	vid_unlazy(vid);			// dots counted as undrawn stay undrawn
-	vid->nodraw = on ? 1 : 0;
+	vid_nodraw_to(vid, on);
 	vid->nodrawNext = -1;
 }
 
@@ -841,21 +960,19 @@ void vid_set_int_frame(Video* vid, int dots) {
 	vid->intlen = dots;
 }
 
-// An undrawn frame of a mode marked blind moves the ray and nothing else
-static inline int vid_skips(Video* vid) {
-	return vid->nodraw && vid->cb->blind;
-}
-
 // Where the dots are skipped atrbyte is not kept, so it is read here from the
 // cell of the last dot the ray passed.
 int vid_atrbyte(Video* vid) {
-	int x, pix, atr;
 	vid_settle(vid);
-	if (!vid_skips(vid)) return vid->atrbyte;
-	x = vid->ray.x - 1 - vid->bord.x;
-	if (vid->vbrd || (x < 0) || (x >= vid->scrn.x)) return 0xff;
-	vid_scr_adr(0, x & ~7, vid->ray.y - vid->bord.y, &pix, &atr);
-	return vid->mrd(MADR(vid->vidPage, atr), vid->xptr) & 0xff;
+	if (vid_skips(vid) && (vid->cb->latch == VL_ATR_ZX)) return vid_atr_skipped(vid);
+	return vid->atrbyte;
+}
+
+int vid_fntbyte(Video* vid) {
+	vid_settle(vid);
+	if (vid_skips(vid) && ((vid->cb->latch == VL_FNT_ATM) || (vid->cb->latch == VL_FNT_EVO)))
+		return vid_fnt_skipped(vid);
+	return vid->fntbyte;
 }
 
 void vid_set_grey(int f) {
@@ -1526,24 +1643,27 @@ void vidDrawEvoText(Video*);
 // weiter
 
 // id,(@on),(@every_visible_dot),(@HBlank),(@LineStart),(@VBlank),(@Frame)
+// HWMC and TSConf's ZX screen leave atrbyte too, but no machine with them reads
+// it back (ZX Evo has no floating bus); the TSConf line work runs undrawn as well,
+// what it fetches is counted (vidTSRender)
 static xVideoMode vidModeTab[] = {
-	{VID_NORMAL, NULL, vidDrawNormal, NULL, NULL, NULL, NULL, nrm_run, 1},
-	{VID_ULA_SCR, NULL, ula_dot, NULL, NULL, NULL, NULL, ula_run, 1},
-	{VID_ALCO, NULL, vidDrawAlco, NULL, NULL, NULL, NULL},
-	{VID_HWMC, NULL, vidDrawHwmc, NULL, NULL, NULL, NULL},
-	{VID_ATM_EGA, NULL, vidDrawATMega, NULL, NULL, NULL, NULL},
-	{VID_ATM_TEXT, NULL, vidDrawATMtext, NULL, NULL, NULL, NULL},
-	{VID_ATM_HWM, NULL, vidDrawATMhwmc, NULL, NULL, NULL, NULL},
-	{VID_EVO_TEXT, NULL, vidDrawEvoText, NULL, NULL, NULL, NULL},
-	{VID_TSL_NORMAL, NULL, vidDrawTSLNormal, vts_hblk, vts_line, NULL, vts_frame},
-	{VID_TSL_16, NULL, vidDrawTSLExt, vts_hblk, vts_line, NULL, vts_frame},			// vidDrawTSL16
-	{VID_TSL_256, NULL, vidDrawTSLExt, vts_hblk, vts_line, NULL, vts_frame},		// vidDrawTSL256
-	{VID_TSL_TEXT, NULL, vidDrawTSLText, vts_hblk, vts_line, NULL, vts_frame},
-	{VID_PRF_MC, NULL, vidProfiScr, NULL, NULL, NULL, NULL},
-	{VID_PRF_MONO, NULL, vidProfiMono, NULL, NULL, NULL, NULL},
+	{VID_NORMAL, NULL, vidDrawNormal, NULL, NULL, NULL, NULL, nrm_run, 1, VL_ATR_ZX},
+	{VID_ULA_SCR, NULL, ula_dot, NULL, NULL, NULL, NULL, ula_run, 1, VL_ATR_ZX},
+	{VID_ALCO, NULL, vidDrawAlco, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
+	{VID_HWMC, NULL, vidDrawHwmc, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
+	{VID_ATM_EGA, NULL, vidDrawATMega, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
+	{VID_ATM_TEXT, NULL, vidDrawATMtext, NULL, NULL, NULL, NULL, NULL, 1, VL_FNT_ATM},
+	{VID_ATM_HWM, NULL, vidDrawATMhwmc, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
+	{VID_EVO_TEXT, NULL, vidDrawEvoText, NULL, NULL, NULL, NULL, NULL, 1, VL_FNT_EVO},
+	{VID_TSL_NORMAL, NULL, vidDrawTSLNormal, vts_hblk, vts_line, NULL, vts_frame, NULL, 1, VL_NONE},
+	{VID_TSL_16, NULL, vidDrawTSLExt, vts_hblk, vts_line, NULL, vts_frame, NULL, 1, VL_NONE},		// vidDrawTSL16
+	{VID_TSL_256, NULL, vidDrawTSLExt, vts_hblk, vts_line, NULL, vts_frame, NULL, 1, VL_NONE},	// vidDrawTSL256
+	{VID_TSL_TEXT, NULL, vidDrawTSLText, vts_hblk, vts_line, NULL, vts_frame, NULL, 1, VL_NONE},
+	{VID_PRF_MC, NULL, vidProfiScr, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
+	{VID_PRF_MONO, NULL, vidProfiMono, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE},
 
 
-	{VID_UNKNOWN, NULL, vidDrawBorder, NULL, NULL, NULL, NULL}
+	{VID_UNKNOWN, NULL, vidDrawBorder, NULL, NULL, NULL, NULL, NULL, 1, VL_NONE}
 };
 
 void vid_set_core(Video* vid, xVideoMode* xvm) {
@@ -1554,12 +1674,14 @@ void vid_set_core(Video* vid, xVideoMode* xvm) {
 
 void vid_set_mode(Video* vid, int mode) {
 	vid_unlazy(vid);
+	vid_latch_at(vid);		// the old mode's bytes, where an undrawn frame keeps them
 	vid->vmode = mode;
 	int i = 0;
 	while ((vidModeTab[i].id != VID_UNKNOWN) && (vidModeTab[i].id != mode)) {
 		i++;
 	}
 	vid_set_core(vid, &vidModeTab[i]);
+	vid_latch_mark(vid);		// the new one reads back what was kept until its dots move it
 }
 
 // NOTE: VBlank starts after last HBlank
@@ -1589,7 +1711,7 @@ void vid_tick(Video* vid) {
 		if (vid->ray.y >= vid->full.y) {		// new frame
 			vid_frame(vid);				// complete frame image
 			if (vid->nodrawNext >= 0) {
-				vid->nodraw = vid->nodrawNext;
+				vid_nodraw_to(vid, vid->nodrawNext);
 				vid->nodrawNext = -1;
 			}
 			vid->idx = 0;

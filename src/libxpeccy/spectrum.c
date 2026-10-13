@@ -425,12 +425,16 @@ void iowr(int port, int val, void* ptr) {
 	if (comp->flgCNTI) {
 		comp_vid_to_t_full(comp);	// sync video to current T
 		zx_cont_t1(comp, port);
+		if (comp->vid->nodraw && comp->vid->cb->latch)
+			vid_latch(comp->vid);		// the page or the mode may change (IRQ_CPU_SYNC)
 		comp->hw->out(comp, port, val);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;
 	} else {
 		// the ray up to T+1 in one step: the OUT reaches the device mid-cycle
 		comp_vid_to(comp, comp->cpu->t + 1);
+		if (comp->vid->nodraw && comp->vid->cb->latch)
+			vid_latch(comp->vid);
 		comp->hw->out(comp, port, val);
 	}
 	if (comp->vid->ula->palchan) {
@@ -492,6 +496,13 @@ void comp_irq(int t, void* ptr) {
 			break;
 		case IRQ_CPU_SYNC:
 			comp_vid_to_t(comp);
+			// an undrawn frame works out what its dots would have fetched when
+			// asked: a write about to change that takes it first
+			if (comp->vid->nodraw && comp->vid->cb->latch) {
+				MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
+				if (vid_latch_hit(comp->vid, (pg->type == MEM_RAM) ? ((pg->num << comp->mem->pgshift) | (comp->cpu->adr & comp->mem->pgmask)) : -1))
+					vid_latch(comp->vid);
+			}
 			return;			// no machine acts on a plain sync
 		case IRQ_CPU_RFSH:
 			comp_vid_to_t(comp);
