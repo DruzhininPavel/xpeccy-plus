@@ -2,7 +2,7 @@
   "args": ["-m", "pent", "--no-autostart", "{media}/demo.trd", "{media}/demo.tap"],
   "steps": [["wait", 3000]],
   "crop": {"widget": "QStatusBar", "pad": 0},
-  "zoom": 2,
+  "zoom": 1,
   "badges": "top",
   "frames": [
     {"n": 1, "rect": [0, 632, 64, 21]},

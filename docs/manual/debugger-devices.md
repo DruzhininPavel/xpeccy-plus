@@ -629,6 +629,8 @@ machine**.
 
 ![The Screen window](images/dbg-screen-window.png)
 
+![The Sound Chips window](images/dbg-sound-window.png)
+
 **Debug > Screen** and **Debug > Sound Chips** move the **Screen** and **Sound Chip**
 panels out of the Debugger into windows of their own. The same command again puts the
 panel back. In the Classic preset the keys are Alt+S and Alt+A; the Modern preset has no

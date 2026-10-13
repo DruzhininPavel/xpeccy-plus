@@ -77,6 +77,30 @@ def page_context(app, pagename, templatename, context, doctree):
     if pagename == "search" and app.builder.name == "html":
         app.add_js_file(PAGES_JS)
         app.add_js_file("search-offline.js")
+    if "genindexentries" in context:
+        link_see(context["genindexentries"])
+
+
+# Sphinx writes an index "see" entry as plain text, "see floppy disk", which leaves the
+# reader to look the term up. It gets the link of the term it names: the first place the
+# index sends that term to.
+def link_see(groups):
+    from sphinx.locale import _
+    forms = [re.escape(_(f)).replace(re.escape("%s"), "(.+)") for f in ("see %s", "see also %s")]
+    see = re.compile("|".join(forms))
+    first = {}
+    for _letter, entries in groups:
+        for name, (links, subs, _key) in entries:
+            uri = links[0][1] if links else next((s[1][0][1] for s in subs if s[1]), None)
+            if uri:
+                first.setdefault(name, uri)
+    for _letter, entries in groups:
+        for _name, (_links, subs, _key) in entries:
+            for i, (sub, sublinks) in enumerate(subs):
+                m = not sublinks and see.fullmatch(sub)
+                target = m and first.get(next(g for g in m.groups() if g))
+                if target:
+                    subs[i] = (sub, [(False, target)])
 
 
 # The text under a search hit is the found page fetch()ed, which a browser refuses to a

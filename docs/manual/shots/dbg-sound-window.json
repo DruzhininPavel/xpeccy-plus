@@ -1,0 +1,42 @@
+{
+  "files": {
+    "CYB1_128.TAP": {
+      "url": "https://spectrumcomputing.co.uk/pub/sinclair/games/c/Cybernoid128.tap.zip",
+      "sha256": "9bf2c0b773fbe11f4f47332fc4933a8a1ac720698c90a51a20a7785fa4f87a38"
+    }
+  },
+  "prepare": [
+    "-m",
+    "zx128",
+    "{media}/CYB1_128.TAP",
+    "--bench",
+    "3000",
+    "--bench-save",
+    "{media}/cybernoid.szx"
+  ],
+  "args": [
+    "{media}/cybernoid.szx"
+  ],
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "run-action key.sndwin"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Sound Chips"
+    ],
+    [
+      "wait",
+      800
+    ]
+  ]
+}

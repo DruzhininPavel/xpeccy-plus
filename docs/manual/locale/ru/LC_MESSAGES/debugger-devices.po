@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-13 19:18+0200\n"
+"POT-Creation-Date: 2026-10-13 23:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -1776,6 +1776,12 @@ msgstr "![Окно Screen](images/dbg-screen-window.png)"
 
 msgid "The Screen window"
 msgstr "Окно Screen"
+
+msgid "![The Sound Chips window](images/dbg-sound-window.png)"
+msgstr "![Окно Sound Chips](images/dbg-sound-window.png)"
+
+msgid "The Sound Chips window"
+msgstr "Окно Sound Chips"
 
 msgid ""
 "**Debug > Screen** and **Debug > Sound Chips** move the **Screen** and "
