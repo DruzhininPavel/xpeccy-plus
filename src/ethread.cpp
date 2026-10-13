@@ -588,6 +588,7 @@ void xThread::emuCycle(Computer* comp) {
 			rewinding = false;
 		}
 		// exec 1 opcode (or handle INT, NMI)
+		int hooks = 1;		// the tape hooks below are still to look at the last step
 		if (conf.emu.pause) {
 			sndNsFixed += NS_TO_FIXED(1000);
 		} else {
@@ -597,8 +598,36 @@ void xThread::emuCycle(Computer* comp) {
 				tm = compExec(comp);
 				comp->flgDBG = brkskip;
 				brkskip = 0;
-			} else if (!(comp->cpu->flgHALT && conf.emu.fast && !comp->gs->enable && !fastload_on && !brk_cond_n
-					&& !comp->flgCOND && !vrecWatch.load(std::memory_order_relaxed) && comp_halt_skip(comp, &tm))) {
+			} else if (conf.emu.fast && !comp->gs->enable && !brk_cond_n && !comp->flgCOND
+					&& !comp->flgDBG && !comp->flgBRKMEM && !comp->flgIBRK && !x_runahead
+					&& !comp->rzx.play && !comp->rzx.rec.on && !vrecWatch.load(std::memory_order_relaxed)) {
+				// Fast mode with nothing to look at between the steps: run them on
+				// until one ends a frame, breaks, or leaves the cpu where a tape hook
+				// below has something to do; the hooks then see that last one, as
+				// they would have. Fast loading's edge loop is looked at here, after
+				// every step, as below. A HALT is run on to the next event at once,
+				// but not under fast loading, which looks at every step of it.
+				Tape* tap = comp->tape;
+				for (;;) {
+					if (fastload_on || !(comp->cpu->flgHALT && comp_halt_skip(comp, &tm)))
+						tm = comp_exec_quiet(comp);
+					if (comp->flgFRM || comp->flgBRK || conf.emu.pause) break;
+					if (zx_rom_active(comp)) {
+						int pc = comp->cpu->regPC;
+						if ((pc == LD_ROM_BASE + LDC_START) || (pc == LD_ROM_BASE + LDC_EDGE1) || (pc == 0x4d0)) break;
+					}
+					if ((tap->ldBase >= 0) || (tape_flash() && (tap->portReads != ldcReads))) break;
+					sndNsFixed += NS_TO_FIXED(tm);
+					if (fastload_on) {
+						sndNsFixed += NS_TO_FIXED(fastload_step(comp));
+						if (comp->flgFRM || comp->flgBRK) {
+							tm = 0;
+							hooks = 0;		// all of them done for this step
+							break;
+						}
+					}
+				}
+			} else {
 				tm = compExec(comp);			// TODO: it exits when fetch-brk is occured, pc doesn't changed
 			}
 			sndNsFixed += NS_TO_FIXED(tm);
@@ -607,7 +636,7 @@ void xThread::emuCycle(Computer* comp) {
 			// None of the tape tricks while a recording plays or is made: the
 			// machine takes its input from the recording alone, and a recording
 			// holds only what came in through a port.
-			if (!comp->rzx.play && !comp->rzx.rec.on) {
+			if (hooks && !comp->rzx.play && !comp->rzx.rec.on) {
 				// tape trap	TODO: rework it as a system breakpoint
 				// this runs on every instruction, and the rom is paged in for most
 				// of them: the pc straight from the Z80, not through the cpu's

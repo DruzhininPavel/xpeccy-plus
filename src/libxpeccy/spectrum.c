@@ -1092,6 +1092,18 @@ int comp_halt_skip(Computer* comp, int* ns) {
 	return 1;
 }
 
+// compExec() for a machine nothing looks at between its steps: no breakpoint,
+// no debugger, no recording playing or being made (the caller makes sure)
+int comp_exec_quiet(Computer* comp) {
+	comp->flgBRKPRE = 0;
+	res4 = 0;
+	res2 = cpu_exec(comp->cpu);
+	if (comp->cpu->flgINTOK) comp->intTaken++;
+	comp->cpu->flgINTOK = 0;
+	comp->cpu->flgNMIOK = 0;
+	return comp_step_end(comp, res2 - res4, res2);
+}
+
 // Time passing with the cpu standing still: what compExec() does once the
 // opcode has run, for a caller that has already put the cpu where that time
 // leaves it. Syncing video and devices in one piece gives what a run of

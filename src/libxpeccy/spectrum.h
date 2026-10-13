@@ -372,6 +372,7 @@ void compUserReset(Computer*,int);
 int compExec(Computer*);
 int comp_skip_ticks(Computer*, int);
 int comp_halt_skip(Computer*, int* ns);		// HALT steps up to the next event at once, fast mode
+int comp_exec_quiet(Computer*);			// compExec() with no breakpoint, debugger or recording
 void comp_irq(int, void*);
 
 //void compKeyPress(Computer*, int, keyEntry*);
