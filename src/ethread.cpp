@@ -607,10 +607,17 @@ void xThread::emuCycle(Computer* comp) {
 				// they would have. Fast loading's edge loop is looked at here, after
 				// every step, as below. A HALT is run on to the next event at once,
 				// but not under fast loading, which looks at every step of it.
+				// Between those, the steps run on in one go (comp_run_quiet) up to
+				// the rom's tape entry points the hooks below look for.
 				Tape* tap = comp->tape;
+				static const int stops[] = {LD_ROM_BASE + LDC_START, LD_ROM_BASE + LDC_EDGE1, 0x4d0};
 				for (;;) {
-					if (fastload_on || !(comp->cpu->flgHALT && comp_halt_skip(comp, &tm)))
+					if (fastload_on) {
 						tm = comp_exec_quiet(comp);
+					} else if (!(comp->cpu->flgHALT && comp_halt_skip(comp, &tm))
+							&& !comp_run_quiet(comp, &tm, stops, 3)) {
+						tm = comp_exec_quiet(comp);
+					}
 					if (comp->flgFRM || comp->flgBRK || conf.emu.pause) break;
 					if (zx_rom_active(comp)) {
 						int pc = comp->cpu->regPC;

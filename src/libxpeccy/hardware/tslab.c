@@ -842,6 +842,7 @@ static xPort tsPortMap[] = {
 
 // FMAPS register window: writing a byte there is the same as out to the matching #xxAF port
 static void tslRegWr(Computer* comp, int reg, int val) {
+	comp_run_io(comp);		// the ports, through memory
 	hwOut(tsPortMap, comp, (reg << 8) | 0xaf, val, 1);
 }
 

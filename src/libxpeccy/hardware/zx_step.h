@@ -43,7 +43,7 @@ static inline void ts_irq_ack_in(Computer* comp) {
 		comp->cpu->flgACK = 0;
 }
 
-static inline void zx_sync_in(Computer* comp, int ns) {
+static inline void zx_devs_sync_in(Computer* comp, int ns) {
 	// devices. This runs once per instruction, so the ones that are idle or
 	// not there at all are asked by the flag they check first, not by a call
 	if (comp->dif->fdc->plan || comp->dif->doors)
@@ -56,6 +56,10 @@ static inline void zx_sync_in(Computer* comp, int ns) {
 	tapSync(comp->tape, ns);
 	bcSync(comp->beep, ns);
 	if (comp->keyb->per) kbd_sync(comp->keyb, ns);		// a key is held: ps/2 auto-repeat
+}
+
+static inline void zx_sync_in(Computer* comp, int ns) {
+	zx_devs_sync_in(comp, ns);
 	// nmi
 	if ((comp->cpu->regPC > 0x3fff) && comp->flgNMIRQ) {
 		comp->cpu->intrq |= Z80_NMI;	// request nmi

@@ -199,6 +199,13 @@ typedef struct Computer {
 	int intTaken;		// maskable interrupts the cpu has taken, for the debugger's spans
 	int frmtCount;		// accumulate T, but reset each INT
 	int hCount;		// T before HALT = frmtCount @ HALT
+	// a quiet run going (comp_run_quiet): the devices are owed the time of the
+	// instructions it has finished, runStep (16.16 ns of the video's step not made
+	// into ns yet); an i/o access gives it to them first (comp_run_io)
+	int runOn;
+	int runIO;		// ...and the run ends with that instruction
+	int runNs;		// ns given to them so far
+	long long runStep;
 	int waitDebt;		// T a board with its own arbiter still owes the next bus cycle
 	int waitPaid;		// what comp_cont_hw() last paid of it, for comp_owe()
 	int fCount;		// T in last frame
@@ -373,6 +380,11 @@ int compExec(Computer*);
 int comp_skip_ticks(Computer*, int);
 int comp_halt_skip(Computer*, int* ns);		// HALT steps up to the next event at once, fast mode
 int comp_exec_quiet(Computer*);			// compExec() with no breakpoint, debugger or recording
+int comp_run_quiet(Computer*, int* ns, const int* stops, int nstops);	// steps run on in one go, fast mode
+void comp_run_io_slow(Computer*);
+static inline void comp_run_io(Computer* comp) {	// before a port is touched
+	if (comp->runOn) comp_run_io_slow(comp);
+}
 void comp_irq(int, void*);
 
 //void compKeyPress(Computer*, int, keyEntry*);

@@ -372,6 +372,7 @@ int comp_pwatch_val(Computer* comp, int idx) {
 
 int iord(int port, void* ptr) {
 	Computer* comp = (Computer*)ptr;
+	comp_run_io(comp);
 	if (comp->flgCNTI) {
 		// fuse reads the port after both halves of the i/o cycle have
 		// been contended (periph.c readport), so do the waiting first
@@ -423,6 +424,7 @@ int iord(int port, void* ptr) {
 
 void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
+	comp_run_io(comp);
 	comp->flgBDI = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? 1 : 0;
 	if (comp->flgCNTI) {
 		comp_vid_to_t(comp);		// video to current T
@@ -1081,6 +1083,18 @@ static int comp_fetch_quiet(Computer* comp, int adr) {
 	return (pg->type != MEM_RAM) || !vid_cont_hit(comp->vid, pg->num << comp->mem->pgshift, 1);
 }
 
+// The devices whose sync takes the time in any pieces alike, all of them as they
+// stand: the AY and the GS only count it, the tape at its normal speed, the SAA
+// steps by the clock. The FDC, a beeper still settling, a held PS/2 key want
+// every step.
+static int comp_devs_summable(Computer* comp) {
+	if (comp->dif->fdc->plan || comp->dif->doors || comp->gs->enable || comp->keyb->per) return 0;
+	bitChan* bc = comp->beep;
+	if ((bc->val != (bc->lev ? bc->hi : bc->lo)) || (bc->perH && bc->perL)) return 0;
+	if (comp->tape->on && (comp->tape->speed != 100)) return 0;
+	return 1;
+}
+
 int comp_halt_skip(Computer* comp, int* ns) {
 	CPU* cpu = comp->cpu;
 	if ((cpu->type != CPU_Z80) || !cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
@@ -1088,10 +1102,7 @@ int comp_halt_skip(Computer* comp, int* ns) {
 	if (comp->rzx.play || comp->rzx.rec.on || comp->flgNMIRQ || comp->snowBad) return 0;
 	// the refresh disturbs the ULA only from a slow bank (zx_snow)
 	if (cpu->flgRFSH && (zx_bank_of(comp, cpu->regI << 8) & 1)) return 0;
-	if (comp->dif->fdc->plan || comp->dif->doors || comp->gs->enable || comp->keyb->per) return 0;
-	bitChan* bc = comp->beep;
-	if ((bc->val != (bc->lev ? bc->hi : bc->lo)) || (bc->perH && bc->perL)) return 0;
-	if (comp->tape->on && (comp->tape->speed != 100)) return 0;
+	if (!comp_devs_summable(comp)) return 0;
 	cbHwSnc sync = comp->hw->sync;
 	if (sync == ts_sync) {
 		if (comp->tsconf.dma.act) return 0;
@@ -1168,6 +1179,107 @@ int comp_exec_quiet(Computer* comp) {
 	comp->cpu->flgINTOK = 0;
 	comp->cpu->flgNMIOK = 0;
 	return comp_step_end(comp, res2 - res4, res2);
+}
+
+// The devices given the time of the instructions a quiet run has finished, as
+// their own step ends would have given it: an i/o access is about to show them
+// to the machine or to change them, and the run ends with that instruction. The
+// NMI is left to the step end.
+void comp_run_io_slow(Computer* comp) {
+	comp->runIO = 1;
+	long long s = comp->runStep;
+	if (!s) return;
+	Video* vid = comp->vid;
+	comp->runStep = 0;
+	vid->stepFixed -= s;
+	int time = vid->time;
+	vid->time = 0;
+	vid_clock(vid, s);		// the dots s completes: what the steps' ns add up to
+	int ns = vid->time;
+	vid->time = time;
+	comp->runNs += ns;
+	zx_devs_sync_in(comp, ns);
+}
+
+// Fast mode: steps run on in one go while nothing but the instructions happens.
+// Each one is the core's own - fetch, contention, snow, the INT sample - and only
+// its step end is put off: the time made into ns and handed to the devices, which
+// take it in any pieces alike (comp_devs_summable) - at the end of the run, or at
+// an i/o access in between, which ends the run. It ends as well on a new frame,
+// an interrupt the cpu takes next, a HALT (comp_halt_skip's), snow that spoils the
+// next fetch, a breakpoint, or a pc in stops while the rom is in.
+// 0 when the machine is not one to run on (the caller steps), else 1 and *ns.
+int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
+	CPU* cpu = comp->cpu;
+	cbHwIrq irq = comp->hw->irq;
+	cbHwSnc sync = comp->hw->sync;
+	if (!cpu->core || (cpu->core->exec != z80_exec) || (cpu->xend != comp_end)) return 0;
+	if ((irq != zx_irq) && (irq != ts_irq)) return 0;
+	int ts = (sync == ts_sync);
+	if (ts) {
+		if (comp->tsconf.dma.act) return 0;
+	} else if (sync != zx_sync) {
+		return 0;
+	}
+	if (cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
+	if (comp_mem_watched(comp) || comp->flgIBRK || comp->flgDBG || x_runahead) return 0;
+	if (comp->rzx.play || comp->rzx.rec.on || comp->flgNMIRQ || comp->snowBad) return 0;
+	if (!comp_devs_summable(comp)) return 0;
+	Video* vid = comp->vid;
+	Memory* mem = comp->mem;
+	comp->flgBRKPRE = 0;
+	comp->runOn = 1;
+	comp->runIO = 0;
+	comp->runNs = 0;
+	comp->runStep = 0;
+	comp_mem_direct(comp);
+	int direct = (cpu->m1p != NULL);
+	for (;;) {
+		int end;
+		res4 = 0;
+		int t = z80_exec_open(cpu, &end);
+		if (end) {		// comp_end() inline
+			cpu->t--;
+			if (irq == zx_irq)
+				zx_irq_ack_in(comp);
+			else
+				ts_irq_ack_in(comp);
+			cpu->t++;
+		}
+		// comp_step_end() but for the ns and the devices
+		vid_sync_lazy(vid, ticks_to_ns_fixed(comp, t - res4));
+		comp->tickCount += t;
+		comp->tickTotal += t;
+		comp->frmtCount += t;
+		if (vid->newFrame || comp->runIO || comp->flgBRK || cpu->flgHALT || (cpu->intrq & cpu->inten) || comp->snowBad) break;
+		if (stops && zx_rom_active(comp)) {
+			int i;
+			for (i = 0; (i < nstops) && (cpu->regPC != stops[i]); i++);
+			if (i < nstops) break;
+		}
+		if (ts) comp->tsconf.cpuDram = 0;		// ts_sync() for this one, the dma idle
+		comp->runStep = vid->stepFixed;
+		if (direct && !cpu->m1p)		// stdMRd() paged TR-DOS
+			cpu->m1p = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? mem->m1dos : mem->m1p;
+	}
+	cpu->rdp = NULL;
+	cpu->m1p = NULL;
+	cpu->wrp = NULL;
+	// what the instructions before the last are owed, then the last one's own step end
+	comp_run_io_slow(comp);
+	comp->runOn = 0;
+	int last = vid_step_ns(vid);
+	if (ts)
+		ts_sync(comp, last);
+	else
+		zx_sync_in(comp, last);
+	if (vid->newFrame) {
+		vid->newFrame = 0;
+		comp->flgFRM = 1;
+		if (xreplay_on) xreplay_frame(comp);
+	}
+	*ns = comp->runNs + last;
+	return 1;
 }
 
 // Time passing with the cpu standing still: what compExec() does once the
