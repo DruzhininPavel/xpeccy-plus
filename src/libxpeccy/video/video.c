@@ -1761,9 +1761,13 @@ static int vid_run_len(Video* vid, int n) {
 	int x = vid->ray.x;
 	int k = n;
 	if (vid->full.x - 1 - x < k) k = vid->full.x - 1 - x;
-	if ((vid->bord.x > x) && (vid->bord.x - 1 - x < k)) k = vid->bord.x - 1 - x;
 	if ((vid->vend.x > x) && (vid->vend.x - 1 - x < k)) k = vid->vend.x - 1 - x;
-	if ((vid->send.x > x) && (vid->send.x - 1 - x < k)) k = vid->send.x - 1 - x;
+	// the border edges only change what a dot draws: an undrawn run goes past them,
+	// hbrd is worked out where it ends (vid_run)
+	if (!vid_skips(vid)) {
+		if ((vid->bord.x > x) && (vid->bord.x - 1 - x < k)) k = vid->bord.x - 1 - x;
+		if ((vid->send.x > x) && (vid->send.x - 1 - x < k)) k = vid->send.x - 1 - x;
+	}
 	if (vid->intFRAME > 0) {
 		if (vid->intFRAME - 1 < k) k = vid->intFRAME - 1;
 	} else if ((vid->inten & 1) && (vid->ray.yb == vid->intp.y) && (vid->intp.x > vid->ray.xb)) {
