@@ -1,0 +1,334 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 17:59+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Getting started"
+msgstr "Начало работы"
+
+msgid "Download"
+msgstr "Где взять"
+
+msgid ""
+"Every release is on the [releases page](https://github.com/dotkoval"
+"/xpeccy-plus/releases). Pick the file for your system:"
+msgstr ""
+"Все выпуски лежат на [странице релизов](https://github.com/dotkoval"
+"/xpeccy-plus/releases). Выберите файл для своей системы:"
+
+msgid "System"
+msgstr "Система"
+
+msgid "File"
+msgstr "Файл"
+
+msgid "Windows 10 or 11"
+msgstr "Windows 10 или 11"
+
+msgid "`xpeccy-plus-<version>-win-x64-qt6.zip`"
+msgstr "`xpeccy-plus-<version>-win-x64-qt6.zip`"
+
+msgid "Older Windows"
+msgstr "Более старая Windows"
+
+msgid "`xpeccy-plus-<version>-win-x64.zip`"
+msgstr "`xpeccy-plus-<version>-win-x64.zip`"
+
+msgid "64-bit"
+msgstr "64 бита"
+
+msgid "`xpeccy-plus-<version>-win-x86.zip`"
+msgstr "`xpeccy-plus-<version>-win-x86.zip`"
+
+msgid "32-bit"
+msgstr "32 бита"
+
+msgid "Linux"
+msgstr "Linux"
+
+msgid "`xpeccy-plus-<version>-linux-x86_64.AppImage`"
+msgstr "`xpeccy-plus-<version>-linux-x86_64.AppImage`"
+
+msgid "macOS"
+msgstr "macOS"
+
+msgid "`xpeccy-plus-<version>-macos-arm64-qt6.dmg`"
+msgstr "`xpeccy-plus-<version>-macos-arm64-qt6.dmg`"
+
+msgid "Apple silicon"
+msgstr "Apple silicon"
+
+msgid ""
+"Nothing has to be installed besides. Machines, ROM images and settings "
+"come with the program, so it runs right away."
+msgstr ""
+"Больше ничего ставить не нужно. Машины, образы ROM и настройки идут "
+"вместе с программой, поэтому она запускается сразу."
+
+msgid ""
+"**Windows.** Unpack the archive anywhere you can write to, and run "
+"`xpeccy-plus.exe`."
+msgstr ""
+"**Windows.** Распакуйте архив в любую папку, куда у вас есть право "
+"записи, и запустите `xpeccy-plus.exe`."
+
+msgid ""
+"**Linux.** Allow the file to run (`chmod +x`, or the file's properties), "
+"then run it. It needs a distribution no older than Ubuntu 22.04 (glibc "
+"2.35)."
+msgstr ""
+"**Linux.** Разрешите файлу запускаться (`chmod +x` или свойства файла) и "
+"запустите его. Нужен дистрибутив не старше Ubuntu 22.04 (glibc 2.35)."
+
+msgid ""
+"**macOS.** Open the disk image and drag **xpeccy-plus** into "
+"Applications. The program is not signed by a registered developer, so the"
+" first start is refused: open **System Settings > Privacy & Security**, "
+"find the message about Xpeccy+ and click **Open Anyway**."
+msgstr ""
+"**macOS.** Откройте образ диска и перетащите **xpeccy-plus** в "
+"«Программы». Программа не подписана зарегистрированным разработчиком, "
+"поэтому первый запуск система отклонит: откройте **Системные настройки > "
+"Конфиденциальность и безопасность**, найдите сообщение о Xpeccy+ и "
+"нажмите **Всё равно открыть**."
+
+msgid "The first start"
+msgstr "Первый запуск"
+
+msgid "The first start asks which machine to run:"
+msgstr "При первом запуске программа спрашивает, какую машину запускать:"
+
+msgid "**Which machine to start?** - any of the built-in machines."
+msgstr "**Which machine to start?** — любая из встроенных машин."
+
+msgid ""
+"**Next time** - **Start the last one chosen**, **Ask again**, or **Start "
+"this one**."
+msgstr ""
+"**Next time** — что делать в следующий раз: **Start the last one chosen**"
+" (последнюю выбранную), **Ask again** (спросить снова) или **Start this "
+"one** (эту)."
+
+msgid ""
+"You can change the answer later on the **Application** page of "
+"**Options**."
+msgstr "Ответ можно поменять позже на странице **Application** окна **Options**."
+
+msgid "Run a program"
+msgstr "Запуск программы"
+
+msgid "Open a file in any of these ways:"
+msgstr "Откройте файл любым из способов:"
+
+msgid "**File > Open...**;"
+msgstr "**File > Open...**;"
+
+msgid "drop the file onto the window;"
+msgstr "перетащите файл в окно;"
+
+msgid "give its name on the command line: `xpeccy-plus game.tzx`."
+msgstr "укажите его в командной строке: `xpeccy-plus game.tzx`."
+
+msgid ""
+"A snapshot (`.szx`, `.z80`, `.sna`) continues straight away from where it"
+" was saved."
+msgstr ""
+"Снапшот (`.szx`, `.z80`, `.sna`) сразу продолжается с того места, где был"
+" сохранён."
+
+msgid ""
+"A tape or a disk can be **run** or just **mounted**. Run resets the "
+"machine and starts the program on it; Mount only puts the tape or disk "
+"in, as if into a real recorder or drive. The first time, Xpeccy+ asks "
+"which one you want. Tick **Remember my choice** to stop the question; the"
+" **File types** page of **Options** sets it again. To be asked about one "
+"file only, hold Shift as you open or drop it."
+msgstr ""
+"Ленту или диск можно **запустить** (**Run**) или только **вставить** "
+"(**Mount**). Run сбрасывает машину и запускает на ней программу; Mount "
+"только вставляет ленту или диск, как в настоящий магнитофон или дисковод."
+" В первый раз Xpeccy+ спрашивает, что сделать. Отметьте **Remember my "
+"choice**, чтобы вопрос больше не появлялся; снова настроить это можно на "
+"странице **File types** окна **Options**. Чтобы программа спросила только"
+" про один файл, держите Shift, когда открываете или перетаскиваете его."
+
+msgid ""
+"If the current machine cannot run the file (a +3 disk on a Pentagon, for "
+"instance), Xpeccy+ switches to one that can - the machine the file names,"
+" when it names one. The next file your own machine can run switches back "
+"to it."
+msgstr ""
+"Если текущая машина не может запустить файл (например, диск +3 на "
+"Pentagon), Xpeccy+ переключается на ту, что может, — на машину, указанную"
+" в самом файле, если она там указана. Следующий файл, который может "
+"запустить ваша собственная машина, переключает обратно на неё."
+
+msgid "The **File types** page of **Options** sets this for each kind of file:"
+msgstr ""
+"На странице **File types** окна **Options** это настраивается для каждого"
+" типа файлов:"
+
+msgid "**Auto** - switch only when needed, then back to your machine;"
+msgstr ""
+"**Auto** — переключаться только при необходимости, потом возвращаться к "
+"вашей машине;"
+
+msgid ""
+"**Ask** - when this machine cannot run the file, the **Choose a Machine**"
+" window lists the machines that can: **Switch** to the one picked, "
+"**Keep** the current one, or **Cancel** and not open the file;"
+msgstr ""
+"**Ask** — когда текущая машина не может запустить файл, окно **Choose a "
+"Machine** показывает машины, которые могут: **Switch** — переключиться на"
+" выбранную, **Keep** — оставить текущую, **Cancel** — не открывать файл;"
+
+msgid "**Keep current** - never switch the machine;"
+msgstr "**Keep current** — никогда не переключать машину;"
+
+msgid "or one machine that always opens this kind of file."
+msgstr "или одна машина, на которой всегда открываются файлы этого типа."
+
+msgid "Where the settings are"
+msgstr "Где хранятся настройки"
+
+msgid "Folder"
+msgstr "Папка"
+
+msgid "Windows"
+msgstr "Windows"
+
+msgid "`config` beside `xpeccy-plus.exe`"
+msgstr "`config` рядом с `xpeccy-plus.exe`"
+
+msgid "Linux, macOS"
+msgstr "Linux, macOS"
+
+msgid "`~/.config/xpeccy-plus` (or `$XDG_CONFIG_HOME/xpeccy-plus`)"
+msgstr "`~/.config/xpeccy-plus` (или `$XDG_CONFIG_HOME/xpeccy-plus`)"
+
+msgid ""
+"Everything you change is kept there: `config.conf` holds the settings, "
+"`roms` holds the ROM images. A file put in `roms` under the name of a "
+"built-in image replaces that image."
+msgstr ""
+"Там хранится всё, что вы меняете: в `config.conf` — настройки, в `roms` —"
+" образы ROM. Файл, положенный в `roms` под именем встроенного образа, "
+"заменяет этот образ."
+
+msgid ""
+"On Windows the whole folder can be moved or copied, settings and all. To "
+"run with a different settings folder, start the program with `--confdir "
+"<folder>`."
+msgstr ""
+"В Windows всю папку можно переносить или копировать вместе с настройками."
+" Чтобы запустить программу с другой папкой настроек, укажите `--confdir "
+"<folder>`."
+
+msgid "This manual"
+msgstr "Это руководство"
+
+msgid ""
+"**Help > Manual** opens this manual from the program's own files, so it "
+"needs no network. It opens in the language of your system when the manual"
+" has that language, and in English when it does not. Switch the language "
+"at the top of the left column."
+msgstr ""
+"**Help > Manual** открывает это руководство из файлов самой программы, "
+"поэтому сеть не нужна. Оно открывается на языке системы, если руководство"
+" есть на этом языке, а иначе — на английском. Язык переключается вверху "
+"левой колонки."
+
+msgid "download"
+msgstr "скачивание"
+
+msgid "installation"
+msgstr "установка"
+
+msgid "AppImage"
+msgstr "AppImage"
+
+msgid "first start"
+msgstr "первый запуск"
+
+msgid "Which machine to start?"
+msgstr "Which machine to start?"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "Run"
+msgstr "Run"
+
+msgid "Mount"
+msgstr "Mount"
+
+msgid "Remember my choice"
+msgstr "Remember my choice"
+
+msgid "drag and drop"
+msgstr "перетаскивание"
+
+msgid "media"
+msgstr "носители"
+
+msgid "run or mount"
+msgstr "запуск или вставка"
+
+msgid "machine"
+msgstr "машина"
+
+msgid "switched by a file"
+msgstr "переключение по файлу"
+
+msgid "Choose a Machine"
+msgstr "Choose a Machine"
+
+msgid "settings folder"
+msgstr "папка настроек"
+
+msgid "config.conf"
+msgstr "config.conf"
+
+msgid "roms folder"
+msgstr "папка roms"
+
+msgid "--confdir"
+msgstr "--confdir"
+
+msgid "configuration folder"
+msgstr "папка конфигурации"
+
+msgid "Manual"
+msgstr "Manual"
+
+#~ msgid ""
+#~ "The same manual comes as PDF in"
+#~ " the `manual` folder beside the "
+#~ "program on Windows, and in `xpeccy-"
+#~ "plus.app/Contents/Resources/doc/manual` on macOS."
+#~ msgstr ""
+#~ "То же руководство в PDF лежит в"
+#~ " папке `manual` рядом с программой в"
+#~ " Windows и в `xpeccy-"
+#~ "plus.app/Contents/Resources/doc/manual` в macOS."
+
+#~ msgid "PDF"
+#~ msgstr ""
+

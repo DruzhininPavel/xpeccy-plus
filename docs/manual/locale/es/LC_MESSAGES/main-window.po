@@ -1,0 +1,347 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "The main window"
+msgstr "La ventana principal"
+
+msgid "![The main window](images/main-window.png)"
+msgstr "![La ventana principal](images/main-window.png)"
+
+msgid "**Menu bar** - every command, with its key beside it."
+msgstr "**Barra de menús** — todos los comandos, con su tecla al lado."
+
+msgid "**Toolbar** - the commands you use most, one click away."
+msgstr "**Barra de herramientas** — los comandos que más usas, a un clic."
+
+msgid ""
+"**Picture** - the machine's screen. Short messages from the program "
+"appear in its lower left corner and fade away."
+msgstr ""
+"**Imagen** — la pantalla de la máquina. Los mensajes breves del programa "
+"aparecen en su esquina inferior izquierda y se desvanecen."
+
+msgid "**Status bar** - the machine, its tape and drives, speed."
+msgstr "**Barra de estado** — la máquina, su cinta y sus unidades, la velocidad."
+
+msgid "Menu bar"
+msgstr "Barra de menús"
+
+msgid "Menu"
+msgstr "Menú"
+
+msgid "What is in it"
+msgstr "Qué contiene"
+
+msgid "**File**"
+msgstr "**File**"
+
+msgid "open and save files, recent files, quick save and load, **Options**"
+msgstr ""
+"abrir y guardar archivos, archivos recientes, guardado y carga rápidos, "
+"**Options**"
+
+msgid "**View**"
+msgstr "**View**"
+
+msgid ""
+"window size, fullscreen, shaders and palette, toolbar and status bar, "
+"virtual keyboard, input overlay"
+msgstr ""
+"tamaño de la ventana, pantalla completa, shaders y paleta, barra de "
+"herramientas y barra de estado, teclado virtual, superposición de entrada"
+
+msgid "**Favorites**"
+msgstr "**Favorites**"
+
+msgid "files you keep at hand"
+msgstr "archivos que tienes a mano"
+
+msgid "**Machine**"
+msgstr "**Machine**"
+
+msgid ""
+"which machine runs, reset, turbo, pause, fast mode, slow motion, fast "
+"forward, rewind"
+msgstr ""
+"qué máquina funciona, reinicio, turbo, pausa, modo rápido, cámara lenta, "
+"avance rápido, rebobinado"
+
+msgid "**Input**"
+msgstr "**Input**"
+
+msgid "keyboard and mouse grab, keymaps, gamepads"
+msgstr "captura del teclado y del ratón, mapas de teclado, mandos"
+
+msgid "**Media**"
+msgstr "**Media**"
+
+msgid "tape player, disk manager, floppy drives, cartridge, SD card, hard disks"
+msgstr ""
+"reproductor de cintas, gestor de discos, unidades de disquete, cartucho, "
+"SD card, discos duros"
+
+msgid "**Capture**"
+msgstr "**Capture**"
+
+msgid "screenshots, video and sound recording, RZX"
+msgstr "capturas de pantalla, grabación de vídeo y de sonido, RZX"
+
+msgid "**Debug**"
+msgstr "**Debug**"
+
+msgid "**Debugger** and its windows"
+msgstr "el **Debugger** y sus ventanas"
+
+msgid "**Help**"
+msgstr "**Help**"
+
+msgid "this manual, the project page, what is new, reporting a problem"
+msgstr ""
+"este manual, la página del proyecto, las novedades, informar de un "
+"problema"
+
+msgid ""
+"A command that has a key shows it in the menu. The keys are set on the "
+"**Hotkeys** page of **Options**."
+msgstr ""
+"Un comando que tiene tecla la muestra en el menú. Las teclas se "
+"configuran en la página **Hotkeys** de **Options**."
+
+msgid "Toolbar"
+msgstr "Barra de herramientas"
+
+#, python-brace-format
+msgid ""
+"Out of the box it has {icon}`fileopen` **Open**, {icon}`save_all` "
+"**Save**, {icon}`shutdown` **Reset**, {icon}`computer` **Machine**, "
+"{icon}`tape` **Tape Player**, {icon}`fdd_disk` **Disk Manager**, "
+"{icon}`fullscreen_icon_16` **Fullscreen**, {icon}`keyboardzx` **Virtual "
+"Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debug**, "
+"{icon}`other` **Options** and {icon}`speaker` **Mute**, and at the right "
+"end {icon}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**, "
+"{icon}`time-pause` **Pause**, {icon}`time-ffwd` **Fast Forward** and "
+"{icon}`time-fast` **Fast Mode**."
+msgstr ""
+"De fábrica tiene {icon}`fileopen` **Open**, {icon}`save_all` **Save**, "
+"{icon}`shutdown` **Reset**, {icon}`computer` **Machine**, {icon}`tape` "
+"**Tape Player**, {icon}`fdd_disk` **Disk Manager**, "
+"{icon}`fullscreen_icon_16` **Fullscreen**, {icon}`keyboardzx` **Virtual "
+"Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debug**, "
+"{icon}`other` **Options** y {icon}`speaker` **Mute**, y en el extremo "
+"derecho {icon}`time-rewind` **Rewind**, {icon}`time-slow` **Slow "
+"Motion**, {icon}`time-pause` **Pause**, {icon}`time-ffwd` **Fast "
+"Forward** y {icon}`time-fast` **Fast Mode**."
+
+msgid "Right-click the toolbar to change it:"
+msgstr "Haz clic derecho en la barra de herramientas para cambiarla:"
+
+msgid ""
+"**Buttons** - every command that can be a button, by group; tick the ones"
+" you want."
+msgstr ""
+"**Buttons** — todos los comandos que pueden ser un botón, por grupos; "
+"marca los que quieras."
+
+msgid "**Remove** - takes away the button you clicked."
+msgstr "**Remove** — quita el botón en el que hiciste clic."
+
+msgid ""
+"**Add Separator Here**, **Add Space Here** - a line or a gap between "
+"groups."
+msgstr ""
+"**Add Separator Here**, **Add Space Here** — una línea o un hueco entre "
+"grupos."
+
+msgid "**Icon Size** - 16 x 16 or 24 x 24."
+msgstr "**Icon Size** — 16 x 16 o 24 x 24."
+
+msgid "**Restore Default Buttons** - back to the set above."
+msgstr "**Restore Default Buttons** — vuelve al conjunto de arriba."
+
+msgid "**Hide Toolbar** - **View > Toolbar** brings it back."
+msgstr "**Hide Toolbar** — **View > Toolbar** la vuelve a mostrar."
+
+msgid "Drag a button to move it."
+msgstr "Arrastra un botón para moverlo."
+
+msgid ""
+"The arrow beside **Mute** opens a volume slider. Alt with the mouse wheel"
+" over the picture changes the volume too."
+msgstr ""
+"La flecha junto a **Mute** abre un control deslizante de volumen. Alt con"
+" la rueda del ratón sobre la imagen también cambia el volumen."
+
+msgid "Status bar"
+msgstr "Barra de estado"
+
+msgid "![The status bar](images/status-bar.png)"
+msgstr "![La barra de estado](images/status-bar.png)"
+
+msgid "The status bar"
+msgstr "La barra de estado"
+
+msgid ""
+"the name of the running machine; a click or a right-click on it opens the"
+" list of machines;"
+msgstr ""
+"el nombre de la máquina en marcha; un clic o un clic derecho sobre él "
+"abre la lista de máquinas;"
+
+#, python-brace-format
+msgid ""
+"{icon}`tapeYellow` **tape** - its light and the block being played, "
+"`3/7`; it shows when a tape is in. Yellow: playing, red: recording, gray:"
+" stopped;"
+msgstr ""
+"{icon}`tapeYellow` **cinta** — su luz y el bloque que se reproduce, "
+"`3/7`; aparece cuando hay una cinta puesta. Amarillo: reproduciendo, "
+"rojo: grabando, gris: parada;"
+
+#, python-brace-format
+msgid ""
+"{icon}`diskGreen` **A: B: C: D:** - a light for each floppy drive the "
+"machine has. Green: reading, red: writing, blue: a disk is in, gray: "
+"empty;"
+msgstr ""
+"{icon}`diskGreen` **A: B: C: D:** — una luz por cada unidad de disquete "
+"que tiene la máquina. Verde: leyendo, rojo: escribiendo, azul: hay un "
+"disco dentro, gris: vacía;"
+
+#, python-brace-format
+msgid ""
+"{icon}`joystick` **joystick** and {icon}`mouse` **mouse** - lit while the"
+" program reads them;"
+msgstr ""
+"{icon}`joystick` **joystick** y {icon}`mouse` **ratón** — encendidos "
+"mientras el programa los lee;"
+
+msgid "the CPU clock in MHz;"
+msgstr "el reloj de la CPU en MHz;"
+
+msgid "frames per second, or **paused**."
+msgstr "fotogramas por segundo, o **paused**."
+
+msgid ""
+"Hold the mouse over the tape or a drive to see which file is in it. A "
+"click opens the **Tape Player** or the **Disk Manager**; a right-click "
+"opens a short menu of the same commands - play, rewind, open, eject."
+msgstr ""
+"Deja el ratón sobre la cinta o una unidad para ver qué archivo tiene. Un "
+"clic abre el **Tape Player** o el **Disk Manager**; un clic derecho abre "
+"un menú breve con los mismos comandos: reproducir, rebobinar, abrir, "
+"expulsar."
+
+msgid "The picture"
+msgstr "La imagen"
+
+msgid "![The menu over the picture](images/menu-picture.png)"
+msgstr "![El menú sobre la imagen](images/menu-picture.png)"
+
+msgid "The menu over the picture"
+msgstr "El menú sobre la imagen"
+
+msgid ""
+"A right-click on the picture opens a menu with the commands needed while "
+"playing: open a file, favorites, machine, turbo, reset, keymap, shaders, "
+"palette, the media windows, grab keyboard, virtual keyboard, gamepads, "
+"**Debugger** and **Options**. Some of its items act on a click as well as"
+" opening their submenu: **Reset** resets the machine, **Debugger** opens "
+"the debugger."
+msgstr ""
+"Un clic derecho sobre la imagen abre un menú con los comandos necesarios "
+"mientras juegas: abrir un archivo, favoritos, máquina, turbo, reinicio, "
+"mapa de teclado, shaders, paleta, las ventanas de soportes, capturar el "
+"teclado, teclado virtual, mandos, **Debugger** y **Options**. Algunos de "
+"sus elementos actúan con un clic además de abrir su submenú: **Reset** "
+"reinicia la máquina, **Debugger** abre el depurador."
+
+msgid ""
+"Drop a file onto the picture to open it (see [Run a program](getting-"
+"started.md#run-a-program))."
+msgstr ""
+"Suelta un archivo sobre la imagen para abrirlo (consulta [Ejecutar un "
+"programa](getting-started.md#run-a-program))."
+
+msgid ""
+"The middle button grabs the mouse for a program that uses one, and lets "
+"it go again."
+msgstr ""
+"El botón central captura el ratón para un programa que lo usa, y lo "
+"vuelve a soltar."
+
+msgid "Alt with the mouse wheel changes the volume."
+msgstr "Alt con la rueda del ratón cambia el volumen."
+
+msgid "Fullscreen"
+msgstr "Pantalla completa"
+
+msgid ""
+"**View > Fullscreen** hides the menu bar, the toolbar and the status bar."
+" Push the pointer to the top edge of the screen and hold it there: the "
+"menu bar comes down, with the toolbar if it is shown. They go away again "
+"when the pointer leaves them. On macOS the menu is in the system menu "
+"bar, as usual."
+msgstr ""
+"**View > Fullscreen** oculta la barra de menús, la barra de herramientas "
+"y la barra de estado. Lleva el puntero al borde superior de la pantalla y"
+" mantenlo ahí: la barra de menús baja, con la barra de herramientas si "
+"está visible. Vuelven a ocultarse cuando el puntero sale de ellas. En "
+"macOS el menú está en la barra de menús del sistema, como siempre."
+
+msgid "main window"
+msgstr "ventana principal"
+
+msgid "menu bar"
+msgstr "barra de menús"
+
+msgid "toolbar"
+msgstr "barra de herramientas"
+
+msgid "customizing"
+msgstr "personalizar"
+
+msgid "Restore Default Buttons"
+msgstr "Restore Default Buttons"
+
+msgid "Icon Size"
+msgstr "Icon Size"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "volume"
+msgstr "volumen"
+
+msgid "status bar"
+msgstr "barra de estado"
+
+msgid "tape"
+msgstr "cinta"
+
+msgid "drive lights"
+msgstr "luces de las unidades"
+
+msgid "right-click menu"
+msgstr "menú del clic derecho"
+
+msgid "context menu"
+msgstr "menú contextual"
+

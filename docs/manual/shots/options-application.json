@@ -1,0 +1,33 @@
+{
+  "config": {
+    "GENERAL": {
+      "machine": "zx128",
+      "port": "30000"
+    }
+  },
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "run-action key.options"
+    ],
+    [
+      "wait",
+      1200
+    ],
+    [
+      "click",
+      "pageList",
+      60,
+      304
+    ],
+    [
+      "wait",
+      800
+    ]
+  ],
+  "frames": []
+}

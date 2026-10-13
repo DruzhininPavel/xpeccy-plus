@@ -1,0 +1,50 @@
+{
+  "files": {
+    "FIRENICE.TRD": {
+      "url": "https://spectrumcomputing.co.uk/pub/sinclair/trdos/games/f/FireNIce.trd.zip",
+      "sha256": "73c8e85be2c26eab76c52f22fb78f9f5f9e724b691bc26a0301e487775da1985",
+      "member": "Fire&Ice.trd"
+    }
+  },
+  "args": [
+    "-m",
+    "pent",
+    "--no-autostart",
+    "{media}/FIRENICE.TRD"
+  ],
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "click",
+      "toolbar",
+      194,
+      17
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "click",
+      "toolbar",
+      194,
+      17
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Disk Manager"
+    ],
+    [
+      "wait",
+      800
+    ]
+  ],
+  "note": "pressed twice: opened first on a hidden desktop, its tab bar is laid out with no height"
+}

@@ -1,0 +1,2155 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Breakpoints and watching"
+msgstr "Puntos de interrupción y vigilancia"
+
+msgid ""
+"A breakpoint tells the machine to stop at a place or on an event: when "
+"the CPU runs an instruction at an address, reads or writes a memory cell,"
+" uses a port, gets an interrupt, or when an expression comes true. "
+"Instead of stopping, a breakpoint can also count, save the screen or "
+"write a line to the breakpoint log, and two of them can time the code "
+"between them. The **Watcher** window and the watched ports show values "
+"while the machine runs."
+msgstr ""
+"Un punto de interrupción hace que la máquina se detenga en un lugar o "
+"ante un evento: cuando la CPU ejecuta una instrucción en una dirección, "
+"lee o escribe una celda de memoria, usa un puerto, recibe una "
+"interrupción, o cuando una expresión se cumple. En vez de detenerse, un "
+"punto de interrupción también puede contar, guardar la pantalla o "
+"escribir una línea en el registro de puntos de interrupción, y dos de "
+"ellos pueden medir el tiempo del código que hay entre ambos. La ventana "
+"**Watcher** y los puertos vigilados muestran valores mientras la máquina "
+"funciona."
+
+msgid ""
+"Breakpoints work while the machine runs. A step taken in the Debugger "
+"does not stop on one (see [Running and stepping](debugger.md#running-and-"
+"stepping))."
+msgstr ""
+"Los puntos de interrupción funcionan mientras la máquina está en marcha. "
+"Un paso dado en el Debugger no se detiene en ellos (consulta [Ejecutar y "
+"avanzar paso a paso](debugger.md#running-and-stepping))."
+
+msgid "Kinds of breakpoint"
+msgstr "Tipos de punto de interrupción"
+
+msgid "Kind"
+msgstr "Tipo"
+
+msgid "Stops when"
+msgstr "Se detiene cuando"
+
+msgid "**CPU address**"
+msgstr "**CPU address**"
+
+msgid "the CPU uses an address, whatever memory page is there"
+msgstr ""
+"la CPU usa una dirección, sea cual sea la página de memoria que hay en "
+"ella"
+
+msgid "**I/O port**"
+msgstr "**I/O port**"
+
+msgid "the CPU reads or writes a port"
+msgstr "la CPU lee o escribe un puerto"
+
+msgid "**RAM cell**"
+msgstr "**RAM cell**"
+
+msgid "the CPU uses a byte of RAM, wherever that page is mapped"
+msgstr "la CPU usa un byte de la RAM, dondequiera que esté mapeada su página"
+
+msgid "**ROM cell**"
+msgstr "**ROM cell**"
+
+msgid "the CPU uses a byte of ROM, wherever that page is mapped"
+msgstr "la CPU usa un byte de la ROM, dondequiera que esté mapeada su página"
+
+msgid "**Slot cell**"
+msgstr "**Slot cell**"
+
+msgid "the CPU uses a byte of the cartridge"
+msgstr "la CPU usa un byte del cartucho"
+
+msgid "**Interrupt**"
+msgstr "**Interrupt**"
+
+msgid "the CPU gets an interrupt request"
+msgstr "la CPU recibe una petición de interrupción"
+
+msgid "**Condition (global)**"
+msgstr "**Condition (global)**"
+
+msgid "an expression comes true; no address"
+msgstr "una expresión se cumple; sin dirección"
+
+msgid "A memory breakpoint has three flags, and any of them can be on:"
+msgstr ""
+"Un punto de interrupción de memoria tiene tres flags, y cualquiera de "
+"ellos puede estar activo:"
+
+msgid ""
+"**Fetch** - the CPU is about to run the instruction there. The machine "
+"stops before it runs, with the instruction under the cursor in the "
+"listing."
+msgstr ""
+"**Fetch** — la CPU va a ejecutar la instrucción que hay ahí. La máquina "
+"se detiene antes de ejecutarla, con la instrucción bajo el cursor en el "
+"listado."
+
+msgid "**Read** - the CPU reads the byte as data."
+msgstr "**Read** — la CPU lee el byte como dato."
+
+msgid "**Write** - the CPU writes the byte."
+msgstr "**Write** — la CPU escribe el byte."
+
+msgid ""
+"A port breakpoint has **Read** (IN) and **Write** (OUT). A read, write or"
+" port breakpoint stops after the instruction that did it has run to its "
+"end."
+msgstr ""
+"Un punto de interrupción de puerto tiene **Read** (IN) y **Write** (OUT)."
+" Un punto de interrupción de lectura, de escritura o de puerto se detiene"
+" después de que la instrucción que lo provocó haya terminado."
+
+msgid ""
+"**CPU address** and **RAM cell** differ on a machine that pages its "
+"memory. A breakpoint on CPU address `C000` stops whatever page is at "
+"`C000`. A breakpoint on a RAM cell stops only for that byte of that page,"
+" at whatever address the page is seen."
+msgstr ""
+"**CPU address** y **RAM cell** se diferencian en una máquina que pagina "
+"su memoria. Un punto de interrupción en la dirección de CPU `C000` se "
+"detiene sea cual sea la página que hay en `C000`. Un punto de "
+"interrupción en una celda de RAM se detiene solo con ese byte de esa "
+"página, en cualquier dirección en que se vea la página."
+
+msgid "Setting breakpoints from the listing"
+msgstr "Poner puntos de interrupción desde el listado"
+
+msgid ""
+"The quickest way is a key on a line of the **Disasm** listing. Each key "
+"switches its breakpoint on and off again. The keys are the same in both "
+"presets:"
+msgstr ""
+"La forma más rápida es una tecla sobre una línea del listado **Disasm**. "
+"Cada tecla activa su punto de interrupción y lo vuelve a quitar. Las "
+"teclas son las mismas en los dos preajustes:"
+
+msgid "Key"
+msgstr "Tecla"
+
+msgid "Breakpoint on the line under the cursor"
+msgstr "Punto de interrupción en la línea bajo el cursor"
+
+msgid "Space"
+msgstr "Space"
+
+msgid "**Fetch**, on the memory cell"
+msgstr "**Fetch**, en la celda de memoria"
+
+msgid "Shift+Space"
+msgstr "Shift+Space"
+
+msgid "**Fetch**, on the CPU address"
+msgstr "**Fetch**, en la dirección de CPU"
+
+msgid "Ctrl+Space"
+msgstr "Ctrl+Space"
+
+msgid "**Write**, on the memory cell"
+msgstr "**Write**, en la celda de memoria"
+
+msgid "Alt+Shift+Space"
+msgstr "Alt+Shift+Space"
+
+msgid "**Read**, on the memory cell"
+msgstr "**Read**, en la celda de memoria"
+
+msgid ""
+"A line with a breakpoint is drawn in its own color. The keys can be "
+"changed on the **Hotkeys** page of **Options**, as **Disasm: "
+"Breakpoint**, **Disasm: Breakpoint on read**, **Disasm: Breakpoint on "
+"write** and **Disasm: Breakpoint on CPU address** (see "
+"[Hotkeys](hotkeys.md))."
+msgstr ""
+"Una línea con un punto de interrupción se dibuja con su propio color. Las"
+" teclas se pueden cambiar en la página **Hotkeys** de **Options**, como "
+"**Disasm: Breakpoint**, **Disasm: Breakpoint on read**, **Disasm: "
+"Breakpoint on write** y **Disasm: Breakpoint on CPU address** (consulta "
+"[Atajos de teclado](hotkeys.md))."
+
+#, python-brace-format
+msgid ""
+"The {icon}`stop` **Breakpoints** button over the listing, and "
+"**Breakpoints** in the menu a right-click on the listing opens, hold "
+"**Fetch break**, **Read break** and **Write break**. They work on the "
+"selected block when the cursor is inside it, or else on the line under "
+"the cursor, and make a memory cell breakpoint. To select a block, drag "
+"over the lines with the left button."
+msgstr ""
+"El botón {icon}`stop` **Breakpoints** sobre el listado, y **Breakpoints**"
+" en el menú que abre un clic derecho en el listado, contienen **Fetch "
+"break**, **Read break** y **Write break**. Actúan sobre el bloque "
+"seleccionado cuando el cursor está dentro de él, o si no sobre la línea "
+"bajo el cursor, y crean un punto de interrupción de celda de memoria. "
+"Para seleccionar un bloque, arrastra sobre las líneas con el botón "
+"izquierdo."
+
+msgid ""
+"In the memory dump, the right-click menu has **Fetch break**, **Read "
+"break** and **Write break** for the byte under the cursor (see [Memory"
+"](debugger-memory.md))."
+msgstr ""
+"En el volcado de memoria, el menú del clic derecho tiene **Fetch break**,"
+" **Read break** y **Write break** para el byte bajo el cursor (consulta "
+"[Memoria](debugger-memory.md))."
+
+msgid ""
+"**Debugger: Stop here** - F4 (Modern), F9 (Classic) - lets the machine "
+"run until it gets to the line under the cursor, without a breakpoint in "
+"the list (see [Code and labels](debugger-code.md))."
+msgstr ""
+"**Debugger: Stop here** — F4 (Modern), F9 (Classic) — deja que la máquina"
+" funcione hasta llegar a la línea bajo el cursor, sin un punto de "
+"interrupción en la lista (consulta [Código y etiquetas](debugger-"
+"code.md))."
+
+msgid "The Breakpoints panel"
+msgstr "El panel Breakpoints"
+
+msgid "![The Breakpoints panel](images/dbg-brk-panel.png)"
+msgstr "![El panel Breakpoints](images/dbg-brk-panel.png)"
+
+msgid "The list of breakpoints."
+msgstr "La lista de puntos de interrupción."
+
+#, python-brace-format
+msgid ""
+"The buttons: {icon}`add` add, {icon}`edit` edit, {icon}`fileopen` open a "
+"list, {icon}`floppy` save the list, and {icon}`cancel` delete at the "
+"bottom."
+msgstr ""
+"Los botones: {icon}`add` añadir, {icon}`edit` editar, {icon}`fileopen` "
+"abrir una lista, {icon}`floppy` guardar la lista y {icon}`cancel` borrar,"
+" abajo."
+
+msgid ""
+"The **Breakpoints** panel is the tab with the stop sign under the memory "
+"dump. Each row is one breakpoint:"
+msgstr ""
+"El panel **Breakpoints** es la pestaña con la señal de stop bajo el "
+"volcado de memoria. Cada fila es un punto de interrupción:"
+
+msgid "Column"
+msgstr "Columna"
+
+msgid "What it shows"
+msgstr "Qué muestra"
+
+msgid "**On**"
+msgstr "**On**"
+
+msgid ""
+"a tick: the breakpoint works; no tick: it stays in the list but does "
+"nothing"
+msgstr ""
+"con marca: el punto de interrupción funciona; sin marca: sigue en la "
+"lista pero no hace nada"
+
+msgid "**F**, **R**, **W**"
+msgstr "**F**, **R**, **W**"
+
+msgid ""
+"the **Fetch**, **Read** and **Write** flags; a port has no **F**, an "
+"interrupt and a global condition have none"
+msgstr ""
+"los flags **Fetch**, **Read** y **Write**; un puerto no tiene **F**, una "
+"interrupción y una condición global no tienen ninguno"
+
+msgid "**Addr**"
+msgstr "**Addr**"
+
+msgid "the kind and the address, see below"
+msgstr "el tipo y la dirección, ver abajo"
+
+msgid "**Cond**"
+msgstr "**Cond**"
+
+msgid "the condition"
+msgstr "la condición"
+
+msgid "**Cnt**"
+msgstr "**Cnt**"
+
+msgid "how many times it fired"
+msgstr "cuántas veces se ha disparado"
+
+msgid ""
+"Click a box in the first four columns to switch that flag. Click a column"
+" title to sort the list by it."
+msgstr ""
+"Haz clic en una casilla de las cuatro primeras columnas para cambiar ese "
+"flag. Haz clic en el título de una columna para ordenar la lista por "
+"ella."
+
+msgid "**Addr** names the kind of breakpoint:"
+msgstr "**Addr** indica el tipo de punto de interrupción:"
+
+msgid "Text"
+msgstr "Texto"
+
+msgid "`CPU:8000`, `CPU:4000-5AFF`"
+msgstr "`CPU:8000`, `CPU:4000-5AFF`"
+
+msgid "**CPU address**, an address or a range"
+msgstr "**CPU address**, una dirección o un rango"
+
+msgid "`IO:00FE mask 0001`"
+msgstr "`IO:00FE mask 0001`"
+
+msgid "**I/O port**, the port and its mask"
+msgstr "**I/O port**, el puerto y su máscara"
+
+msgid "`RAM:014000 [05:0000]`"
+msgstr "`RAM:014000 [05:0000]`"
+
+msgid "**RAM cell**: the place in all of RAM, then the page and the offset in it"
+msgstr ""
+"**RAM cell**: la posición en toda la RAM, después la página y el "
+"desplazamiento dentro de ella"
+
+msgid "`ROM:...`, `SLT:...`"
+msgstr "`ROM:...`, `SLT:...`"
+
+msgid "**ROM cell**, **Slot cell**, written the same way"
+msgstr "**ROM cell**, **Slot cell**, escritas de la misma forma"
+
+msgid "`IRQ`"
+msgstr "`IRQ`"
+
+msgid "`COND`, `COND, on change`"
+msgstr "`COND`, `COND, on change`"
+
+msgid ""
+"Double-click a row of an address, RAM or ROM breakpoint to show that "
+"place in the listing; a RAM or ROM cell shows only while its page is "
+"mapped in."
+msgstr ""
+"Haz doble clic en la fila de un punto de interrupción de dirección, de "
+"RAM o de ROM para mostrar ese lugar en el listado; una celda de RAM o de "
+"ROM solo se muestra mientras su página está mapeada."
+
+msgid "The buttons at the right:"
+msgstr "Los botones de la derecha:"
+
+#, python-brace-format
+msgid ""
+"{icon}`add` add (the plus sign) - opens the **Breakpoint Editor** for a "
+"new breakpoint;"
+msgstr ""
+"{icon}`add` añadir (el signo más) — abre el **Breakpoint Editor** para un"
+" punto de interrupción nuevo;"
+
+#, python-brace-format
+msgid ""
+"{icon}`edit` edit (the pencil) - opens the selected one in the "
+"**Breakpoint Editor**;"
+msgstr ""
+"{icon}`edit` editar (el lápiz) — abre el seleccionado en el **Breakpoint "
+"Editor**;"
+
+#, python-brace-format
+msgid ""
+"{icon}`fileopen` open (the folder) - loads a list from a `.xbrk` file, in"
+" place of the one you have;"
+msgstr ""
+"{icon}`fileopen` abrir (la carpeta) — carga una lista desde un archivo "
+"`.xbrk`, en lugar de la que tienes;"
+
+#, python-brace-format
+msgid "{icon}`floppy` save (the floppy disk) - writes the list to a `.xbrk` file;"
+msgstr ""
+"{icon}`floppy` guardar (el disquete) — escribe la lista en un archivo "
+"`.xbrk`;"
+
+#, python-brace-format
+msgid ""
+"{icon}`cancel` delete (the red cross, at the bottom) - removes the "
+"selected breakpoints."
+msgstr ""
+"{icon}`cancel` borrar (la cruz roja, abajo) — elimina los puntos de "
+"interrupción seleccionados."
+
+msgid "The right-click menu of the list has:"
+msgstr "El menú del clic derecho de la lista tiene:"
+
+msgid ""
+"**Reset counter** - sets **Cnt** of the selected breakpoints back to 0, "
+"together with the hit count that `HITS` reads and what their spans "
+"measured;"
+msgstr ""
+"**Reset counter** — devuelve a 0 el **Cnt** de los puntos de interrupción"
+" seleccionados, junto con el número de visitas que lee `HITS` y lo que "
+"midieron sus tramos;"
+
+msgid ""
+"**Open breakpoint log** - opens the [breakpoint log](#the-breakpoint-log)"
+" in the program your system opens `.log` files with. It is grayed out "
+"until the log is written."
+msgstr ""
+"**Open breakpoint log** — abre el [registro de puntos de interrupción"
+"](#the-breakpoint-log) en el programa con el que tu sistema abre los "
+"archivos `.log`. Aparece en gris hasta que se escribe el registro."
+
+msgid ""
+"Hold the mouse over the row of a breakpoint that opens a span to see what"
+" the span measured (see [Spans](#spans))."
+msgstr ""
+"Deja el ratón sobre la fila de un punto de interrupción que abre un tramo"
+" para ver lo que midió el tramo (consulta [Tramos](#spans))."
+
+msgid ""
+"The list is not kept when the program closes. Save it to a file to use it"
+" again."
+msgstr ""
+"La lista no se conserva al cerrar el programa. Guárdala en un archivo "
+"para volver a usarla."
+
+msgid "The Breakpoint Editor"
+msgstr "El Breakpoint Editor"
+
+msgid "![The Breakpoint Editor](images/dbg-brk-editor.png)"
+msgstr "![El Breakpoint Editor](images/dbg-brk-editor.png)"
+
+msgid ""
+"The editor shows only the fields the chosen **Type** needs. Here it holds"
+" a breakpoint that opens a span and logs two registers on every hit; the "
+"line beside **Span** is what the span has measured so far."
+msgstr ""
+"El editor muestra solo los campos que necesita el **Type** elegido. Aquí "
+"contiene un punto de interrupción que abre un tramo y anota en el "
+"registro los valores de dos registros de la CPU en cada visita; la línea "
+"junto a **Span** es lo que el tramo ha medido hasta ahora."
+
+msgid "Field"
+msgstr "Campo"
+
+msgid "What it sets"
+msgstr "Qué define"
+
+msgid "**Type**"
+msgstr "**Type**"
+
+msgid ""
+"the kind: **CPU address**, **I/O port**, **RAM cell**, **ROM cell**, "
+"**Slot cell**, **Interrupt**, **Condition (global)**"
+msgstr ""
+"el tipo: **CPU address**, **I/O port**, **RAM cell**, **ROM cell**, "
+"**Slot cell**, **Interrupt**, **Condition (global)**"
+
+msgid "**Page**"
+msgstr "**Page**"
+
+msgid "the 16K page of a RAM, ROM or slot cell, as a decimal number"
+msgstr ""
+"la página de 16K de una celda de RAM, de ROM o del slot, como número "
+"decimal"
+
+msgid "**Address** ... **to**"
+msgstr "**Address** ... **to**"
+
+msgid ""
+"the first and the last byte; **to** left empty means one byte. For an "
+"**I/O port** they are **Port** and **mask**"
+msgstr ""
+"el primer y el último byte; **to** vacío significa un solo byte. Para un "
+"**I/O port** son **Port** y **mask**"
+
+msgid "**Access**"
+msgstr "**Access**"
+
+msgid "**Fetch**, **Read**, **Write**"
+msgstr "**Fetch**, **Read**, **Write**"
+
+msgid "**Span**"
+msgstr "**Span**"
+
+msgid "**None**, **Opens a span** or **Closes a span**, see [Spans](#spans)"
+msgstr "**None**, **Opens a span** o **Closes a span**, consulta [Tramos](#spans)"
+
+msgid "**Condition**"
+msgstr "**Condition**"
+
+msgid ""
+"an expression; the breakpoint fires only when it is not 0. Empty means "
+"always. **On change** beside it is for a global condition"
+msgstr ""
+"una expresión; el punto de interrupción se dispara solo cuando no es 0. "
+"Vacía significa siempre. **On change**, a su lado, es para una condición "
+"global"
+
+msgid "**Action**"
+msgstr "**Action**"
+
+msgid "what happens when it fires: **Debugger**, **Counter** or **Screen dump**"
+msgstr "qué ocurre cuando se dispara: **Debugger**, **Counter** o **Screen dump**"
+
+msgid "**Log**"
+msgstr "**Log**"
+
+msgid ""
+"also write a line to the breakpoint log every time it fires, and what to "
+"write in it"
+msgstr ""
+"escribir además una línea en el registro de puntos de interrupción cada "
+"vez que se dispara, y qué escribir en ella"
+
+msgid "Addresses"
+msgstr "Direcciones"
+
+msgid ""
+"The **Address** fields take a hex number, with or without `#`, `$` or "
+"`0x` in front, or a label name. A label wins over a number written the "
+"same way: if there is a label `BEEF`, `BEEF` is that label and `#BEEF` "
+"the number."
+msgstr ""
+"Los campos **Address** admiten un número hexadecimal, con o sin `#`, `$` "
+"o `0x` delante, o el nombre de una etiqueta. Una etiqueta gana a un "
+"número escrito igual: si hay una etiqueta `BEEF`, `BEEF` es esa etiqueta "
+"y `#BEEF` el número."
+
+msgid "![A RAM cell in the editor](images/dbg-brk-editor-cell.png)"
+msgstr "![Una celda de RAM en el editor](images/dbg-brk-editor-cell.png)"
+
+msgid "A RAM cell in the editor"
+msgstr "Una celda de RAM en el editor"
+
+msgid "A cell of RAM, ROM or the slot can be given four ways:"
+msgstr "Una celda de RAM, de ROM o del slot se puede indicar de cuatro formas:"
+
+msgid "an offset in the page, `0000` to `3FFF`, with the page in **Page**;"
+msgstr ""
+"un desplazamiento en la página, de `0000` a `3FFF`, con la página en "
+"**Page**;"
+
+msgid ""
+"the page and the offset together, `05:1800`. The page is hex here, while "
+"**Page** counts in decimal;"
+msgstr ""
+"la página y el desplazamiento juntos, `05:1800`. Aquí la página es "
+"hexadecimal, mientras que **Page** cuenta en decimal;"
+
+msgid ""
+"a CPU address of `4000` or more, such as `5800`: the cell is the one "
+"mapped there now, and **Page** moves to its page. This works when the "
+"memory there is of the kind the type watches; otherwise the address is "
+"taken as an offset in **Page**;"
+msgstr ""
+"una dirección de CPU de `4000` o más, como `5800`: la celda es la que "
+"está mapeada ahí ahora, y **Page** pasa a su página. Funciona cuando la "
+"memoria que hay ahí es del tipo que vigila el punto; si no, la dirección "
+"se toma como desplazamiento en **Page**;"
+
+msgid "a label. For a RAM cell the label brings its page with it."
+msgstr "una etiqueta. Para una celda de RAM, la etiqueta trae consigo su página."
+
+#, python-brace-format
+msgid ""
+"The line under the fields shows how the address was read: `8000, START` "
+"for a CPU address with its label; `RAM 05:1800-1AFF, at 5800 now` for a "
+"cell, or `not mapped now` when its page is not in the memory at the "
+"moment. When it cannot be read, the line says why in red, such as **the "
+"range ends before it starts** or **the end is in another page**, and "
+"{icon}`ok-apply` **OK** does not take it."
+msgstr ""
+"La línea bajo los campos muestra cómo se ha interpretado la dirección: "
+"`8000, START` para una dirección de CPU con su etiqueta; `RAM "
+"05:1800-1AFF, at 5800 now` para una celda, o `not mapped now` cuando su "
+"página no está en la memoria en ese momento. Cuando no se puede "
+"interpretar, la línea dice por qué en rojo, como **the range ends before "
+"it starts** o **the end is in another page**, y {icon}`ok-apply` **OK** "
+"no la acepta."
+
+msgid ""
+"The **mask** of a port says which bits of the 16-bit port address are "
+"compared: a 1 bit must be the same as in **Port**, a 0 bit can be "
+"anything. Empty or `FFFF` is one exact port; `00FF` matches on the low "
+"byte; `0001` with port `00FE` matches every even port, which is every "
+"port the Spectrum's ULA answers."
+msgstr ""
+"La **mask** de un puerto indica qué bits de la dirección de puerto de 16 "
+"bits se comparan: un bit a 1 debe ser igual que en **Port**, un bit a 0 "
+"puede ser cualquiera. Vacía o `FFFF` es un único puerto exacto; `00FF` "
+"compara el byte bajo; `0001` con el puerto `00FE` coincide con todos los "
+"puertos pares, que son todos los puertos a los que responde la ULA del "
+"Spectrum."
+
+msgid "Condition and Log"
+msgstr "Condition y Log"
+
+#, python-brace-format
+msgid ""
+"The line under **Condition** checks the expression as you type it. It "
+"shows **ok:** and the expression as it was understood, with brackets for "
+"the priorities and hex numbers with `0x`; or what is wrong and at which "
+"character. {icon}`ok-apply` **OK** does not take a broken condition. The "
+"**?** button opens **Expression Syntax**, a short reference of the next "
+"section."
+msgstr ""
+"La línea bajo **Condition** comprueba la expresión mientras la escribes. "
+"Muestra **ok:** y la expresión tal como se ha entendido, con paréntesis "
+"para las prioridades y los números hexadecimales con `0x`; o qué está mal"
+" y en qué carácter. {icon}`ok-apply` **OK** no acepta una condición "
+"errónea. El botón **?** abre **Expression Syntax**, una breve referencia "
+"de la sección siguiente."
+
+msgid ""
+"**Log** has a field beside it, for what a logged hit writes: expressions "
+"split by commas, such as `A, HL, M(SP)`, in the syntax of a condition. "
+"Empty, the line has every register. A wrong expression keeps the editor "
+"open, with what is wrong under **Condition**."
+msgstr ""
+"**Log** tiene un campo al lado, para lo que escribe una visita "
+"registrada: expresiones separadas por comas, como `A, HL, M(SP)`, con la "
+"sintaxis de una condición. Vacío, la línea tiene todos los registros. Una"
+" expresión errónea deja el editor abierto, con lo que está mal bajo "
+"**Condition**."
+
+#, python-brace-format
+msgid ""
+"Label names are completed as you type in the address fields, "
+"**Condition** and **Log**. {icon}`cancel` **Cancel** closes the editor "
+"and changes nothing. Editing a breakpoint keeps its counters and what its"
+" span has measured."
+msgstr ""
+"Los nombres de etiquetas se completan mientras escribes en los campos de "
+"dirección, **Condition** y **Log**. {icon}`cancel` **Cancel** cierra el "
+"editor sin cambiar nada. Editar un punto de interrupción conserva sus "
+"contadores y lo que ha medido su tramo."
+
+msgid "Conditions"
+msgstr "Condiciones"
+
+msgid ""
+"A condition is an expression in the style of C. It is checked when the "
+"breakpoint is hit; the breakpoint fires when the result is not 0. "
+"Comparisons and the logical operators give 1 for true and 0 for false."
+msgstr ""
+"Una condición es una expresión al estilo de C. Se comprueba cuando se "
+"alcanza el punto de interrupción; este se dispara cuando el resultado no "
+"es 0. Las comparaciones y los operadores lógicos dan 1 para verdadero y 0"
+" para falso."
+
+msgid "Operators"
+msgstr "Operadores"
+
+msgid ""
+"From the one that binds tightest to the loosest; operators in one row "
+"have the same priority and work from left to right."
+msgstr ""
+"Del que más liga al que menos; los operadores de una misma fila tienen la"
+" misma prioridad y actúan de izquierda a derecha."
+
+msgid "Operator"
+msgstr "Operador"
+
+msgid "Meaning"
+msgstr "Significado"
+
+msgid "`( )`"
+msgstr "`( )`"
+
+msgid "brackets"
+msgstr "paréntesis"
+
+msgid "`[x]`, `M(x)`"
+msgstr "`[x]`, `M(x)`"
+
+msgid "the word and the byte in memory at x"
+msgstr "la palabra y el byte en memoria en x"
+
+msgid "`!` `~` `-`"
+msgstr "`!` `~` `-`"
+
+msgid "logical not, invert all bits, negate"
+msgstr "no lógico, invertir todos los bits, cambiar de signo"
+
+msgid "`x->n`"
+msgstr "`x->n`"
+
+msgid "the byte in memory at x+n"
+msgstr "el byte en memoria en x+n"
+
+msgid "`*` `/` `%`"
+msgstr "`*` `/` `%`"
+
+msgid "multiply, divide, remainder"
+msgstr "multiplicar, dividir, resto"
+
+msgid "`+` `-`"
+msgstr "`+` `-`"
+
+msgid "add, subtract"
+msgstr "sumar, restar"
+
+msgid "`<<` `>>`"
+msgstr "`<<` `>>`"
+
+msgid "shift left, shift right"
+msgstr "desplazamiento a la izquierda, a la derecha"
+
+msgid "`<` `>` `<=` `>=`"
+msgstr "`<` `>` `<=` `>=`"
+
+msgid "compare"
+msgstr "comparar"
+
+msgid "`==` `!=` `=`"
+msgstr "`==` `!=` `=`"
+
+msgid "equal, not equal; `=` is the same as `==`"
+msgstr "igual, distinto; `=` es lo mismo que `==`"
+
+msgid "`&`"
+msgstr "`&`"
+
+msgid "bitwise and"
+msgstr "y bit a bit"
+
+msgid "`^`"
+msgstr "`^`"
+
+msgid "bitwise exclusive or"
+msgstr "o exclusivo bit a bit"
+
+msgid "`|`"
+msgstr "`|`"
+
+msgid "bitwise or"
+msgstr "o bit a bit"
+
+msgid "`&&`"
+msgstr "`&&`"
+
+msgid "logical and"
+msgstr "y lógico"
+
+msgid "`||`"
+msgstr "`||`"
+
+msgid "logical or"
+msgstr "o lógico"
+
+msgid ""
+"The values are 32-bit numbers with no sign: `-1` is `FFFFFFFF`, so `A - 5"
+" < 0` is never true. Division by 0 gives 0, so a condition does not start"
+" firing when a divisor happens to be 0. A word in memory is read low byte"
+" first, as the Z80 reads it."
+msgstr ""
+"Los valores son números de 32 bits sin signo: `-1` es `FFFFFFFF`, así que"
+" `A - 5 < 0` nunca se cumple. La división por 0 da 0, para que una "
+"condición no empiece a dispararse cuando un divisor resulta ser 0. Una "
+"palabra en memoria se lee con el byte bajo primero, como la lee el Z80."
+
+msgid "Operands"
+msgstr "Operandos"
+
+msgid "Operand"
+msgstr "Operando"
+
+msgid "`A`, `HL`, `BC'`..."
+msgstr "`A`, `HL`, `BC'`..."
+
+msgid "a CPU register, see below"
+msgstr "un registro de la CPU, ver abajo"
+
+msgid "a name"
+msgstr "un nombre"
+
+msgid "a label: its address"
+msgstr "una etiqueta: su dirección"
+
+msgid "`1234`"
+msgstr "`1234`"
+
+msgid "a decimal number"
+msgstr "un número decimal"
+
+msgid "`0x1234`, `#1234`"
+msgstr "`0x1234`, `#1234`"
+
+msgid "a hex number"
+msgstr "un número hexadecimal"
+
+msgid "`0123`"
+msgstr "`0123`"
+
+msgid "an octal number: a leading zero, as in C"
+msgstr "un número octal: un cero delante, como en C"
+
+msgid "`'A'`"
+msgstr "`'A'`"
+
+msgid "the code of a character"
+msgstr "el código de un carácter"
+
+msgid "`M(x)`"
+msgstr "`M(x)`"
+
+msgid "the byte at x"
+msgstr "el byte en x"
+
+msgid "`[x]`"
+msgstr "`[x]`"
+
+msgid "the word at x"
+msgstr "la palabra en x"
+
+msgid "`RAY(x, y)`"
+msgstr "`RAY(x, y)`"
+
+msgid "1 if the beam passed dot x of line y during this instruction"
+msgstr "1 si el haz pasó por el punto x de la línea y durante esta instrucción"
+
+msgid ""
+"The registers are `A`, `F`, `B`, `C`, `D`, `E`, `H`, `L` and the same "
+"with `'` for the second set (`A'`, `B'`...); the pairs `AF`, `BC`, `DE`, "
+"`HL`, `AF'`, `BC'`, `DE'`, `HL'`; `IX`, `IY` and their halves `IXH`, "
+"`IXL`, `IYH`, `IYL`; `SP`, `PC`, `I`, `R`, `IR`; `IM`, `IFF1`, `IFF2`. "
+"Register names can be typed in either case; label names cannot."
+msgstr ""
+"Los registros son `A`, `F`, `B`, `C`, `D`, `E`, `H`, `L` y los mismos con"
+" `'` para el segundo juego (`A'`, `B'`...); los pares `AF`, `BC`, `DE`, "
+"`HL`, `AF'`, `BC'`, `DE'`, `HL'`; `IX`, `IY` y sus mitades `IXH`, `IXL`, "
+"`IYH`, `IYL`; `SP`, `PC`, `I`, `R`, `IR`; `IM`, `IFF1`, `IFF2`. Los "
+"nombres de registros se pueden escribir en mayúsculas o minúsculas; los "
+"de etiquetas, no."
+
+msgid ""
+"A name is looked up first as a register, then as one of the variables "
+"below, then as a label. So a label that has the name of a register cannot"
+" be reached by its name."
+msgstr ""
+"Un nombre se busca primero como registro, después como una de las "
+"variables de abajo y después como etiqueta. Por eso, una etiqueta con el "
+"nombre de un registro no se puede alcanzar por su nombre."
+
+msgid ""
+"A number without a prefix is decimal: `100` is a hundred, `0x100` and "
+"`#100` are 256, `0100` is 64. A bare `FF` is therefore not a number but a"
+" name, so hex always needs its prefix."
+msgstr ""
+"Un número sin prefijo es decimal: `100` es cien, `0x100` y `#100` son "
+"256, `0100` es 64. Por tanto, un `FF` a secas no es un número sino un "
+"nombre, así que el hexadecimal siempre necesita su prefijo."
+
+msgid "Variables"
+msgstr "Variables"
+
+msgid ""
+"The last memory or port access of the instruction. Each is `FFFFFFFF` "
+"when there was none."
+msgstr ""
+"El último acceso a memoria o a puerto de la instrucción. Cada una vale "
+"`FFFFFFFF` cuando no lo hubo."
+
+msgid "Variable"
+msgstr "Variable"
+
+msgid "`RD`"
+msgstr "`RD`"
+
+msgid "the address of the last memory read"
+msgstr "la dirección de la última lectura de memoria"
+
+msgid "`WR`"
+msgstr "`WR`"
+
+msgid "the address of the last memory write"
+msgstr "la dirección de la última escritura en memoria"
+
+msgid "`MDT`"
+msgstr "`MDT`"
+
+msgid "the byte of that read or write"
+msgstr "el byte de esa lectura o escritura"
+
+msgid "`IN`"
+msgstr "`IN`"
+
+msgid "the port of the last IN"
+msgstr "el puerto del último IN"
+
+msgid "`OUT`"
+msgstr "`OUT`"
+
+msgid "the port of the last OUT"
+msgstr "el puerto del último OUT"
+
+msgid "`VAL`"
+msgstr "`VAL`"
+
+msgid "the byte of that IN or OUT"
+msgstr "el byte de ese IN u OUT"
+
+msgid "The state of the machine:"
+msgstr "El estado de la máquina:"
+
+msgid "`DOS`"
+msgstr "`DOS`"
+
+msgid "1 while the TR-DOS ROM is switched in"
+msgstr "1 mientras la ROM de TR-DOS está activa"
+
+msgid "`SLOT0` ... `SLOT3`"
+msgstr "`SLOT0` ... `SLOT3`"
+
+msgid ""
+"the page in the memory window at `#0000`, `#4000`, `#8000` and `#C000`, "
+"as the **MEMMAP** panel shows them"
+msgstr ""
+"la página en la ventana de memoria en `#0000`, `#4000`, `#8000` y "
+"`#C000`, tal como las muestra el panel **MEMMAP**"
+
+msgid "`FRAME`"
+msgstr "`FRAME`"
+
+msgid ""
+"frames since the last reset, as the **FRAME** counter of the **MEMMAP** "
+"panel"
+msgstr ""
+"fotogramas desde el último reinicio, como el contador **FRAME** del panel"
+" **MEMMAP**"
+
+msgid "`RAYX`, `RAYY`"
+msgstr "`RAYX`, `RAYY`"
+
+msgid ""
+"where the beam is between two instructions, as the **RAY** counter of the"
+" **MEMMAP** panel"
+msgstr ""
+"dónde está el haz entre dos instrucciones, como el contador **RAY** del "
+"panel **MEMMAP**"
+
+msgid "`HITS`"
+msgstr "`HITS`"
+
+msgid "how many times this breakpoint was hit, see below"
+msgstr "cuántas veces se ha alcanzado este punto de interrupción, ver abajo"
+
+msgid "`DT`"
+msgstr "`DT`"
+
+msgid ""
+"T-states since the span opened, or since this breakpoint's hit before, "
+"see [Spans](#spans)"
+msgstr ""
+"ciclos (T-states) desde que se abrió el tramo, o desde la visita anterior"
+" a este punto de interrupción, consulta [Tramos](#spans)"
+
+msgid ""
+"A port is 16 bits wide, and the Spectrum decodes only part of it. `IN` "
+"and `OUT` hold the whole 16 bits, so ask for the keyboard port as `(IN & "
+"0xFF) == 0xFE`, not as one exact value. When a program always uses the "
+"same full port, as 128K paging uses `7FFD`, plain `OUT == 0x7FFD` is "
+"enough."
+msgstr ""
+"Un puerto tiene 16 bits, y el Spectrum solo decodifica una parte. `IN` y "
+"`OUT` contienen los 16 bits completos, así que pregunta por el puerto del"
+" teclado como `(IN & 0xFF) == 0xFE`, no como un único valor exacto. "
+"Cuando un programa usa siempre el mismo puerto completo, como la "
+"paginación de 128K usa `7FFD`, basta con `OUT == 0x7FFD`."
+
+msgid ""
+"`RAYX` and `RAYY` count dots and lines from the first visible one, "
+"borders included. The line is longer than the picture, so a 48K frame is "
+"448 x 312. Use them for a region of the frame, for example `RAYY == 100 "
+"&& RAYX >= 200`."
+msgstr ""
+"`RAYX` y `RAYY` cuentan puntos y líneas desde el primero visible, bordes "
+"incluidos. La línea es más larga que la imagen, así que un fotograma de "
+"48K mide 448 x 312. Úsalos para una región del fotograma, por ejemplo "
+"`RAYY == 100 && RAYX >= 200`."
+
+msgid ""
+"`RAY(x, y)` is for one exact dot. The beam moves 8 to 46 dots during one "
+"instruction, so `RAYX == 200` is almost never true between two of them; "
+"`RAY(200, 100)` asks whether the beam passed that dot while the "
+"instruction ran, and is true once a frame. The machine stops right after "
+"that instruction. Both arguments can be expressions, such as `RAY(200 + "
+"B, RAYY)`. A plain number outside the frame is refused while you type it;"
+" a computed one outside the frame is simply never reached."
+msgstr ""
+"`RAY(x, y)` es para un punto exacto. El haz avanza de 8 a 46 puntos "
+"durante una instrucción, así que `RAYX == 200` casi nunca se cumple entre"
+" dos de ellas; `RAY(200, 100)` pregunta si el haz pasó por ese punto "
+"mientras se ejecutaba la instrucción, y se cumple una vez por fotograma. "
+"La máquina se detiene justo después de esa instrucción. Los dos "
+"argumentos pueden ser expresiones, como `RAY(200 + B, RAYY)`. Un número "
+"literal fuera del fotograma se rechaza al escribirlo; uno calculado fuera"
+" del fotograma simplemente nunca se alcanza."
+
+msgid "Before or after the instruction"
+msgstr "Antes o después de la instrucción"
+
+msgid ""
+"On a **Fetch** breakpoint the registers are read before the instruction "
+"runs. On a **Read**, **Write** or port breakpoint they are read after it."
+msgstr ""
+"En un punto de interrupción **Fetch**, los registros se leen antes de que"
+" se ejecute la instrucción. En uno **Read**, **Write** o de puerto, se "
+"leen después."
+
+msgid "HITS"
+msgstr "HITS"
+
+msgid ""
+"On a breakpoint with an address, `HITS` counts every hit of it, this one "
+"included, whatever the condition says. `HITS > 30` lets the first 30 hits"
+" pass and stops on the 31st."
+msgstr ""
+"En un punto de interrupción con dirección, `HITS` cuenta cada visita, "
+"incluida esta, diga lo que diga la condición. `HITS > 30` deja pasar las "
+"primeras 30 visitas y se detiene en la 31.ª."
+
+msgid ""
+"On a global condition there is no address to count, so `HITS` counts the "
+"times the condition itself fired. It can limit a condition (`HITS < 3` "
+"stops the first three times) but not skip: `PC == 0x8000 && HITS > 30` "
+"never comes true, because `HITS` only moves when the whole condition is "
+"true. To let an address pass a number of times, make it an address "
+"breakpoint with the condition `HITS > 30`. The editor warns about this in"
+" amber."
+msgstr ""
+"En una condición global no hay dirección que contar, así que `HITS` "
+"cuenta las veces que se ha disparado la propia condición. Puede limitar "
+"una condición (`HITS < 3` se detiene las tres primeras veces) pero no "
+"saltar visitas: `PC == 0x8000 && HITS > 30` nunca se cumple, porque "
+"`HITS` solo avanza cuando toda la condición es verdadera. Para dejar "
+"pasar una dirección cierto número de veces, crea un punto de interrupción"
+" de dirección con la condición `HITS > 30`. El editor avisa de esto en "
+"ámbar."
+
+msgid "DT"
+msgstr "DT"
+
+msgid ""
+"On a breakpoint that closes a span, `DT` is how long that span took, in "
+"T-states: `DT > 12000` in its condition fires only on a pass that ran too"
+" long. On any other breakpoint with an address it is the time since its "
+"own hit before. It is 0 when there is nothing to measure from, such as on"
+" the first hit, and on a global condition."
+msgstr ""
+"En un punto de interrupción que cierra un tramo, `DT` es lo que duró ese "
+"tramo, en ciclos (T-states): `DT > 12000` en su condición se dispara solo"
+" en una pasada que tardó demasiado. En cualquier otro punto de "
+"interrupción con dirección es el tiempo desde su visita anterior. Vale 0 "
+"cuando no hay nada desde lo que medir, como en la primera visita, y en "
+"una condición global."
+
+msgid "Good to know"
+msgstr "Conviene saber"
+
+msgid ""
+"An address holds one breakpoint, so it has one condition. Join several "
+"with `||`."
+msgstr ""
+"Una dirección tiene un solo punto de interrupción, así que tiene una sola"
+" condición. Une varias con `||`."
+
+msgid ""
+"A condition that cannot be worked out when it runs, such as one with a "
+"label that is no longer loaded, fires, so the mistake does not go "
+"unnoticed."
+msgstr ""
+"Una condición que no se puede evaluar al ejecutarse, como una con una "
+"etiqueta que ya no está cargada, se dispara, para que el error no pase "
+"desapercibido."
+
+msgid "Examples"
+msgstr "Ejemplos"
+
+msgid "Condition"
+msgstr "Condición"
+
+msgid "Fires when"
+msgstr "Se dispara cuando"
+
+msgid "`A == 5 && [SP] > 0xFF00`"
+msgstr "`A == 5 && [SP] > 0xFF00`"
+
+msgid "A is 5 and the word on top of the stack is above `FF00`"
+msgstr "A vale 5 y la palabra en la cima de la pila es mayor que `FF00`"
+
+msgid "`(BC == 0x1234) || (BC == 0x5678)`"
+msgstr "`(BC == 0x1234) || (BC == 0x5678)`"
+
+msgid "BC holds either value"
+msgstr "BC contiene uno de los dos valores"
+
+msgid "`M(PC) == 0x76`"
+msgstr "`M(PC) == 0x76`"
+
+msgid "a HALT is about to run"
+msgstr "va a ejecutarse un HALT"
+
+msgid "`SP < 0x5B00`"
+msgstr "`SP < 0x5B00`"
+
+msgid "the stack ran down into the screen and system variables"
+msgstr "la pila ha bajado hasta la pantalla y las variables del sistema"
+
+msgid "`WR >= 0x4000 && WR < 0x5800`"
+msgstr "`WR >= 0x4000 && WR < 0x5800`"
+
+msgid "something writes to the screen's pixels"
+msgstr "algo escribe en los píxeles de la pantalla"
+
+msgid "`(IN & 0xFF) == 0xFE && (VAL & 0x1F) != 0x1F`"
+msgstr "`(IN & 0xFF) == 0xFE && (VAL & 0x1F) != 0x1F`"
+
+msgid "a key is pressed while the keyboard is read"
+msgstr "hay una tecla pulsada mientras se lee el teclado"
+
+msgid "`OUT == 0x7FFD && (VAL & 7) == 3`"
+msgstr "`OUT == 0x7FFD && (VAL & 7) == 3`"
+
+msgid "a 128K program pages RAM page 3 in at `#C000`"
+msgstr "un programa de 128K pone la página 3 de RAM en `#C000`"
+
+msgid "`SLOT3 == 7`"
+msgstr "`SLOT3 == 7`"
+
+msgid "RAM page 7 is at `#C000`"
+msgstr "la página 7 de RAM está en `#C000`"
+
+msgid "`HITS == 30`"
+msgstr "`HITS == 30`"
+
+msgid "on an address breakpoint: the 30th time it is hit"
+msgstr "en un punto de interrupción de dirección: la 30.ª vez que se alcanza"
+
+msgid "`FRAME == 300`"
+msgstr "`FRAME == 300`"
+
+msgid ""
+"as a global condition with **On change**: the first instruction of frame "
+"300"
+msgstr ""
+"como condición global con **On change**: la primera instrucción del "
+"fotograma 300"
+
+msgid "`RAYY == 100`"
+msgstr "`RAYY == 100`"
+
+msgid "every instruction on line 100; with **On change**, once a frame"
+msgstr "cada instrucción en la línea 100; con **On change**, una vez por fotograma"
+
+msgid "`RAY(200, 100)`"
+msgstr "`RAY(200, 100)`"
+
+msgid "the instruction during which the beam passed dot 200 of line 100"
+msgstr ""
+"la instrucción durante la cual el haz pasó por el punto 200 de la línea "
+"100"
+
+msgid "`DT > 12000`"
+msgstr "`DT > 12000`"
+
+msgid "on a breakpoint that closes a span: the span took more than 12000 T"
+msgstr ""
+"en un punto de interrupción que cierra un tramo: el tramo duró más de "
+"12000 T"
+
+msgid "Global conditions and On change"
+msgstr "Condiciones globales y On change"
+
+msgid ""
+"A breakpoint of type **Condition (global)** has no address. Its "
+"expression is checked after every instruction, so it finds things no "
+"single address can: \"A became 0 somewhere\", \"the stack went below "
+"`5B00`\"."
+msgstr ""
+"Un punto de interrupción de tipo **Condition (global)** no tiene "
+"dirección. Su expresión se comprueba después de cada instrucción, así que"
+" encuentra cosas que ninguna dirección concreta puede: «A se ha hecho 0 "
+"en algún sitio», «la pila ha bajado de `5B00`»."
+
+msgid ""
+"Out of the box it fires on every instruction while the expression is "
+"true, just as the condition of an address breakpoint does. Tick **On "
+"change** to make it fire only when the expression becomes true: once, and"
+" again only after it was false in between. `A == 0` without **On change**"
+" stops on every instruction while A stays 0; with it, only on the "
+"instruction that made it 0."
+msgstr ""
+"De fábrica se dispara en cada instrucción mientras la expresión sea "
+"verdadera, igual que la condición de un punto de interrupción de "
+"dirección. Marca **On change** para que se dispare solo cuando la "
+"expresión pasa a ser verdadera: una vez, y de nuevo solo después de haber"
+" sido falsa entre medias. `A == 0` sin **On change** se detiene en cada "
+"instrucción mientras A siga a 0; con él, solo en la instrucción que lo "
+"puso a 0."
+
+msgid ""
+"Several global conditions can come true on the same instruction; each one"
+" then does its own action."
+msgstr ""
+"Varias condiciones globales pueden cumplirse en la misma instrucción; "
+"cada una realiza entonces su propia acción."
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Action"
+msgstr "Acción"
+
+msgid "What happens"
+msgstr "Qué ocurre"
+
+msgid "**Debugger**"
+msgstr "**Debugger**"
+
+msgid "the machine stops and the Debugger opens"
+msgstr "la máquina se detiene y se abre el Debugger"
+
+msgid "**Counter**"
+msgstr "**Counter**"
+
+msgid "the machine goes on; only **Cnt** in the list grows"
+msgstr "la máquina sigue; solo crece **Cnt** en la lista"
+
+msgid "**Screen dump**"
+msgstr "**Screen dump**"
+
+msgid ""
+"the machine goes on; the 6912 bytes of the main screen (RAM page 5) are "
+"saved as an `.scr` file"
+msgstr ""
+"la máquina sigue; los 6912 bytes de la pantalla principal (página 5 de "
+"RAM) se guardan como archivo `.scr`"
+
+msgid ""
+"A screen dump goes into the screenshots folder (the **Output** of the "
+"**Screenshots** group on the **Video** page of **Options**, see "
+"[Screenshots](capture.md#screenshots)), named after the time, such as "
+"`xpeccy_153012_250_0.scr`."
+msgstr ""
+"Un volcado de pantalla va a la carpeta de capturas de pantalla (el "
+"**Output** del grupo **Screenshots** en la página **Video** de "
+"**Options**, consulta [Capturas de pantalla](capture.md#screenshots)), "
+"con un nombre según la hora, como `xpeccy_153012_250_0.scr`."
+
+msgid "Spans"
+msgstr "Tramos"
+
+msgid ""
+"Two breakpoints can time the code between them. Set **Span** of the first"
+" to **Opens a span** and of the second to **Closes a span**. Each time "
+"the machine gets to the first and then to the second, the T-states "
+"between them make one span. The opening breakpoint keeps how many spans "
+"there were, the shortest, the average and the longest, and how many of "
+"them had an interrupt in the middle."
+msgstr ""
+"Dos puntos de interrupción pueden medir el tiempo del código que hay "
+"entre ellos. Pon el **Span** del primero en **Opens a span** y el del "
+"segundo en **Closes a span**. Cada vez que la máquina llega al primero y "
+"después al segundo, los ciclos (T-states) entre ambos forman un tramo. El"
+" punto de interrupción de apertura guarda cuántos tramos hubo, el más "
+"corto, la media y el más largo, y cuántos tuvieron una interrupción por "
+"medio."
+
+msgid ""
+"The span is opened and closed on every hit, whatever the condition says. "
+"The condition and the action decide only whether the hit stops, counts or"
+" logs."
+msgstr ""
+"El tramo se abre y se cierra en cada visita, diga lo que diga la "
+"condición. La condición y la acción solo deciden si la visita detiene, "
+"cuenta o registra."
+
+msgid ""
+"A close takes the span opened last, whichever breakpoint opened it. So "
+"spans can nest: a routine called from a timed routine can be timed too, "
+"each on its own."
+msgstr ""
+"Un cierre toma el último tramo abierto, sea cual sea el punto de "
+"interrupción que lo abrió. Así los tramos se pueden anidar: una rutina "
+"llamada desde una rutina medida también se puede medir, cada una por su "
+"cuenta."
+
+msgid "A close with no span open measures nothing."
+msgstr "Un cierre sin ningún tramo abierto no mide nada."
+
+msgid ""
+"A routine with several ways out needs a closing breakpoint on each of "
+"them."
+msgstr ""
+"Una rutina con varias salidas necesita un punto de interrupción de cierre"
+" en cada una."
+
+msgid ""
+"Any breakpoint with an address can open or close a span, and so can "
+"**Interrupt**; a global condition cannot."
+msgstr ""
+"Cualquier punto de interrupción con dirección puede abrir o cerrar un "
+"tramo, y también **Interrupt**; una condición global no puede."
+
+msgid "What the spans measured is shown:"
+msgstr "Lo que midieron los tramos se muestra:"
+
+msgid "beside **Span** in the **Breakpoint Editor**, for an opening breakpoint;"
+msgstr ""
+"junto a **Span** en el **Breakpoint Editor**, para un punto de "
+"interrupción de apertura;"
+
+msgid ""
+"when you hold the mouse over its row in the **Breakpoints** panel, such "
+"as `938 spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`;"
+msgstr ""
+"al dejar el ratón sobre su fila en el panel **Breakpoints**, como `938 "
+"spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`;"
+
+msgid ""
+"at the end of the breakpoint log, when the program closes, if a "
+"breakpoint wrote to it, and at the end of a [run with no window](command-"
+"line.md#running-with-no-window): one line for each opening breakpoint."
+msgstr ""
+"al final del registro de puntos de interrupción, al cerrar el programa, "
+"si algún punto de interrupción escribió en él, y al final de una "
+"[ejecución sin ventana](command-line.md#running-with-no-window): una "
+"línea por cada punto de interrupción de apertura."
+
+msgid ""
+"The line has the breakpoint's label, or its address when it has none, "
+"then the number of spans, the shortest, the average and the longest in "
+"T-states, their sum, and how many had an interrupt."
+msgstr ""
+"La línea tiene la etiqueta del punto de interrupción, o su dirección si "
+"no la tiene, después el número de tramos, el más corto, la media y el más"
+" largo en ciclos (T-states), su suma y cuántos tuvieron una interrupción."
+
+msgid ""
+"Spans of the same code differ for a reason: on a Spectrum the CPU waits "
+"when it uses the memory the screen is read from at that moment, so the "
+"same loop takes longer while the beam draws the picture. **Reset "
+"counter** in the right-click menu of the list starts them again."
+msgstr ""
+"Los tramos del mismo código difieren por una razón: en un Spectrum la CPU"
+" espera cuando usa la memoria de la que se lee la pantalla en ese "
+"momento, así que el mismo bucle tarda más mientras el haz dibuja la "
+"imagen. **Reset counter** en el menú del clic derecho de la lista los "
+"pone de nuevo a cero."
+
+msgid "The breakpoint log"
+msgstr "El registro de puntos de interrupción"
+
+msgid ""
+"Tick **Log** in the **Breakpoint Editor** and every time the breakpoint "
+"fires, a line goes to the breakpoint log, whatever its action is. With "
+"the action **Counter** this logs every hit without stopping."
+msgstr ""
+"Marca **Log** en el **Breakpoint Editor** y, cada vez que se dispare el "
+"punto de interrupción, irá una línea al registro de puntos de "
+"interrupción, sea cual sea su acción. Con la acción **Counter** esto "
+"registra cada visita sin detenerse."
+
+msgid ""
+"The log is a file of its own. It is made at the first hit that logs, with"
+" nothing to switch on first: `xpeccy-plus-<date>-<time>-brk.log`, in "
+"`logs/<date>/` beside the program, or in the **Folder** of the **Log** "
+"group on the **Application** page of **Options**. Where that cannot be "
+"written to, it goes to the settings folder. **Open breakpoint log** in "
+"the right-click menu of the **Breakpoints** list opens it; `--brk-log` on"
+" the command line sends it elsewhere (see [Command line](command-"
+"line.md#debugging))."
+msgstr ""
+"El registro (log) es un archivo propio. Se crea con la primera visita que"
+" registra, sin tener que activar nada antes: `xpeccy-"
+"plus-<date>-<time>-brk.log`, en `logs/<date>/` junto al programa, o en la"
+" **Folder** del grupo **Log** de la página **Application** de "
+"**Options**. Si ahí no se puede escribir, va a la carpeta de ajustes. "
+"**Open breakpoint log** en el menú del clic derecho de la lista "
+"**Breakpoints** lo abre; `--brk-log` en la línea de comandos lo envía a "
+"otro sitio (consulta [Línea de comandos](command-line.md#debugging))."
+
+msgid ""
+"Apart from the date in its first line, the log has no time of day in it, "
+"only the machine's own time. Two runs of the same program give the same "
+"lines, so two logs can be compared line by line."
+msgstr ""
+"Aparte de la fecha de su primera línea, el registro no contiene la hora "
+"del día, solo el tiempo propio de la máquina. Dos ejecuciones del mismo "
+"programa dan las mismas líneas, así que dos de estos archivos se pueden "
+"comparar línea a línea."
+
+msgid "Part"
+msgstr "Parte"
+
+msgid "`F00000000 T034459`"
+msgstr "`F00000000 T034459`"
+
+msgid "the frame since the last reset, and the T-state in it"
+msgstr "el fotograma desde el último reinicio, y el ciclo (T-state) dentro de él"
+
+msgid "`t=5758`"
+msgstr "`t=5758`"
+
+msgid "T-states since the machine was made"
+msgstr "ciclos (T-states) desde que se creó la máquina"
+
+msgid "`CPU:8006 RAM:02:0006`"
+msgstr "`CPU:8006 RAM:02:0006`"
+
+msgid ""
+"where it fired: the breakpoint's own address, then the same place the "
+"other way - page and offset for a CPU address, the CPU address for a cell"
+msgstr ""
+"dónde se disparó: la dirección propia del punto de interrupción, y "
+"después el mismo lugar visto al revés — página y desplazamiento para una "
+"dirección de CPU, la dirección de CPU para una celda"
+
+msgid "`F`"
+msgstr "`F`"
+
+msgid ""
+"what was done there: `F` a fetch, `RD 5C3A=FF` a read, `WR 4000=00` a "
+"write, `IN=BF` or `OUT=07` on a port"
+msgstr ""
+"qué se hizo ahí: `F` una lectura de instrucción, `RD 5C3A=FF` una "
+"lectura, `WR 4000=00` una escritura, `IN=BF` u `OUT=07` en un puerto"
+
+msgid "`n=1/129`"
+msgstr "`n=1/129`"
+
+msgid "how many times it fired, and how many times it was hit"
+msgstr "cuántas veces se disparó y cuántas veces se alcanzó"
+
+msgid "`stop`"
+msgstr "`stop`"
+
+msgid "the action is **Debugger**: the machine stopped here"
+msgstr "la acción es **Debugger**: la máquina se detuvo aquí"
+
+msgid "`span=open`, `span=close from=START int=0`"
+msgstr "`span=open`, `span=close from=START int=0`"
+
+msgid ""
+"the breakpoint opens or closes a span; a close names the breakpoint that "
+"opened it and how many interrupts came in between"
+msgstr ""
+"el punto de interrupción abre o cierra un tramo; un cierre indica el "
+"punto de interrupción que lo abrió y cuántas interrupciones hubo entre "
+"medias"
+
+msgid "`DT=42`"
+msgstr "`DT=42`"
+
+msgid "the value of `DT`"
+msgstr "el valor de `DT`"
+
+msgid "`cond=...`"
+msgstr "`cond=...`"
+
+msgid "the condition, when there is one"
+msgstr "la condición, si la hay"
+
+msgid "`PC=8006 ... IFF2=0`"
+msgstr "`PC=8006 ... IFF2=0`"
+
+msgid "the registers; PC is the instruction the breakpoint belongs to"
+msgstr ""
+"los registros; PC es la instrucción a la que pertenece el punto de "
+"interrupción"
+
+msgid "`F=S-------`"
+msgstr "`F=S-------`"
+
+msgid "the flags, by letter: S, Z, 5, H, 3, P, N, C"
+msgstr "los flags, por letra: S, Z, 5, H, 3, P, N, C"
+
+msgid "`ROMPG=0 RAMPG=0`"
+msgstr "`ROMPG=0 RAMPG=0`"
+
+msgid "the ROM page at `#0000` and the RAM page at `#C000`"
+msgstr "la página de ROM en `#0000` y la página de RAM en `#C000`"
+
+msgid "`DOS=0 ROM=1 CPM=0 INT=0`"
+msgstr "`DOS=0 ROM=1 CPM=0 INT=0`"
+
+msgid "the signals of the **MEMMAP** panel"
+msgstr "las señales del panel **MEMMAP**"
+
+msgid ""
+"With expressions in the field beside **Log**, the line has them in place "
+"of the registers, each as written and its value in hex:"
+msgstr ""
+"Con expresiones en el campo junto a **Log**, la línea las contiene en "
+"lugar de los registros, cada una tal como se escribió y su valor en "
+"hexadecimal:"
+
+msgid "An expression that cannot be worked out at that moment is written as `?`."
+msgstr "Una expresión que no se puede evaluar en ese momento se escribe como `?`."
+
+msgid "Breakpoint files"
+msgstr "Archivos de puntos de interrupción"
+
+#, python-brace-format
+msgid ""
+"{icon}`floppy` **Save** in the **Breakpoints** panel writes the list to a"
+" text file, `.xbrk`; {icon}`fileopen` **Open** loads one, in place of the"
+" list you have. A file can be written by hand too: one breakpoint a line,"
+" its fields split by colons. Lines starting with `;` are skipped."
+msgstr ""
+"{icon}`floppy` **Save** en el panel **Breakpoints** escribe la lista en "
+"un archivo de texto, `.xbrk`; {icon}`fileopen` **Open** carga uno, en "
+"lugar de la lista que tienes. Un archivo también se puede escribir a "
+"mano: un punto de interrupción por línea, con sus campos separados por "
+"dos puntos. Las líneas que empiezan por `;` se ignoran."
+
+msgid "What it holds"
+msgstr "Qué contiene"
+
+msgid "1, kind"
+msgstr "1, tipo"
+
+msgid "`CPU`, `IO`, `RAM`, `ROM`, `SLT`, `IRQ` or `COND`"
+msgstr "`CPU`, `IO`, `RAM`, `ROM`, `SLT`, `IRQ` o `COND`"
+
+msgid "2"
+msgstr "2"
+
+msgid ""
+"`CPU`: the address or a range; `IO`: the port; `RAM`, `ROM`, `SLT`: the "
+"page; others: empty"
+msgstr ""
+"`CPU`: la dirección o un rango; `IO`: el puerto; `RAM`, `ROM`, `SLT`: la "
+"página; los demás: vacío"
+
+msgid "3"
+msgstr "3"
+
+msgid ""
+"`IO`: the mask; `RAM`, `ROM`, `SLT`: the offset or a range of offsets; "
+"others: empty"
+msgstr ""
+"`IO`: la máscara; `RAM`, `ROM`, `SLT`: el desplazamiento o un rango de "
+"desplazamientos; los demás: vacío"
+
+msgid "4, flags"
+msgstr "4, flags"
+
+msgid ""
+"any of `F`, `R`, `W`; `0` switched off; `E` **On change**; `L` **Log**; "
+"`[` opens a span, `]` closes one"
+msgstr ""
+"cualquiera de `F`, `R`, `W`; `0` desactivado; `E` **On change**; `L` "
+"**Log**; `[` abre un tramo, `]` lo cierra"
+
+msgid "5, action"
+msgstr "5, acción"
+
+msgid "`DBG` (**Debugger**), `CNT` (**Counter**) or `SCR` (**Screen dump**)"
+msgstr "`DBG` (**Debugger**), `CNT` (**Counter**) o `SCR` (**Screen dump**)"
+
+msgid "6, condition"
+msgstr "6, condición"
+
+msgid "the condition, or empty"
+msgstr "la condición, o vacío"
+
+msgid "7, log"
+msgstr "7, registro"
+
+msgid ""
+"what a logged hit writes: expressions split by commas. Leave it out for "
+"every register"
+msgstr ""
+"lo que escribe una visita registrada: expresiones separadas por comas. "
+"Omítelo para todos los registros"
+
+msgid "A line can stop after the condition; the last two fields can be empty."
+msgstr ""
+"Una línea puede terminar tras la condición; los dos últimos campos pueden"
+" estar vacíos."
+
+msgid ""
+"An address in a list is hex without a prefix, as **Save** writes it, or a"
+" label of the labels loaded at the time: `CPU:START`, `CPU:START-DONE`. A"
+" label wins over hex written the same way; `#`, `$` or `0x` in front "
+"makes it a number. A RAM label carries its page, so the page field can be"
+" left empty: `RAM::SCREEN_BUF:W:CNT:`. **Save** writes the addresses as "
+"numbers."
+msgstr ""
+"Una dirección en una lista es hexadecimal sin prefijo, tal como la "
+"escribe **Save**, o una etiqueta de las cargadas en ese momento: "
+"`CPU:START`, `CPU:START-DONE`. Una etiqueta gana a un hexadecimal escrito"
+" igual; `#`, `$` o `0x` delante lo convierten en número. Una etiqueta de "
+"RAM lleva su página, así que el campo de página puede quedar vacío: "
+"`RAM::SCREEN_BUF:W:CNT:`. **Save** escribe las direcciones como números."
+
+msgid ""
+"A line that cannot be read is left out and named in the log. A condition "
+"or a log expression that does not compile is kept as it is: the condition"
+" then fires every time, and the expression is written as `?`, so the "
+"mistake shows."
+msgstr ""
+"Una línea que no se puede leer se descarta y se indica en el registro. "
+"Una condición o una expresión para el registro que no compila se conserva"
+" tal cual: la condición se dispara entonces siempre, y la expresión se "
+"escribe como `?`, para que el error se vea."
+
+msgid ""
+"Options of the command line set breakpoints at start (see [Command line"
+"](command-line.md#debugging)):"
+msgstr ""
+"Opciones de la línea de comandos ponen puntos de interrupción al arrancar"
+" (consulta [Línea de comandos](command-line.md#debugging)):"
+
+msgid "`--bp ADR` - a **Fetch** breakpoint on a CPU address or a label;"
+msgstr ""
+"`--bp ADR` — un punto de interrupción **Fetch** en una dirección de CPU o"
+" una etiqueta;"
+
+msgid "`--brk FILE` - loads a `.xbrk` file, added to the ones loaded before it;"
+msgstr "`--brk FILE` — carga un archivo `.xbrk`, que se suma a los cargados antes;"
+
+msgid ""
+"`--brk-log FILE` - writes the breakpoint log to that file, or with `-` to"
+" the standard output."
+msgstr ""
+"`--brk-log FILE` — escribe el registro de puntos de interrupción en ese "
+"archivo, o con `-` en la salida estándar."
+
+msgid ""
+"The labels of `-l` are loaded first, wherever it stands on the command "
+"line. Together with `--bench` this runs a test from a script with no "
+"window, which ends on the first breakpoint with the action **Debugger** "
+"(see [Running with no window](command-line.md#running-with-no-window))."
+msgstr ""
+"Las etiquetas de `-l` se cargan primero, esté donde esté en la línea de "
+"comandos. Junto con `--bench` esto ejecuta una prueba desde un script sin"
+" ventana, que termina en el primer punto de interrupción con la acción "
+"**Debugger** (consulta [Ejecución sin ventana](command-line.md#running-"
+"with-no-window))."
+
+msgid "The Watcher"
+msgstr "El Watcher"
+
+msgid "![The Watcher](images/dbg-watcher.png)"
+msgstr "![El Watcher](images/dbg-watcher.png)"
+
+#, python-brace-format
+msgid ""
+"The **Watcher** window shows the registers and some places in memory, and"
+" follows them while the machine runs. Open it with **Debug > Watcher** in"
+" the main window, or **Watcher** under the {icon}`other` **Tools** button"
+" over the listing."
+msgstr ""
+"La ventana **Watcher** muestra los registros y algunos lugares de la "
+"memoria, y los sigue mientras la máquina funciona. Ábrela con **Debug > "
+"Watcher** en la ventana principal, o con **Watcher** bajo el botón "
+"{icon}`other` **Tools** sobre el listado."
+
+msgid "**CPU** - the registers."
+msgstr "**CPU** — los registros."
+
+msgid "**MEMORY** - the watches, two rows each."
+msgstr "**MEMORY** — las vigilancias, dos filas cada una."
+
+msgid "The four memory banks, from `#0000` to `#C000`: ROM or RAM, and the page."
+msgstr ""
+"Los cuatro bancos de memoria, de `#0000` a `#C000`: ROM o RAM, y la "
+"página."
+
+msgid ""
+"In the picture the game Exolon runs, with a file of labels for it. `AMMO`"
+" is its ammo counter: the first byte, `63`, is 99 rounds. `VITORC + 0x60`"
+" is the second frame of its hero's sprite. `SP` is the stack, and `[SP]` "
+"the code the routine will return to. `0x3D00` is the start of the font in"
+" ROM."
+msgstr ""
+"En la imagen se ejecuta el juego Exolon, con un archivo de etiquetas para"
+" él. `AMMO` es su contador de munición: el primer byte, `63`, son 99 "
+"disparos. `VITORC + 0x60` es el segundo fotograma del sprite de su héroe."
+" `SP` es la pila, y `[SP]` el código al que volverá la rutina. `0x3D00` "
+"es el inicio de la fuente en la ROM."
+
+msgid ""
+"Right-click the **MEMORY** list and choose **Add watcher** to add a "
+"watch, or **Delete watcher** to remove the selected one. Double-click a "
+"watch to change it."
+msgstr ""
+"Haz clic derecho en la lista **MEMORY** y elige **Add watcher** para "
+"añadir una vigilancia, o **Delete watcher** para eliminar la "
+"seleccionada. Haz doble clic en una vigilancia para cambiarla."
+
+msgid "![The Watcher Editor](images/dbg-watcher-editor.png)"
+msgstr "![El Watcher Editor](images/dbg-watcher-editor.png)"
+
+msgid "The Watcher Editor"
+msgstr "El Watcher Editor"
+
+msgid "The **Watcher Editor** has:"
+msgstr "El **Watcher Editor** tiene:"
+
+msgid ""
+"**Type** - **CPU addr**, **RAM addr** or **ROM addr**, written before the"
+" watch;"
+msgstr ""
+"**Type** — **CPU addr**, **RAM addr** o **ROM addr**, que se escribe "
+"delante de la vigilancia;"
+
+#, python-brace-format
+msgid ""
+"**Expression** - an address, in the same syntax as a condition (see "
+"[Conditions](#conditions)): `HL`, `0x5C3A`, `IX + 5`, `[0x5C53]`, a "
+"label. The {icon}`label` button beside it opens the list of labels; a "
+"label picked there goes into the field."
+msgstr ""
+"**Expression** — una dirección, con la misma sintaxis que una condición "
+"(consulta [Condiciones](#conditions)): `HL`, `0x5C3A`, `IX + 5`, "
+"`[0x5C53]`, una etiqueta. El botón {icon}`label` a su lado abre la lista "
+"de etiquetas; una etiqueta elegida ahí va al campo."
+
+#, python-brace-format
+msgid ""
+"{icon}`checkbox` **OK** takes it only when the expression is right. The "
+"first row of a watch shows its type and expression, and its value as an "
+"address; the second row the 13 bytes that start at that address. `??` "
+"means the expression cannot be worked out at the moment."
+msgstr ""
+"{icon}`checkbox` **OK** la acepta solo cuando la expresión es correcta. "
+"La primera fila de una vigilancia muestra su tipo y su expresión, y su "
+"valor como dirección; la segunda fila, los 13 bytes que empiezan en esa "
+"dirección. `??` significa que la expresión no se puede evaluar en ese "
+"momento."
+
+msgid "The watches are not kept when the program closes."
+msgstr "Las vigilancias no se conservan al cerrar el programa."
+
+msgid "Watched ports"
+msgstr "Puertos vigilados"
+
+msgid ""
+"The **PORTS** block of the **MEMMAP** panel shows the last value on the "
+"ports you choose. See [Watched ports](debugger.md#watched-ports)."
+msgstr ""
+"El bloque **PORTS** del panel **MEMMAP** muestra el último valor en los "
+"puertos que elijas. Consulta [Puertos vigilados](debugger.md#watched-"
+"ports)."
+
+msgid "Stop when the program writes to the screen"
+msgstr "Detenerse cuando el programa escribe en la pantalla"
+
+#, python-brace-format
+msgid ""
+"In the **Breakpoints** panel, press {icon}`add` add (the plus sign). The "
+"editor opens on a **CPU address** with **Fetch** ticked."
+msgstr ""
+"En el panel **Breakpoints**, pulsa {icon}`add` añadir (el signo más). El "
+"editor se abre con un **CPU address** con **Fetch** marcado."
+
+msgid "Untick **Fetch**, tick **Write**."
+msgstr "Desmarca **Fetch** y marca **Write**."
+
+msgid ""
+"Type `4000` into **Address** and `5AFF` into **to**. The line under them "
+"says `4000-5AFF`."
+msgstr ""
+"Escribe `4000` en **Address** y `5AFF` en **to**. La línea bajo ellos "
+"dice `4000-5AFF`."
+
+#, python-brace-format
+msgid "Press {icon}`ok-apply` **OK** and close the Debugger."
+msgstr "Pulsa {icon}`ok-apply` **OK** y cierra el Debugger."
+
+msgid ""
+"The row says `CPU:4000-5AFF` with a tick under **W**. The first time "
+"anything writes to the screen, the Debugger opens. The machine stops "
+"after the instruction that wrote; in the listing it is usually the line "
+"above the cursor."
+msgstr ""
+"La fila dice `CPU:4000-5AFF` con una marca bajo **W**. La primera vez que"
+" algo escriba en la pantalla, se abrirá el Debugger. La máquina se "
+"detiene después de la instrucción que escribió; en el listado suele ser "
+"la línea encima del cursor."
+
+msgid "Stop when the border color changes"
+msgstr "Detenerse cuando cambia el color del borde"
+
+msgid "The border color is set by an OUT to the ULA's port, `FE`."
+msgstr "El color del borde se establece con un OUT al puerto de la ULA, `FE`."
+
+#, python-brace-format
+msgid "In the **Breakpoints** panel, press {icon}`add` add."
+msgstr "En el panel **Breakpoints**, pulsa {icon}`add` añadir."
+
+msgid "Set **Type** to **I/O port**."
+msgstr "Pon **Type** en **I/O port**."
+
+msgid "Tick **Write**."
+msgstr "Marca **Write**."
+
+msgid ""
+"Type `00FE` into **Port** and `0001` into **mask**, so every even port "
+"counts, as on the real machine."
+msgstr ""
+"Escribe `00FE` en **Port** y `0001` en **mask**, para que cuente "
+"cualquier puerto par, como en la máquina real."
+
+msgid ""
+"The row says `IO:00FE mask 0001`. The Debugger opens on every OUT to the "
+"port. A program that makes sound writes the same port all the time, for "
+"the speaker; to stop only when the border turns red, put `(VAL & 7) == 2`"
+" into **Condition**."
+msgstr ""
+"La fila dice `IO:00FE mask 0001`. El Debugger se abre en cada OUT al "
+"puerto. Un programa que produce sonido escribe en ese puerto todo el "
+"tiempo, para el altavoz; para detenerte solo cuando el borde se vuelve "
+"rojo, pon `(VAL & 7) == 2` en **Condition**."
+
+msgid "Log every call to a routine without stopping"
+msgstr "Registrar cada llamada a una rutina sin detenerse"
+
+msgid ""
+"In the Debugger, put the cursor on the first line of the routine and "
+"press Shift+Space."
+msgstr ""
+"En el Debugger, pon el cursor en la primera línea de la rutina y pulsa "
+"Shift+Space."
+
+#, python-brace-format
+msgid ""
+"Select the new row in the **Breakpoints** panel and press {icon}`edit` "
+"edit (the pencil)."
+msgstr ""
+"Selecciona la fila nueva en el panel **Breakpoints** y pulsa {icon}`edit`"
+" editar (el lápiz)."
+
+#, python-brace-format
+msgid ""
+"Set **Action** to **Counter** and tick **Log**. To log only some values, "
+"type them into the field beside it, such as `A, HL, M(HL)`. Press {icon"
+"}`ok-apply` **OK**."
+msgstr ""
+"Pon **Action** en **Counter** y marca **Log**. Para registrar solo "
+"algunos valores, escríbelos en el campo de al lado, como `A, HL, M(HL)`. "
+"Pulsa {icon}`ok-apply` **OK**."
+
+msgid "Close the Debugger."
+msgstr "Cierra el Debugger."
+
+msgid ""
+"The machine runs on as before. **Cnt** in the list counts the calls, and "
+"every call adds a line to the breakpoint log. **Open breakpoint log** in "
+"the right-click menu of the list shows it."
+msgstr ""
+"La máquina sigue funcionando como antes. **Cnt** en la lista cuenta las "
+"llamadas, y cada llamada añade una línea al registro de puntos de "
+"interrupción. **Open breakpoint log** en el menú del clic derecho de la "
+"lista lo muestra."
+
+msgid "Stop when A is 0 at a given address"
+msgstr "Detenerse cuando A vale 0 en una dirección concreta"
+
+msgid "Put the cursor on the line in the listing and press Shift+Space."
+msgstr "Pon el cursor en la línea del listado y pulsa Shift+Space."
+
+#, python-brace-format
+msgid ""
+"Select the new row in the **Breakpoints** panel and press {icon}`edit` "
+"edit."
+msgstr ""
+"Selecciona la fila nueva en el panel **Breakpoints** y pulsa {icon}`edit`"
+" editar."
+
+msgid "Type `A == 0` into **Condition**. The line under it says **ok: (A == 0)**."
+msgstr ""
+"Escribe `A == 0` en **Condition**. La línea de debajo dice **ok: (A == "
+"0)**."
+
+msgid ""
+"The **Cond** column shows `A == 0`. The machine runs through that line as"
+" long as A is not 0, and stops on it, before it runs, the first time A is"
+" 0 there."
+msgstr ""
+"La columna **Cond** muestra `A == 0`. La máquina pasa por esa línea "
+"mientras A no sea 0, y se detiene en ella, antes de ejecutarla, la "
+"primera vez que A vale 0 ahí."
+
+msgid "Stop on the 50th pass"
+msgstr "Detenerse en la pasada 50"
+
+msgid "Make a breakpoint on the line as above."
+msgstr "Crea un punto de interrupción en la línea como antes."
+
+msgid "Put `HITS == 50` into its **Condition**."
+msgstr "Pon `HITS == 50` en su **Condition**."
+
+msgid ""
+"The machine stops the 50th time the CPU gets to the line. **Reset "
+"counter** in the right-click menu of the list starts the count again."
+msgstr ""
+"La máquina se detiene la 50.ª vez que la CPU llega a la línea. **Reset "
+"counter** en el menú del clic derecho de la lista vuelve a empezar la "
+"cuenta."
+
+msgid "Time a routine"
+msgstr "Medir el tiempo de una rutina"
+
+msgid ""
+"Here the routine starts at the label `START`, and `DONE` is the last "
+"instruction of one pass."
+msgstr ""
+"Aquí la rutina empieza en la etiqueta `START`, y `DONE` es la última "
+"instrucción de una pasada."
+
+#, python-brace-format
+msgid ""
+"In the **Breakpoints** panel, press {icon}`add` add. Type `START` into "
+"**Address**; the line under it says `8000, START`. Set **Span** to "
+"**Opens a span** and **Action** to **Counter**. Press {icon}`ok-apply` "
+"**OK**."
+msgstr ""
+"En el panel **Breakpoints**, pulsa {icon}`add` añadir. Escribe `START` en"
+" **Address**; la línea de debajo dice `8000, START`. Pon **Span** en "
+"**Opens a span** y **Action** en **Counter**. Pulsa {icon}`ok-apply` "
+"**OK**."
+
+msgid ""
+"Press add again. Type `DONE` into **Address**, set **Span** to **Closes a"
+" span** and **Action** to **Counter**. Press **OK**."
+msgstr ""
+"Pulsa añadir otra vez. Escribe `DONE` en **Address**, pon **Span** en "
+"**Closes a span** y **Action** en **Counter**. Pulsa **OK**."
+
+msgid "Close the Debugger and let the program run for a while."
+msgstr "Cierra el Debugger y deja que el programa funcione un rato."
+
+msgid "Open the Debugger and hold the mouse over `CPU:8000` in the list."
+msgstr "Abre el Debugger y deja el ratón sobre `CPU:8000` en la lista."
+
+msgid ""
+"The tip says how many passes there were and how long they took: `938 "
+"spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`."
+msgstr ""
+"La descripción emergente dice cuántas pasadas hubo y cuánto tardaron: "
+"`938 spans: min 10767, avg 11193.0, max 11486 T, 0 with an interrupt`."
+
+msgid ""
+"To stop on a pass that is too slow, open the `DONE` breakpoint again, set"
+" **Action** to **Debugger** and type `DT > 11400` into **Condition**. The"
+" machine stops at the end of such a pass."
+msgstr ""
+"Para detenerte en una pasada demasiado lenta, abre otra vez el punto de "
+"interrupción `DONE`, pon **Action** en **Debugger** y escribe `DT > "
+"11400` en **Condition**. La máquina se detiene al final de esa pasada."
+
+msgid "Check a program from a script"
+msgstr "Comprobar un programa desde un script"
+
+msgid ""
+"The same two breakpoints, as a file `timing.xbrk`, with the labels of the"
+" program in `timing.lab`. The closing breakpoint also writes `HL` and "
+"`BC` to the log:"
+msgstr ""
+"Los mismos dos puntos de interrupción, como archivo `timing.xbrk`, con "
+"las etiquetas del programa en `timing.lab`. El punto de interrupción de "
+"cierre también escribe `HL` y `BC` en el registro:"
+
+msgid ""
+"The machine runs two frames with no window. With `--brk-log -` the log "
+"comes to the standard output, before the speed line and the spans:"
+msgstr ""
+"La máquina ejecuta dos fotogramas sin ventana. Con `--brk-log -` el "
+"registro sale por la salida estándar, antes de la línea de velocidad y de"
+" los tramos:"
+
+msgid ""
+"The exit code is 0. With the action **Debugger** and `DT > 11400` on "
+"`DONE`, the run would stop on the first slow pass and exit with 2, so a "
+"script can tell a slow build of the program from a fast one."
+msgstr ""
+"El código de salida es 0. Con la acción **Debugger** y `DT > 11400` en "
+"`DONE`, la ejecución se detendría en la primera pasada lenta y saldría "
+"con 2, de modo que un script puede distinguir una versión lenta del "
+"programa de una rápida."
+
+msgid "breakpoint"
+msgstr "punto de interrupción"
+
+msgid "watchpoint"
+msgstr "punto de vigilancia"
+
+msgid "CPU address"
+msgstr "CPU address"
+
+msgid "I/O port"
+msgstr "I/O port"
+
+msgid "RAM cell"
+msgstr "RAM cell"
+
+msgid "ROM cell"
+msgstr "ROM cell"
+
+msgid "Slot cell"
+msgstr "Slot cell"
+
+msgid "Interrupt"
+msgstr "Interrupt"
+
+msgid "Fetch"
+msgstr "Fetch"
+
+msgid "Read"
+msgstr "Read"
+
+msgid "Write"
+msgstr "Write"
+
+msgid "setting"
+msgstr "colocación"
+
+msgid "Breakpoints panel"
+msgstr "panel Breakpoints"
+
+msgid "Reset counter"
+msgstr "Reset counter"
+
+msgid "Breakpoint Editor"
+msgstr "Breakpoint Editor"
+
+msgid "address"
+msgstr "dirección"
+
+msgid "port mask"
+msgstr "máscara de puerto"
+
+msgid "Expression Syntax"
+msgstr "Expression Syntax"
+
+msgid "condition"
+msgstr "condición"
+
+msgid "operators"
+msgstr "operadores"
+
+msgid "operands"
+msgstr "operandos"
+
+msgid "RD"
+msgstr "RD"
+
+msgid "WR"
+msgstr "WR"
+
+msgid "MDT"
+msgstr "MDT"
+
+msgid "IN"
+msgstr "IN"
+
+msgid "OUT"
+msgstr "OUT"
+
+msgid "VAL"
+msgstr "VAL"
+
+msgid "DOS"
+msgstr "DOS"
+
+msgid "SLOT0"
+msgstr "SLOT0"
+
+msgid "FRAME"
+msgstr "FRAME"
+
+msgid "RAYX"
+msgstr "RAYX"
+
+msgid "RAYY"
+msgstr "RAYY"
+
+msgid "RAY"
+msgstr "RAY"
+
+msgid "global condition"
+msgstr "condición global"
+
+msgid "Condition (global)"
+msgstr "Condition (global)"
+
+msgid "On change"
+msgstr "On change"
+
+msgid "action"
+msgstr "acción"
+
+msgid "Counter"
+msgstr "Counter"
+
+msgid "Screen dump"
+msgstr "Screen dump"
+
+msgid "span"
+msgstr "tramo"
+
+msgid "timing"
+msgstr "medición de tiempo"
+
+msgid "breakpoint log"
+msgstr "registro de puntos de interrupción"
+
+msgid "log"
+msgstr "registro (log)"
+
+msgid "Open breakpoint log"
+msgstr "Open breakpoint log"
+
+msgid ".xbrk"
+msgstr ".xbrk"
+
+msgid "file"
+msgstr "archivo"
+
+msgid "--bp"
+msgstr "--bp"
+
+msgid "--brk"
+msgstr "--brk"
+
+msgid "--brk-log"
+msgstr "--brk-log"
+
+msgid "Watcher"
+msgstr "Watcher"
+
+msgid "watch"
+msgstr "vigilancia"
+
+msgid "Watcher Editor"
+msgstr "Watcher Editor"
+

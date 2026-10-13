@@ -1,0 +1,161 @@
+{
+  "files": {
+    "CYB1_128.TAP": {
+      "url": "https://spectrumcomputing.co.uk/pub/sinclair/games/c/Cybernoid128.tap.zip",
+      "sha256": "9bf2c0b773fbe11f4f47332fc4933a8a1ac720698c90a51a20a7785fa4f87a38"
+    }
+  },
+  "prepare": [
+    "-m",
+    "zx128",
+    "{media}/CYB1_128.TAP",
+    "--bench",
+    "3000",
+    "--bench-save",
+    "{media}/cybernoid.szx"
+  ],
+  "args": [
+    "{media}/cybernoid.szx"
+  ],
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "run-action key.debuger"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "run",
+      "show-panel AYWIDGET"
+    ],
+    [
+      "wait",
+      600
+    ]
+  ],
+  "crop": {
+    "widget": "AYWIDGET",
+    "pad": 26
+  },
+  "badges": "inside",
+  "frames": [
+    {
+      "n": 1,
+      "rect": [
+        470,
+        407,
+        125,
+        26
+      ],
+      "at": [
+        -14,
+        13
+      ]
+    },
+    {
+      "n": 2,
+      "rect": [
+        848,
+        407,
+        28,
+        26
+      ],
+      "at": [
+        -14,
+        13
+      ]
+    },
+    {
+      "n": 3,
+      "rect": [
+        474,
+        440,
+        272,
+        62
+      ],
+      "at": [
+        -16,
+        31
+      ]
+    },
+    {
+      "n": 4,
+      "rect": [
+        470,
+        506,
+        302,
+        102
+      ],
+      "at": [
+        -14,
+        51
+      ]
+    },
+    {
+      "n": 5,
+      "rect": [
+        578,
+        610,
+        192,
+        32
+      ],
+      "at": [
+        206,
+        16
+      ]
+    },
+    {
+      "n": 6,
+      "rect": [
+        469,
+        647,
+        208,
+        24
+      ],
+      "at": [
+        -14,
+        12
+      ]
+    },
+    {
+      "n": 7,
+      "rect": [
+        729,
+        647,
+        156,
+        24
+      ],
+      "at": [
+        -14,
+        12
+      ]
+    },
+    {
+      "n": 8,
+      "rect": [
+        470,
+        673,
+        415,
+        46
+      ],
+      "at": [
+        -14,
+        23
+      ]
+    }
+  ]
+}

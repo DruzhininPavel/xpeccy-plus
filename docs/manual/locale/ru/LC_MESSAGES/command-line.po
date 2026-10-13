@@ -1,0 +1,821 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 21:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Command line"
+msgstr "Командная строка"
+
+msgid "Xpeccy+ takes file names and options on the command line:"
+msgstr "Xpeccy+ принимает в командной строке имена файлов и параметры:"
+
+msgid ""
+"On Windows the program is `xpeccy-plus.exe`. Put a name that has spaces "
+"in it in quotes."
+msgstr ""
+"В Windows программа называется `xpeccy-plus.exe`. Имя с пробелами "
+"возьмите в кавычки."
+
+msgid ""
+"`-h` or `--help` prints the list of options and quits without opening the"
+" window. On Windows add `-c` to see it."
+msgstr ""
+"`-h` или `--help` выводит список параметров и завершает работу, не "
+"открывая окна. В Windows добавьте `-c`, чтобы его увидеть."
+
+msgid ""
+"An option the program does not know, or one given last without its value,"
+" is not opened as a file: it is a warning in the log and, once the window"
+" is up, a message over the picture. An address or a page number that is "
+"not a number gets the same warning, and the option is left out."
+msgstr ""
+"Параметр, которого программа не знает, или последний параметр без "
+"значения не открывается как файл: о нём пишется предупреждение в журнал, "
+"а когда окно появится — сообщение поверх изображения. Адрес или номер "
+"страницы, который не является числом, получает то же предупреждение, и "
+"параметр пропускается."
+
+msgid "Files"
+msgstr "Файлы"
+
+msgid ""
+"Every word that is not an option is a file to open: a snapshot, a tape, a"
+" disk or anything else **File > Open...** takes. Name several to open "
+"several, a disk and a tape for instance."
+msgstr ""
+"Каждое слово, которое не является параметром, — файл для открытия: "
+"снапшот, лента, диск или что угодно ещё, что принимает **File > "
+"Open...**. Укажите несколько, чтобы открыть несколько, например диск и "
+"ленту."
+
+msgid ""
+"The command line is read from left to right, and an option acts on the "
+"files after it."
+msgstr ""
+"Командная строка читается слева направо, и параметр действует на файлы "
+"после него."
+
+msgid ""
+"A tape or a disk named here is run, as when **Run opened media** is "
+"chosen on the **File types** page of **Options**. Only **Mount opened "
+"media** there makes it just go in. The command line never asks which one "
+"you want. Two options decide it for one start:"
+msgstr ""
+"Указанные здесь лента или диск запускаются, как при выборе **Run opened "
+"media** на странице **File types** окна **Options**. Только **Mount "
+"opened media** там заставляет их просто вставиться. Командная строка "
+"никогда не спрашивает, что вы хотите. На один запуск это решают два "
+"параметра:"
+
+msgid "`--autostart` - run the files named here, whatever **Options** says;"
+msgstr ""
+"`--autostart` — запустить указанные здесь файлы, что бы ни говорили "
+"**Options**;"
+
+msgid "`--no-autostart` - only mount them."
+msgstr "`--no-autostart` — только вставить их."
+
+msgid ""
+"A file can switch the machine, as it does when you open it from the menu "
+"(see [Run a program](getting-started.md#run-a-program)), unless `-m` "
+"names the machine."
+msgstr ""
+"Файл может переключить машину, как и при открытии из меню (см. [Запуск "
+"программы](getting-started.md#run-a-program)), если только машину не "
+"задаёт `-m`."
+
+msgid ""
+"A file or a machine named here skips the **Start Machine** question, if "
+"**Options** asks it at start (see [Machine at start](machines.md#machine-"
+"at-start))."
+msgstr ""
+"Указанные здесь файл или машина пропускают вопрос **Start Machine**, если"
+" **Options** задают его при запуске (см. [Machine at start](machines.md"
+"#machine-at-start))."
+
+msgid "Machine and media"
+msgstr "Машина и носители"
+
+msgid ""
+"`-m ID`, `--machine ID` - start on this machine. It takes the machine's "
+"name as the list shows it, such as `\"ZX Spectrum 128K\"`, or its short "
+"id: the name of its file, such as `zx48`, `zx128`, `zxplus2`, `zxplus2a`,"
+" `zxplus3`, `pent`, `pent1024`, `scorp`, `scorptp`, `atm2`, `profi3`, "
+"`profi`, `phoenix`, `evo-baseconf`, `evo-tsconf`, `alf`, `alf128`. `-p` "
+"is the older name of the same option. It is acted on before anything "
+"else, wherever it stands, so a snapshot named before it is not lost; "
+"given twice, the last one counts. It counts as your own pick of a "
+"machine, as in the **Machine** menu."
+msgstr ""
+"`-m ID`, `--machine ID` — запустить эту машину. Принимает имя машины, как"
+" оно показано в списке, например `\"ZX Spectrum 128K\"`, или её короткий "
+"идентификатор — имя её файла, например `zx48`, `zx128`, `zxplus2`, "
+"`zxplus2a`, `zxplus3`, `pent`, `pent1024`, `scorp`, `scorptp`, `atm2`, "
+"`profi3`, `profi`, `phoenix`, `evo-baseconf`, `evo-tsconf`, `alf`, "
+"`alf128`. `-p` — старое имя того же параметра. Он выполняется раньше "
+"всего остального, где бы ни стоял, так что снапшот, указанный перед ним, "
+"не теряется; если он задан дважды, действует последний. Он считается "
+"вашим собственным выбором машины, как в меню **Machine**."
+
+msgid ""
+"`--disk X` - the floppy drive for the disks named after it: `0` to `3`, "
+"`a` to `d` or `A` to `D`. Without it a disk goes into drive A."
+msgstr ""
+"`--disk X` — дисковод для дисков, указанных после него: от `0` до `3`, от"
+" `a` до `d` или от `A` до `D`. Без него диск вставляется в дисковод A."
+
+msgid ""
+"`--sdcard PATH` - the SD card of the ZX Evolution: an image, or a folder "
+"served as a card."
+msgstr ""
+"`--sdcard PATH` — SD-карта ZX Evolution: образ или папка, представленная "
+"как карта."
+
+msgid ""
+"`--confdir DIR` - take the settings from another folder instead of the "
+"usual one (see [Where the settings are](getting-started.md#where-the-"
+"settings-are))."
+msgstr ""
+"`--confdir DIR` — брать настройки из другой папки вместо обычной (см. "
+"[Где хранятся настройки](getting-started.md#where-the-settings-are))."
+
+msgid "Window"
+msgstr "Окно"
+
+msgid ""
+"These change the setting itself, as **Options** would, and it stays for "
+"the next start."
+msgstr ""
+"Эти параметры меняют саму настройку, как это сделали бы **Options**, и "
+"она сохраняется до следующего запуска."
+
+msgid "`-s N`, `--size N` - window size, 1 to 6 (x1 to x6)."
+msgstr "`-s N`, `--size N` — размер окна, от 1 до 6 (от x1 до x6)."
+
+msgid "`--fullscreen 1` - start fullscreen; `--fullscreen 0` - in a window."
+msgstr ""
+"`--fullscreen 1` — запуск в полноэкранном режиме; `--fullscreen 0` — в "
+"окне."
+
+msgid ""
+"`-r 1`, `--ratio 1` - keep the picture's shape in fullscreen; `0` "
+"stretches it."
+msgstr ""
+"`-r 1`, `--ratio 1` — сохранять пропорции изображения в полноэкранном "
+"режиме; `0` растягивает его."
+
+msgid "`-n N`, `--noflick N` - anti-flicker intensity, 0 to 100 percent."
+msgstr "`-n N`, `--noflick N` — сила подавления мерцания, от 0 до 100 процентов."
+
+msgid ""
+"`--style` - macOS only: the system's own look instead of the one Xpeccy+ "
+"sets."
+msgstr "`--style` — только macOS: системный вид вместо того, что задаёт Xpeccy+."
+
+msgid "Debugging"
+msgstr "Отладка"
+
+msgid "`-d`, `--debug` - open the Debugger at once."
+msgstr "`-d`, `--debug` — сразу открыть Debugger."
+
+msgid ""
+"`-l FILE`, `--labels FILE` - load labels made by SjASMPlus (its "
+"`LABELSLIST`). They win over the labels that come with an image."
+msgstr ""
+"`-l FILE`, `--labels FILE` — загрузить метки, созданные SjASMPlus (его "
+"`LABELSLIST`). Они важнее меток, идущих вместе с образом."
+
+msgid "`-a ADR`, `--adr ADR` - where `-f` loads, 16384 (`0x4000`) if not given."
+msgstr ""
+"`-a ADR`, `--adr ADR` — куда загружает `-f`, по умолчанию 16384 "
+"(`0x4000`)."
+
+msgid "`-f FILE`, `--file FILE` - load a binary file into memory at that address."
+msgstr ""
+"`-f FILE`, `--file FILE` — загрузить двоичный файл в память по этому "
+"адресу."
+
+msgid "`-b N`, `--bank N` - put RAM page N at `#C000`."
+msgstr "`-b N`, `--bank N` — включить страницу RAM N по адресу `#C000`."
+
+msgid "`--pc ADR` - set the PC register."
+msgstr "`--pc ADR` — задать регистр PC."
+
+msgid "`--sp ADR` - set the SP register."
+msgstr "`--sp ADR` — задать регистр SP."
+
+msgid ""
+"`--bp ADR` - a breakpoint on executing that address. A label name works "
+"too."
+msgstr ""
+"`--bp ADR` — точка останова на выполнение этого адреса. Подходит и имя "
+"метки."
+
+msgid ""
+"`--brk FILE` - load a list of breakpoints (`.xbrk`); its addresses can be"
+" labels. Give it more than once to load several lists."
+msgstr ""
+"`--brk FILE` — загрузить список точек останова (`.xbrk`); его адреса "
+"могут быть метками. Укажите несколько раз, чтобы загрузить несколько "
+"списков."
+
+msgid ""
+"`--brk-log FILE` - where the [breakpoint log](debugger-breakpoints.md"
+"#the-breakpoint-log) goes; `-` writes it to the standard output."
+msgstr ""
+"`--brk-log FILE` — куда пишется [журнал точек останова](debugger-"
+"breakpoints.md#the-breakpoint-log); `-` выводит его в стандартный вывод."
+
+msgid "`--xmap FILE` - load a memory map saved by the Debugger (`.xmap`)."
+msgstr "`--xmap FILE` — загрузить карту памяти, сохранённую Debugger (`.xmap`)."
+
+msgid ""
+"A number in these options is hex with `#`, `$` or `0x` in front (`#8000`,"
+" `$8000`, `0x8000`), and decimal without one (`32768`). A leading zero "
+"means nothing: `0100` is a hundred. In a shell `#` starts a comment and "
+"`$` a variable, so there write `0x8000`, or put the number in quotes: "
+"`\"#8000\"`."
+msgstr ""
+"Число в этих параметрах шестнадцатеричное, если впереди `#`, `$` или `0x`"
+" (`#8000`, `$8000`, `0x8000`), и десятичное без них (`32768`). Ведущий "
+"ноль ничего не значит: `0100` — это сто. В оболочке `#` начинает "
+"комментарий, а `$` — переменную, поэтому там пишите `0x8000` или возьмите"
+" число в кавычки: `\"#8000\"`."
+
+msgid ""
+"`--bp` and `--brk` are set once every option is read, so the labels of "
+"`-l` are there for them wherever `-l` stands. The others act at the "
+"moment they are read, so put them after a snapshot they belong to: a "
+"snapshot loaded later sets its own registers and memory. A tape or a disk"
+" that is run resets the machine after all the options are read, which "
+"undoes `--pc` and `--sp`."
+msgstr ""
+"`--bp` и `--brk` устанавливаются после чтения всех параметров, поэтому "
+"метки из `-l` для них уже есть, где бы `-l` ни стоял. Остальные действуют"
+" в момент чтения, поэтому ставьте их после снапшота, к которому они "
+"относятся: снапшот, загруженный позже, задаёт свои регистры и память. "
+"Запускаемые лента или диск сбрасывают машину после чтения всех "
+"параметров, что отменяет `--pc` и `--sp`."
+
+msgid "Running with no window"
+msgstr "Запуск без окна"
+
+msgid ""
+"`--bench N` runs the machine for N frames with no window, as fast as the "
+"computer can, with no sound, and quits. It is for scripts: running a test"
+" program, measuring a routine, taking a picture or a snapshot at a given "
+"frame. Everything else on the command line acts as usual, so the files, "
+"the machine and the breakpoints are set first."
+msgstr ""
+"`--bench N` прогоняет машину N кадров без окна, так быстро, как может "
+"компьютер, без звука, и завершает работу. Это для скриптов: запустить "
+"тестовую программу, измерить подпрограмму, снять картинку или снапшот на "
+"заданном кадре. Всё остальное в командной строке действует как обычно, "
+"так что файлы, машина и точки останова задаются заранее."
+
+msgid ""
+"A breakpoint whose action is **Debugger** ends the run where it fires. "
+"One with **Counter** counts and lets the run go on, and one with **Log** "
+"writes its line, as in the window."
+msgstr ""
+"Точка останова с действием **Debugger** завершает прогон там, где "
+"срабатывает. Точка с **Counter** считает и даёт прогону идти дальше, а с "
+"**Log** пишет свою строку, как в окне."
+
+msgid ""
+"What the run prints goes to the standard output; the program's log, when "
+"it goes to the console, to the standard error. A run ends with a line of "
+"its speed:"
+msgstr ""
+"То, что выводит прогон, идёт в стандартный вывод; журнал программы, если "
+"он выводится в консоль, — в стандартный поток ошибок. Прогон "
+"заканчивается строкой о его скорости:"
+
+msgid ""
+"`(stopped early)` says a breakpoint ended it. After it comes one `SPAN` "
+"line for each span the breakpoints measured (see [Spans](debugger-"
+"breakpoints.md#spans))."
+msgstr ""
+"`(stopped early)` означает, что его завершила точка останова. После неё "
+"идёт по строке `SPAN` на каждый интервал, измеренный точками останова "
+"(см. [Интервалы](debugger-breakpoints.md#spans))."
+
+msgid "The exit code tells a script how the run ended:"
+msgstr "Код завершения сообщает скрипту, чем кончился прогон:"
+
+msgid "Code"
+msgstr "Код"
+
+msgid "Meaning"
+msgstr "Значение"
+
+msgid "`0`"
+msgstr "`0`"
+
+msgid "it ran every frame asked for"
+msgstr "выполнены все заданные кадры"
+
+msgid "`1`"
+msgstr "`1`"
+
+msgid "something on the command line was not understood; nothing was run"
+msgstr "что-то в командной строке не понято; ничего не запускалось"
+
+msgid "`2`"
+msgstr "`2`"
+
+msgid "a breakpoint stopped it"
+msgstr "остановлен точкой останова"
+
+msgid "More options for such a run:"
+msgstr "Ещё параметры для такого прогона:"
+
+msgid "`--bench-skip N` - run N frames first, left out of the timing;"
+msgstr "`--bench-skip N` — сначала прогнать N кадров, не учитывая их во времени;"
+
+msgid ""
+"`--bench-steps N` - then N instructions more, to stop in the middle of a "
+"frame;"
+msgstr "`--bench-steps N` — затем ещё N команд, чтобы остановиться посреди кадра;"
+
+msgid "`--bench-full` - mix the sound too, as playing does;"
+msgstr "`--bench-full` — микшировать и звук, как при обычной работе;"
+
+msgid "`--bench-keys SPEC` - press keys on given frames, see below;"
+msgstr "`--bench-keys SPEC` — нажимать клавиши на заданных кадрах, см. ниже;"
+
+msgid ""
+"`--bench-hash` - print a check sum of the frames, the sound, the RAM and "
+"the registers, for telling whether two runs did the same;"
+msgstr ""
+"`--bench-hash` — вывести контрольную сумму кадров, звука, RAM и "
+"регистров, чтобы понять, сделали ли два прогона одно и то же;"
+
+msgid ""
+"`--bench-shot FILE` - save the last frame, with the whole border, as a "
+"PPM picture;"
+msgstr ""
+"`--bench-shot FILE` — сохранить последний кадр со всем бордюром как "
+"картинку PPM;"
+
+msgid ""
+"`--bench-save FILE` - save a snapshot at the end, in the format the "
+"extension names;"
+msgstr ""
+"`--bench-save FILE` — в конце сохранить снапшот в формате, который задаёт"
+" расширение;"
+
+msgid "`--bench-state FILE` - save the raw state of the machine at the end;"
+msgstr "`--bench-state FILE` — в конце сохранить сырое состояние машины;"
+
+msgid "`--bench-nodraw` - draw no picture, to measure the rest without it;"
+msgstr ""
+"`--bench-nodraw` — не рисовать изображение, чтобы измерить остальное без "
+"него;"
+
+msgid "`--bench-heat` - collect the memory heat map, counted in `--bench-hash`;"
+msgstr ""
+"`--bench-heat` — собирать тепловую карту памяти, она учитывается в "
+"`--bench-hash`;"
+
+msgid "`--bench-prof FILE` - Windows only: where the time of the emulation goes."
+msgstr "`--bench-prof FILE` — только Windows: на что уходит время эмуляции."
+
+msgid ""
+"`--bench-keys` takes a list split by commas, each item `FRAME:KEYS` or "
+"`FRAME:KEYS/N`: the keys go down on that frame of the run and are held N "
+"frames, 4 if not given. The keys of one item are pressed together. Digits"
+" and small letters are those keys of the Spectrum, `E` is Enter, `C` Caps"
+" Shift, `S` Symbol Shift and `_` Space. `joy:up+fire` holds the joystick,"
+" `joyb:` the second one, `nmi` presses the NMI button, and `pc:` with a "
+"keymap name presses a key of the PC keyboard a ZX Evolution has: `pc:F1`,"
+" `pc:UP`, `pc:ENT`."
+msgstr ""
+"`--bench-keys` принимает список через запятую, каждый элемент "
+"`FRAME:KEYS` или `FRAME:KEYS/N`: клавиши нажимаются на этом кадре прогона"
+" и держатся N кадров, по умолчанию 4. Клавиши одного элемента нажимаются "
+"вместе. Цифры и строчные буквы — это соответствующие клавиши Spectrum, "
+"`E` — Enter, `C` — Caps Shift, `S` — Symbol Shift, `_` — Space. "
+"`joy:up+fire` держит джойстик, `joyb:` — второй, `nmi` нажимает кнопку "
+"NMI, а `pc:` с именем из раскладки нажимает клавишу PC-клавиатуры, "
+"которая есть у ZX Evolution: `pc:F1`, `pc:UP`, `pc:ENT`."
+
+msgid ""
+"`--help` lists a few more `--bench-` options. They check the emulator "
+"itself."
+msgstr ""
+"`--help` перечисляет ещё несколько параметров `--bench-`. Они проверяют "
+"сам эмулятор."
+
+msgid ""
+"On Linux and macOS a shell waits for the run and has its exit code as "
+"usual. On Windows the program does not hold up the console it is started "
+"from. In PowerShell send what it prints into a pipe, and the exit code is"
+" in `$LASTEXITCODE`:"
+msgstr ""
+"В Linux и macOS оболочка, как обычно, ждёт завершения прогона и получает "
+"его код завершения. В Windows программа не задерживает консоль, из "
+"которой запущена. В PowerShell передайте её вывод в конвейер, а код "
+"завершения будет в `$LASTEXITCODE`:"
+
+#, python-format
+msgid ""
+"In the Command Prompt start it with `start /wait \"\" xpeccy-plus.exe "
+"...`, and the exit code is in `%errorlevel%`."
+msgstr ""
+"В командной строке Windows запускайте её через `start /wait \"\" xpeccy-"
+"plus.exe ...`, а код завершения будет в `%errorlevel%`."
+
+msgid "Recording"
+msgstr "Запись"
+
+msgid "`--wav-out FILE` - record the sound to a WAV file from the start."
+msgstr "`--wav-out FILE` — записывать звук в файл WAV с самого начала."
+
+msgid "`--video-out FILE` - record a video from the start, `.mp4` or `.mkv`."
+msgstr "`--video-out FILE` — записывать видео с самого начала, `.mp4` или `.mkv`."
+
+msgid ""
+"`--video-auto`, `--no-video-auto` - start and stop recording by itself, "
+"or not, whatever **Options** says."
+msgstr ""
+"`--video-auto`, `--no-video-auto` — начинать и останавливать запись "
+"автоматически или нет, что бы ни говорили **Options**."
+
+msgid ""
+"`--video-autostart AT`, `--video-autostop AT` - when it starts and stops "
+"by itself."
+msgstr ""
+"`--video-autostart AT`, `--video-autostop AT` — когда запись начинается и"
+" останавливается сама."
+
+msgid "See [Screenshots and recording](capture.md) for what each one does."
+msgstr ""
+"Что делает каждый из них, см. в главе [Снимки экрана и "
+"запись](capture.md)."
+
+msgid "Logging"
+msgstr "Журнал"
+
+msgid ""
+"What these set is for this start only: the settings in **Options** stay "
+"as they are."
+msgstr ""
+"То, что задают эти параметры, действует только на этот запуск: настройки "
+"в **Options** остаются как есть."
+
+msgid ""
+"`--log` - write a log file, to `logs/<date>/` beside the program. Where "
+"the program's folder cannot be written to, the log goes to the settings "
+"folder."
+msgstr ""
+"`--log` — писать файл журнала в `logs/<date>/` рядом с программой. Если в"
+" папку программы нельзя писать, журнал идёт в папку настроек."
+
+msgid "`--no-log` - no log file, even if **Options** says to write one."
+msgstr "`--no-log` — без файла журнала, даже если **Options** велят его писать."
+
+msgid "`--log-dir DIR` - put the `logs` folder into `DIR`."
+msgstr "`--log-dir DIR` — поместить папку `logs` в `DIR`."
+
+msgid ""
+"`--log-level LEVEL` - how much is written: `error`, `warn`, `info` (the "
+"usual), `debug` or `trace`."
+msgstr ""
+"`--log-level LEVEL` — сколько писать: `error`, `warn`, `info` (обычно), "
+"`debug` или `trace`."
+
+msgid ""
+"`--log-groups SPEC` - a level for single parts of the program, such as "
+"`\"video:trace,net:off\"`; `\"all:debug\"` sets them all, `-sound` turns "
+"one off. The parts are `app`, `conf`, `core`, `cpu`, `video`, `sound`, "
+"`tape`, `disk`, `input`, `hw`, `file`, `gui`, `gl`, `net` and `brk`."
+msgstr ""
+"`--log-groups SPEC` — уровень для отдельных частей программы, например "
+"`\"video:trace,net:off\"`; `\"all:debug\"` задаёт его всем, `-sound` "
+"выключает одну. Части такие: `app`, `conf`, `core`, `cpu`, `video`, "
+"`sound`, `tape`, `disk`, `input`, `hw`, `file`, `gui`, `gl`, `net` и "
+"`brk`."
+
+msgid ""
+"`--log-console` - write the log to the standard error as well, as **To "
+"the console** in **Options** does. On Windows there is one only with `-c`"
+" or a redirect."
+msgstr ""
+"`--log-console` — писать журнал ещё и в стандартный поток ошибок, как "
+"**To the console** в **Options**. В Windows он есть только с `-c` или при"
+" перенаправлении."
+
+msgid ""
+"`-c`, `--console` - Windows only: write to the console the program was "
+"started from, or open a console of its own when there is none. That "
+"console waits for a key before it closes. The log goes there at `debug` "
+"level unless `--log-level` says otherwise. Output sent to a file stays in"
+" the file."
+msgstr ""
+"`-c`, `--console` — только Windows: писать в консоль, из которой запущена"
+" программа, или открыть свою, если её нет. Такая консоль перед закрытием "
+"ждёт нажатия клавиши. Журнал идёт туда с уровнем `debug`, если `--log-"
+"level` не задаёт другого. Вывод, направленный в файл, остаётся в файле."
+
+msgid "command line"
+msgstr "командная строка"
+
+msgid "options"
+msgstr "параметры"
+
+msgid "--help"
+msgstr "--help"
+
+msgid "-h"
+msgstr "-h"
+
+msgid "files"
+msgstr "файлы"
+
+msgid "--autostart"
+msgstr "--autostart"
+
+msgid "--no-autostart"
+msgstr "--no-autostart"
+
+msgid "-m"
+msgstr "-m"
+
+msgid "--machine"
+msgstr "--machine"
+
+msgid "-p"
+msgstr "-p"
+
+msgid "--disk"
+msgstr "--disk"
+
+msgid "--sdcard"
+msgstr "--sdcard"
+
+msgid "--confdir"
+msgstr "--confdir"
+
+msgid "-s"
+msgstr "-s"
+
+msgid "--size"
+msgstr "--size"
+
+msgid "--fullscreen"
+msgstr "--fullscreen"
+
+msgid "-r"
+msgstr "-r"
+
+msgid "--ratio"
+msgstr "--ratio"
+
+msgid "-n"
+msgstr "-n"
+
+msgid "--noflick"
+msgstr "--noflick"
+
+msgid "--style"
+msgstr "--style"
+
+msgid "debugging"
+msgstr "отладка"
+
+msgid "-d"
+msgstr "-d"
+
+msgid "--debug"
+msgstr "--debug"
+
+msgid "-l"
+msgstr "-l"
+
+msgid "--labels"
+msgstr "--labels"
+
+msgid "-a"
+msgstr "-a"
+
+msgid "--adr"
+msgstr "--adr"
+
+msgid "-f"
+msgstr "-f"
+
+msgid "--file"
+msgstr "--file"
+
+msgid "-b"
+msgstr "-b"
+
+msgid "--bank"
+msgstr "--bank"
+
+msgid "--pc"
+msgstr "--pc"
+
+msgid "--sp"
+msgstr "--sp"
+
+msgid "--bp"
+msgstr "--bp"
+
+msgid "--brk"
+msgstr "--brk"
+
+msgid "--brk-log"
+msgstr "--brk-log"
+
+msgid "--xmap"
+msgstr "--xmap"
+
+msgid "numbers"
+msgstr "числа"
+
+msgid "--bench"
+msgstr "--bench"
+
+msgid "headless run"
+msgstr "запуск без окна"
+
+msgid "benchmark"
+msgstr "замер скорости"
+
+msgid "exit code"
+msgstr "код завершения"
+
+msgid "--bench-skip"
+msgstr "--bench-skip"
+
+msgid "--bench-steps"
+msgstr "--bench-steps"
+
+msgid "--bench-full"
+msgstr "--bench-full"
+
+msgid "--bench-keys"
+msgstr "--bench-keys"
+
+msgid "--bench-hash"
+msgstr "--bench-hash"
+
+msgid "--bench-shot"
+msgstr "--bench-shot"
+
+msgid "--bench-save"
+msgstr "--bench-save"
+
+msgid "--bench-state"
+msgstr "--bench-state"
+
+msgid "--bench-nodraw"
+msgstr "--bench-nodraw"
+
+msgid "--bench-heat"
+msgstr "--bench-heat"
+
+msgid "--bench-prof"
+msgstr "--bench-prof"
+
+msgid "--wav-out"
+msgstr "--wav-out"
+
+msgid "--video-out"
+msgstr "--video-out"
+
+msgid "--video-auto"
+msgstr "--video-auto"
+
+msgid "--no-video-auto"
+msgstr "--no-video-auto"
+
+msgid "--video-autostart"
+msgstr "--video-autostart"
+
+msgid "--video-autostop"
+msgstr "--video-autostop"
+
+msgid "log"
+msgstr "журнал"
+
+msgid "--log"
+msgstr "--log"
+
+msgid "--no-log"
+msgstr "--no-log"
+
+msgid "--log-dir"
+msgstr "--log-dir"
+
+msgid "--log-level"
+msgstr "--log-level"
+
+msgid "--log-groups"
+msgstr "--log-groups"
+
+msgid "--log-console"
+msgstr "--log-console"
+
+msgid "-c"
+msgstr "-c"
+
+msgid "--console"
+msgstr "--console"
+
+#~ msgid ""
+#~ "`-m ID`, `--machine ID` - start on"
+#~ " this machine. It takes the machine's"
+#~ " name as the list shows it, "
+#~ "such as `\"ZX Spectrum 128K\"`, or "
+#~ "its short id: the name of its "
+#~ "file, such as `zx48`, `zx128`, "
+#~ "`zxplus2`, `zxplus2a`, `zxplus3`, `pent`, "
+#~ "`pent1024`, `scorp`, `scorptp`, `atm2`, "
+#~ "`profi3`, `profi`, `phoenix`, `evo-baseconf`,"
+#~ " `evo-tsconf`, `alf`, `alf128`. `-p` "
+#~ "is the older name of the same "
+#~ "option. Put it before the files: "
+#~ "it counts as your own pick of "
+#~ "a machine, as in the **Machine** "
+#~ "menu."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`-a ADR`, `--adr ADR` - where `-f`"
+#~ " loads, 16384 (`0x4000`) if not "
+#~ "given."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`--bp ADR` - a breakpoint on "
+#~ "executing that address. A label name "
+#~ "works too, after `-l`."
+#~ msgstr ""
+
+#~ msgid "`--brk FILE` - load a list of breakpoints (`.xbrk`)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "An address is a decimal number "
+#~ "(`32768`) or a hex one with `0x`"
+#~ " (`0x8000`). A number that starts "
+#~ "with `0` is read as octal. `#8000`"
+#~ " and `$8000` do not work here."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "These act at the moment they are"
+#~ " read, so put them after a "
+#~ "snapshot they belong to: a snapshot "
+#~ "loaded later sets its own registers "
+#~ "and memory. A tape or a disk "
+#~ "that is run resets the machine "
+#~ "after all the options are read, "
+#~ "which undoes `--pc` and `--sp`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`--log-console` - write the log to"
+#~ " the console as well; on Windows "
+#~ "only together with `-c`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`-c`, `--console` - Windows only: open"
+#~ " a console and write the log to"
+#~ " it, at `debug` level unless "
+#~ "`--log-level` says otherwise."
+#~ msgstr ""
+
+#~ msgid "`-a ADR`, `--adr ADR` - where `-f` loads, 16384 (`#4000`) if not given."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A number in these options is hex"
+#~ " with `#`, `$` or `0x` in front"
+#~ " (`#8000`, `$8000`, `0x8000`), and decimal"
+#~ " without one (`32768`). A leading "
+#~ "zero means nothing: `0100` is a "
+#~ "hundred."
+#~ msgstr ""
+

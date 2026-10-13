@@ -432,6 +432,12 @@ add_dependencies(${PROJECT_NAME} version_header)
 #
 # macOS: a self-contained .app, the same way. CPack (DragNDrop) packs the very
 # same tree into a dmg.
+#
+# The user manual goes in when MANUAL_DIR names a built one (tools/manual.py);
+# CMake does not build it. It lies beside README in each layout, where
+# MainWin::openManual() looks for it.
+
+set(MANUAL_DIR "" CACHE PATH "a built user manual to install (tools/manual.py)")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
@@ -451,6 +457,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		${CMAKE_SOURCE_DIR}/CHANGELOG.md
 		DESTINATION ${BUNDLE_RES}/doc
 	)
+	if(MANUAL_DIR)
+		install(DIRECTORY ${MANUAL_DIR}/ DESTINATION ${BUNDLE_RES}/doc/manual)
+	endif()
 
 	# Everything the bundle needs but the build does not produce: Qt, SDL3 and a
 	# signature. Runs on the installed bundle, after the files above are in place
@@ -500,6 +509,9 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 		${CMAKE_SOURCE_DIR}/CHANGELOG.md
 		DESTINATION share/doc/${PROJECT_NAME}
 	)
+	if(MANUAL_DIR)
+		install(DIRECTORY ${MANUAL_DIR}/ DESTINATION share/doc/${PROJECT_NAME}/manual)
+	endif()
 
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
@@ -515,6 +527,9 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		${CMAKE_SOURCE_DIR}/LICENSE_ICONS
 		DESTINATION .
 	)
+	if(MANUAL_DIR)
+		install(DIRECTORY ${MANUAL_DIR}/ DESTINATION manual)
+	endif()
 
 	# FindSDL2 only reports the import library, so locate the runtime dll too
 	find_file(SDL2_RUNTIME_LIBRARY SDL2.dll

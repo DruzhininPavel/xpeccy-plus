@@ -1,0 +1,11 @@
+{
+  "config": {"GENERAL": {"machine": "zx128"}},
+  "args": ["-s", "2"],
+  "steps": [["wait", 4000]],
+  "frames": [
+    {"n": 1, "widget": "QMenuBar"},
+    {"n": 2, "widget": "toolbar"},
+    {"n": 3, "widget": "MainWin"},
+    {"n": 4, "widget": "QStatusBar"}
+  ]
+}

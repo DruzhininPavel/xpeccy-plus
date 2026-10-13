@@ -1,0 +1,374 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Options"
+msgstr "Options"
+
+msgid ""
+"**File > Options...** opens the settings. The pages are listed on the "
+"left; this chapter says what each one holds and where the manual explains"
+" it."
+msgstr ""
+"**File > Options...** abre los ajustes. Las páginas aparecen a la "
+"izquierda; este capítulo dice qué contiene cada una y dónde lo explica el"
+" manual."
+
+#, python-brace-format
+msgid ""
+"{icon}`ok-apply` **OK** applies the changes and closes the window, "
+"**Apply** applies them and keeps it open, {icon}`cancel` **Cancel** drops"
+" them. Hold the mouse over a setting to see what it does."
+msgstr ""
+"{icon}`ok-apply` **OK** aplica los cambios y cierra la ventana, **Apply**"
+" los aplica y la deja abierta, {icon}`cancel` **Cancel** los descarta. "
+"Deja el ratón sobre un ajuste para ver qué hace."
+
+msgid "Machine"
+msgstr "Machine"
+
+msgid "![The Machine page](images/options-machine.png)"
+msgstr "![La página Machine](images/options-machine.png)"
+
+msgid "The Machine page"
+msgstr "La página Machine"
+
+#, python-brace-format
+msgid ""
+"The running machine: **Model**, **Memory**, **ROM** and the **Speed** "
+"slider at the top, then its devices in four groups - **Storage**, "
+"**Input**, **Sound** and **Board**. The {icon}`settings` gear beside a "
+"device opens the rest of its settings. See [The Machine page](machines.md"
+"#the-machine-page)."
+msgstr ""
+"La máquina en marcha: **Model**, **Memory**, **ROM** y el control "
+"deslizante **Speed** arriba, y después sus dispositivos en cuatro grupos "
+"— **Storage**, **Input**, **Sound** y **Board**. El engranaje "
+"{icon}`settings` junto a un dispositivo abre el resto de sus ajustes. "
+"Consulta [La página Machine](machines.md#the-machine-page)."
+
+#, python-brace-format
+msgid ""
+"What you change here is kept for this machine only. {icon}`save_all` "
+"**Save machine...**, {icon}`refresh` **Restore machine** and "
+"{icon}`cancel` **Delete this machine** are explained in [Your own "
+"machines](machines.md#your-own-machines)."
+msgstr ""
+"Lo que cambias aquí se guarda solo para esta máquina. {icon}`save_all` "
+"**Save machine...**, {icon}`refresh` **Restore machine** y {icon}`cancel`"
+" **Delete this machine** se explican en [Tus propias "
+"máquinas](machines.md#your-own-machines)."
+
+msgid "Video"
+msgstr "Video"
+
+msgid "![The Video page](images/options-video.png)"
+msgstr "![La página Video](images/options-video.png)"
+
+msgid "The Video page"
+msgstr "La página Video"
+
+msgid ""
+"**Picture** - border size, palette, shader, window size, fullscreen, gray"
+" scale. See [Picture](picture.md)."
+msgstr ""
+"**Picture** — tamaño del borde, paleta, shader, tamaño de la ventana, "
+"pantalla completa, escala de grises. Consulta [Imagen](picture.md)."
+
+msgid "**Anti-flicker** - see [Anti-flicker](picture.md#anti-flicker)."
+msgstr "**Anti-flicker** — consulta [Anti-flicker](picture.md#anti-flicker)."
+
+msgid ""
+"**Screenshots** - see [Screenshot settings](capture.md#screenshot-"
+"settings)."
+msgstr ""
+"**Screenshots** — consulta [Ajustes de las capturas](capture.md"
+"#screenshot-settings)."
+
+msgid ""
+"**Recording** - video recording through FFmpeg. See [Recording "
+"settings](capture.md#recording-settings)."
+msgstr ""
+"**Recording** — grabación de vídeo mediante FFmpeg. Consulta [Ajustes de "
+"grabación](capture.md#recording-settings)."
+
+msgid "Sound"
+msgstr "Sound"
+
+msgid "![The Sound page](images/options-sound.png)"
+msgstr "![La página Sound](images/options-sound.png)"
+
+msgid "The Sound page"
+msgstr "La página Sound"
+
+msgid ""
+"**Output** (driver, rate, latency), the filters, and the volume of each "
+"sound source. See [The Sound page](sound.md#the-sound-page). The sound "
+"chips themselves are set on the **Machine** page."
+msgstr ""
+"**Output** (controlador, frecuencia, latencia), los filtros y el volumen "
+"de cada fuente de sonido. Consulta [La página Sound](sound.md#the-sound-"
+"page). Los chips de sonido en sí se configuran en la página **Machine**."
+
+msgid "Input"
+msgstr "Input"
+
+msgid "![The Input page](images/options-input.png)"
+msgstr "![La página Input](images/options-input.png)"
+
+msgid "The Input page"
+msgstr "La página Input"
+
+msgid ""
+"The keymap, the two gamepad players and the **Gamepads...** window, and "
+"**Game bindings**. See [Keyboard, joystick and mouse](input.md)."
+msgstr ""
+"El mapa de teclado, los dos jugadores con mando y la ventana "
+"**Gamepads...**, y **Game bindings**. Consulta [Teclado, joystick y "
+"ratón](input.md)."
+
+msgid "File types"
+msgstr "File types"
+
+msgid "![The File types page](images/options-filetypes.png)"
+msgstr "![La página File types](images/options-filetypes.png)"
+
+msgid "The File types page"
+msgstr "La página File types"
+
+msgid ""
+"What opening a tape or a disk does - run it, mount it, or ask - and "
+"whether the media in the drives come back at the next start. The table "
+"says which machine each kind of file opens on. See [Which machine opens a"
+" file](files.md#which-machine-opens-a-file)."
+msgstr ""
+"Qué hace abrir una cinta o un disco — ejecutarlo, montarlo o preguntar — "
+"y si los soportes de las unidades vuelven en el siguiente arranque. La "
+"tabla dice en qué máquina se abre cada tipo de archivo. Consulta [Qué "
+"máquina abre un archivo](files.md#which-machine-opens-a-file)."
+
+msgid "Emulation"
+msgstr "Emulation"
+
+msgid "![The Emulation page](images/options-emulation.png)"
+msgstr "![La página Emulation](images/options-emulation.png)"
+
+msgid "The Emulation page"
+msgstr "La página Emulation"
+
+msgid ""
+"**Input lag** - **Low latency** and **Run ahead**. See [Input "
+"lag](time.md#input-lag)."
+msgstr ""
+"**Input lag** — **Low latency** y **Run ahead**. Consulta [Retardo de "
+"entrada](time.md#input-lag)."
+
+msgid ""
+"**Speed and rewind** - how far back rewind goes, how the keys of slow "
+"motion, fast forward and fast mode work, and what fast mode shows. See "
+"[Speed and time](time.md)."
+msgstr ""
+"**Speed and rewind** — hasta dónde llega el rebobinado, cómo funcionan "
+"las teclas de cámara lenta, avance rápido y modo rápido, y qué muestra el"
+" modo rápido. Consulta [Velocidad y tiempo](time.md)."
+
+msgid "Debugger"
+msgstr "Debugger"
+
+msgid "![The Debugger page](images/options-debugger.png)"
+msgstr "![La página Debugger](images/options-debugger.png)"
+
+msgid "The Debugger page"
+msgstr "La página Debugger"
+
+msgid ""
+"The font, the colors and what the Debugger shows. See [The Debugger page "
+"of Options](debugger.md#the-debugger-page-of-options)."
+msgstr ""
+"La fuente, los colores y lo que muestra el Debugger. Consulta [La página "
+"Debugger de Options](debugger.md#the-debugger-page-of-options)."
+
+msgid "Hotkeys"
+msgstr "Hotkeys"
+
+msgid "![The Hotkeys page](images/options-hotkeys.png)"
+msgstr "![La página Hotkeys](images/options-hotkeys.png)"
+
+msgid "The Hotkeys page"
+msgstr "La página Hotkeys"
+
+msgid ""
+"Every key of the program, in the Modern or Classic layout or one of your "
+"own. See [Hotkeys](hotkeys.md)."
+msgstr ""
+"Todas las teclas del programa, en la distribución Modern o Classic o en "
+"una tuya. Consulta [Atajos de teclado](hotkeys.md)."
+
+msgid "Appearance"
+msgstr "Appearance"
+
+msgid "![The Appearance page](images/options-appearance.png)"
+msgstr "![La página Appearance](images/options-appearance.png)"
+
+msgid "The Appearance page"
+msgstr "La página Appearance"
+
+msgid ""
+"**Interface** - **Style**: **System** (the look of your system) or one of"
+" seven bundled styles."
+msgstr ""
+"**Interface** — **Style**: **System** (el aspecto de tu sistema) o uno de"
+" los siete estilos incluidos."
+
+msgid ""
+"**Indicators** - the signs over the picture: which are shown. See "
+"[Indicators on the picture](picture.md#indicators-on-the-picture)."
+msgstr ""
+"**Indicators** — los indicadores sobre la imagen: cuáles se muestran. "
+"Consulta [Indicadores sobre la imagen](picture.md#indicators-on-the-"
+"picture)."
+
+msgid "Application"
+msgstr "Application"
+
+msgid "![The Application page](images/options-application.png)"
+msgstr "![La página Application](images/options-application.png)"
+
+msgid "The Application page"
+msgstr "La página Application"
+
+msgid ""
+"**Machine at start** - see [Machine at start](machines.md#machine-at-"
+"start)."
+msgstr ""
+"**Machine at start** — consulta [Machine at start](machines.md#machine-"
+"at-start)."
+
+msgid ""
+"**Listen port** - the network port the program listens on, for tools that"
+" control it."
+msgstr ""
+"**Listen port** — el puerto de red en el que escucha el programa, para "
+"herramientas que lo controlan."
+
+msgid "**Confirm exit** - ask before closing."
+msgstr "**Confirm exit** — preguntar antes de cerrar."
+
+msgid ""
+"**Pause when inactive** - pause the machine while the window is in the "
+"background. See [Pause](time.md#pause)."
+msgstr ""
+"**Pause when inactive** — pausar la máquina mientras la ventana está en "
+"segundo plano. Consulta [Pausa](time.md#pause)."
+
+#, python-brace-format
+msgid ""
+"{icon}`star` **Manage favorites...** - see "
+"[Favorites](files.md#favorites)."
+msgstr ""
+"{icon}`star` **Manage favorites...** — consulta "
+"[Favorites](files.md#favorites)."
+
+#, python-brace-format
+msgid ""
+"{icon}`save_all` **Export settings...**, {icon}`fileopen` **Import "
+"settings...** - keep all your settings, your own machines included, in "
+"one file, and bring them back."
+msgstr ""
+"{icon}`save_all` **Export settings...**, {icon}`fileopen` **Import "
+"settings...** — guarda todos tus ajustes, incluidas tus propias máquinas,"
+" en un archivo, y recupéralos."
+
+#, python-brace-format
+msgid ""
+"{icon}`refresh` **Reset to defaults** - the settings back to how they "
+"ship. Your own machines stay."
+msgstr ""
+"{icon}`refresh` **Reset to defaults** — devuelve los ajustes a los de "
+"fábrica. Tus propias máquinas se conservan."
+
+msgid ""
+"**Log** - a log file of what the program does, for reporting a problem: "
+"**Write a log file**, **To the console**, **Level**, **Folder**."
+msgstr ""
+"**Log** — un archivo de registro de lo que hace el programa, para "
+"informar de un problema: **Write a log file**, **To the console**, "
+"**Level**, **Folder**."
+
+msgid "preferences"
+msgstr "preferencias"
+
+msgid "Machine page"
+msgstr "página Machine"
+
+msgid "Video page"
+msgstr "página Video"
+
+msgid "Sound page"
+msgstr "página Sound"
+
+msgid "Input page"
+msgstr "página Input"
+
+msgid "File types page"
+msgstr "página File types"
+
+msgid "Emulation page"
+msgstr "página Emulation"
+
+msgid "Debugger page"
+msgstr "página Debugger"
+
+msgid "Hotkeys page"
+msgstr "página Hotkeys"
+
+msgid "Appearance page"
+msgstr "página Appearance"
+
+msgid "Style"
+msgstr "Style"
+
+msgid "interface style"
+msgstr "estilo de la interfaz"
+
+msgid "Application page"
+msgstr "página Application"
+
+msgid "Listen port"
+msgstr "Listen port"
+
+msgid "Confirm exit"
+msgstr "Confirm exit"
+
+msgid "Export settings"
+msgstr "Export settings"
+
+msgid "Import settings"
+msgstr "Import settings"
+
+msgid "Reset to defaults"
+msgstr "Reset to defaults"
+
+msgid "log"
+msgstr "registro (log)"
+
+msgid "log file"
+msgstr "archivo de registro"
+

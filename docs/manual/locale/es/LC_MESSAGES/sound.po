@@ -1,0 +1,502 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Sound"
+msgstr "Sonido"
+
+msgid ""
+"What you hear comes from the machine's own sound devices - the beeper, "
+"the tape, and whatever sound chips and cards the machine has. Which "
+"devices a machine has is set on the **Machine** page of **Options**; how "
+"the sound is played and how loud each device is are on the **Sound** "
+"page."
+msgstr ""
+"Lo que oyes viene de los propios dispositivos de sonido de la máquina: el"
+" beeper, la cinta y los chips y tarjetas de sonido que tenga la máquina. "
+"Qué dispositivos tiene una máquina se fija en la página **Machine** de "
+"**Options**; cómo se reproduce el sonido y el volumen de cada dispositivo"
+" están en la página **Sound**."
+
+msgid "Volume and mute"
+msgstr "Volumen y silencio"
+
+#, python-brace-format
+msgid ""
+"{icon}`speaker` **Mute** on the toolbar, or **Machine > Mute**, silences "
+"the sound and brings it back. The arrow beside the **Mute** button opens "
+"a slider for the volume (see [Toolbar](main-window.md#toolbar))."
+msgstr ""
+"{icon}`speaker` **Mute** en la barra de herramientas, o **Machine > "
+"Mute**, silencia el sonido y lo devuelve. La flecha junto al botón "
+"**Mute** abre un control deslizante para el volumen (consulta [Barra de "
+"herramientas](main-window.md#toolbar))."
+
+msgid ""
+"Alt with the mouse wheel over the picture turns the volume up or down by "
+"5%. The slider under the **Mute** button shows the new volume for a "
+"moment; when the toolbar is hidden, the picture shows it. While the mouse"
+" is grabbed, the wheel goes to the machine instead."
+msgstr ""
+"Alt con la rueda del ratón sobre la imagen sube o baja el volumen un 5%. "
+"El control deslizante bajo el botón **Mute** muestra un momento el nuevo "
+"volumen; si la barra de herramientas está oculta, lo muestra la imagen. "
+"Mientras el ratón está capturado, la rueda va a la máquina."
+
+msgid ""
+"This volume is the same as **Master** on the **Sound** page, and both "
+"mute and volume are kept for the next start."
+msgstr ""
+"Este volumen es el mismo que **Master** en la página **Sound**, y tanto "
+"el silencio como el volumen se guardan para el siguiente arranque."
+
+msgid "The Sound page"
+msgstr "La página Sound"
+
+msgid "**Options > Sound** has three groups."
+msgstr "**Options > Sound** tiene tres grupos."
+
+msgid "**Output** - how the sound reaches your speakers:"
+msgstr "**Output** — cómo llega el sonido a tus altavoces:"
+
+msgid "**Driver** - **SDL** plays the sound; **NULL** plays nothing."
+msgstr "**Driver** — **SDL** reproduce el sonido; **NULL** no reproduce nada."
+
+msgid ""
+"**Rate** - the sample rate: **Auto** takes the rate your computer's sound"
+" device uses and shows which one it is, or **48000** or **44100**."
+msgstr ""
+"**Rate** — la frecuencia de muestreo: **Auto** toma la frecuencia que usa"
+" el dispositivo de sonido de tu equipo y muestra cuál es, o **48000** o "
+"**44100**."
+
+msgid ""
+"**Latency** - how much sound is kept ready ahead of playback, from 10 to "
+"150 ms. Less makes the sound follow the picture and the keys more "
+"closely; too little and the sound clicks. With **Auto adjust** ticked "
+"(the default) the program finds the value by itself: it raises the "
+"latency when the sound runs short and lowers it again after a long clean "
+"spell. The slider then shows the value it has settled on."
+msgstr ""
+"**Latency** — cuánto sonido se tiene preparado por delante de la "
+"reproducción, de 10 a 150 ms. Menos hace que el sonido siga más de cerca "
+"a la imagen y a las teclas; demasiado poco y el sonido chasquea. Con "
+"**Auto adjust** marcado (por defecto) el programa encuentra el valor por "
+"sí solo: sube la latencia cuando el sonido se queda corto y la vuelve a "
+"bajar tras un largo rato limpio. El control deslizante muestra entonces "
+"el valor en que se ha asentado."
+
+msgid "The group beside it has three switches:"
+msgstr "El grupo de al lado tiene tres interruptores:"
+
+msgid ""
+"**Enabled** - with it off, the program plays silence. The machine still "
+"runs at its normal speed."
+msgstr ""
+"**Enabled** — desactivado, el programa reproduce silencio. La máquina "
+"sigue corriendo a su velocidad normal."
+
+msgid ""
+"**Low cut (DC)** - takes out the lowest frequencies. The chips' output "
+"sits above zero rather than around it, and that offset only takes "
+"loudness away from the rest of the sound. On out of the box."
+msgstr ""
+"**Low cut (DC)** — quita las frecuencias más bajas. La salida de los "
+"chips queda por encima de cero en vez de alrededor de él, y ese "
+"desplazamiento solo le quita volumen al resto del sonido. Activado de "
+"fábrica."
+
+msgid ""
+"**High cut (anti-alias)** - takes out the frequencies too high for the "
+"output rate. Without it they come back as false notes, which is heard "
+"most in beeper music as a harsh crunch. On out of the box; it costs a "
+"little CPU time."
+msgstr ""
+"**High cut (anti-alias)** — quita las frecuencias demasiado altas para la"
+" frecuencia de salida. Sin él vuelven como notas falsas, que se oyen "
+"sobre todo en la música de beeper como un crujido áspero. Activado de "
+"fábrica; cuesta un poco de tiempo de CPU."
+
+msgid "**Volumes** - one slider for each device, from 0 to 100:"
+msgstr "**Volumes** — un control deslizante por dispositivo, de 0 a 100:"
+
+msgid "Volume"
+msgstr "Volumen"
+
+msgid "What it sets"
+msgstr "Qué ajusta"
+
+msgid "**Master**"
+msgstr "**Master**"
+
+msgid "everything together; the same as the toolbar's volume"
+msgstr "todo junto; lo mismo que el volumen de la barra de herramientas"
+
+msgid "**Beeper**"
+msgstr "**Beeper**"
+
+msgid "the machine's own speaker"
+msgstr "el altavoz propio de la máquina"
+
+msgid "**Tape**"
+msgstr "**Tape**"
+
+msgid "the tape, while it plays or records"
+msgstr "la cinta, mientras se reproduce o graba"
+
+msgid "**PSG**"
+msgstr "**PSG**"
+
+msgid "the AY or YM sound chips"
+msgstr "los chips de sonido AY o YM"
+
+msgid "**DAC**"
+msgstr "**DAC**"
+
+msgid "Covox and Soundrive"
+msgstr "Covox y Soundrive"
+
+msgid "**General Sound**"
+msgstr "**General Sound**"
+
+msgid "the General Sound card"
+msgstr "la tarjeta General Sound"
+
+msgid "**SAA1099**"
+msgstr "**SAA1099**"
+
+msgid "the SAA1099 chip"
+msgstr "el chip SAA1099"
+
+msgid "The **Sound** page is the same for every machine."
+msgstr "La página **Sound** es la misma para todas las máquinas."
+
+msgid "Sound devices of a machine"
+msgstr "Dispositivos de sonido de una máquina"
+
+#, python-brace-format
+msgid ""
+"The **Sound** group on the **Machine** page of **Options** lists the "
+"sound devices of the running machine. Each machine keeps its own: a "
+"change here goes with this machine only. The button with the "
+"{icon}`settings` gear at the end of a row opens the device's further "
+"settings. See [The Machine page](machines.md#the-machine-page) for the "
+"rest of the page."
+msgstr ""
+"El grupo **Sound** de la página **Machine** de **Options** lista los "
+"dispositivos de sonido de la máquina en marcha. Cada máquina guarda los "
+"suyos: un cambio aquí solo afecta a esta máquina. El botón con el "
+"engranaje {icon}`settings` al final de una fila abre más ajustes del "
+"dispositivo. Consulta [La página Machine](machines.md#the-machine-page) "
+"para el resto de la página."
+
+msgid "PSG"
+msgstr "PSG"
+
+msgid ""
+"The sound chips most music on the Spectrum is written for. The **PSG** "
+"row says how many:"
+msgstr ""
+"Los chips de sonido para los que está escrita la mayor parte de la música"
+" del Spectrum. La fila **PSG** indica cuántos:"
+
+msgid "Choice"
+msgstr "Opción"
+
+msgid "What you get"
+msgstr "Qué obtienes"
+
+msgid "**None**"
+msgstr "**None**"
+
+msgid "no sound chip"
+msgstr "ningún chip de sonido"
+
+msgid "**x1 - AY/YM**"
+msgstr "**x1 - AY/YM**"
+
+msgid "one chip, three voices - the 128K machines and most clones"
+msgstr "un chip, tres voces — las máquinas de 128K y la mayoría de los clones"
+
+msgid "**x2 - TurboSound**"
+msgstr "**x2 - TurboSound**"
+
+msgid "two chips, six voices, for music written for TurboSound"
+msgstr "dos chips, seis voces, para música escrita para TurboSound"
+
+msgid "**x2 - TurboSound FM**"
+msgstr "**x2 - TurboSound FM**"
+
+msgid ""
+"two YM2203 chips: TurboSound with FM synthesis, for music written for "
+"TurboSound FM"
+msgstr ""
+"dos chips YM2203: TurboSound con síntesis FM, para música escrita para "
+"TurboSound FM"
+
+msgid "**x3 - ZX Next**"
+msgstr "**x3 - ZX Next**"
+
+msgid "three chips, nine voices"
+msgstr "tres chips, nueve voces"
+
+msgid ""
+"A program written for one chip plays on the first chip of two or three, "
+"and sounds the same."
+msgstr ""
+"Un programa escrito para un chip suena en el primero de dos o tres chips,"
+" y suena igual."
+
+#, python-brace-format
+msgid "The {icon}`settings` gear opens **Machine: PSG**:"
+msgstr "El engranaje {icon}`settings` abre **Machine: PSG**:"
+
+msgid ""
+"**Chip** - **AY-3-8910** or **YM2149**. The two sound alike; the YM2149 "
+"plays volume envelopes in finer steps. **YM2203** is the chip of "
+"TurboSound FM and is chosen with it."
+msgstr ""
+"**Chip** — **AY-3-8910** o **YM2149**. Los dos suenan parecido; el YM2149"
+" reproduce las envolventes de volumen en pasos más finos. **YM2203** es "
+"el chip de TurboSound FM y se elige con él."
+
+msgid ""
+"**Clock** - the chip's clock in MHz, which sets the pitch. **Auto** is "
+"half the machine's base CPU clock, as the boards divide it, and the list "
+"shows what that comes to. **1.773447** is the clock of the ZX Spectrum "
+"128, +2 and +3; **1.75** that of most clones. Music written for one of "
+"them sounds a little out of tune on the other. You can also type a clock "
+"of your own."
+msgstr ""
+"**Clock** — el reloj del chip en MHz, que fija el tono. **Auto** es la "
+"mitad del reloj base de la CPU de la máquina, como lo dividen las placas,"
+" y la lista muestra a cuánto equivale. **1.773447** es el reloj del ZX "
+"Spectrum 128, +2 y +3; **1.75**, el de la mayoría de los clones. La "
+"música escrita para uno de ellos suena algo desafinada en el otro. "
+"También puedes escribir un reloj propio."
+
+msgid ""
+"**Stereo** - **Mono**, or the order of the three voices from left to "
+"right: **ABC**, **ACB**, **BAC**, **BCA**, **CAB**, **CBA**. **ABC** puts"
+" the second voice in the middle; **ACB** puts the third voice there."
+msgstr ""
+"**Stereo** — **Mono**, o el orden de las tres voces de izquierda a "
+"derecha: **ABC**, **ACB**, **BAC**, **BCA**, **CAB**, **CBA**. **ABC** "
+"pone la segunda voz en el centro; **ACB** pone ahí la tercera."
+
+#, python-format
+msgid ""
+"**Separation** - how far apart the left and right sides are: 100% keeps "
+"them fully apart, 0% is mono. It is grayed out with **Mono**."
+msgstr ""
+"**Separation** — cuánto se separan los lados izquierdo y derecho: 100% "
+"los separa por completo, 0% es mono. Aparece en gris con **Mono**."
+
+msgid "DAC"
+msgstr "DAC"
+
+msgid ""
+"A DAC plays digitized sound - speech, drums and samples - written to a "
+"port byte by byte:"
+msgstr ""
+"Un DAC reproduce sonido digitalizado — voz, percusión y samples — escrito"
+" en un puerto byte a byte:"
+
+msgid "**None** - no DAC;"
+msgstr "**None** — sin DAC;"
+
+msgid "**Covox only** - one mono channel on port #FB;"
+msgstr "**Covox only** — un canal mono en el puerto #FB;"
+
+msgid ""
+"**Soundrive 1.05 mode 1** - four channels, two on each side, on ports "
+"#0F, #1F (left) and #4F, #5F (right);"
+msgstr ""
+"**Soundrive 1.05 mode 1** — cuatro canales, dos por lado, en los puertos "
+"#0F, #1F (izquierda) y #4F, #5F (derecha);"
+
+msgid ""
+"**Soundrive 1.05 mode 2** - the same four channels on ports #F1, #F3 "
+"(left) and #F9, #FB (right)."
+msgstr ""
+"**Soundrive 1.05 mode 2** — los mismos cuatro canales en los puertos #F1,"
+" #F3 (izquierda) y #F9, #FB (derecha)."
+
+msgid "Pick the one the program is written for."
+msgstr "Elige aquel para el que está escrito el programa."
+
+msgid "General Sound"
+msgstr "General Sound"
+
+#, python-brace-format
+msgid ""
+"A sound card with a processor and memory of its own, which plays music "
+"modules and samples for the programs written for it. **On** puts it in "
+"the machine. The {icon}`settings` gear opens **Machine: General Sound**:"
+msgstr ""
+"Una tarjeta de sonido con procesador y memoria propios, que reproduce "
+"módulos de música y samples para los programas escritos para ella. **On**"
+" la pone en la máquina. El engranaje {icon}`settings` abre **Machine: "
+"General Sound**:"
+
+#, python-brace-format
+msgid ""
+"**ROM** - the card's own ROM, picked from the list or from a file with "
+"the {icon}`fileopen` folder button;"
+msgstr ""
+"**ROM** — la ROM propia de la tarjeta, elegida de la lista o de un "
+"archivo con el botón de carpeta {icon}`fileopen`;"
+
+msgid "**Reset** - the card is reset together with the machine."
+msgstr "**Reset** — la tarjeta se reinicia junto con la máquina."
+
+msgid "SAA1099"
+msgstr "SAA1099"
+
+msgid ""
+"A sound chip with six voices, found on some sound cards for the Spectrum."
+" **On** puts it in the machine."
+msgstr ""
+"Un chip de sonido de seis voces, presente en algunas tarjetas de sonido "
+"para el Spectrum. **On** lo pone en la máquina."
+
+msgid "Beeper"
+msgstr "Beeper"
+
+msgid ""
+"The beeper is the machine's own speaker, and every machine has it. Its "
+"volume is **Beeper** on the **Sound** page. **MIC in the beeper**, in the"
+" **ULA** group of **Machine: Advanced Settings**, mixes in the signal the"
+" machine sends to the tape too, a tenth as loud, as a machine with a ULA "
+"does (see [Advanced settings](machines.md#advanced-settings))."
+msgstr ""
+"El beeper es el altavoz propio de la máquina, y todas las máquinas lo "
+"tienen. Su volumen es **Beeper** en la página **Sound**. **MIC in the "
+"beeper**, en el grupo **ULA** de **Machine: Advanced Settings**, mezcla "
+"también la señal que la máquina envía a la cinta, a una décima parte de "
+"volumen, como hace una máquina con ULA (consulta [Ajustes "
+"avanzados](machines.md#advanced-settings))."
+
+msgid "Recording the sound"
+msgstr "Grabar el sonido"
+
+msgid ""
+"**Capture > Record Sound to WAV...** writes what you hear to a file; see "
+"[Screenshots and recording](capture.md)."
+msgstr ""
+"**Capture > Record Sound to WAV...** escribe en un archivo lo que oyes; "
+"consulta [Capturas de pantalla y grabación](capture.md)."
+
+msgid "sound"
+msgstr "sonido"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "volume"
+msgstr "volumen"
+
+msgid "Sound page"
+msgstr "página Sound"
+
+msgid "Driver"
+msgstr "Driver"
+
+msgid "Latency"
+msgstr "Latency"
+
+msgid "Auto adjust"
+msgstr "Auto adjust"
+
+msgid "latency"
+msgstr "latencia"
+
+msgid "Low cut (DC)"
+msgstr "Low cut (DC)"
+
+msgid "High cut (anti-alias)"
+msgstr "High cut (anti-alias)"
+
+msgid "anti-alias filter"
+msgstr "filtro antialias"
+
+msgid "Volumes"
+msgstr "Volumes"
+
+msgid "Master"
+msgstr "Master"
+
+msgid "sound devices"
+msgstr "dispositivos de sonido"
+
+msgid "AY"
+msgstr "AY"
+
+msgid "YM"
+msgstr "YM"
+
+msgid "TurboSound"
+msgstr "TurboSound"
+
+msgid "TurboSound FM"
+msgstr "TurboSound FM"
+
+msgid "sound chip"
+msgstr "chip de sonido"
+
+msgid "Machine: PSG"
+msgstr "Machine: PSG"
+
+msgid "AY-3-8910"
+msgstr "AY-3-8910"
+
+msgid "YM2149"
+msgstr "YM2149"
+
+msgid "YM2203"
+msgstr "YM2203"
+
+msgid "clock"
+msgstr "reloj"
+
+msgid "stereo"
+msgstr "estéreo"
+
+msgid "Separation"
+msgstr "Separation"
+
+msgid "Covox"
+msgstr "Covox"
+
+msgid "Soundrive"
+msgstr "Soundrive"
+
+msgid "beeper"
+msgstr "beeper"
+
+msgid "MIC in the beeper"
+msgstr "MIC in the beeper"
+
+msgid "Record Sound to WAV"
+msgstr "Record Sound to WAV"
+
+msgid "recording"
+msgstr "grabación"
+

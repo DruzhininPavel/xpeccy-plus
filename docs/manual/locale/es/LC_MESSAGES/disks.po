@@ -1,0 +1,889 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Disks and drives"
+msgstr "Discos y unidades"
+
+msgid ""
+"A machine can have floppy drives, hard disks, an SD card or a cartridge "
+"slot, depending on the hardware it copies. The **Media** menu lists only "
+"what the running machine has."
+msgstr ""
+"Una máquina puede tener unidades de disquete, discos duros, una SD card o"
+" una ranura de cartucho, según el hardware que reproduce. El menú "
+"**Media** muestra solo lo que tiene la máquina en marcha."
+
+msgid "Which machine has what"
+msgstr "Qué tiene cada máquina"
+
+msgid "Machine"
+msgstr "Máquina"
+
+msgid "Floppy"
+msgstr "Disquete"
+
+msgid "Hard disk"
+msgstr "Disco duro"
+
+msgid "Other"
+msgstr "Otros"
+
+msgid "ZX Spectrum 48K"
+msgstr "ZX Spectrum 48K"
+
+msgid "-"
+msgstr "-"
+
+msgid "cartridge"
+msgstr "cartucho"
+
+msgid "ZX Spectrum 128K, +2, +2A"
+msgstr "ZX Spectrum 128K, +2, +2A"
+
+msgid "ZX Spectrum +3"
+msgstr "ZX Spectrum +3"
+
+msgid "+3 drives"
+msgstr "unidades del +3"
+
+msgid "Pentagon, Pentagon 1024 SL"
+msgstr "Pentagon, Pentagon 1024 SL"
+
+msgid "Beta Disk"
+msgstr "Beta Disk"
+
+msgid "Scorpion ZS 256"
+msgstr "Scorpion ZS 256"
+
+msgid "Scorpion ZS 256 Turbo+"
+msgstr "Scorpion ZS 256 Turbo+"
+
+msgid "SMUC"
+msgstr "SMUC"
+
+msgid "ATM Turbo 2+"
+msgstr "ATM Turbo 2+"
+
+msgid "ATM Turbo"
+msgstr "ATM Turbo"
+
+msgid "Profi v3"
+msgstr "Profi v3"
+
+msgid "Profi v5"
+msgstr "Profi v5"
+
+msgid "Profi"
+msgstr "Profi"
+
+msgid "ZX Evolution, both"
+msgstr "ZX Evolution, ambas"
+
+msgid "NemoIDE (ZX Evo)"
+msgstr "NemoIDE (ZX Evo)"
+
+msgid "SD card"
+msgstr "SD card"
+
+msgid "ZXM-Phoenix"
+msgstr "ZXM-Phoenix"
+
+msgid "ALF TV Game, ALF TV Game 128K"
+msgstr "ALF TV Game, ALF TV Game 128K"
+
+msgid ""
+"**Beta Disk** is the TR-DOS disk interface with up to four drives, A to "
+"D. The **+3** interface has two drives, A and B, and runs +3DOS."
+msgstr ""
+"**Beta Disk** es la interfaz de disco de TR-DOS, con hasta cuatro "
+"unidades, de la A a la D. La interfaz del **+3** tiene dos unidades, A y "
+"B, y ejecuta +3DOS."
+
+msgid ""
+"A machine with no disk interface of its own can be given one. Open the "
+"**Machine** page of **Options** and pick it in the **Disk** row: "
+"**None**, **Beta Disk (WD1793)** or **+3 (uPD765)**. The **Hard disk** "
+"row does the same for an IDE interface: **NemoIDE**, **NemoIDE A8**, "
+"**NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** or **Profi**. An interface "
+"that is part of the machine's board cannot be changed: the list is grayed"
+" out, and its tooltip says **Built into this board**. The +2A and +3 "
+"cannot take a Beta Disk."
+msgstr ""
+"A una máquina sin interfaz de disco propia se le puede añadir una. Abre "
+"la página **Machine** de **Options** y elígela en la fila **Disk**: "
+"**None**, **Beta Disk (WD1793)** o **+3 (uPD765)**. La fila **Hard disk**"
+" hace lo mismo para una interfaz IDE: **NemoIDE**, **NemoIDE A8**, "
+"**NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** o **Profi**. Una interfaz "
+"que forma parte de la placa de la máquina no se puede cambiar: la lista "
+"aparece en gris y su descripción emergente dice **Built into this "
+"board**. El +2A y el +3 no admiten Beta Disk."
+
+msgid "Floppy disks"
+msgstr "Disquetes"
+
+msgid "Putting a disk in"
+msgstr "Meter un disco"
+
+msgid ""
+"Open a disk image with **File > Open...**, or drop it onto the window: it"
+" goes into drive A (see [Run a program](getting-"
+"started.md#run-a-program)). To put it into another drive, pick **Disk "
+"B**, **Disk C** or **Disk D** as the file type in the open dialog."
+msgstr ""
+"Abre una imagen de disco con **File > Open...** o suéltala sobre la "
+"ventana: entra en la unidad A (consulta [Ejecutar un programa](getting-"
+"started.md#run-a-program)). Para meterla en otra unidad, elige **Disk "
+"B**, **Disk C** o **Disk D** como tipo de archivo en el diálogo de "
+"apertura."
+
+msgid "![Media > Floppy Drives](images/menu-floppy.png)"
+msgstr "![Media > Floppy Drives](images/menu-floppy.png)"
+
+msgid "Media > Floppy Drives"
+msgstr "Media > Floppy Drives"
+
+msgid ""
+"**Media > Floppy Drives** has a submenu for each drive the machine has. "
+"Its name is the disk in the drive, or **(empty)**; the drive letter is on"
+" its icon. A star after the name means the disk has been changed and not "
+"saved yet. Each submenu has:"
+msgstr ""
+"**Media > Floppy Drives** tiene un submenú por cada unidad de la máquina."
+" Su nombre es el del disco que hay en la unidad, o **(empty)**; la letra "
+"de la unidad está en su icono. Un asterisco tras el nombre indica que el "
+"disco ha cambiado y aún no se ha guardado. Cada submenú tiene:"
+
+msgid ""
+"**Open...** - put a disk image into this drive. It is only mounted: "
+"nothing starts, and the machine stays the same."
+msgstr ""
+"**Open...** — mete una imagen de disco en esta unidad. Solo se monta: no "
+"se inicia nada y la máquina sigue igual."
+
+#, python-brace-format
+msgid ""
+"**New** - an empty disk. On a Beta Disk machine you are asked **Format "
+"for TR-DOS?**: {icon}`ok-apply` **Yes** gives an empty TR-DOS disk ready "
+"for files, {icon}`cancel` **No** an unformatted one, for a program that "
+"formats it itself."
+msgstr ""
+"**New** — un disco vacío. En una máquina con Beta Disk se te pregunta "
+"**Format for TR-DOS?**: {icon}`ok-apply` **Yes** da un disco TR-DOS vacío"
+" listo para archivos, {icon}`cancel` **No** uno sin formatear, para un "
+"programa que lo formatea por sí mismo."
+
+msgid "**Save** - write the disk back to the file it came from."
+msgstr "**Save** — escribe el disco de vuelta en el archivo del que salió."
+
+msgid ""
+"**Save As...** - write the disk to a new file; you pick the name and the "
+"format."
+msgstr ""
+"**Save As...** — escribe el disco en un archivo nuevo; tú eliges el "
+"nombre y el formato."
+
+msgid "**Eject** - take the disk out."
+msgstr "**Eject** — saca el disco."
+
+msgid ""
+"**Write Protect** - the machine cannot write to this disk, as with the "
+"tab on a real one."
+msgstr ""
+"**Write Protect** — la máquina no puede escribir en este disco, como con "
+"la pestaña de uno real."
+
+#, python-brace-format
+msgid ""
+"A right-click on a drive's {icon}`diskGreen` light in the status bar "
+"opens the same menu."
+msgstr ""
+"Un clic derecho sobre la luz {icon}`diskGreen` de una unidad en la barra "
+"de estado abre el mismo menú."
+
+msgid "Disk formats"
+msgstr "Formatos de disco"
+
+msgid "Format"
+msgstr "Formato"
+
+msgid "Opens"
+msgstr "Abre"
+
+msgid "Saves"
+msgstr "Guarda"
+
+msgid "What it is"
+msgstr "Qué es"
+
+msgid "`.trd`"
+msgstr "`.trd`"
+
+msgid "yes"
+msgstr "sí"
+
+msgid "TR-DOS disk, sector by sector"
+msgstr "disco TR-DOS, sector a sector"
+
+msgid "`.scl`"
+msgstr "`.scl`"
+
+msgid "TR-DOS files packed together without the empty space"
+msgstr "archivos TR-DOS empaquetados juntos sin el espacio vacío"
+
+msgid "`.udi`"
+msgstr "`.udi`"
+
+msgid "the whole disk track by track, as the drive reads it"
+msgstr "el disco entero pista a pista, tal como lo lee la unidad"
+
+msgid "`.dsk`"
+msgstr "`.dsk`"
+
+msgid "+3 disk (extended DSK too)"
+msgstr "disco del +3 (también DSK extendido)"
+
+msgid "`.td0`"
+msgstr "`.td0`"
+
+msgid "Teledisk image"
+msgstr "imagen Teledisk"
+
+msgid "`.fdi`"
+msgstr "`.fdi`"
+
+msgid "FDI image"
+msgstr "imagen FDI"
+
+msgid "`.ima`, `.img`"
+msgstr "`.ima`, `.img`"
+
+msgid "1.44 MB PC floppy"
+msgstr "disquete de PC de 1,44 MB"
+
+msgid "`.$B`, `.$C`..."
+msgstr "`.$B`, `.$C`..."
+
+msgid "Hobeta: one TR-DOS file"
+msgstr "Hobeta: un archivo TR-DOS"
+
+msgid ""
+"A **Hobeta** file is not a disk but a single TR-DOS file. Opening it into"
+" a drive adds the file to the disk that is there; an empty drive gets a "
+"new TR-DOS disk with the file on it."
+msgstr ""
+"Un archivo **Hobeta** no es un disco sino un solo archivo TR-DOS. Al "
+"abrirlo en una unidad, el archivo se añade al disco que haya en ella; una"
+" unidad vacía recibe un disco TR-DOS nuevo con el archivo dentro."
+
+msgid ""
+"Any other file can be opened as **RAW file to disk**: it is copied onto "
+"the TR-DOS disk in the drive as one file, named after the host file. A "
+"file longer than 65280 bytes is split into several parts."
+msgstr ""
+"Cualquier otro archivo se puede abrir como **RAW file to disk**: se copia"
+" al disco TR-DOS de la unidad como un solo archivo, con el nombre del "
+"archivo original. Un archivo de más de 65280 bytes se divide en varias "
+"partes."
+
+msgid "The boot file"
+msgstr "El archivo de arranque"
+
+msgid ""
+"Most TR-DOS disks start with a file named `boot`, which the machine runs "
+"when it boots from the disk. When a TR-DOS disk has no `boot` of its own,"
+" Xpeccy+ adds one as the disk is opened, so the disk starts by itself and"
+" shows a menu of its files. The disk is not counted as changed for that, "
+"and the image file is not touched unless you save the disk."
+msgstr ""
+"La mayoría de los discos TR-DOS empiezan con un archivo llamado `boot`, "
+"que la máquina ejecuta al arrancar desde el disco. Si un disco TR-DOS no "
+"tiene `boot` propio, Xpeccy+ le añade uno al abrirlo, para que el disco "
+"arranque solo y muestre un menú con sus archivos. Por ello el disco no "
+"cuenta como cambiado, y el archivo de imagen no se toca a menos que "
+"guardes el disco."
+
+#, python-brace-format
+msgid ""
+"To stop this, open the **Machine** page of **Options**, click the "
+"{icon}`settings` gear in the **Disk** row and clear **Add boot loader**. "
+"The file added is `boot.$B` in the [settings folder](getting-started.md"
+"#where-the-settings-are); put another Hobeta file there under the same "
+"name to use your own."
+msgstr ""
+"Para evitarlo, abre la página **Machine** de **Options**, haz clic en el "
+"engranaje {icon}`settings` de la fila **Disk** y desmarca **Add boot "
+"loader**. El archivo que se añade es `boot.$B` de la [carpeta de ajustes"
+"](getting-started.md#where-the-settings-are); pon allí otro archivo "
+"Hobeta con el mismo nombre para usar el tuyo."
+
+msgid "Drive settings"
+msgstr "Ajustes de las unidades"
+
+#, python-brace-format
+msgid ""
+"The {icon}`settings` gear in the **Disk** row of the **Machine** page "
+"opens **Machine: Disk**:"
+msgstr ""
+"El engranaje {icon}`settings` de la fila **Disk** de la página "
+"**Machine** abre **Machine: Disk**:"
+
+msgid ""
+"**Fast disk access** - no waiting for the head to move or the disk to "
+"turn; see below."
+msgstr ""
+"**Fast disk access** — sin esperar a que el cabezal se mueva o el disco "
+"gire; consulta más abajo."
+
+msgid "**Add boot loader** - see [The boot file](#the-boot-file)."
+msgstr "**Add boot loader** — consulta [El archivo de arranque](#the-boot-file)."
+
+msgid "**TR-DOS ROM** - which ROM image the Beta Disk runs."
+msgstr "**TR-DOS ROM** — qué imagen de ROM ejecuta el Beta Disk."
+
+msgid ""
+"**Interleave** - the order of sectors on each track of a `.trd` or `.scl`"
+" image, set when it is opened. TR-DOS formats its own disks as 1, 9, 2, "
+"10..."
+msgstr ""
+"**Interleave** — el orden de los sectores en cada pista de una imagen "
+"`.trd` o `.scl`, fijado al abrirla. TR-DOS formatea sus propios discos "
+"como 1, 9, 2, 10..."
+
+msgid ""
+"**Number of drives** - from one (A) to four (A to D); a +3 has two at "
+"most. A drive left out is not there at all, and programs find it missing."
+msgstr ""
+"**Number of drives** — de una (A) a cuatro (de la A a la D); un +3 tiene "
+"dos como mucho. Una unidad que se quita no existe en absoluto, y los "
+"programas la encuentran ausente."
+
+msgid "**Drives** - for each drive, **80 cylinders** and **Double side**."
+msgstr "**Drives** — para cada unidad, **80 cylinders** y **Double side**."
+
+msgid "Fast Disk Access"
+msgstr "Fast Disk Access"
+
+msgid ""
+"Real drives spend time moving the head and waiting for the sector to come"
+" round. **Media > Fast Disk Access** skips those waits, so disks load "
+"much faster. The same switch is in the **Disk Manager** and in **Machine:"
+" Disk**."
+msgstr ""
+"Las unidades reales pierden tiempo moviendo el cabezal y esperando a que "
+"pase el sector. **Media > Fast Disk Access** se salta esas esperas, así "
+"que los discos cargan mucho más rápido. El mismo interruptor está en el "
+"**Disk Manager** y en **Machine: Disk**."
+
+msgid "Changed disks"
+msgstr "Discos cambiados"
+
+msgid ""
+"What the machine writes to a disk stays in memory: the image file changes"
+" only when you save the disk."
+msgstr ""
+"Lo que la máquina escribe en un disco se queda en memoria: el archivo de "
+"imagen solo cambia cuando guardas el disco."
+
+msgid ""
+"**File > Save Changed Disks** asks about each drive whose disk was "
+"changed: **Disk A: game.trd has been changed. Do you want to save it?** "
+"**Yes** writes it to its file, **No** leaves it, **Cancel** stops asking."
+" A new disk that has no file yet asks for a name, and so does a disk "
+"opened from a format Xpeccy+ reads but does not write, such as `.td0`, "
+"`.fdi` or `.ima`. A save that fails says why, and the disk stays changed."
+msgstr ""
+"**File > Save Changed Disks** pregunta por cada unidad cuyo disco ha "
+"cambiado: **Disk A: game.trd has been changed. Do you want to save it?** "
+"**Yes** lo escribe en su archivo, **No** lo deja así, **Cancel** deja de "
+"preguntar. Un disco nuevo que aún no tiene archivo pide un nombre, y "
+"también un disco abierto de un formato que Xpeccy+ lee pero no escribe, "
+"como `.td0`, `.fdi` o `.ima`. Un guardado que falla dice por qué, y el "
+"disco sigue cambiado."
+
+msgid ""
+"Before a changed disk is ejected or replaced, and when you close Xpeccy+,"
+" you are asked the same question. **Cancel** keeps the disk in the drive,"
+" or keeps the program open."
+msgstr ""
+"Antes de expulsar o sustituir un disco cambiado, y al cerrar Xpeccy+, se "
+"te hace la misma pregunta. **Cancel** deja el disco en la unidad, o "
+"mantiene el programa abierto."
+
+msgid ""
+"With **Remember mounted media** on the **File types** page of "
+"**Options**, the disks in the drives are opened again at the next start."
+msgstr ""
+"Con **Remember mounted media** en la página **File types** de "
+"**Options**, los discos de las unidades se vuelven a abrir en el "
+"siguiente arranque."
+
+msgid "Disk Manager"
+msgstr "Disk Manager"
+
+msgid "![The Disk Manager](images/disk-manager.png)"
+msgstr "![El Disk Manager](images/disk-manager.png)"
+
+msgid "The Disk Manager"
+msgstr "El Disk Manager"
+
+#, python-brace-format
+msgid ""
+"**Media > Disk Manager** (also {icon}`fdd_disk` on the toolbar, and a "
+"click on a drive {icon}`diskGreen` light in the status bar) shows what is"
+" in the drives and on the disks. In the picture drive A holds Fire 'n Ice"
+" (n-Discovery, 2003)."
+msgstr ""
+"**Media > Disk Manager** (también {icon}`fdd_disk` en la barra de "
+"herramientas, y un clic en la luz {icon}`diskGreen` de una unidad en la "
+"barra de estado) muestra lo que hay en las unidades y en los discos. En "
+"la imagen, la unidad A tiene Fire 'n Ice (n-Discovery, 2003)."
+
+msgid ""
+"**Tabs** - one for each drive, named after the disk's own TR-DOS label or"
+" the file name. **Fast disk access** beside them is the same switch as in"
+" the **Media** menu."
+msgstr ""
+"**Pestañas** — una por unidad, con el nombre de la etiqueta TR-DOS del "
+"disco o el del archivo. **Fast disk access**, a su lado, es el mismo "
+"interruptor que en el menú **Media**."
+
+#, python-brace-format
+msgid ""
+"**The line under the tabs** - the file in the drive, then buttons to "
+"{icon}`fileopen` open a disk image, {icon}`doc-new` insert a new disk, "
+"{icon}`save_all` save to the file it came from, {icon}`floppy` save as, "
+"and {icon}`tape-eject` eject, and the **Write protect** box. They do what"
+" the **Floppy Drives** menu does."
+msgstr ""
+"**La línea bajo las pestañas** — el archivo de la unidad, luego botones "
+"para {icon}`fileopen` abrir una imagen de disco, {icon}`doc-new` meter un"
+" disco nuevo, {icon}`save_all` guardar en el archivo del que salió, "
+"{icon}`floppy` guardar como y {icon}`tape-eject` expulsar, y la casilla "
+"**Write protect**. Hacen lo mismo que el menú **Floppy Drives**."
+
+msgid ""
+"**The catalog** - the files on a TR-DOS disk: **Name**, **Ext**, "
+"**Start**, **Length**, **SecLen** (length in sectors), **Trk** and "
+"**Sec** (where the file begins). A +3DOS disk has columns of its own (see"
+" below); any other disk shows no catalog."
+msgstr ""
+"**El catálogo** — los archivos de un disco TR-DOS: **Name**, **Ext**, "
+"**Start**, **Length**, **SecLen** (longitud en sectores), **Trk** y "
+"**Sec** (dónde empieza el archivo). Un disco +3DOS tiene sus propias "
+"columnas (consulta más abajo); cualquier otro disco no muestra catálogo."
+
+msgid ""
+"**The line at the bottom** - the disk's label, how many files and deleted"
+" files it has, free sectors, and **modified** when it has unsaved "
+"changes. While the drive's motor runs, **Head on track** shows where the "
+"head is, and the file under it is shown in bold."
+msgstr ""
+"**La línea inferior** — la etiqueta del disco, cuántos archivos y "
+"archivos borrados tiene, los sectores libres y **modified** cuando tiene "
+"cambios sin guardar. Mientras gira el motor de la unidad, **Head on "
+"track** muestra dónde está el cabezal, y el archivo que hay debajo "
+"aparece en negrita."
+
+msgid ""
+"Select one or more files in the catalog (Ctrl or Shift for several) and "
+"use the buttons on the right:"
+msgstr ""
+"Selecciona uno o más archivos en el catálogo (Ctrl o Shift para varios) y"
+" usa los botones de la derecha:"
+
+#, python-brace-format
+msgid ""
+"{icon}`tape` **Copy to tape** - add the files to the tape in the [Tape "
+"Player](tapes.md), as BASIC programs or code blocks. A file whose length "
+"does not match the sectors it takes (several files joined into one) is "
+"skipped."
+msgstr ""
+"{icon}`tape` **Copy to tape** — añade los archivos a la cinta del [Tape "
+"Player](tapes.md), como programas BASIC o bloques de código. Se omite un "
+"archivo cuya longitud no coincide con los sectores que ocupa (varios "
+"archivos unidos en uno)."
+
+#, python-brace-format
+msgid ""
+"{icon}`dollar` **Save as Hobeta** - write each file to a folder you pick "
+"as a Hobeta file (`name.$C`)."
+msgstr ""
+"{icon}`dollar` **Save as Hobeta** — escribe cada archivo como archivo "
+"Hobeta (`name.$C`) en la carpeta que elijas."
+
+#, python-brace-format
+msgid ""
+"{icon}`filebin` **Save as RAW** - write each file's bare data, with no "
+"header (`name.C`)."
+msgstr ""
+"{icon}`filebin` **Save as RAW** — escribe los datos puros de cada "
+"archivo, sin cabecera (`name.C`)."
+
+msgid ""
+"The window follows the drives as the machine runs: a file the program "
+"writes shows up in the catalog straight away."
+msgstr ""
+"La ventana sigue a las unidades mientras la máquina funciona: un archivo "
+"que escribe el programa aparece en el catálogo al momento."
+
+msgid "+3DOS disks"
+msgstr "Discos +3DOS"
+
+msgid ""
+"A +3 disk shows its files too, and so do the CPC system and data disks, "
+"which the +3 also reads. The columns are **Name**, **Ext**, **Type** "
+"(**Program**, **Numbers**, **Chars** or **Bytes**), **Start** (a "
+"program's autostart line, or the address of code), **Length**, **Size** "
+"(the space the file takes on the disk), **Trk** and **Sec**. A file in a "
+"user area other than 0 has its number before the name, as `3:GAME`. The "
+"line at the bottom says which kind of disk it is, how many files it has "
+"and how much space is free."
+msgstr ""
+"Un disco del +3 también muestra sus archivos, y lo mismo los discos de "
+"sistema y de datos del CPC, que el +3 también lee. Las columnas son "
+"**Name**, **Ext**, **Type** (**Program**, **Numbers**, **Chars** o "
+"**Bytes**), **Start** (la línea de autoarranque de un programa o la "
+"dirección del código), **Length**, **Size** (el espacio que ocupa el "
+"archivo en el disco), **Trk** y **Sec**. Un archivo en un área de usuario"
+" distinta de 0 lleva su número delante del nombre, como `3:GAME`. La "
+"línea inferior dice qué tipo de disco es, cuántos archivos tiene y cuánto"
+" espacio queda libre."
+
+#, python-brace-format
+msgid ""
+"The buttons work as on TR-DOS. {icon}`tape` **Copy to tape** and "
+"{icon}`dollar` **Save as Hobeta** need the file's +3DOS header, which "
+"gives its type, address and length; a file without one is skipped. "
+"{icon}`filebin` **Save as RAW** writes the data without the header, or "
+"the whole file when it has none."
+msgstr ""
+"Los botones funcionan como en TR-DOS. {icon}`tape` **Copy to tape** y "
+"{icon}`dollar` **Save as Hobeta** necesitan la cabecera +3DOS del "
+"archivo, que da su tipo, dirección y longitud; un archivo sin ella se "
+"omite. {icon}`filebin` **Save as RAW** escribe los datos sin la cabecera,"
+" o el archivo entero si no la tiene."
+
+msgid ""
+"The two ZX Evolution machines have an SD card slot. **Media > SD Card** "
+"shows the card that is in, or **(no card)**, and has:"
+msgstr ""
+"Las dos máquinas ZX Evolution tienen una ranura de SD card. **Media > SD "
+"Card** muestra la tarjeta que está puesta, o **(no card)**, y tiene:"
+
+msgid "**Open Image...** - an image file of a card."
+msgstr "**Open Image...** — un archivo de imagen de una tarjeta."
+
+msgid ""
+"**Open Folder...** - a folder on your computer, served to the machine as "
+"a card. See [A folder as a disk](#a-folder-as-a-disk)."
+msgstr ""
+"**Open Folder...** — una carpeta de tu equipo, que la máquina ve como una"
+" tarjeta. Consulta [Una carpeta como disco](#a-folder-as-a-disk)."
+
+msgid "**Eject** - take the card out."
+msgstr "**Eject** — saca la tarjeta."
+
+msgid "**Write Protect** - the card's lock switch. It is always on for a folder."
+msgstr ""
+"**Write Protect** — el interruptor de bloqueo de la tarjeta. Con una "
+"carpeta siempre está activado."
+
+msgid ""
+"What the machine writes to a card image goes into the image file at once."
+" To start with a card, use `--sdcard <file or folder>` on the [command "
+"line](command-line.md)."
+msgstr ""
+"Lo que la máquina escribe en una imagen de tarjeta va al archivo de "
+"imagen al instante. Para empezar con una tarjeta, usa `--sdcard <file or "
+"folder>` en la [línea de comandos](command-line.md)."
+
+msgid "Hard disks"
+msgstr "Discos duros"
+
+#, python-brace-format
+msgid ""
+"A machine with an IDE interface (see [Which machine has what](#which-"
+"machine-has-what)) has two places for a drive, **Master** and **Slave**. "
+"Connect them first: on the **Machine** page of **Options**, click the "
+"{icon}`settings` gear in the **Hard disk** row and set **Master** (and "
+"**Slave**, if you want two) to **HDD (ATA)**."
+msgstr ""
+"Una máquina con interfaz IDE (consulta [Qué tiene cada máquina](#which-"
+"machine-has-what)) tiene dos posiciones para una unidad, **Master** y "
+"**Slave**. Conéctalas primero: en la página **Machine** de **Options**, "
+"haz clic en el engranaje {icon}`settings` de la fila **Hard disk** y pon "
+"**Master** (y **Slave**, si quieres dos) en **HDD (ATA)**."
+
+msgid ""
+"**Media > Drives** then has a submenu for each connected device, named "
+"**Master:** or **Slave:** and the image in it:"
+msgstr ""
+"**Media > Drives** tiene entonces un submenú por cada dispositivo "
+"conectado, con el nombre **Master:** o **Slave:** y la imagen que "
+"contiene:"
+
+msgid ""
+"**Open Image...** - a hard disk image: `.hdi`, or a plain image of the "
+"disk under any other name."
+msgstr ""
+"**Open Image...** — una imagen de disco duro: `.hdi`, o una imagen plana "
+"del disco con cualquier otro nombre."
+
+msgid ""
+"**Open Folder...** - a folder on your computer, served as a disk. See [A "
+"folder as a disk](#a-folder-as-a-disk)."
+msgstr ""
+"**Open Folder...** — una carpeta de tu equipo, que la máquina ve como un "
+"disco. Consulta [Una carpeta como disco](#a-folder-as-a-disk)."
+
+msgid "**Eject** - take the image out."
+msgstr "**Eject** — saca la imagen."
+
+msgid ""
+"**Properties...** - the window **Hard Disk: Master** (or **Slave**): the "
+"image, its cylinders, heads and sectors (**C / H / S**), its "
+"**Capacity**, and the **LBA** box. LBA lets the system address the disk "
+"by sector number; clear it for an old system that only knows cylinders, "
+"heads and sectors."
+msgstr ""
+"**Properties...** — la ventana **Hard Disk: Master** (o **Slave**): la "
+"imagen, sus cilindros, cabezas y sectores (**C / H / S**), su "
+"**Capacity** y la casilla **LBA**. LBA permite al sistema direccionar el "
+"disco por número de sector; desmárcala para un sistema antiguo que solo "
+"conoce cilindros, cabezas y sectores."
+
+msgid ""
+"What the machine writes to a hard disk image goes into the file at once. "
+"The images stay mounted when you switch machines, and are opened again at"
+" the next start."
+msgstr ""
+"Lo que la máquina escribe en una imagen de disco duro va al archivo al "
+"instante. Las imágenes siguen montadas al cambiar de máquina, y se "
+"vuelven a abrir en el siguiente arranque."
+
+msgid "A folder as a disk"
+msgstr "Una carpeta como disco"
+
+msgid ""
+"**Open Folder...** in **Media > SD Card** and in **Media > Drives** lets "
+"the machine read a folder of your computer as if it were a FAT32 card or "
+"disk. There is no image to make: copy programs into the folder and open "
+"it."
+msgstr ""
+"**Open Folder...** en **Media > SD Card** y en **Media > Drives** permite"
+" a la máquina leer una carpeta de tu equipo como si fuera una tarjeta o "
+"un disco FAT32. No hay que crear ninguna imagen: copia los programas en "
+"la carpeta y ábrela."
+
+msgid ""
+"It is **read only**. The machine can read every file but cannot write: "
+"nothing it does changes your files."
+msgstr ""
+"Es **de solo lectura**. La máquina puede leer cualquier archivo pero no "
+"escribir: nada de lo que haga cambia tus archivos."
+
+msgid ""
+"The folder is read when it is opened, and again when you switch machines "
+"or click **Apply** in **Options**. Files added later show up only then."
+msgstr ""
+"La carpeta se lee al abrirla, y otra vez al cambiar de máquina o al hacer"
+" clic en **Apply** en **Options**. Los archivos añadidos después solo "
+"aparecen entonces."
+
+msgid ""
+"The disk is made just big enough for the folder: from 512 MB up to 32 GB."
+" A larger folder is not opened, and the message **folder too big for a "
+"disk** says so."
+msgstr ""
+"El disco se crea con el tamaño justo para la carpeta: de 512 MB a 32 GB. "
+"Una carpeta mayor no se abre, y lo indica el mensaje **folder too big for"
+" a disk**."
+
+msgid ""
+"Left out: files of 4 GB and over, folders more than 16 levels deep, more "
+"than 65536 entries in one folder, and anything past 200000 entries in "
+"all. The message **folder: not all of it fits** says when something was "
+"left out."
+msgstr ""
+"Se omiten: los archivos de 4 GB o más, las carpetas con más de 16 niveles"
+" de profundidad, más de 65536 entradas en una carpeta y todo lo que pase "
+"de 200000 entradas en total. El mensaje **folder: not all of it fits** "
+"avisa cuando se ha omitido algo."
+
+msgid ""
+"On a hard disk, a folder that holds NedoOS with its `ZXLDR` file in the "
+"top level can boot NedoOS."
+msgstr ""
+"En un disco duro, una carpeta que contiene NedoOS con su archivo `ZXLDR` "
+"en el nivel superior puede arrancar NedoOS."
+
+msgid "Cartridge"
+msgstr "Cartucho"
+
+msgid ""
+"The ZX Spectrum 48K takes an Interface 2 ROM cartridge, and the ALF TV "
+"Game consoles their game cartridges. **Media > Cartridge** shows the "
+"cartridge that is in, or **(empty)**, and has:"
+msgstr ""
+"El ZX Spectrum 48K admite un cartucho ROM de Interface 2, y las consolas "
+"ALF TV Game sus cartuchos de juegos. **Media > Cartridge** muestra el "
+"cartucho que está puesto, o **(empty)**, y tiene:"
+
+msgid ""
+"**Open...** - a cartridge image, `.rom` or `.bin`, up to 4 MB. The "
+"machine is reset with the cartridge in."
+msgstr ""
+"**Open...** — una imagen de cartucho, `.rom` o `.bin`, de hasta 4 MB. La "
+"máquina se reinicia con el cartucho puesto."
+
+msgid ""
+"**Eject** - take the cartridge out; the machine is reset if it was "
+"running from it."
+msgstr ""
+"**Eject** — saca el cartucho; la máquina se reinicia si estaba "
+"funcionando desde él."
+
+msgid "disk"
+msgstr "disco"
+
+msgid "TR-DOS"
+msgstr "TR-DOS"
+
+msgid "+3DOS"
+msgstr "+3DOS"
+
+msgid "disk interface"
+msgstr "interfaz de disco"
+
+msgid "NemoIDE"
+msgstr "NemoIDE"
+
+msgid "floppy disk"
+msgstr "disquete"
+
+msgid "Floppy Drives"
+msgstr "Floppy Drives"
+
+msgid "Write Protect"
+msgstr "Write Protect"
+
+msgid "floppy"
+msgstr "disco flexible"
+
+msgid "TRD"
+msgstr "TRD"
+
+msgid "SCL"
+msgstr "SCL"
+
+msgid "UDI"
+msgstr "UDI"
+
+msgid "DSK"
+msgstr "DSK"
+
+msgid "TD0"
+msgstr "TD0"
+
+msgid "FDI"
+msgstr "FDI"
+
+msgid "IMA"
+msgstr "IMA"
+
+msgid "Hobeta"
+msgstr "Hobeta"
+
+msgid "RAW file to disk"
+msgstr "RAW file to disk"
+
+msgid "boot file"
+msgstr "archivo de arranque"
+
+msgid "Add boot loader"
+msgstr "Add boot loader"
+
+msgid "Machine: Disk"
+msgstr "Machine: Disk"
+
+msgid "Interleave"
+msgstr "Interleave"
+
+msgid "Number of drives"
+msgstr "Number of drives"
+
+msgid "TR-DOS ROM"
+msgstr "TR-DOS ROM"
+
+msgid "saving"
+msgstr "guardar"
+
+msgid "Save Changed Disks"
+msgstr "Save Changed Disks"
+
+msgid "Remember mounted media"
+msgstr "Remember mounted media"
+
+msgid "Copy to tape"
+msgstr "Copy to tape"
+
+msgid "Save as Hobeta"
+msgstr "Save as Hobeta"
+
+msgid "Save as RAW"
+msgstr "Save as RAW"
+
+msgid "CPC disk"
+msgstr "disco CPC"
+
+msgid "--sdcard"
+msgstr "--sdcard"
+
+msgid "hard disk"
+msgstr "disco duro"
+
+msgid "IDE"
+msgstr "IDE"
+
+msgid "HDI"
+msgstr "HDI"
+
+msgid "LBA"
+msgstr "LBA"
+
+msgid "HDD"
+msgstr "HDD"
+
+msgid "folder as a disk"
+msgstr "carpeta como disco"
+
+msgid "Open Folder"
+msgstr "Open Folder"
+
+msgid "FAT32"
+msgstr "FAT32"
+
+msgid "NedoOS"
+msgstr "NedoOS"
+
+msgid "Interface 2"
+msgstr "Interface 2"
+

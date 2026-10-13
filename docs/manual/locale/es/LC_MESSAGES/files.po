@@ -1,0 +1,683 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Files and snapshots"
+msgstr "Archivos e instantáneas"
+
+msgid ""
+"Xpeccy+ opens snapshots, tapes, disks, cartridges and RZX recordings, and"
+" saves snapshots, tapes and disks. This chapter is about the **File** and"
+" **Favorites** menus, snapshots, and how a file picks the machine it runs"
+" on. Tapes and disks have chapters of their own: [Tapes](tapes.md) and "
+"[Disks and drives](disks.md)."
+msgstr ""
+"Xpeccy+ abre instantáneas, cintas, discos, cartuchos y grabaciones RZX, y"
+" guarda instantáneas, cintas y discos. Este capítulo trata de los menús "
+"**File** y **Favorites**, de las instantáneas y de cómo un archivo elige "
+"la máquina en la que se ejecuta. Las cintas y los discos tienen sus "
+"propios capítulos: [Cintas](tapes.md) y [Discos y unidades](disks.md)."
+
+msgid "File formats"
+msgstr "Formatos de archivo"
+
+msgid "Kind"
+msgstr "Tipo"
+
+msgid "Files"
+msgstr "Archivos"
+
+msgid "Open"
+msgstr "Abrir"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Snapshot"
+msgstr "Instantánea"
+
+msgid "`.szx`"
+msgstr "`.szx`"
+
+msgid "yes"
+msgstr "sí"
+
+msgid "yes, every machine"
+msgstr "sí, en todas las máquinas"
+
+msgid "`.z80`"
+msgstr "`.z80`"
+
+msgid "48K, 128K, +2, +2A, +3, Pentagon, Scorpion"
+msgstr "48K, 128K, +2, +2A, +3, Pentagon, Scorpion"
+
+msgid "`.sna`"
+msgstr "`.sna`"
+
+msgid "`.spg` (ZX Evolution TSConf)"
+msgstr "`.spg` (ZX Evolution TSConf)"
+
+msgid "no"
+msgstr "no"
+
+msgid "Tape"
+msgstr "Cinta"
+
+msgid "`.tap`"
+msgstr "`.tap`"
+
+msgid "`.tzx`"
+msgstr "`.tzx`"
+
+msgid "`.wav`"
+msgstr "`.wav`"
+
+msgid "Disk"
+msgstr "Disco"
+
+msgid "`.trd`, `.scl`, `.udi`, `.dsk`"
+msgstr "`.trd`, `.scl`, `.udi`, `.dsk`"
+
+msgid "`.td0`, `.fdi`, `.ima`, `.img`"
+msgstr "`.td0`, `.fdi`, `.ima`, `.img`"
+
+msgid "TR-DOS file"
+msgstr "Archivo TR-DOS"
+
+msgid "Hobeta (`.$B`, `.$C` and so on)"
+msgstr "Hobeta (`.$B`, `.$C`, etc.)"
+
+msgid "yes, onto a disk"
+msgstr "sí, a un disco"
+
+msgid "Any file"
+msgstr "Cualquier archivo"
+
+msgid "**RAW file to disk**"
+msgstr "**RAW file to disk**"
+
+msgid "yes, onto disk A"
+msgstr "sí, al disco A"
+
+msgid "Cartridge"
+msgstr "Cartucho"
+
+msgid "`.rom`, `.bin`"
+msgstr "`.rom`, `.bin`"
+
+msgid "Recording"
+msgstr "Grabación"
+
+msgid "`.rzx`"
+msgstr "`.rzx`"
+
+msgid "from the **Capture** menu"
+msgstr "desde el menú **Capture**"
+
+msgid ""
+"A Hobeta file opens as a TR-DOS file on a disk: in drive A, or in the "
+"drive picked from the file types of the open dialog. A drive with no disk"
+" gets a new, formatted one first."
+msgstr ""
+"Un archivo Hobeta se abre como archivo TR-DOS en un disco: en la unidad "
+"A, o en la unidad elegida entre los tipos de archivo del diálogo de "
+"apertura. Una unidad sin disco recibe antes uno nuevo y formateado."
+
+msgid ""
+"**RAW file to disk** is a choice of file type in the open dialog. It "
+"writes any file onto the disk in drive A as a TR-DOS file, in parts if "
+"the file is long."
+msgstr ""
+"**RAW file to disk** es una opción de tipo de archivo del diálogo de "
+"apertura. Escribe cualquier archivo en el disco de la unidad A como "
+"archivo TR-DOS, en partes si el archivo es largo."
+
+msgid ""
+"Screenshots, video and sound files are in [Screenshots and "
+"recording](capture.md)."
+msgstr ""
+"Las capturas de pantalla, el vídeo y los archivos de sonido están en "
+"[Capturas de pantalla y grabación](capture.md)."
+
+msgid "Opening a file"
+msgstr "Abrir un archivo"
+
+msgid ""
+"**File > Open...** opens the program's file dialog. You can also drop a "
+"file onto the window, pick one from **File > Recent** or from "
+"**Favorites**, or give it on the command line. Whether a tape or a disk "
+"is run or only mounted is explained in [Run a program](getting-"
+"started.md#run-a-program)."
+msgstr ""
+"**File > Open...** abre el diálogo de archivos del programa. También "
+"puedes soltar un archivo sobre la ventana, elegir uno en **File > "
+"Recent** o en **Favorites**, o indicarlo en la línea de comandos. Si una "
+"cinta o un disco se ejecuta o solo se monta se explica en [Ejecutar un "
+"programa](getting-started.md#run-a-program)."
+
+msgid ""
+"To choose Run or Mount for one file only, hold Shift as you drop it, or "
+"as you leave the open dialog with **Open**. A small menu asks: **Run** or"
+" **Mount**."
+msgstr ""
+"Para elegir Run o Mount solo para un archivo, mantén pulsado Shift al "
+"soltarlo, o al salir del diálogo de apertura con **Open**. Un pequeño "
+"menú pregunta: **Run** o **Mount**."
+
+msgid ""
+"**File > Recent** lists the last 10 files opened, newest first. Hold the "
+"mouse over an item to see where the file is. A file that is gone is "
+"reported and taken off the list. **Clear** empties the list."
+msgstr ""
+"**File > Recent** muestra los 10 últimos archivos abiertos, del más "
+"reciente al más antiguo. Deja el ratón sobre un elemento para ver dónde "
+"está el archivo. Un archivo que ya no existe se notifica y se quita de la"
+" lista. **Clear** vacía la lista."
+
+msgid ""
+"**File > Reload** opens the last file again, the way it was opened: into "
+"the same drive, run or mounted. If you loaded a labels file in the "
+"Debugger, it is read again too."
+msgstr ""
+"**File > Reload** vuelve a abrir el último archivo tal como se abrió: en "
+"la misma unidad, ejecutado o montado. Si cargaste un archivo de etiquetas"
+" en el Debugger, también se vuelve a leer."
+
+msgid ""
+"When **Auto-load labels** is ticked on the **Debugger** page of "
+"**Options**, opening a file also loads a `.labels` file of the same name "
+"from the same folder, if there is one. A disk opened into drive B, C or D"
+" does not load labels."
+msgstr ""
+"Con **Auto-load labels** marcado en la página **Debugger** de "
+"**Options**, al abrir un archivo también se carga un archivo `.labels` "
+"con el mismo nombre de la misma carpeta, si existe. Un disco abierto en "
+"la unidad B, C o D no carga etiquetas."
+
+msgid "The file dialog"
+msgstr "El diálogo de archivos"
+
+msgid ""
+"All opening and saving goes through the program's own file dialog, the "
+"same on every system. It starts in the folder you used last."
+msgstr ""
+"Todo lo que se abre y se guarda pasa por el diálogo de archivos propio "
+"del programa, igual en todos los sistemas. Empieza en la última carpeta "
+"que usaste."
+
+msgid ""
+"The list of file types at the bottom is more than a filter: the type you "
+"pick says what the file is opened as. **Disk B** puts a disk into drive "
+"B, **RAW file to disk** writes any file onto disk A, and **All files** "
+"goes by the file's extension."
+msgstr ""
+"La lista de tipos de archivo de la parte inferior es más que un filtro: "
+"el tipo que eliges indica cómo se abre el archivo. **Disk B** mete un "
+"disco en la unidad B, **RAW file to disk** escribe cualquier archivo en "
+"el disco A y **All files** se guía por la extensión del archivo."
+
+msgid "Saving"
+msgstr "Guardar"
+
+msgid ""
+"**File > Save...** saves a snapshot, the tape or a disk. The file types "
+"in the dialog say what is saved: **Snapshot**, **Tape** when a tape is "
+"in, and **Disk A** to **Disk D** for each drive with a disk. Type the "
+"extension of the format you want; with no extension the file gets `.szx`,"
+" `.tap` or `.trd`."
+msgstr ""
+"**File > Save...** guarda una instantánea, la cinta o un disco. Los tipos"
+" de archivo del diálogo indican qué se guarda: **Snapshot**, **Tape** "
+"cuando hay una cinta puesta y de **Disk A** a **Disk D** por cada unidad "
+"con disco. Escribe la extensión del formato que quieras; sin extensión, "
+"el archivo recibe `.szx`, `.tap` o `.trd`."
+
+msgid ""
+"**WAV recording, export** writes the tape as sound (see [Export to "
+"WAV](tapes.md#export-to-wav)). It is a copy, not the tape's own file, so "
+"the tape still counts as changed after it."
+msgstr ""
+"**WAV recording, export** escribe la cinta como sonido (consulta "
+"[Exportar a WAV](tapes.md#export-to-wav)). Es una copia, no el archivo "
+"propio de la cinta, así que la cinta sigue contando como cambiada "
+"después."
+
+msgid ""
+"A file that cannot be saved is not passed over in silence: a message says"
+" why, such as a tape with blocks a `.tap` cannot hold, or a disk that is "
+"not TR-DOS saved as `.trd`."
+msgstr ""
+"Un archivo que no se puede guardar no se pasa por alto en silencio: un "
+"mensaje dice por qué, como una cinta con bloques que un `.tap` no puede "
+"contener, o un disco que no es TR-DOS guardado como `.trd`."
+
+msgid ""
+"**File > Save Changed Disks** saves every disk that was written to, each "
+"to its own file. It asks about each disk first: **Yes**, **No** or "
+"**Cancel**. The same question comes for a changed disk or tape when you "
+"close the program, eject it or put another one in; **Cancel** keeps it "
+"where it is, and the program open."
+msgstr ""
+"**File > Save Changed Disks** guarda cada disco en el que se ha escrito, "
+"cada uno en su propio archivo. Antes pregunta por cada disco: **Yes**, "
+"**No** o **Cancel**. La misma pregunta aparece para un disco o una cinta "
+"cambiados al cerrar el programa, al expulsarlos o al meter otro; "
+"**Cancel** los deja donde están, y el programa abierto."
+
+msgid "Snapshots"
+msgstr "Instantáneas"
+
+msgid ""
+"A snapshot is the whole machine at one moment. Opening one puts the "
+"machine back to that moment, and it runs on from there."
+msgstr ""
+"Una instantánea es la máquina entera en un momento. Al abrirla, la "
+"máquina vuelve a ese momento y sigue funcionando desde allí."
+
+msgid ""
+"**SZX** is the format to use. A `.szx` saved by Xpeccy+ keeps everything:"
+" memory, the processor, the sound chips, the disk controller, where the "
+"tape stands, and the exact point in the frame. It also notes the machine "
+"it was taken on, the tape and the disks by their file names. The images "
+"themselves are not inside: save a changed disk too."
+msgstr ""
+"**SZX** es el formato que conviene usar. Un `.szx` guardado por Xpeccy+ "
+"lo conserva todo: la memoria, el procesador, los chips de sonido, el "
+"controlador de disco, la posición de la cinta y el punto exacto del "
+"fotograma. También anota la máquina en la que se hizo, la cinta y los "
+"discos por sus nombres de archivo. Las imágenes en sí no van dentro: "
+"guarda también un disco cambiado."
+
+msgid ""
+"When an SZX is opened, its tape and disks go back in: from where they "
+"were, or from the snapshot's own folder. The tape is wound to the block "
+"it stood on. A disk that is already in its drive is left as it is, so "
+"what was written to it since is not lost. Images that a snapshot carries "
+"inside it are written to the system's temporary folder and put in from "
+"there."
+msgstr ""
+"Al abrir un SZX, su cinta y sus discos vuelven a ponerse: desde donde "
+"estaban, o desde la propia carpeta de la instantánea. La cinta se lleva "
+"al bloque en el que estaba. Un disco que ya está en su unidad se deja "
+"como está, para no perder lo que se ha escrito en él desde entonces. Las "
+"imágenes que una instantánea lleva dentro se escriben en la carpeta "
+"temporal del sistema y se ponen desde allí."
+
+msgid ""
+"An SZX opens on exactly the model it names. If that model is not one of "
+"the built-in machines, it opens on the nearest one. When the snapshot was"
+" taken with something the machine does not have - other ULA timings, "
+"ULA+, an AY, a disk interface, a device that is not emulated - a warning "
+"lists it. The machine's settings are not changed for it."
+msgstr ""
+"Un SZX se abre exactamente en el modelo que indica. Si ese modelo no es "
+"una de las máquinas incorporadas, se abre en la más parecida. Si la "
+"instantánea se hizo con algo que la máquina no tiene — otros tiempos de "
+"la ULA, ULA+, un AY, una interfaz de disco, un dispositivo no emulado —, "
+"un aviso lo enumera. Los ajustes de la máquina no se cambian por ello."
+
+msgid ""
+"**Z80** and **SNA** are older formats that many programs read. They keep "
+"less:"
+msgstr ""
+"**Z80** y **SNA** son formatos más antiguos que leen muchos programas. "
+"Conservan menos:"
+
+msgid ""
+"`.z80` can be saved only on a 48K, 128K, +2, +2A, +3, Pentagon or "
+"Scorpion. It keeps the first 128K of memory (256K on a Scorpion), and not"
+" TR-DOS being paged in."
+msgstr ""
+"`.z80` solo se puede guardar en un 48K, 128K, +2, +2A, +3, Pentagon o "
+"Scorpion. Conserva los primeros 128K de memoria (256K en un Scorpion), y "
+"no que TR-DOS esté paginado."
+
+msgid ""
+"`.sna` has no place for the point in the frame. A running machine is "
+"saved at the next interrupt, which is where loading puts it back. If that"
+" cannot be done, the message **SNA: no frame position, use SZX** appears."
+" It keeps 48K or 128K of memory."
+msgstr ""
+"`.sna` no tiene sitio para el punto del fotograma. Una máquina en marcha "
+"se guarda en la siguiente interrupción, que es donde la carga la vuelve a"
+" poner. Si no se puede, aparece el mensaje **SNA: no frame position, use "
+"SZX**. Conserva 48K o 128K de memoria."
+
+msgid ""
+"A `.z80` or `.sna` opens on any machine that can run the model it was "
+"saved from: a 48K snapshot runs anywhere, a 128K one on anything but a "
+"48K, a +3 one on a +2A or +3."
+msgstr ""
+"Un `.z80` o `.sna` se abre en cualquier máquina capaz de ejecutar el "
+"modelo en el que se guardó: una instantánea de 48K funciona en "
+"cualquiera, una de 128K en todas menos el 48K, una de +3 en un +2A o +3."
+
+msgid "**SPG** is a ZX Evolution (TSConf) format. It opens only, on that machine."
+msgstr ""
+"**SPG** es un formato de ZX Evolution (TSConf). Solo se abre, en esa "
+"máquina."
+
+msgid "Quick save and load"
+msgstr "Guardado y carga rápidos"
+
+msgid ""
+"**File > Quick Save** keeps the machine as it is, both in memory and as "
+"an `.szx` file in the `quick` folder of the [settings folder](getting-"
+"started.md#where-the-settings-are). There is one quick save per machine: "
+"a new one replaces the last."
+msgstr ""
+"**File > Quick Save** guarda la máquina tal como está, tanto en memoria "
+"como en un archivo `.szx` de la carpeta `quick` de la [carpeta de ajustes"
+"](getting-started.md#where-the-settings-are). Hay un guardado rápido por "
+"máquina: uno nuevo sustituye al anterior."
+
+msgid ""
+"**File > Quick Load** puts back the quick save of the machine that is "
+"running. It works after a restart too, from the file. The message "
+"\"nothing quick saved\" means this machine has none."
+msgstr ""
+"**File > Quick Load** recupera el guardado rápido de la máquina en "
+"marcha. También funciona tras reiniciar el programa, desde el archivo. El"
+" mensaje «nothing quick saved» significa que esta máquina no tiene "
+"ninguno."
+
+msgid ""
+"**File > Undo Quick Load** takes back the last quick load and returns to "
+"where you were. Use it again and the quick load is back."
+msgstr ""
+"**File > Undo Quick Load** deshace la última carga rápida y vuelve a "
+"donde estabas. Úsalo otra vez y la carga rápida vuelve."
+
+msgid "Which machine opens a file"
+msgstr "Qué máquina abre un archivo"
+
+msgid ""
+"What a file needs and the machine it switches to are explained in [Run a "
+"program](getting-started.md#run-a-program). The **File types** page of "
+"**Options** sets it for each format."
+msgstr ""
+"Lo que necesita un archivo y la máquina a la que cambia se explican en "
+"[Ejecutar un programa](getting-started.md#run-a-program). La página "
+"**File types** de **Options** lo fija para cada formato."
+
+msgid "The **General** group at the top of the page:"
+msgstr "El grupo **General** de la parte superior de la página:"
+
+msgid ""
+"**Run opened media**, **Mount opened media** or **Ask: run or mount** - "
+"what opening a tape or a disk does. **Ask** shows the **Open Media** "
+"question; ticking **Remember my choice** there sets this box."
+msgstr ""
+"**Run opened media**, **Mount opened media** o **Ask: run or mount** — "
+"qué hace abrir una cinta o un disco. **Ask** muestra la pregunta **Open "
+"Media**; marcar allí **Remember my choice** fija esta casilla."
+
+msgid ""
+"**Remember mounted media** - the tape and the disks in the drives are "
+"back on the next start."
+msgstr ""
+"**Remember mounted media** — la cinta y los discos de las unidades "
+"vuelven a estar en el siguiente arranque."
+
+msgid "The **File types** group has a row per format:"
+msgstr "El grupo **File types** tiene una fila por formato:"
+
+msgid "**Format** - the kind of file."
+msgstr "**Format** — el tipo de archivo."
+
+msgid ""
+"**Needs** - what a machine must have to run it: **any machine**, **Beta "
+"Disk (TR-DOS)**, **+3 disk drive**, **TSConf**, **read from the file** (a"
+" `.z80` or `.sna` names its model), **exactly the one it was taken on** "
+"(SZX) or **exactly the one it was recorded on** (RZX)."
+msgstr ""
+"**Needs** — lo que debe tener una máquina para ejecutarlo: **any "
+"machine**, **Beta Disk (TR-DOS)**, **+3 disk drive**, **TSConf**, **read "
+"from the file** (un `.z80` o `.sna` indica su modelo), **exactly the one "
+"it was taken on** (SZX) o **exactly the one it was recorded on** (RZX)."
+
+msgid ""
+"**Opened on** - **Auto**, **Ask**, **Keep current**, or one machine from "
+"the list."
+msgstr ""
+"**Opened on** — **Auto**, **Ask**, **Keep current** o una máquina de la "
+"lista."
+
+msgid ""
+"A tape runs on any machine, so its rows have no **Ask**: **Auto** there "
+"only returns to your own machine after a file switched away from it. A "
+"machine picked in **Opened on** is used for every file of that format "
+"that it can run. **Restore defaults** sets every row back to **Auto**."
+msgstr ""
+"Una cinta funciona en cualquier máquina, así que sus filas no tienen "
+"**Ask**: **Auto** solo vuelve a tu propia máquina después de que un "
+"archivo te haya cambiado a otra. Una máquina elegida en **Opened on** se "
+"usa para todos los archivos de ese formato que pueda ejecutar. **Restore "
+"defaults** devuelve todas las filas a **Auto**."
+
+msgid ""
+"Only a file that is about to run decides the machine: a snapshot always, "
+"a tape or a disk only when it is run, and a disk only from drive A."
+msgstr ""
+"Solo un archivo que va a ejecutarse decide la máquina: una instantánea "
+"siempre, una cinta o un disco solo cuando se ejecutan, y un disco solo "
+"desde la unidad A."
+
+msgid "Favorites"
+msgstr "Favorites"
+
+msgid ""
+"The **Favorites** menu keeps files at hand. At the top it offers the file"
+" named in the window title: **Add \"name\"...** puts it on the list, "
+"**Remove \"name\"** takes it off. Below are your favorites; pick one to "
+"open it. **Organize...** opens the **Favorites** window."
+msgstr ""
+"El menú **Favorites** tiene archivos a mano. Arriba ofrece el archivo que"
+" aparece en el título de la ventana: **Add \"name\"...** lo pone en la "
+"lista, **Remove \"name\"** lo quita. Debajo están tus favoritos; elige "
+"uno para abrirlo. **Organize...** abre la ventana **Favorites**."
+
+#, python-brace-format
+msgid ""
+"Adding a favorite asks for its **Name**, the text in the menu, and its "
+"**Path**. The {icon}`fileopen` button beside it picks the file in the "
+"file dialog."
+msgstr ""
+"Al añadir un favorito se piden su **Name**, el texto del menú, y su "
+"**Path**. El botón {icon}`fileopen` de al lado elige el archivo en el "
+"diálogo de archivos."
+
+#, python-brace-format
+msgid ""
+"The **Favorites** window lists every favorite with its name and file. "
+"Double-click a row to change it. The buttons beside the list {icon}`add` "
+"add a file, move the selected one {icon}`arrow-up` up or {icon}`arrow-"
+"down` down, and {icon}`cancel` remove it. The same window opens from "
+"{icon}`star` **Manage favorites...** on the **Application** page of "
+"**Options**."
+msgstr ""
+"La ventana **Favorites** muestra cada favorito con su nombre y su "
+"archivo. Haz doble clic en una fila para cambiarla. Los botones junto a "
+"la lista sirven para {icon}`add` añadir un archivo, mover el seleccionado"
+" {icon}`arrow-up` arriba o {icon}`arrow-down` abajo y {icon}`cancel` "
+"quitarlo. La misma ventana se abre desde {icon}`star` **Manage "
+"favorites...** en la página **Application** de **Options**."
+
+msgid ""
+"The **Add to Favorites** hotkey adds the file in use, with the same "
+"question. It has no key until you give it one on the **Hotkeys** page of "
+"**Options**."
+msgstr ""
+"El atajo de teclado **Add to Favorites** añade el archivo en uso, con la "
+"misma pregunta. No tiene tecla hasta que le asignes una en la página "
+"**Hotkeys** de **Options**."
+
+msgid "RZX recordings"
+msgstr "Grabaciones RZX"
+
+msgid ""
+"An `.rzx` file is a recording of a whole session, played back exactly. "
+"Opening one plays it in the **RZX Player**, on exactly the machine it was"
+" recorded on. See [Playing an RZX](capture.md#playing-an-rzx) and "
+"[Recording an RZX](capture.md#recording-an-rzx)."
+msgstr ""
+"Un archivo `.rzx` es la grabación de una sesión entera, que se reproduce "
+"exactamente. Al abrirlo se reproduce en el **RZX Player**, exactamente en"
+" la máquina en la que se grabó. Consulta [Reproducir un RZX](capture.md"
+"#playing-an-rzx) y [Grabar un RZX](capture.md#recording-an-rzx)."
+
+msgid "file format"
+msgstr "formato de archivo"
+
+msgid "TAP"
+msgstr "TAP"
+
+msgid "TZX"
+msgstr "TZX"
+
+msgid "WAV"
+msgstr "WAV"
+
+msgid "TRD"
+msgstr "TRD"
+
+msgid "SCL"
+msgstr "SCL"
+
+msgid "UDI"
+msgstr "UDI"
+
+msgid "DSK"
+msgstr "DSK"
+
+msgid "TD0"
+msgstr "TD0"
+
+msgid "FDI"
+msgstr "FDI"
+
+msgid "IMA"
+msgstr "IMA"
+
+msgid "IMG"
+msgstr "IMG"
+
+msgid "Hobeta"
+msgstr "Hobeta"
+
+msgid "cartridge"
+msgstr "cartucho"
+
+msgid "file"
+msgstr "archivo"
+
+msgid "RAW file to disk"
+msgstr "RAW file to disk"
+
+msgid "Recent"
+msgstr "Recent"
+
+msgid "Reload"
+msgstr "Reload"
+
+msgid "Auto-load labels"
+msgstr "Auto-load labels"
+
+msgid "labels file"
+msgstr "archivo de etiquetas"
+
+msgid "file dialog"
+msgstr "diálogo de archivos"
+
+msgid "snapshot"
+msgstr "instantánea"
+
+msgid "saving"
+msgstr "guardar"
+
+msgid "tape"
+msgstr "cinta"
+
+msgid "disk"
+msgstr "disco"
+
+msgid "Save Changed Disks"
+msgstr "Save Changed Disks"
+
+msgid "SZX"
+msgstr "SZX"
+
+msgid "save state"
+msgstr "guardar estado"
+
+msgid "Z80"
+msgstr "Z80"
+
+msgid "SNA"
+msgstr "SNA"
+
+msgid "SPG"
+msgstr "SPG"
+
+msgid "Quick Save"
+msgstr "Quick Save"
+
+msgid "Quick Load"
+msgstr "Quick Load"
+
+msgid "Undo Quick Load"
+msgstr "Undo Quick Load"
+
+msgid "quick save"
+msgstr "guardado rápido"
+
+msgid "File types page"
+msgstr "página File types"
+
+msgid "machine"
+msgstr "máquina"
+
+msgid "switched by a file"
+msgstr "cambiada por un archivo"
+
+msgid "Opened on"
+msgstr "Opened on"
+
+msgid "Run opened media"
+msgstr "Run opened media"
+
+msgid "Mount opened media"
+msgstr "Mount opened media"
+
+msgid "Remember mounted media"
+msgstr "Remember mounted media"
+
+msgid "Add to Favorites"
+msgstr "Add to Favorites"
+
+msgid "Manage favorites"
+msgstr "Manage favorites"
+
+msgid "RZX"
+msgstr "RZX"
+
+msgid "RZX Player"
+msgstr "RZX Player"
+

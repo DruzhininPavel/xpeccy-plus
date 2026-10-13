@@ -1,0 +1,4 @@
+{
+  "steps": [["wait", 3000], ["run", "open-menu @picture"], ["wait", 800]],
+  "capture": "menus"
+}

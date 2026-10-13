@@ -1,0 +1,56 @@
+{
+  "config": {
+    "DEBUGA": {
+      "evo.tab": "1",
+      "evo.detached": "yes",
+      "evo.window": "120:80:640:520"
+    }
+  },
+  "files": {
+    "UWOL.SPG": {
+      "url": "https://prods.tslabs.info/files/uwol_1.0.zip",
+      "sha256": "0050c6ef5cb5a83b50c5a440384ce559d23af50da3d2421f82449d7d4163c538",
+      "member": "uwol_1.0.spg"
+    }
+  },
+  "prepare": [
+    "-m",
+    "evo-tsconf",
+    "{media}/UWOL.SPG",
+    "--bench",
+    "3000",
+    "--bench-keys",
+    "600:_/10,1200:_/10,1800:_/10,2600:_/10",
+    "--bench-save",
+    "{media}/uwol.szx"
+  ],
+  "args": [
+    "-m",
+    "evo-tsconf",
+    "{media}/uwol.szx"
+  ],
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "activate-window ZX Evolution"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "click",
+      "QTreeWidget",
+      80,
+      62
+    ],
+    [
+      "wait",
+      800
+    ]
+  ]
+}

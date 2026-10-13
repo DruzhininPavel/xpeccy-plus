@@ -1,0 +1,9 @@
+{# the index under the chapters; not in the toctree, which the PDF's single page builder
+   cannot take it into #}
+<div class="sidebar-tree xp-index-link">
+  <ul>
+    <li class="toctree-l1{% if pagename == 'genindex' %} current current-page{% endif %}">
+      <a class="reference internal" href="{{ pathto('genindex') }}">{{ _('Index') }}</a>
+    </li>
+  </ul>
+</div>

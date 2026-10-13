@@ -1,0 +1,40 @@
+{
+  "args": [
+    "-m",
+    "pent1024"
+  ],
+  "steps": [
+    [
+      "wait",
+      4000
+    ],
+    [
+      "run",
+      "run-action key.debuger"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "run",
+      "show-panel CMOSDUMPWIDGET"
+    ],
+    [
+      "wait",
+      700
+    ]
+  ],
+  "crop": {
+    "widget": "CMOSDUMPWIDGET",
+    "pad": 0
+  }
+}

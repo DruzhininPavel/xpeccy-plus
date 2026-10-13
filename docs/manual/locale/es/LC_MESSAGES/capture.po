@@ -1,0 +1,707 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Screenshots and recording"
+msgstr "Capturas de pantalla y grabación"
+
+msgid ""
+"The **Capture** menu takes down what the machine shows and plays: still "
+"pictures, video, sound, and RZX recordings of a game played."
+msgstr ""
+"El menú **Capture** registra lo que la máquina muestra y reproduce: "
+"imágenes fijas, vídeo, sonido y grabaciones RZX de una partida."
+
+msgid "Screenshots"
+msgstr "Capturas de pantalla"
+
+msgid ""
+"**Capture > Screenshot** (F7 in both hotkey presets) saves the picture as"
+" a file. The message **screenshot saved** appears in the corner of the "
+"picture."
+msgstr ""
+"**Capture > Screenshot** (F7 en los dos preajustes de atajos) guarda la "
+"imagen como archivo. El mensaje **screenshot saved** aparece en la "
+"esquina de la imagen."
+
+msgid ""
+"**Capture > Screenshot Series** takes several in a row, a set number of "
+"frames apart. Use **Capture > Screenshot** while a series runs to stop "
+"it."
+msgstr ""
+"**Capture > Screenshot Series** hace varias seguidas, separadas por un "
+"número fijo de fotogramas. Usa **Capture > Screenshot** mientras dura una"
+" serie para detenerla."
+
+msgid ""
+"The files go into the screenshots folder, named after the time they were "
+"taken: `xpeccy_153012_250.png` is 15:30:12 and 250 ms."
+msgstr ""
+"Los archivos van a la carpeta de capturas, con el nombre de la hora en "
+"que se hicieron: `xpeccy_153012_250.png` es 15:30:12 y 250 ms."
+
+msgid "Screenshot settings"
+msgstr "Ajustes de las capturas"
+
+msgid "The **Screenshots** group on the **Video** page of **Options**:"
+msgstr "El grupo **Screenshots** de la página **Video** de **Options**:"
+
+#, python-brace-format
+msgid ""
+"**Output** - the folder; the {icon}`fileopen` button beside it picks one."
+" Your home folder at first."
+msgstr ""
+"**Output** — la carpeta; el botón {icon}`fileopen` de al lado elige una. "
+"Al principio, tu carpeta personal."
+
+msgid "**Format** - the kind of file, see below."
+msgstr "**Format** — el tipo de archivo, consulta más abajo."
+
+msgid ""
+"**Combo** ... **each** ... **frames** - how many pictures **Screenshot "
+"Series** takes, and how many frames apart."
+msgstr ""
+"**Combo** ... **each** ... **frames** — cuántas imágenes hace "
+"**Screenshot Series** y cuántos fotogramas las separan."
+
+msgid "**No border** - the screen only, without the border around it."
+msgstr "**No border** — solo la pantalla, sin el borde que la rodea."
+
+msgid "Format"
+msgstr "Formato"
+
+msgid "What is saved"
+msgstr "Qué se guarda"
+
+msgid "**PNG**, **BMP**, **JPG**"
+msgstr "**PNG**, **BMP**, **JPG**"
+
+msgid "the machine's picture at the window's size, without the shader"
+msgstr "la imagen de la máquina al tamaño de la ventana, sin el shader"
+
+msgid "**SCR**"
+msgstr "**SCR**"
+
+msgid "the 6912 bytes of the machine's screen memory, to load back on a Spectrum"
+msgstr ""
+"los 6912 bytes de la memoria de pantalla de la máquina, para volver a "
+"cargarlos en un Spectrum"
+
+msgid "**Hobeta**"
+msgstr "**Hobeta**"
+
+msgid ""
+"the same screen memory as a Hobeta file (`.$C`), which goes onto a TR-DOS"
+" disk as `screen`"
+msgstr ""
+"la misma memoria de pantalla como archivo Hobeta (`.$C`), que va a un "
+"disco TR-DOS como `screen`"
+
+msgid ""
+"**SCR** and **Hobeta** hold only the standard Spectrum screen: a picture "
+"made in another video mode does not fit in them."
+msgstr ""
+"**SCR** y **Hobeta** solo contienen la pantalla estándar del Spectrum: "
+"una imagen hecha en otro modo de vídeo no cabe en ellos."
+
+msgid "Video"
+msgstr "Vídeo"
+
+msgid ""
+"**Capture > Record Video** starts a video, and the same command again "
+"stops it. While it records, a blinking sign in the top right corner of "
+"the picture says so; it is not in the video. When it stops, the message "
+"**video saved:** names the file."
+msgstr ""
+"**Capture > Record Video** inicia un vídeo, y el mismo comando otra vez "
+"lo detiene. Mientras graba, lo indica un símbolo parpadeante en la "
+"esquina superior derecha de la imagen; no sale en el vídeo. Al detenerse,"
+" el mensaje **video saved:** da el nombre del archivo."
+
+msgid ""
+"The video has the picture and the sound together, in an MP4 file by "
+"default. It is made by FFmpeg, a free program that is not part of "
+"Xpeccy+."
+msgstr ""
+"El vídeo lleva la imagen y el sonido juntos, en un archivo MP4 por "
+"defecto. Lo crea FFmpeg, un programa libre que no forma parte de Xpeccy+."
+
+msgid "Getting FFmpeg"
+msgstr "Obtener FFmpeg"
+
+msgid ""
+"Xpeccy+ looks for FFmpeg in the `ffmpeg` folder inside the [settings "
+"folder](getting-started.md#where-the-settings-are), then wherever your "
+"system finds programs (and on macOS in Homebrew's folders). To use "
+"another copy, give its path in the **FFmpeg** field of the **Recording** "
+"group; leave the field empty to let Xpeccy+ find it."
+msgstr ""
+"Xpeccy+ busca FFmpeg en la carpeta `ffmpeg` dentro de la [carpeta de "
+"ajustes](getting-started.md#where-the-settings-are), y después donde tu "
+"sistema busca los programas (y en macOS, en las carpetas de Homebrew). "
+"Para usar otra copia, indica su ruta en el campo **FFmpeg** del grupo "
+"**Recording**; deja el campo vacío para que Xpeccy+ lo busque."
+
+#, python-brace-format
+msgid ""
+"When there is none, **Record Video** opens the **Get FFmpeg** window "
+"instead (so does the {icon}`arrow-down` arrow button beside the "
+"**FFmpeg** field):"
+msgstr ""
+"Si no hay ninguno, **Record Video** abre en su lugar la ventana **Get "
+"FFmpeg** (igual que el botón de flecha {icon}`arrow-down` junto al campo "
+"**FFmpeg**):"
+
+#, python-brace-format
+msgid ""
+"**Windows** - downloads a ready-made FFmpeg (about 190 MB) into the "
+"settings folder and checks it. {icon}`arrow-down` **Get latest** takes "
+"the newest release, {icon}`arrow-down` **Get previous** the one before "
+"it. Take the previous one if your graphics driver is not new: with an old"
+" driver the newest release cannot use the graphics card to encode."
+msgstr ""
+"**Windows** — descarga un FFmpeg ya compilado (unos 190 MB) en la carpeta"
+" de ajustes y lo comprueba. {icon}`arrow-down` **Get latest** toma la "
+"versión más reciente, {icon}`arrow-down` **Get previous** la anterior. "
+"Toma la anterior si tu controlador gráfico no es reciente: con un "
+"controlador antiguo, la última versión no puede usar la tarjeta gráfica "
+"para codificar."
+
+msgid ""
+"**Linux** - installs the distribution's `ffmpeg` package; the system asks"
+" for your password."
+msgstr ""
+"**Linux** — instala el paquete `ffmpeg` de la distribución; el sistema te"
+" pide la contraseña."
+
+msgid ""
+"**macOS** - installs it with Homebrew. Without Homebrew the window says "
+"where to get it."
+msgstr ""
+"**macOS** — lo instala con Homebrew. Sin Homebrew, la ventana dice dónde "
+"conseguirlo."
+
+msgid ""
+"When the window says **FFmpeg ... is ready**, close it and use **Record "
+"Video** again."
+msgstr ""
+"Cuando la ventana diga **FFmpeg ... is ready**, ciérrala y vuelve a usar "
+"**Record Video**."
+
+msgid "Recording settings"
+msgstr "Ajustes de grabación"
+
+msgid "The **Recording** group on the **Video** page of **Options**:"
+msgstr "El grupo **Recording** de la página **Video** de **Options**:"
+
+msgid ""
+"**Source** - **RAW frame** records the machine's picture alone, with no "
+"shader and no indicators. **Screen** records the window as you see it, "
+"shader and all."
+msgstr ""
+"**Source** — **RAW frame** graba solo la imagen de la máquina, sin shader"
+" ni indicadores. **Screen** graba la ventana tal como la ves, con el "
+"shader incluido."
+
+msgid ""
+"**Scale** - how many times bigger than the machine's picture, from "
+"**Scale x1** to **Scale x8** (for **RAW frame** only)."
+msgstr ""
+"**Scale** — cuántas veces mayor que la imagen de la máquina, de **Scale "
+"x1** a **Scale x8** (solo para **RAW frame**)."
+
+msgid ""
+"**Real FPS** or **50 FPS** - the machine's own frame rate, which is a "
+"little off 50 on most machines, or exactly 50 with the sound fitted to "
+"it."
+msgstr ""
+"**Real FPS** o **50 FPS** — la frecuencia de fotogramas propia de la "
+"máquina, que en la mayoría de las máquinas se aparta un poco de 50, o "
+"exactamente 50 con el sonido ajustado a ella."
+
+msgid "**Output** - the folder; your system's videos folder at first."
+msgstr "**Output** — la carpeta; al principio, la carpeta de vídeos de tu sistema."
+
+msgid "**FFmpeg** - see [Getting FFmpeg](#getting-ffmpeg)."
+msgstr "**FFmpeg** — consulta [Obtener FFmpeg](#getting-ffmpeg)."
+
+msgid ""
+"The size and rate of the video are shown beside them. The **Border** "
+"setting of the **Picture** group changes the size too."
+msgstr ""
+"El tamaño y la frecuencia del vídeo se muestran a su lado. El ajuste "
+"**Border** del grupo **Picture** también cambia el tamaño."
+
+#, python-brace-format
+msgid ""
+"{icon}`settings` **Advanced settings** opens **Recording: Advanced "
+"Settings**:"
+msgstr ""
+"{icon}`settings` **Advanced settings** abre **Recording: Advanced "
+"Settings**:"
+
+msgid ""
+"**Video** - **Container** (**MP4** or **MKV**), **Codec**, **Preset** "
+"(slower makes a smaller file, but can hold the machine up), **Quality "
+"(CRF)** (lower is better; 18 looks lossless), **Color**, and **Blend up "
+"to 60 fps**. The codecs are **H.264** and **H.265**, **AV1** and the "
+"graphics card encoders (**NVENC**, **AMF**, **QSV**) when your FFmpeg and"
+" computer can use them, and **FFV1, lossless**, which goes into MKV."
+msgstr ""
+"**Video** — **Container** (**MP4** o **MKV**), **Codec**, **Preset** (más"
+" lento da un archivo más pequeño, pero puede frenar la máquina), "
+"**Quality (CRF)** (más bajo es mejor; con 18 parece sin pérdida), "
+"**Color** y **Blend up to 60 fps**. Los códecs son **H.264** y **H.265**,"
+" **AV1** y los codificadores de la tarjeta gráfica (**NVENC**, **AMF**, "
+"**QSV**) cuando tu FFmpeg y tu equipo pueden usarlos, y **FFV1, "
+"lossless**, que va en MKV."
+
+msgid ""
+"**Sound** - **Codec** (**Auto**, **AAC** or **Opus**) and its bit rate. "
+"**Keep pitch at 50 FPS** keeps the notes in tune when **50 FPS** speeds "
+"the sound up a little."
+msgstr ""
+"**Sound** — **Codec** (**Auto**, **AAC** u **Opus**) y su tasa de bits. "
+"**Keep pitch at 50 FPS** mantiene las notas afinadas cuando **50 FPS** "
+"acelera un poco el sonido."
+
+msgid ""
+"**File name template** - the name of the video file, shown worked out "
+"under it."
+msgstr ""
+"**File name template** — el nombre del archivo de vídeo, con el resultado"
+" mostrado debajo."
+
+msgid "**Auto recording** - see below."
+msgstr "**Auto recording** — consulta más abajo."
+
+msgid ""
+"**FFmpeg** - **Extra options** for the encoder, **Video override** and "
+"**Sound override** to replace the options Xpeccy+ makes, and the whole "
+"FFmpeg command as it will run."
+msgstr ""
+"**FFmpeg** — **Extra options** para el codificador, **Video override** y "
+"**Sound override** para sustituir las opciones que genera Xpeccy+, y el "
+"comando de FFmpeg completo tal como se ejecutará."
+
+msgid "The file name template takes these keys:"
+msgstr "La plantilla del nombre de archivo admite estas claves:"
+
+msgid "Key"
+msgstr "Clave"
+
+msgid "Becomes"
+msgstr "Se convierte en"
+
+#, python-format
+msgid "`%d`"
+msgstr "`%d`"
+
+msgid "the date, `20260929`"
+msgstr "la fecha, `20260929`"
+
+msgid "`%t`"
+msgstr "`%t`"
+
+msgid "the time, `153012`"
+msgstr "la hora, `153012`"
+
+#, python-format
+msgid "`%image`"
+msgstr "`%image`"
+
+msgid ""
+"the name of the file in use (snapshot, tape or disk), or the machine when"
+" there is none"
+msgstr ""
+"el nombre del archivo en uso (instantánea, cinta o disco), o la máquina "
+"si no hay ninguno"
+
+msgid "`%machine`"
+msgstr "`%machine`"
+
+msgid "the machine"
+msgstr "la máquina"
+
+#, python-format
+msgid ""
+"The default is `xpeccy-plus_%d_%t_%image`. The name is made when the "
+"recording stops, so `%image` is the last file that was in use."
+msgstr ""
+"Por defecto es `xpeccy-plus_%d_%t_%image`. El nombre se forma cuando se "
+"detiene la grabación, así que `%image` es el último archivo que estuvo en"
+" uso."
+
+msgid "Auto recording"
+msgstr "Grabación automática"
+
+msgid ""
+"**Auto recording** starts and stops a video by itself, to catch a demo or"
+" a game from its first frame."
+msgstr ""
+"**Auto recording** inicia y detiene un vídeo por sí solo, para captar una"
+" demo o un juego desde su primer fotograma."
+
+msgid ""
+"**Autostart at** - starts a video when the condition is met: **Code in "
+"RAM** (the first program code the machine runs from RAM, which is where a"
+" loaded program starts), or the CPU reaching an address: **PC ==**, **PC "
+">=** or **PC <=**, with the address beside it (`#8000`, `$8000`, `0x8000`"
+" or `32768`). It starts once after each reset; switched on in Options, it"
+" waits for the next reset."
+msgstr ""
+"**Autostart at** — inicia un vídeo cuando se cumple la condición: **Code "
+"in RAM** (el primer código de programa que la máquina ejecuta desde la "
+"RAM, que es donde empieza un programa cargado) o que la CPU llegue a una "
+"dirección: **PC ==**, **PC >=** o **PC <=**, con la dirección al lado "
+"(`#8000`, `$8000`, `0x8000` o `32768`). Se inicia una vez tras cada "
+"reinicio; si se activa en Options, espera al siguiente reinicio."
+
+msgid ""
+"**Autostop at** - stops any video, one started by hand too: at a "
+"**Reset**, or when the CPU reaches an address as above."
+msgstr ""
+"**Autostop at** — detiene cualquier vídeo, también uno iniciado a mano: "
+"en un **Reset**, o cuando la CPU llega a una dirección como arriba."
+
+msgid ""
+"**Record Video** by hand always has the last word: a video started or "
+"stopped by hand is not started again until the next reset."
+msgstr ""
+"**Record Video** a mano siempre tiene la última palabra: un vídeo "
+"iniciado o detenido a mano no vuelve a iniciarse hasta el siguiente "
+"reinicio."
+
+msgid "The **?** button lists the command-line switches for recording:"
+msgstr "El botón **?** enumera las opciones de línea de comandos para grabar:"
+
+msgid ""
+"`--video-out <file>` - record from the start into this file; `.mp4` or "
+"`.mkv` picks the container."
+msgstr ""
+"`--video-out <file>` — graba desde el inicio en este archivo; `.mp4` o "
+"`.mkv` elige el contenedor."
+
+msgid ""
+"`--video-auto`, `--no-video-auto` - auto start and stop on or off for "
+"this run, with the conditions set in Options."
+msgstr ""
+"`--video-auto`, `--no-video-auto` — activa o desactiva el inicio y la "
+"parada automáticos en esta ejecución, con las condiciones fijadas en "
+"Options."
+
+msgid ""
+"`--video-autostart <at>`, `--video-autostop <at>` - the conditions for "
+"this run: `ram`, `reset`, or an address such as `==#6000` or "
+"`\">=#8000\"`."
+msgstr ""
+"`--video-autostart <at>`, `--video-autostop <at>` — las condiciones para "
+"esta ejecución: `ram`, `reset` o una dirección como `==#6000` o "
+"`\">=#8000\"`."
+
+msgid "They hold for that run only. See [Command line](command-line.md)."
+msgstr ""
+"Solo valen para esa ejecución. Consulta [Línea de comandos](command-"
+"line.md)."
+
+msgid "Sound to WAV"
+msgstr "Sonido a WAV"
+
+msgid ""
+"**Capture > Record Sound to WAV...** asks for a file and writes "
+"everything the machine plays into it, until you choose the command again."
+" The file is 16-bit stereo, at the **Rate** set on the **Sound** page of "
+"**Options**. The messages **start WAV output** and **stop WAV output** "
+"confirm it. `--wav-out <file>` on the command line records from the "
+"start."
+msgstr ""
+"**Capture > Record Sound to WAV...** pide un archivo y escribe en él todo"
+" lo que reproduce la máquina, hasta que vuelvas a elegir el comando. El "
+"archivo es estéreo de 16 bits, a la **Rate** fijada en la página "
+"**Sound** de **Options**. Los mensajes **start WAV output** y **stop WAV "
+"output** lo confirman. `--wav-out <file>` en la línea de comandos graba "
+"desde el inicio."
+
+msgid "RZX recordings"
+msgstr "Grabaciones RZX"
+
+msgid ""
+"An RZX file records a game as it is played: the machine's state at the "
+"start and every key press and joystick move after it. Played back, it "
+"repeats the game exactly, frame for frame, on any program that plays RZX."
+" It is much smaller than a video, and it is how long games are shown "
+"finished, or how a hard part is shown done."
+msgstr ""
+"Un archivo RZX graba una partida tal como se juega: el estado de la "
+"máquina al principio y cada pulsación de tecla y movimiento del joystick "
+"después. Al reproducirlo, repite la partida exactamente, fotograma a "
+"fotograma, en cualquier programa que reproduzca RZX. Es mucho más pequeño"
+" que un vídeo, y es la forma de mostrar juegos largos terminados, o una "
+"parte difícil superada."
+
+msgid "Playing an RZX"
+msgstr "Reproducir un RZX"
+
+msgid "![The RZX Player](images/rzx-player.png)"
+msgstr "![El RZX Player](images/rzx-player.png)"
+
+msgid "The RZX Player"
+msgstr "El RZX Player"
+
+#, python-brace-format
+msgid ""
+"Open an `.rzx` file with **File > Open...**, or with the {icon}`fileopen`"
+" button in the **RZX Player** (**Capture > RZX > RZX Player**). It plays "
+"on the machine it was recorded on. The **RZX Player** shows:"
+msgstr ""
+"Abre un archivo `.rzx` con **File > Open...**, o con el botón "
+"{icon}`fileopen` del **RZX Player** (**Capture > RZX > RZX Player**). Se "
+"reproduce en la máquina en la que se grabó. El **RZX Player** muestra:"
+
+msgid ""
+"**Recorded with**, **Machine**, **Length** and **Snapshots** - what the "
+"file says about itself. For files made by Xpeccy+, **Recorded with** also"
+" tells how many rollbacks and how much slow motion went into it."
+msgstr ""
+"**Recorded with**, **Machine**, **Length** y **Snapshots** — lo que el "
+"archivo dice de sí mismo. En los archivos hechos con Xpeccy+, **Recorded "
+"with** también indica cuántos retrocesos y cuánta cámara lenta se usaron."
+
+msgid ""
+"the list of the file's blocks, with **Start**, **Length**, **Block** and "
+"**Info**; the part being played is marked. Double-click a row to go "
+"there."
+msgstr ""
+"la lista de bloques del archivo, con **Start**, **Length**, **Block** e "
+"**Info**; la parte que se reproduce está marcada. Haz doble clic en una "
+"fila para ir allí."
+
+msgid "the progress bar and the time; click the bar to go to that point."
+msgstr ""
+"la barra de progreso y el tiempo; haz clic en la barra para ir a ese "
+"punto."
+
+#, python-brace-format
+msgid ""
+"{icon}`tape-rec` **Record**, {icon}`tape-play` **Play / Pause**, {icon"
+"}`tape-stop` **Stop**, and {icon}`rzx-bookmark` **Add a bookmark to roll "
+"back to**."
+msgstr ""
+"{icon}`tape-rec` **Record**, {icon}`tape-play` **Play / Pause**, {icon"
+"}`tape-stop` **Stop** y {icon}`rzx-bookmark` **Add a bookmark to roll "
+"back to**."
+
+msgid "Recording an RZX"
+msgstr "Grabar un RZX"
+
+msgid "![Capture > RZX](images/menu-rzx.png)"
+msgstr "![Capture > RZX](images/menu-rzx.png)"
+
+msgid "Capture > RZX"
+msgstr "Capture > RZX"
+
+msgid ""
+"**Capture > RZX > Record...** asks for a file and starts recording from "
+"the machine as it is now. A blinking sign in the corner of the picture "
+"shows it records. The file is brought up to date every 30 seconds, so a "
+"crash does not lose the game."
+msgstr ""
+"**Capture > RZX > Record...** pide un archivo y empieza a grabar desde la"
+" máquina tal como está ahora. Un símbolo parpadeante en la esquina de la "
+"imagen indica que graba. El archivo se actualiza cada 30 segundos, así "
+"que un fallo no hace perder la partida."
+
+#, python-brace-format
+msgid ""
+"{icon}`tape-rec` **Record** in the **RZX Player** during playback takes "
+"over from that point instead: the recording goes on from the frame "
+"reached, with all that was played before it."
+msgstr ""
+"{icon}`tape-rec` **Record** en el **RZX Player** durante la reproducción "
+"toma el relevo desde ese punto: la grabación sigue desde el fotograma "
+"alcanzado, con todo lo reproducido antes."
+
+msgid "While you record:"
+msgstr "Mientras grabas:"
+
+msgid ""
+"**Add Bookmark** - remember this point. A bookmark made while the machine"
+" is paused is made when it runs on."
+msgstr ""
+"**Add Bookmark** — recuerda este punto. Un marcador creado con la máquina"
+" en pausa se crea cuando vuelve a funcionar."
+
+msgid ""
+"**Rollback to Bookmark** - go back to the last bookmark, or to the start "
+"when there is none, and play on from there; what was recorded after it is"
+" thrown away. [Rewind](time.md) takes the recording back the same way."
+msgstr ""
+"**Rollback to Bookmark** — vuelve al último marcador, o al principio si "
+"no hay ninguno, y sigue jugando desde allí; lo grabado después se "
+"descarta. El [rebobinado](time.md) hace retroceder la grabación del mismo"
+" modo."
+
+msgid ""
+"**Stop and Finalize** - end the recording and save it without the "
+"bookmarks: this is the file to share."
+msgstr ""
+"**Stop and Finalize** — termina la grabación y la guarda sin los "
+"marcadores: este es el archivo para compartir."
+
+#, python-brace-format
+msgid ""
+"Ending the recording any other way - **Record...** again, {icon}`tape-"
+"stop` **Stop** in the player, opening another RZX file or switching "
+"machines - saves it with its bookmarks, so you can go on with it later. "
+"**Open and Continue...** does that: it opens a recording, runs it to its "
+"end at full speed, and records on from there; you are asked for the file,"
+" with the same one offered."
+msgstr ""
+"Terminar la grabación de cualquier otra forma — **Record...** otra vez, "
+"{icon}`tape-stop` **Stop** en el reproductor, abrir otro archivo RZX o "
+"cambiar de máquina — la guarda con sus marcadores, para que puedas "
+"continuarla más tarde. **Open and Continue...** hace eso: abre una "
+"grabación, la ejecuta hasta el final a toda velocidad y sigue grabando "
+"desde allí; se te pide el archivo, con el mismo ya propuesto."
+
+msgid ""
+"**Finalize File...** removes the bookmarks from a recording saved "
+"earlier, without playing it."
+msgstr ""
+"**Finalize File...** quita los marcadores de una grabación guardada "
+"antes, sin reproducirla."
+
+msgid "Screenshot"
+msgstr "Screenshot"
+
+msgid "Screenshot Series"
+msgstr "Screenshot Series"
+
+msgid "screen capture"
+msgstr "captura de pantalla"
+
+msgid "format"
+msgstr "formato"
+
+msgid "folder"
+msgstr "carpeta"
+
+msgid "No border"
+msgstr "No border"
+
+msgid "SCR"
+msgstr "SCR"
+
+msgid "Hobeta"
+msgstr "Hobeta"
+
+msgid "PNG"
+msgstr "PNG"
+
+msgid "Record Video"
+msgstr "Record Video"
+
+msgid "video"
+msgstr "vídeo"
+
+msgid "FFmpeg"
+msgstr "FFmpeg"
+
+msgid "Get FFmpeg"
+msgstr "Get FFmpeg"
+
+msgid "settings"
+msgstr "ajustes"
+
+msgid "RAW frame"
+msgstr "RAW frame"
+
+msgid "Real FPS"
+msgstr "Real FPS"
+
+msgid "Recording: Advanced Settings"
+msgstr "Recording: Advanced Settings"
+
+msgid "codec"
+msgstr "códec"
+
+msgid "MP4"
+msgstr "MP4"
+
+msgid "MKV"
+msgstr "MKV"
+
+msgid "NVENC"
+msgstr "NVENC"
+
+msgid "File name template"
+msgstr "File name template"
+
+msgid "file name"
+msgstr "nombre de archivo"
+
+msgid "Autostart at"
+msgstr "Autostart at"
+
+msgid "Autostop at"
+msgstr "Autostop at"
+
+msgid "Record Sound to WAV"
+msgstr "Record Sound to WAV"
+
+msgid "WAV"
+msgstr "WAV"
+
+msgid "recording sound"
+msgstr "grabar sonido"
+
+msgid "sound"
+msgstr "sonido"
+
+msgid "recording"
+msgstr "grabación"
+
+msgid "RZX"
+msgstr "RZX"
+
+msgid "RZX Player"
+msgstr "RZX Player"
+
+msgid "playing"
+msgstr "reproducción"
+
+msgid "Add Bookmark"
+msgstr "Add Bookmark"
+
+msgid "Rollback to Bookmark"
+msgstr "Rollback to Bookmark"
+
+msgid "Stop and Finalize"
+msgstr "Stop and Finalize"
+
+msgid "bookmark"
+msgstr "marcador"
+
+msgid "Open and Continue"
+msgstr "Open and Continue"
+
+msgid "Finalize File"
+msgstr "Finalize File"
+

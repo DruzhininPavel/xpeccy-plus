@@ -1,0 +1,696 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Screenshots and recording"
+msgstr "Знімки екрана й запис"
+
+msgid ""
+"The **Capture** menu takes down what the machine shows and plays: still "
+"pictures, video, sound, and RZX recordings of a game played."
+msgstr ""
+"Меню **Capture** записує те, що машина показує й відтворює: нерухомі "
+"зображення, відео, звук і записи RZX зіграної гри."
+
+msgid "Screenshots"
+msgstr "Знімки екрана"
+
+msgid ""
+"**Capture > Screenshot** (F7 in both hotkey presets) saves the picture as"
+" a file. The message **screenshot saved** appears in the corner of the "
+"picture."
+msgstr ""
+"**Capture > Screenshot** (F7 в обох наборах гарячих клавіш) зберігає "
+"зображення у файл. У кутку зображення з'являється повідомлення "
+"**screenshot saved**."
+
+msgid ""
+"**Capture > Screenshot Series** takes several in a row, a set number of "
+"frames apart. Use **Capture > Screenshot** while a series runs to stop "
+"it."
+msgstr ""
+"**Capture > Screenshot Series** робить кілька знімків поспіль через "
+"задану кількість кадрів. Щоб зупинити серію, виберіть **Capture > "
+"Screenshot**, поки вона триває."
+
+msgid ""
+"The files go into the screenshots folder, named after the time they were "
+"taken: `xpeccy_153012_250.png` is 15:30:12 and 250 ms."
+msgstr ""
+"Файли потрапляють у папку знімків екрана й називаються за часом знімка: "
+"`xpeccy_153012_250.png` — це 15:30:12 і 250 мс."
+
+msgid "Screenshot settings"
+msgstr "Налаштування знімків екрана"
+
+msgid "The **Screenshots** group on the **Video** page of **Options**:"
+msgstr "Група **Screenshots** на сторінці **Video** вікна **Options**:"
+
+#, python-brace-format
+msgid ""
+"**Output** - the folder; the {icon}`fileopen` button beside it picks one."
+" Your home folder at first."
+msgstr ""
+"**Output** — папка; кнопка {icon}`fileopen` поруч дає змогу її вибрати. "
+"Спочатку це ваша домашня папка."
+
+msgid "**Format** - the kind of file, see below."
+msgstr "**Format** — тип файлу, див. нижче."
+
+msgid ""
+"**Combo** ... **each** ... **frames** - how many pictures **Screenshot "
+"Series** takes, and how many frames apart."
+msgstr ""
+"**Combo** ... **each** ... **frames** — скільки знімків робить "
+"**Screenshot Series** і через скільки кадрів."
+
+msgid "**No border** - the screen only, without the border around it."
+msgstr "**No border** — лише екран, без бордюру навколо."
+
+msgid "Format"
+msgstr "Формат"
+
+msgid "What is saved"
+msgstr "Що зберігається"
+
+msgid "**PNG**, **BMP**, **JPG**"
+msgstr "**PNG**, **BMP**, **JPG**"
+
+msgid "the machine's picture at the window's size, without the shader"
+msgstr "зображення машини в розмірі вікна, без шейдера"
+
+msgid "**SCR**"
+msgstr "**SCR**"
+
+msgid "the 6912 bytes of the machine's screen memory, to load back on a Spectrum"
+msgstr "6912 байтів екранної пам'яті машини, щоб завантажити назад на Spectrum"
+
+msgid "**Hobeta**"
+msgstr "**Hobeta**"
+
+msgid ""
+"the same screen memory as a Hobeta file (`.$C`), which goes onto a TR-DOS"
+" disk as `screen`"
+msgstr ""
+"та сама екранна пам'ять як файл Hobeta (`.$C`), який потрапляє на диск "
+"TR-DOS як `screen`"
+
+msgid ""
+"**SCR** and **Hobeta** hold only the standard Spectrum screen: a picture "
+"made in another video mode does not fit in them."
+msgstr ""
+"**SCR** і **Hobeta** містять лише стандартний екран Spectrum: зображення "
+"в іншому відеорежимі в них не вміщається."
+
+msgid "Video"
+msgstr "Відео"
+
+msgid ""
+"**Capture > Record Video** starts a video, and the same command again "
+"stops it. While it records, a blinking sign in the top right corner of "
+"the picture says so; it is not in the video. When it stops, the message "
+"**video saved:** names the file."
+msgstr ""
+"**Capture > Record Video** починає відео, а та сама команда ще раз його "
+"зупиняє. Поки триває запис, про це каже знак, що блимає у верхньому "
+"правому куті зображення; у відео його немає. Після зупинки повідомлення "
+"**video saved:** називає файл."
+
+msgid ""
+"The video has the picture and the sound together, in an MP4 file by "
+"default. It is made by FFmpeg, a free program that is not part of "
+"Xpeccy+."
+msgstr ""
+"Відео містить зображення й звук разом, типово у файлі MP4. Його створює "
+"FFmpeg — вільна програма, яка не входить до Xpeccy+."
+
+msgid "Getting FFmpeg"
+msgstr "Як отримати FFmpeg"
+
+msgid ""
+"Xpeccy+ looks for FFmpeg in the `ffmpeg` folder inside the [settings "
+"folder](getting-started.md#where-the-settings-are), then wherever your "
+"system finds programs (and on macOS in Homebrew's folders). To use "
+"another copy, give its path in the **FFmpeg** field of the **Recording** "
+"group; leave the field empty to let Xpeccy+ find it."
+msgstr ""
+"Xpeccy+ шукає FFmpeg у папці `ffmpeg` усередині [папки налаштувань"
+"](getting-started.md#where-the-settings-are), потім там, де ваша система "
+"шукає програми (а на macOS — у папках Homebrew). Щоб використати іншу "
+"копію, вкажіть її шлях у полі **FFmpeg** групи **Recording**; залиште "
+"поле порожнім, щоб Xpeccy+ знайшов її сам."
+
+#, python-brace-format
+msgid ""
+"When there is none, **Record Video** opens the **Get FFmpeg** window "
+"instead (so does the {icon}`arrow-down` arrow button beside the "
+"**FFmpeg** field):"
+msgstr ""
+"Якщо FFmpeg немає, **Record Video** натомість відкриває вікно **Get "
+"FFmpeg** (так само, як і кнопка зі стрілкою {icon}`arrow-down` поруч із "
+"полем **FFmpeg**):"
+
+#, python-brace-format
+msgid ""
+"**Windows** - downloads a ready-made FFmpeg (about 190 MB) into the "
+"settings folder and checks it. {icon}`arrow-down` **Get latest** takes "
+"the newest release, {icon}`arrow-down` **Get previous** the one before "
+"it. Take the previous one if your graphics driver is not new: with an old"
+" driver the newest release cannot use the graphics card to encode."
+msgstr ""
+"**Windows** — завантажує готовий FFmpeg (близько 190 МБ) у папку "
+"налаштувань і перевіряє його. {icon}`arrow-down` **Get latest** бере "
+"найновіший випуск, {icon}`arrow-down` **Get previous** — попередній. "
+"Беріть попередній, якщо драйвер відеокарти не новий: зі старим драйвером "
+"найновіший випуск не може кодувати на відеокарті."
+
+msgid ""
+"**Linux** - installs the distribution's `ffmpeg` package; the system asks"
+" for your password."
+msgstr ""
+"**Linux** — встановлює пакет `ffmpeg` вашого дистрибутива; система "
+"попросить ваш пароль."
+
+msgid ""
+"**macOS** - installs it with Homebrew. Without Homebrew the window says "
+"where to get it."
+msgstr ""
+"**macOS** — встановлює його через Homebrew. Без Homebrew вікно скаже, де "
+"його взяти."
+
+msgid ""
+"When the window says **FFmpeg ... is ready**, close it and use **Record "
+"Video** again."
+msgstr ""
+"Коли вікно скаже **FFmpeg ... is ready**, закрийте його й знову виберіть "
+"**Record Video**."
+
+msgid "Recording settings"
+msgstr "Налаштування запису"
+
+msgid "The **Recording** group on the **Video** page of **Options**:"
+msgstr "Група **Recording** на сторінці **Video** вікна **Options**:"
+
+msgid ""
+"**Source** - **RAW frame** records the machine's picture alone, with no "
+"shader and no indicators. **Screen** records the window as you see it, "
+"shader and all."
+msgstr ""
+"**Source** — **RAW frame** записує лише зображення машини, без шейдера й "
+"індикаторів. **Screen** записує вікно так, як ви його бачите, разом із "
+"шейдером."
+
+msgid ""
+"**Scale** - how many times bigger than the machine's picture, from "
+"**Scale x1** to **Scale x8** (for **RAW frame** only)."
+msgstr ""
+"**Scale** — у скільки разів більше за зображення машини, від **Scale x1**"
+" до **Scale x8** (лише для **RAW frame**)."
+
+msgid ""
+"**Real FPS** or **50 FPS** - the machine's own frame rate, which is a "
+"little off 50 on most machines, or exactly 50 with the sound fitted to "
+"it."
+msgstr ""
+"**Real FPS** або **50 FPS** — власна частота кадрів машини, що на "
+"більшості машин трохи відрізняється від 50, або рівно 50 зі звуком, "
+"підігнаним до неї."
+
+msgid "**Output** - the folder; your system's videos folder at first."
+msgstr "**Output** — папка; спочатку це системна папка відео."
+
+msgid "**FFmpeg** - see [Getting FFmpeg](#getting-ffmpeg)."
+msgstr "**FFmpeg** — див. [Як отримати FFmpeg](#getting-ffmpeg)."
+
+msgid ""
+"The size and rate of the video are shown beside them. The **Border** "
+"setting of the **Picture** group changes the size too."
+msgstr ""
+"Розмір і частота кадрів відео показані поруч. Налаштування **Border** "
+"групи **Picture** теж змінює розмір."
+
+#, python-brace-format
+msgid ""
+"{icon}`settings` **Advanced settings** opens **Recording: Advanced "
+"Settings**:"
+msgstr ""
+"{icon}`settings` **Advanced settings** відкриває **Recording: Advanced "
+"Settings**:"
+
+msgid ""
+"**Video** - **Container** (**MP4** or **MKV**), **Codec**, **Preset** "
+"(slower makes a smaller file, but can hold the machine up), **Quality "
+"(CRF)** (lower is better; 18 looks lossless), **Color**, and **Blend up "
+"to 60 fps**. The codecs are **H.264** and **H.265**, **AV1** and the "
+"graphics card encoders (**NVENC**, **AMF**, **QSV**) when your FFmpeg and"
+" computer can use them, and **FFV1, lossless**, which goes into MKV."
+msgstr ""
+"**Video** — **Container** (**MP4** або **MKV**), **Codec**, **Preset** "
+"(повільніший дає менший файл, але може гальмувати машину), **Quality "
+"(CRF)** (менше — краще; 18 виглядає як без втрат), **Color** і **Blend up"
+" to 60 fps**. Кодеки: **H.264** і **H.265**, **AV1** та кодувальники "
+"відеокарт (**NVENC**, **AMF**, **QSV**), якщо ваш FFmpeg і комп'ютер їх "
+"підтримують, а також **FFV1, lossless**, що йде в MKV."
+
+msgid ""
+"**Sound** - **Codec** (**Auto**, **AAC** or **Opus**) and its bit rate. "
+"**Keep pitch at 50 FPS** keeps the notes in tune when **50 FPS** speeds "
+"the sound up a little."
+msgstr ""
+"**Sound** — **Codec** (**Auto**, **AAC** або **Opus**) і його бітрейт. "
+"**Keep pitch at 50 FPS** зберігає висоту нот, коли **50 FPS** трохи "
+"прискорює звук."
+
+msgid ""
+"**File name template** - the name of the video file, shown worked out "
+"under it."
+msgstr ""
+"**File name template** — ім'я файлу відео; під ним показано, яким воно "
+"вийде."
+
+msgid "**Auto recording** - see below."
+msgstr "**Auto recording** — див. нижче."
+
+msgid ""
+"**FFmpeg** - **Extra options** for the encoder, **Video override** and "
+"**Sound override** to replace the options Xpeccy+ makes, and the whole "
+"FFmpeg command as it will run."
+msgstr ""
+"**FFmpeg** — **Extra options** для кодувальника, **Video override** і "
+"**Sound override**, щоб замінити параметри, які складає Xpeccy+, і вся "
+"команда FFmpeg у тому вигляді, в якому її буде запущено."
+
+msgid "The file name template takes these keys:"
+msgstr "Шаблон імені файлу приймає такі ключі:"
+
+msgid "Key"
+msgstr "Ключ"
+
+msgid "Becomes"
+msgstr "Стає"
+
+#, python-format
+msgid "`%d`"
+msgstr "`%d`"
+
+msgid "the date, `20260929`"
+msgstr "дата, `20260929`"
+
+msgid "`%t`"
+msgstr "`%t`"
+
+msgid "the time, `153012`"
+msgstr "час, `153012`"
+
+#, python-format
+msgid "`%image`"
+msgstr "`%image`"
+
+msgid ""
+"the name of the file in use (snapshot, tape or disk), or the machine when"
+" there is none"
+msgstr ""
+"ім'я відкритого файлу (снапшота, стрічки чи диска) або машина, якщо файлу"
+" немає"
+
+msgid "`%machine`"
+msgstr "`%machine`"
+
+msgid "the machine"
+msgstr "машина"
+
+#, python-format
+msgid ""
+"The default is `xpeccy-plus_%d_%t_%image`. The name is made when the "
+"recording stops, so `%image` is the last file that was in use."
+msgstr ""
+"Типово це `xpeccy-plus_%d_%t_%image`. Ім'я складається, коли запис "
+"зупиняється, тож `%image` — останній відкритий файл."
+
+msgid "Auto recording"
+msgstr "Auto recording"
+
+msgid ""
+"**Auto recording** starts and stops a video by itself, to catch a demo or"
+" a game from its first frame."
+msgstr ""
+"**Auto recording** сам починає й зупиняє відео, щоб записати демо чи гру "
+"з першого кадру."
+
+msgid ""
+"**Autostart at** - starts a video when the condition is met: **Code in "
+"RAM** (the first program code the machine runs from RAM, which is where a"
+" loaded program starts), or the CPU reaching an address: **PC ==**, **PC "
+">=** or **PC <=**, with the address beside it (`#8000`, `$8000`, `0x8000`"
+" or `32768`). It starts once after each reset; switched on in Options, it"
+" waits for the next reset."
+msgstr ""
+"**Autostart at** — починає відео, коли виконано умову: **Code in RAM** "
+"(перший код програми, який машина виконує з RAM, — саме там починається "
+"завантажена програма) або CPU доходить до адреси: **PC ==**, **PC >=** чи"
+" **PC <=** з адресою поруч (`#8000`, `$8000`, `0x8000` або `32768`). "
+"Запис починається один раз після кожного скидання; якщо увімкнути в "
+"Options, він чекає наступного скидання."
+
+msgid ""
+"**Autostop at** - stops any video, one started by hand too: at a "
+"**Reset**, or when the CPU reaches an address as above."
+msgstr ""
+"**Autostop at** — зупиняє будь-яке відео, зокрема почате вручну: під час "
+"**Reset** або коли CPU доходить до адреси, як вище."
+
+msgid ""
+"**Record Video** by hand always has the last word: a video started or "
+"stopped by hand is not started again until the next reset."
+msgstr ""
+"**Record Video** вручну завжди має останнє слово: відео, почате чи "
+"зупинене вручну, не починається знову до наступного скидання."
+
+msgid "The **?** button lists the command-line switches for recording:"
+msgstr "Кнопка **?** показує ключі командного рядка для запису:"
+
+msgid ""
+"`--video-out <file>` - record from the start into this file; `.mp4` or "
+"`.mkv` picks the container."
+msgstr ""
+"`--video-out <file>` — записувати від початку в цей файл; `.mp4` або "
+"`.mkv` визначає контейнер."
+
+msgid ""
+"`--video-auto`, `--no-video-auto` - auto start and stop on or off for "
+"this run, with the conditions set in Options."
+msgstr ""
+"`--video-auto`, `--no-video-auto` — автоматичний початок і зупинка "
+"увімкнені чи вимкнені на цей запуск, з умовами, заданими в Options."
+
+msgid ""
+"`--video-autostart <at>`, `--video-autostop <at>` - the conditions for "
+"this run: `ram`, `reset`, or an address such as `==#6000` or "
+"`\">=#8000\"`."
+msgstr ""
+"`--video-autostart <at>`, `--video-autostop <at>` — умови на цей запуск: "
+"`ram`, `reset` або адреса, наприклад `==#6000` чи `\">=#8000\"`."
+
+msgid "They hold for that run only. See [Command line](command-line.md)."
+msgstr "Вони діють лише на цей запуск. Див. [Командний рядок](command-line.md)."
+
+msgid "Sound to WAV"
+msgstr "Звук у WAV"
+
+msgid ""
+"**Capture > Record Sound to WAV...** asks for a file and writes "
+"everything the machine plays into it, until you choose the command again."
+" The file is 16-bit stereo, at the **Rate** set on the **Sound** page of "
+"**Options**. The messages **start WAV output** and **stop WAV output** "
+"confirm it. `--wav-out <file>` on the command line records from the "
+"start."
+msgstr ""
+"**Capture > Record Sound to WAV...** питає ім'я файлу й записує в нього "
+"все, що відтворює машина, доки ви не виберете команду знову. Файл — "
+"16-бітне стерео з частотою **Rate**, заданою на сторінці **Sound** вікна "
+"**Options**. Повідомлення **start WAV output** і **stop WAV output** це "
+"підтверджують. `--wav-out <file>` у командному рядку записує від самого "
+"початку."
+
+msgid "RZX recordings"
+msgstr "Записи RZX"
+
+msgid ""
+"An RZX file records a game as it is played: the machine's state at the "
+"start and every key press and joystick move after it. Played back, it "
+"repeats the game exactly, frame for frame, on any program that plays RZX."
+" It is much smaller than a video, and it is how long games are shown "
+"finished, or how a hard part is shown done."
+msgstr ""
+"Файл RZX записує гру так, як у неї грають: стан машини на початку й кожне"
+" натискання клавіші та рух джойстика після цього. Під час відтворення він"
+" повторює гру точно, кадр за кадром, у будь-якій програмі, що відтворює "
+"RZX. Він набагато менший за відео, і саме так показують довгі ігри "
+"пройденими або складне місце подоланим."
+
+msgid "Playing an RZX"
+msgstr "Відтворення RZX"
+
+msgid "![The RZX Player](images/rzx-player.png)"
+msgstr "![RZX Player](images/rzx-player.png)"
+
+msgid "The RZX Player"
+msgstr "RZX Player"
+
+#, python-brace-format
+msgid ""
+"Open an `.rzx` file with **File > Open...**, or with the {icon}`fileopen`"
+" button in the **RZX Player** (**Capture > RZX > RZX Player**). It plays "
+"on the machine it was recorded on. The **RZX Player** shows:"
+msgstr ""
+"Відкрийте файл `.rzx` через **File > Open...** або кнопкою "
+"{icon}`fileopen` у **RZX Player** (**Capture > RZX > RZX Player**). Він "
+"відтворюється на тій машині, на якій його записано. **RZX Player** "
+"показує:"
+
+msgid ""
+"**Recorded with**, **Machine**, **Length** and **Snapshots** - what the "
+"file says about itself. For files made by Xpeccy+, **Recorded with** also"
+" tells how many rollbacks and how much slow motion went into it."
+msgstr ""
+"**Recorded with**, **Machine**, **Length** і **Snapshots** — що файл каже"
+" про себе. Для файлів, зроблених у Xpeccy+, **Recorded with** також каже,"
+" скільки в нього пішло відкатів і скільки сповільненого руху."
+
+msgid ""
+"the list of the file's blocks, with **Start**, **Length**, **Block** and "
+"**Info**; the part being played is marked. Double-click a row to go "
+"there."
+msgstr ""
+"список блоків файлу з **Start**, **Length**, **Block** і **Info**; "
+"частину, що відтворюється, позначено. Двічі клацніть рядок, щоб перейти "
+"туди."
+
+msgid "the progress bar and the time; click the bar to go to that point."
+msgstr ""
+"індикатор прогресу й час; клацніть на індикаторі, щоб перейти до цього "
+"місця."
+
+#, python-brace-format
+msgid ""
+"{icon}`tape-rec` **Record**, {icon}`tape-play` **Play / Pause**, {icon"
+"}`tape-stop` **Stop**, and {icon}`rzx-bookmark` **Add a bookmark to roll "
+"back to**."
+msgstr ""
+"{icon}`tape-rec` **Record**, {icon}`tape-play` **Play / Pause**, {icon"
+"}`tape-stop` **Stop** і {icon}`rzx-bookmark` **Add a bookmark to roll "
+"back to**."
+
+msgid "Recording an RZX"
+msgstr "Запис RZX"
+
+msgid "![Capture > RZX](images/menu-rzx.png)"
+msgstr "![Capture > RZX](images/menu-rzx.png)"
+
+msgid "Capture > RZX"
+msgstr "Capture > RZX"
+
+msgid ""
+"**Capture > RZX > Record...** asks for a file and starts recording from "
+"the machine as it is now. A blinking sign in the corner of the picture "
+"shows it records. The file is brought up to date every 30 seconds, so a "
+"crash does not lose the game."
+msgstr ""
+"**Capture > RZX > Record...** питає ім'я файлу й починає запис зі стану "
+"машини на цю мить. Знак, що блимає в кутку зображення, показує, що йде "
+"запис. Файл оновлюється кожні 30 секунд, тож збій не знищить гру."
+
+#, python-brace-format
+msgid ""
+"{icon}`tape-rec` **Record** in the **RZX Player** during playback takes "
+"over from that point instead: the recording goes on from the frame "
+"reached, with all that was played before it."
+msgstr ""
+"{icon}`tape-rec` **Record** у **RZX Player** під час відтворення "
+"натомість перехоплює запис із цього місця: запис триває від досягнутого "
+"кадру разом з усім, що було відтворено до нього."
+
+msgid "While you record:"
+msgstr "Під час запису:"
+
+msgid ""
+"**Add Bookmark** - remember this point. A bookmark made while the machine"
+" is paused is made when it runs on."
+msgstr ""
+"**Add Bookmark** — запам'ятати це місце. Закладка, зроблена, коли машина "
+"на паузі, створюється, коли вона продовжить роботу."
+
+msgid ""
+"**Rollback to Bookmark** - go back to the last bookmark, or to the start "
+"when there is none, and play on from there; what was recorded after it is"
+" thrown away. [Rewind](time.md) takes the recording back the same way."
+msgstr ""
+"**Rollback to Bookmark** — повернутися до останньої закладки або до "
+"початку, якщо закладок немає, і грати далі звідти; записане після неї "
+"відкидається. [Перемотування](time.md) повертає запис назад так само."
+
+msgid ""
+"**Stop and Finalize** - end the recording and save it without the "
+"bookmarks: this is the file to share."
+msgstr ""
+"**Stop and Finalize** — завершити запис і зберегти його без закладок: "
+"саме цим файлом можна ділитися."
+
+#, python-brace-format
+msgid ""
+"Ending the recording any other way - **Record...** again, {icon}`tape-"
+"stop` **Stop** in the player, opening another RZX file or switching "
+"machines - saves it with its bookmarks, so you can go on with it later. "
+"**Open and Continue...** does that: it opens a recording, runs it to its "
+"end at full speed, and records on from there; you are asked for the file,"
+" with the same one offered."
+msgstr ""
+"Будь-яке інше завершення запису — знову **Record...**, {icon}`tape-stop` "
+"**Stop** у плеєрі, відкриття іншого файлу RZX чи перемикання машини — "
+"зберігає його із закладками, тож ви зможете продовжити його пізніше. Це "
+"робить **Open and Continue...**: відкриває запис, проганяє його до кінця "
+"на повній швидкості й записує далі звідти; програма питає файл і пропонує"
+" той самий."
+
+msgid ""
+"**Finalize File...** removes the bookmarks from a recording saved "
+"earlier, without playing it."
+msgstr ""
+"**Finalize File...** видаляє закладки із запису, збереженого раніше, не "
+"відтворюючи його."
+
+msgid "Screenshot"
+msgstr "Screenshot"
+
+msgid "Screenshot Series"
+msgstr "Screenshot Series"
+
+msgid "screen capture"
+msgstr "захоплення екрана"
+
+msgid "format"
+msgstr "формат"
+
+msgid "folder"
+msgstr "папка"
+
+msgid "No border"
+msgstr "No border"
+
+msgid "SCR"
+msgstr "SCR"
+
+msgid "Hobeta"
+msgstr "Hobeta"
+
+msgid "PNG"
+msgstr "PNG"
+
+msgid "Record Video"
+msgstr "Record Video"
+
+msgid "video"
+msgstr "відео"
+
+msgid "FFmpeg"
+msgstr "FFmpeg"
+
+msgid "Get FFmpeg"
+msgstr "Get FFmpeg"
+
+msgid "settings"
+msgstr "налаштування"
+
+msgid "RAW frame"
+msgstr "RAW frame"
+
+msgid "Real FPS"
+msgstr "Real FPS"
+
+msgid "Recording: Advanced Settings"
+msgstr "Recording: Advanced Settings"
+
+msgid "codec"
+msgstr "кодек"
+
+msgid "MP4"
+msgstr "MP4"
+
+msgid "MKV"
+msgstr "MKV"
+
+msgid "NVENC"
+msgstr "NVENC"
+
+msgid "File name template"
+msgstr "File name template"
+
+msgid "file name"
+msgstr "ім'я файлу"
+
+msgid "Autostart at"
+msgstr "Autostart at"
+
+msgid "Autostop at"
+msgstr "Autostop at"
+
+msgid "Record Sound to WAV"
+msgstr "Record Sound to WAV"
+
+msgid "WAV"
+msgstr "WAV"
+
+msgid "recording sound"
+msgstr "запис звуку"
+
+msgid "sound"
+msgstr "звук"
+
+msgid "recording"
+msgstr "запис"
+
+msgid "RZX"
+msgstr "RZX"
+
+msgid "RZX Player"
+msgstr "RZX Player"
+
+msgid "playing"
+msgstr "відтворення"
+
+msgid "Add Bookmark"
+msgstr "Add Bookmark"
+
+msgid "Rollback to Bookmark"
+msgstr "Rollback to Bookmark"
+
+msgid "Stop and Finalize"
+msgstr "Stop and Finalize"
+
+msgid "bookmark"
+msgstr "закладка"
+
+msgid "Open and Continue"
+msgstr "Open and Continue"
+
+msgid "Finalize File"
+msgstr "Finalize File"
+

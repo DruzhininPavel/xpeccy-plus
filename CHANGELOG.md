@@ -11,6 +11,10 @@ before that point is upstream's history and is not repeated here.
 
 ### Added
 
+- **A user manual** in English, Russian, Ukrainian and Spanish: Help > Manual opens it from
+  the package in the system's language, with search that works offline. Each release puts
+  it on GitHub Pages too.
+
 - **Debugging from a script**: `--bench N` runs a program with no window in every build, not
   only in nightly ones. It ends on a breakpoint that stops, and the exit code says whether it
   ran to the end, stopped or could not start. Results go to stdout, the log to stderr.

@@ -1,0 +1,1020 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Machines"
+msgstr "Машини"
+
+msgid ""
+"Xpeccy+ comes with the Sinclair and Amstrad models of the ZX Spectrum, "
+"the best-known clones and the ZX Evolution board. Each one is a complete "
+"machine: memory, ROM images, disk interface, sound and timing are already"
+" set as on the real hardware."
+msgstr ""
+"Xpeccy+ постачається з моделями ZX Spectrum від Sinclair і Amstrad, "
+"найвідомішими клонами й платою ZX Evolution. Кожна з них — повна машина: "
+"пам'ять, образи ROM, дисковий інтерфейс, звук і таймінги вже налаштовано,"
+" як на справжньому обладнанні."
+
+msgid "The built-in machines"
+msgstr "Вбудовані машини"
+
+msgid "The machine list shows them in this order, in four groups."
+msgstr "Список машин показує їх у такому порядку, у чотирьох групах."
+
+msgid "Machine"
+msgstr "Машина"
+
+msgid "Memory"
+msgstr "Пам'ять"
+
+msgid "Disk"
+msgstr "Диск"
+
+msgid "Notes"
+msgstr "Примітки"
+
+msgid "**ZX Spectrum 48K**"
+msgstr "**ZX Spectrum 48K**"
+
+msgid "48 KB"
+msgstr "48 КБ"
+
+msgid "-"
+msgstr "-"
+
+msgid "Sinclair's 48K; beeper only; cartridge slot"
+msgstr "48K від Sinclair; лише біпер; гніздо картриджа"
+
+msgid "**ZX Spectrum 128K**"
+msgstr "**ZX Spectrum 128K**"
+
+msgid "128 KB"
+msgstr "128 КБ"
+
+msgid "Sinclair's 128K; AY"
+msgstr "128K від Sinclair; AY"
+
+msgid "**ZX Spectrum +2**"
+msgstr "**ZX Spectrum +2**"
+
+msgid ""
+"Amstrad's first model, the gray +2: the 128K with its own ROMs and late "
+"ULA timing; AY"
+msgstr ""
+"перша модель Amstrad, сірий +2: 128K з власними ROM і пізніми таймінгами "
+"ULA; AY"
+
+msgid "**ZX Spectrum +2A**"
+msgstr "**ZX Spectrum +2A**"
+
+msgid "Amstrad's later model: Amstrad gate array, four +3 ROMs; AY"
+msgstr "пізніша модель Amstrad: матриця Amstrad gate array, чотири ROM від +3; AY"
+
+msgid "**ZX Spectrum +3**"
+msgstr "**ZX Spectrum +3**"
+
+msgid "+3, two drives"
+msgstr "+3, два дисководи"
+
+msgid "the +2A with a 3-inch disk drive; AY"
+msgstr "+2A з 3-дюймовим дисководом; AY"
+
+msgid "**Pentagon**"
+msgstr "**Pentagon**"
+
+msgid "Beta Disk"
+msgstr "Beta Disk"
+
+msgid "YM, Covox; Kempston mouse and joystick"
+msgstr "YM, Covox; миша й джойстик Kempston"
+
+msgid "**Pentagon 1024 SL**"
+msgstr "**Pentagon 1024 SL**"
+
+msgid "1024 KB"
+msgstr "1024 КБ"
+
+msgid "as the Pentagon; turbo x2"
+msgstr "як Pentagon; турбо x2"
+
+msgid "**Scorpion ZS 256**"
+msgstr "**Scorpion ZS 256**"
+
+msgid "256 KB"
+msgstr "256 КБ"
+
+msgid "AY, Covox; Kempston mouse and joystick"
+msgstr "AY, Covox; миша й джойстик Kempston"
+
+msgid "**Scorpion ZS 256 Turbo+**"
+msgstr "**Scorpion ZS 256 Turbo+**"
+
+msgid "the Scorpion with the Turbo+ board: SMUC hard disk, turbo x2"
+msgstr "Scorpion із платою Turbo+: жорсткий диск SMUC, турбо x2"
+
+msgid "**ATM Turbo 2+**"
+msgstr "**ATM Turbo 2+**"
+
+msgid "YM, Covox; ATM hard disk, Kempston mouse and joystick, turbo x2"
+msgstr "YM, Covox; жорсткий диск ATM, миша й джойстик Kempston, турбо x2"
+
+msgid "**Profi v3**"
+msgstr "**Profi v3**"
+
+msgid "512 KB"
+msgstr "512 КБ"
+
+msgid "version 3 board; AY, Covox; Kempston mouse and joystick, turbo x2"
+msgstr "плата версії 3; AY, Covox; миша й джойстик Kempston, турбо x2"
+
+msgid "**Profi v5**"
+msgstr "**Profi v5**"
+
+msgid ""
+"version 5 board; YM, Covox; Profi hard disk, DD palette, Kempston mouse "
+"and joystick, turbo x2"
+msgstr ""
+"плата версії 5; YM, Covox; жорсткий диск Profi, палітра DD, миша й "
+"джойстик Kempston, турбо x2"
+
+msgid "**ZXM-Phoenix**"
+msgstr "**ZXM-Phoenix**"
+
+msgid "2 MB"
+msgstr "2 МБ"
+
+msgid "YM, Covox; Kempston mouse and joystick, turbo x2"
+msgstr "YM, Covox; миша й джойстик Kempston, турбо x2"
+
+msgid "**ZX Evolution (BaseConf)**"
+msgstr "**ZX Evolution (BaseConf)**"
+
+msgid "4 MB"
+msgstr "4 МБ"
+
+msgid ""
+"the ZX Evolution board running BaseConf: two YM (TurboSound), Covox; "
+"NemoIDE hard disk, SD card, PC keyboard, mouse with wheel, turbo x2 and "
+"x4"
+msgstr ""
+"плата ZX Evolution з BaseConf: два YM (TurboSound), Covox; жорсткий диск "
+"NemoIDE, SD card, клавіатура PC, миша з коліщатком, турбо x2 і x4"
+
+msgid "**ZX Evolution (TSConf)**"
+msgstr "**ZX Evolution (TSConf)**"
+
+msgid "the same board running TSConf; as BaseConf"
+msgstr "та сама плата з TSConf; як BaseConf"
+
+msgid "**ALF TV Game**"
+msgstr "**ALF TV Game**"
+
+msgid "64 KB"
+msgstr "64 КБ"
+
+msgid "a games console built on the 48K: no AY; cartridges, two joysticks"
+msgstr "ігрова консоль на основі 48K: без AY; картриджі, два джойстики"
+
+msgid "**ALF TV Game 128K**"
+msgstr "**ALF TV Game 128K**"
+
+msgid "the 128K version of the console; YM"
+msgstr "версія консолі на 128K; YM"
+
+msgid ""
+"**Beta Disk** is the TR-DOS disk interface; the **+3** has its own drives"
+" and +3DOS (see [Disks and drives](disks.md))."
+msgstr ""
+"**Beta Disk** — дисковий інтерфейс TR-DOS; **+3** має власні дисководи й "
+"+3DOS (див. [Диски й дисководи](disks.md))."
+
+msgid ""
+"On the clones and the +3 the disk interface is part of the board, and so "
+"are the hard disk interfaces of the ATM Turbo 2+, the Profi v5 and the ZX"
+" Evolution: Options shows them, but does not let you take them out."
+msgstr ""
+"На клонах і на +3 дисковий інтерфейс є частиною плати, як і інтерфейси "
+"жорстких дисків ATM Turbo 2+, Profi v5 і ZX Evolution: Options показує "
+"їх, але не дає їх прибрати."
+
+msgid ""
+"A name with an asterisk after it in the list, such as `Pentagon *`, is a "
+"built-in machine you have changed (see [Your own machines](#your-own-"
+"machines))."
+msgstr ""
+"Назва із зірочкою в списку, наприклад `Pentagon *`, — це вбудована "
+"машина, яку ви змінили (див. [Власні машини](#your-own-machines))."
+
+msgid "Choosing a machine"
+msgstr "Вибір машини"
+
+msgid "Pick a machine in any of these places:"
+msgstr "Виберіть машину в будь-якому з цих місць:"
+
+msgid "**Machine > Machine** on the menu bar;"
+msgstr "**Machine > Machine** у рядку меню;"
+
+#, python-brace-format
+msgid "the {icon}`computer` **Machine** button on the toolbar;"
+msgstr "кнопка {icon}`computer` **Machine** на панелі інструментів;"
+
+msgid "**Machine** in the right-click menu over the picture;"
+msgstr "**Machine** у меню правої кнопки над зображенням;"
+
+msgid "the machine's name in the status bar, with either mouse button;"
+msgstr "назва машини в рядку стану, будь-якою кнопкою миші;"
+
+msgid "**Model** on the **Machine** page of **Options**, then **Apply**."
+msgstr "**Model** на сторінці **Machine** вікна **Options**, потім **Apply**."
+
+msgid "![Machine > Machine](images/menu-machine.png)"
+msgstr "![Machine > Machine](images/menu-machine.png)"
+
+msgid "Machine > Machine"
+msgstr "Machine > Machine"
+
+msgid ""
+"A switch resets the new machine and shows its name over the picture and "
+"in the status bar. The tape and the disks stay in: the tape goes back to "
+"its start. An RZX recording stops, and the rewind history starts over."
+msgstr ""
+"Перемикання скидає нову машину й показує її назву над зображенням і в "
+"рядку стану. Стрічка й диски лишаються вставленими: стрічка повертається "
+"на початок. Запис RZX зупиняється, а історія перемотування починається "
+"заново."
+
+msgid ""
+"In **Options**, pick the machine first and change its settings after: an "
+"**Apply** that switches the machine does nothing else, and the page then "
+"shows the new machine's settings."
+msgstr ""
+"В **Options** спершу виберіть машину, а потім змінюйте її налаштування: "
+"**Apply**, що перемикає машину, більше нічого не робить, і сторінка після"
+" цього показує налаштування нової машини."
+
+msgid ""
+"Opening a file can switch the machine too, when the current one cannot "
+"run it. See [Run a program](getting-started.md#run-a-program)."
+msgstr ""
+"Відкриття файлу теж може перемкнути машину, якщо поточна не може його "
+"запустити. Див. [Запуск програми](getting-started.md#run-a-program)."
+
+msgid "Machine at start"
+msgstr "Machine at start"
+
+msgid ""
+"**Machine at start** on the **Application** page of **Options** says "
+"which machine a start of Xpeccy+ takes:"
+msgstr ""
+"**Machine at start** на сторінці **Application** вікна **Options** "
+"визначає, яку машину бере Xpeccy+ під час запуску:"
+
+msgid ""
+"**The last one chosen** - the last machine you picked yourself. A machine"
+" that a file switched to does not count."
+msgstr ""
+"**The last one chosen** — остання машина, яку ви вибрали самі. Машина, на"
+" яку перемкнув файл, не враховується."
+
+msgid "**Ask** - the **Start Machine** window asks every time."
+msgstr "**Ask** — вікно **Start Machine** питає щоразу."
+
+msgid "one of the machines - always that one."
+msgstr "одна з машин — завжди саме вона."
+
+msgid ""
+"The first start asks (see [The first start](getting-started.md#the-first-"
+"start)). A machine or a file named on the command line skips the question"
+" (see [Command line](command-line.md))."
+msgstr ""
+"Перший запуск питає (див. [Перший запуск](getting-started.md#the-first-"
+"start)). Машина чи файл, названі в командному рядку, пропускають це "
+"питання (див. [Командний рядок](command-line.md))."
+
+msgid "Reset"
+msgstr "Скидання"
+
+msgid ""
+"**Machine > Reset** lists where a reset can take the machine: the ROMs it"
+" can start from, such as **Basic 128**, **Basic 48**, **Service** and "
+"**TR-DOS**. The one in bold is where a plain reset goes. **TR-DOS** is "
+"there only when the machine has a Beta Disk interface."
+msgstr ""
+"**Machine > Reset** перелічує, куди скидання може привести машину: ROM, з"
+" яких вона може стартувати, наприклад **Basic 128**, **Basic 48**, "
+"**Service** і **TR-DOS**. Виділений жирним — той, куди веде звичайне "
+"скидання. **TR-DOS** є лише тоді, коли машина має інтерфейс Beta Disk."
+
+msgid "![Machine > Reset on a Pentagon](images/menu-reset.png)"
+msgstr "![Machine > Reset на Pentagon](images/menu-reset.png)"
+
+msgid "Machine > Reset on a Pentagon"
+msgstr "Machine > Reset на Pentagon"
+
+msgid ""
+"On the ATM Turbo 2+, the ZX Evolution and the ALF consoles the list holds"
+" only **Boots its own firmware**, grayed out: these machines start their "
+"own firmware on every reset."
+msgstr ""
+"На ATM Turbo 2+, ZX Evolution і консолях ALF у списку є лише сірий пункт "
+"**Boots its own firmware**: ці машини під час кожного скидання запускають"
+" власну прошивку."
+
+#, python-brace-format
+msgid ""
+"The {icon}`shutdown` **Reset** button on the toolbar resets at a click; "
+"the arrow beside it opens the list. **Reset** in the right-click menu "
+"works the same way. F12 resets in both hotkey presets."
+msgstr ""
+"Кнопка {icon}`shutdown` **Reset** на панелі інструментів скидає машину "
+"одним клацанням; стрілка поруч відкриває список. **Reset** у меню правої "
+"кнопки працює так само. F12 скидає машину в обох наборах гарячих клавіш."
+
+#, python-brace-format
+msgid ""
+"To change where a plain reset goes, open the {icon}`settings` **ROM** "
+"button on the **Machine** page of **Options** and mark another ROM (see "
+"[ROM images](#rom-images))."
+msgstr ""
+"Щоб змінити, куди веде звичайне скидання, відкрийте кнопку "
+"{icon}`settings` **ROM** на сторінці **Machine** вікна **Options** і "
+"позначте інший ROM (див. [Образи ROM](#rom-images))."
+
+msgid ""
+"The **Hotkeys** page of **Options** also has **Reset to 48K**, **Reset to"
+" 128K**, **Reset to DOS** and **Reset to Service**. On a machine that has"
+" no such start, the key shows a short message and does nothing."
+msgstr ""
+"Сторінка **Hotkeys** вікна **Options** має також **Reset to 48K**, "
+"**Reset to 128K**, **Reset to DOS** і **Reset to Service**. На машині, що"
+" не має такого старту, клавіша показує коротке повідомлення й нічого не "
+"робить."
+
+msgid "NMI"
+msgstr "NMI"
+
+msgid ""
+"**Machine > NMI** sends a non-maskable interrupt to the CPU. What happens"
+" then is up to the machine's ROM. It does nothing while an RZX recording "
+"plays. The key is F10 in the Classic preset and Shift+F10 in the Modern "
+"one."
+msgstr ""
+"**Machine > NMI** надсилає CPU немасковане переривання. Що буде далі, "
+"залежить від ROM машини. Під час відтворення запису RZX команда нічого не"
+" робить. Клавіша — F10 у наборі Classic і Shift+F10 у Modern."
+
+msgid "Turbo and speed"
+msgstr "Турбо і швидкість"
+
+msgid ""
+"**Machine > Turbo Mode** lists the turbo steps the machine's board has, "
+"with the CPU clock each one gives, for example **x2 (7 MHz)**. It is "
+"grayed out on a machine with no turbo, and while an RZX recording plays. "
+"The **Switch Turbo** hotkey steps through the list."
+msgstr ""
+"**Machine > Turbo Mode** перелічує турборежими, які має плата машини, з "
+"частотою CPU для кожного, наприклад **x2 (7 MHz)**. Пункт сірий на машині"
+" без турбо, а також під час відтворення запису RZX. Гаряча клавіша "
+"**Switch Turbo** перебирає список."
+
+msgid ""
+"A board that has a turbo usually lets its programs switch it too. Then "
+"the program can change the step you picked, and Xpeccy+ shows the new "
+"clock over the picture."
+msgstr ""
+"Плата з турбо зазвичай дає й програмам його перемикати. Тоді програма "
+"може змінити вибраний вами режим, і Xpeccy+ показує нову частоту над "
+"зображенням."
+
+msgid ""
+"**Speed** on the **Machine** page of **Options** is a slider for the "
+"whole emulation:"
+msgstr ""
+"**Speed** на сторінці **Machine** вікна **Options** — це повзунок для "
+"всієї емуляції:"
+
+msgid ""
+"left of the middle, **Slow motion 1/2**, **1/4** and **1/8** slow "
+"everything down, and the frame rate drops with it;"
+msgstr ""
+"ліворуч від середини **Slow motion 1/2**, **1/4** і **1/8** сповільнюють "
+"усе, і частота кадрів падає разом із цим;"
+
+msgid "the middle is **Normal speed**;"
+msgstr "посередині — **Normal speed**;"
+
+msgid ""
+"right of it, **Overclock x2**, **x4** and **x8** speed the CPU up and "
+"keep the frame rate."
+msgstr ""
+"праворуч від неї **Overclock x2**, **x4** і **x8** прискорюють CPU й "
+"зберігають частоту кадрів."
+
+msgid ""
+"No real machine ran faster than 14 MHz, so past that the timing of a "
+"program is not guaranteed. The slider is not saved: the next start is at "
+"normal speed. The **Speed Up** and **Speed Down** hotkeys move it too. "
+"See also [Speed and time](time.md)."
+msgstr ""
+"Жодна справжня машина не працювала швидше за 14 МГц, тож вище за це "
+"таймінги програми не гарантовано. Положення повзунка не зберігається: "
+"наступний запуск — на звичайній швидкості. Гарячі клавіші **Speed Up** і "
+"**Speed Down** теж його рухають. Див. також [Швидкість і час](time.md)."
+
+msgid "The Machine page"
+msgstr "Сторінка Machine"
+
+msgid ""
+"**File > Options...** opens **Options**; **Machine** is its first page. "
+"At the top:"
+msgstr ""
+"**File > Options...** відкриває **Options**; **Machine** — його перша "
+"сторінка. Угорі:"
+
+#, python-brace-format
+msgid ""
+"**Model** - the machine. The {icon}`settings` gear beside it opens "
+"**Machine: Advanced Settings**."
+msgstr ""
+"**Model** — машина. Шестерня {icon}`settings` поруч відкриває **Machine: "
+"Advanced Settings**."
+
+msgid "**Memory** - how much RAM the machine has."
+msgstr "**Memory** — скільки RAM має машина."
+
+#, python-brace-format
+msgid ""
+"**ROM** - the ROM files in use; the {icon}`settings` button opens "
+"**Machine: ROM**."
+msgstr ""
+"**ROM** — файли ROM, що використовуються; кнопка {icon}`settings` "
+"відкриває **Machine: ROM**."
+
+msgid "**Speed** - the slider described in [Turbo and speed](#turbo-and-speed)."
+msgstr "**Speed** — повзунок, описаний у [Турбо і швидкість](#turbo-and-speed)."
+
+#, python-brace-format
+msgid ""
+"{icon}`refresh` **Restore machine**, {icon}`save_all` **Save "
+"machine...**, {icon}`cancel` **Delete this machine** - see [Your own "
+"machines](#your-own-machines)."
+msgstr ""
+"{icon}`refresh` **Restore machine**, {icon}`save_all` **Save "
+"machine...**, {icon}`cancel` **Delete this machine** — див. [Власні "
+"машини](#your-own-machines)."
+
+#, python-brace-format
+msgid ""
+"Below them are the machine's devices, in four groups. Each row has a "
+"choice and a {icon}`settings` gear button; the gear opens the rest of "
+"that device's settings, in a window named after it, such as **Machine: "
+"Disk**. A gray gear means the device has nothing more to set."
+msgstr ""
+"Нижче — пристрої машини в чотирьох групах. Кожен рядок має вибір і "
+"кнопку-шестерню {icon}`settings`; шестерня відкриває решту налаштувань "
+"пристрою у вікні з його назвою, наприклад **Machine: Disk**. Сіра "
+"шестерня означає, що в пристрою більше нічого налаштовувати."
+
+msgid "Group"
+msgstr "Група"
+
+msgid "Row"
+msgstr "Рядок"
+
+msgid "What it sets"
+msgstr "Що задає"
+
+msgid "**Storage**"
+msgstr "**Storage**"
+
+msgid "**Tape**"
+msgstr "**Tape**"
+
+msgid "loading settings; the row shows which are on (see [Tapes](tapes.md))"
+msgstr ""
+"налаштування завантаження; рядок показує, які ввімкнено (див. "
+"[Стрічки](tapes.md))"
+
+msgid "**Disk**"
+msgstr "**Disk**"
+
+msgid ""
+"**None**, **Beta Disk (WD1793)** or **+3 (uPD765)**; drives and the TR-"
+"DOS ROM in its window (see [Disks and drives](disks.md))"
+msgstr ""
+"**None**, **Beta Disk (WD1793)** або **+3 (uPD765)**; дисководи й TR-DOS "
+"ROM — у його вікні (див. [Диски й дисководи](disks.md))"
+
+msgid "**Hard disk**"
+msgstr "**Hard disk**"
+
+msgid "the IDE interface; **Master** and **Slave** in its window"
+msgstr "інтерфейс IDE; **Master** і **Slave** — у його вікні"
+
+msgid "**SD card**"
+msgstr "**SD card**"
+
+msgid "ZX Evolution only: the card in use"
+msgstr "лише ZX Evolution: картка, що використовується"
+
+msgid "**Cartridge**"
+msgstr "**Cartridge**"
+
+msgid "48K and ALF only: the cartridge in use"
+msgstr "лише 48K і ALF: картридж, що використовується"
+
+msgid "**Input**"
+msgstr "**Input**"
+
+msgid "**Joystick**"
+msgstr "**Joystick**"
+
+msgid "**None**, **Kempston 5-bit**, **Kempston 8-bit**"
+msgstr "**None**, **Kempston 5-bit**, **Kempston 8-bit**"
+
+msgid "**Mouse**"
+msgstr "**Mouse**"
+
+msgid "**None** or **Kempston mouse**; sensitivity and wheel in its window"
+msgstr "**None** або **Kempston mouse**; чутливість і коліщатко — у його вікні"
+
+msgid "**PC keyboard**"
+msgstr "**PC keyboard**"
+
+msgid ""
+"ATM Turbo 2+ and ZX Evolution only: which scan codes the machine gets "
+"(see [Keyboard, joystick and mouse](input.md))"
+msgstr ""
+"лише ATM Turbo 2+ і ZX Evolution: які скан-коди отримує машина (див. "
+"[Клавіатура, джойстик і миша](input.md))"
+
+msgid "**Sound**"
+msgstr "**Sound**"
+
+msgid "**PSG**"
+msgstr "**PSG**"
+
+msgid ""
+"the AY/YM chips, from **None** to **x3 - ZX Next**; chip, clock and "
+"stereo in its window (see [Sound](sound.md))"
+msgstr ""
+"мікросхеми AY/YM, від **None** до **x3 - ZX Next**; мікросхема, частота й"
+" стерео — у його вікні (див. [Звук](sound.md))"
+
+msgid "**DAC**"
+msgstr "**DAC**"
+
+msgid "**None**, **Covox only**, **Soundrive 1.05 mode 1** or **mode 2**"
+msgstr "**None**, **Covox only**, **Soundrive 1.05 mode 1** або **mode 2**"
+
+msgid "**General Sound**"
+msgstr "**General Sound**"
+
+msgid "**Off** or **On**; its ROM in its window"
+msgstr "**Off** або **On**; його ROM — у його вікні"
+
+msgid "**SAA1099**"
+msgstr "**SAA1099**"
+
+msgid "**Off** or **On**"
+msgstr "**Off** або **On**"
+
+msgid "**Board**"
+msgstr "**Board**"
+
+msgid "**Turbo**"
+msgstr "**Turbo**"
+
+msgid "the turbo steps: **x1 (no turbo)**, **x1, x2** or **x1, x2, x4**"
+msgstr "турборежими: **x1 (no turbo)**, **x1, x2** або **x1, x2, x4**"
+
+#, python-brace-format
+msgid "Changes take effect when you press **Apply** or {icon}`ok-apply` **OK**."
+msgstr ""
+"Зміни набувають чинності, коли ви натискаєте **Apply** або {icon}`ok-"
+"apply` **OK**."
+
+msgid "Advanced settings"
+msgstr "Розширені налаштування"
+
+msgid ""
+"**Machine: Advanced Settings** holds what makes the machine what it is, "
+"rather than how you use it. Leave it alone unless you know the hardware."
+msgstr ""
+"**Machine: Advanced Settings** містить те, що робить машину саме такою, а"
+" не те, як ви нею користуєтеся. Не чіпайте цих налаштувань, якщо не "
+"знаєте обладнання."
+
+msgid ""
+"**CPU** - **Base clock**, the crystal the board runs on. The frame rate "
+"comes from it too."
+msgstr ""
+"**CPU** — **Base clock**, кварц, на якому працює плата. Від нього "
+"залежить і частота кадрів."
+
+msgid ""
+"**ULA** - **Raster layout** (the size of the frame and where the "
+"interrupt falls in it), **ULA pattern**, **Floating bus**, **Ear input**,"
+" and check boxes for **Contended memory**, **Contended I/O**, **Early "
+"timings**, **4T border**, **ULA snow...**, **...and it crashes**, **MIC "
+"in the beeper** and **ULA plus**."
+msgstr ""
+"**ULA** — **Raster layout** (розмір кадру і де в ньому припадає "
+"переривання), **ULA pattern**, **Floating bus**, **Ear input** і поля "
+"позначок **Contended memory**, **Contended I/O**, **Early timings**, **4T"
+" border**, **ULA snow...**, **...and it crashes**, **MIC in the beeper** "
+"та **ULA plus**."
+
+msgid "**Board** - **Even M1** (Scorpion ZS 256) and **DD palette** (Profi)."
+msgstr "**Board** — **Even M1** (Scorpion ZS 256) і **DD palette** (Profi)."
+
+msgid ""
+"Each one is explained beside it, or in a tooltip when you hold the mouse "
+"over it."
+msgstr "Кожне пояснено поруч або в підказці, коли навести на нього мишу."
+
+msgid "Your own machines"
+msgstr "Власні машини"
+
+msgid ""
+"A change you make to a machine stays with that machine. It is saved when "
+"you apply it and when you switch to another machine, so coming back finds"
+" it as you left it. The machine keeps: memory, the ROM set and the marked"
+" ROM, base clock, turbo steps, the **Advanced settings**, and its devices"
+" - disk interface and number of drives, hard disk interface, PSG, DAC, "
+"General Sound, SAA1099, joystick, mouse and PC keyboard. The rest of the "
+"page, the tape settings for one, is the same for every machine."
+msgstr ""
+"Зміна, яку ви вносите в машину, лишається з цією машиною. Вона "
+"зберігається, коли ви її застосовуєте і коли перемикаєтеся на іншу "
+"машину, тож, повернувшись, ви знайдете все так, як залишили. Машина "
+"зберігає: пам'ять, набір ROM і позначений ROM, базову частоту, "
+"турборежими, **Advanced settings** і свої пристрої — дисковий інтерфейс і"
+" кількість дисководів, інтерфейс жорсткого диска, PSG, DAC, General "
+"Sound, SAA1099, джойстик, мишу й клавіатуру PC. Решта сторінки, наприклад"
+" налаштування стрічки, однакова для всіх машин."
+
+msgid ""
+"A built-in machine you have changed gets an asterisk after its name. It "
+"still takes the fixes a new version of Xpeccy+ brings, wherever you did "
+"not change it."
+msgstr ""
+"Змінена вами вбудована машина отримує зірочку після назви. Вона й далі "
+"отримує виправлення, які приносить нова версія Xpeccy+, там, де ви нічого"
+" не змінювали."
+
+msgid "The three buttons on the **Machine** page:"
+msgstr "Три кнопки на сторінці **Machine**:"
+
+#, python-brace-format
+msgid ""
+"{icon}`save_all` **Save machine...** keeps the current settings as a new "
+"machine under a name you give (it suggests the machine's name with "
+"`(mine)` after it). The new machine appears in the machine list and runs "
+"at once. It is based on the machine it was made from, so it too takes "
+"that machine's fixes where you did not change it. The name must be one no"
+" other machine has."
+msgstr ""
+"{icon}`save_all` **Save machine...** зберігає поточні налаштування як "
+"нову машину з ім'ям, яке ви дасте (програма пропонує назву машини з "
+"`(mine)` після неї). Нова машина з'являється в списку машин і одразу "
+"запускається. Вона базується на машині, з якої її зроблено, тож теж "
+"отримує виправлення цієї машини там, де ви нічого не змінювали. Ім'я не "
+"має збігатися з іменем жодної іншої машини."
+
+#, python-brace-format
+msgid ""
+"{icon}`refresh` **Restore machine** drops every change. A built-in "
+"machine goes back to how it ships; one of your own goes back to the "
+"machine it was made from, and stays in the list."
+msgstr ""
+"{icon}`refresh` **Restore machine** скасовує всі зміни. Вбудована машина "
+"повертається до того стану, у якому постачається; ваша власна "
+"повертається до машини, з якої її зроблено, і лишається в списку."
+
+#, python-brace-format
+msgid ""
+"{icon}`cancel` **Delete this machine** removes a machine of your own, "
+"after asking, and switches to the one it was made from. Built-in machines"
+" cannot be deleted: use **Restore machine**."
+msgstr ""
+"{icon}`cancel` **Delete this machine** після запитання видаляє вашу "
+"власну машину й перемикає на ту, з якої її зроблено. Вбудовані машини "
+"видалити не можна: використовуйте **Restore machine**."
+
+#, python-brace-format
+msgid ""
+"Each machine you have changed or made is a small text file in the "
+"`machines` folder of the settings folder (see [Where the settings are"
+"](getting-started.md#where-the-settings-are)). It holds only what differs"
+" from the machine it is based on. Deleting the file of a built-in "
+"machine, with Xpeccy+ closed, does the same as **Restore machine**. "
+"{icon}`save_all` **Export settings...** on the **Application** page takes"
+" your own machines along with the settings."
+msgstr ""
+"Кожна машина, яку ви змінили чи створили, — це невеликий текстовий файл у"
+" папці `machines` папки налаштувань (див. [Де зберігаються налаштування"
+"](getting-started.md#where-the-settings-are)). Він містить лише те, що "
+"відрізняється від машини, на якій вона базується. Видалення файлу "
+"вбудованої машини, коли Xpeccy+ закрито, робить те саме, що й **Restore "
+"machine**. {icon}`save_all` **Export settings...** на сторінці "
+"**Application** забирає ваші власні машини разом із налаштуваннями."
+
+msgid "ROM images"
+msgstr "Образи ROM"
+
+msgid ""
+"The ROM images are in the `roms` folder of the settings folder. Xpeccy+ "
+"comes with every image its machines need. They keep their own terms: "
+"`LICENSE` and `PROVENANCE.md` in the same folder say where each one came "
+"from."
+msgstr ""
+"Образи ROM лежать у папці `roms` папки налаштувань. Xpeccy+ постачається "
+"з усіма образами, потрібними його машинам. Вони мають власні умови "
+"використання: `LICENSE` і `PROVENANCE.md` у тій самій папці кажуть, "
+"звідки взято кожен."
+
+msgid ""
+"To replace a ROM for every machine that uses it, put your file into "
+"`roms` under the same name. On Linux and macOS a new version of Xpeccy+ "
+"adds the images it is missing but never overwrites one that is already "
+"there, so your file stays."
+msgstr ""
+"Щоб замінити ROM для всіх машин, що його використовують, покладіть свій "
+"файл у `roms` під тим самим іменем. На Linux і macOS нова версія Xpeccy+ "
+"додає образи, яких бракує, але ніколи не перезаписує вже наявні, тож ваш "
+"файл лишається."
+
+#, python-brace-format
+msgid ""
+"To give one machine a different ROM, click the {icon}`settings` **ROM** "
+"button on the **Machine** page. The **Machine: ROM** window lists the "
+"machine's ROM banks, named after what is in each, such as **ROM 0 (Basic "
+"128)**:"
+msgstr ""
+"Щоб дати одній машині інший ROM, клацніть кнопку {icon}`settings` **ROM**"
+" на сторінці **Machine**. Вікно **Machine: ROM** перелічує банки ROM "
+"машини, названі за тим, що в кожному, наприклад **ROM 0 (Basic 128)**:"
+
+msgid ""
+"pick a file from the list, which holds every `.rom` and `.bin` file in "
+"the `roms` folder;"
+msgstr "виберіть файл зі списку, де є всі файли `.rom` і `.bin` з папки `roms`;"
+
+#, python-brace-format
+msgid ""
+"or click the {icon}`fileopen` folder button beside it to take a file from"
+" anywhere;"
+msgstr ""
+"або клацніть кнопку папки {icon}`fileopen` поруч, щоб узяти файл звідки "
+"завгодно;"
+
+msgid "mark the bank a plain reset starts from (**Boots from the marked ROM**)."
+msgstr ""
+"позначте банк, з якого стартує звичайне скидання (**Boots from the marked"
+" ROM**)."
+
+msgid ""
+"**Font** is the text-mode font, for the machines that have one. The "
+"General Sound ROM is in the **Machine: General Sound** window, and the "
+"TR-DOS ROM in **Machine: Disk**."
+msgstr ""
+"**Font** — шрифт текстового режиму для машин, які його мають. ROM General"
+" Sound — у вікні **Machine: General Sound**, а TR-DOS ROM — у **Machine: "
+"Disk**."
+
+#, python-brace-format
+msgid ""
+"{icon}`settings` **Expert settings** opens **Machine: ROM Files**, the "
+"same set file by file: where each part starts in its file, how much of it"
+" is read, and where it lands in the machine's ROM. Its buttons "
+"{icon}`add` add a file, {icon}`edit` edit or {icon}`cancel` remove the "
+"one selected, and {icon}`lamp` fill the set with the machine's standard "
+"ROMs again. Adding or editing opens the **Romset Editor** with **File**, "
+"**File offset**, **Size** (0 reads to the end of the file) and **ROM "
+"pos**, all in KB."
+msgstr ""
+"{icon}`settings` **Expert settings** відкриває **Machine: ROM Files** — "
+"той самий набір, файл за файлом: де кожна частина починається у своєму "
+"файлі, скільки з неї читається і куди вона потрапляє в ROM машини. Його "
+"кнопки: {icon}`add` додати файл, {icon}`edit` змінити чи {icon}`cancel` "
+"видалити виділений і {icon}`lamp` знову заповнити набір стандартними ROM "
+"машини. Додавання чи редагування відкриває **Romset Editor** з полями "
+"**File**, **File offset**, **Size** (0 — читати до кінця файлу) і **ROM "
+"pos**, усе в КБ."
+
+msgid ""
+"The new ROM is in place when you press **Apply**. Reset the machine to "
+"start from it."
+msgstr ""
+"Новий ROM стає на місце, коли ви натискаєте **Apply**. Скиньте машину, "
+"щоб стартувати з нього."
+
+msgid "machine"
+msgstr "машина"
+
+msgid "profile"
+msgstr "профіль"
+
+msgid "built-in"
+msgstr "вбудована"
+
+msgid "ZX Spectrum 48K"
+msgstr "ZX Spectrum 48K"
+
+msgid "ZX Spectrum 128K"
+msgstr "ZX Spectrum 128K"
+
+msgid "ZX Spectrum +2"
+msgstr "ZX Spectrum +2"
+
+msgid "ZX Spectrum +2A"
+msgstr "ZX Spectrum +2A"
+
+msgid "ZX Spectrum +3"
+msgstr "ZX Spectrum +3"
+
+msgid "Pentagon"
+msgstr "Pentagon"
+
+msgid "Pentagon 1024 SL"
+msgstr "Pentagon 1024 SL"
+
+msgid "Scorpion ZS 256"
+msgstr "Scorpion ZS 256"
+
+msgid "Scorpion ZS 256 Turbo+"
+msgstr "Scorpion ZS 256 Turbo+"
+
+msgid "ATM Turbo 2+"
+msgstr "ATM Turbo 2+"
+
+msgid "Profi v3"
+msgstr "Profi v3"
+
+msgid "Profi v5"
+msgstr "Profi v5"
+
+msgid "ZXM-Phoenix"
+msgstr "ZXM-Phoenix"
+
+msgid "ZX Evolution"
+msgstr "ZX Evolution"
+
+msgid "BaseConf"
+msgstr "BaseConf"
+
+msgid "TSConf"
+msgstr "TSConf"
+
+msgid "ALF TV Game"
+msgstr "ALF TV Game"
+
+msgid "ALF TV Game 128K"
+msgstr "ALF TV Game 128K"
+
+msgid "TR-DOS"
+msgstr "TR-DOS"
+
+msgid "choosing"
+msgstr "вибір"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Start Machine"
+msgstr "Start Machine"
+
+msgid "ROM to start from"
+msgstr "ROM для запуску"
+
+msgid "Reset to 48K"
+msgstr "Reset to 48K"
+
+msgid "Reset to 128K"
+msgstr "Reset to 128K"
+
+msgid "Reset to DOS"
+msgstr "Reset to DOS"
+
+msgid "Reset to Service"
+msgstr "Reset to Service"
+
+msgid "Turbo Mode"
+msgstr "Turbo Mode"
+
+msgid "turbo"
+msgstr "турбо"
+
+msgid "Switch Turbo"
+msgstr "Switch Turbo"
+
+msgid "Speed slider"
+msgstr "повзунок Speed"
+
+msgid "Overclock"
+msgstr "Overclock"
+
+msgid "Speed Up"
+msgstr "Speed Up"
+
+msgid "Speed Down"
+msgstr "Speed Down"
+
+msgid "Machine page"
+msgstr "сторінка Machine"
+
+msgid "devices"
+msgstr "пристрої"
+
+msgid "Covox"
+msgstr "Covox"
+
+msgid "Soundrive"
+msgstr "Soundrive"
+
+msgid "General Sound"
+msgstr "General Sound"
+
+msgid "SAA1099"
+msgstr "SAA1099"
+
+msgid "Machine: Advanced Settings"
+msgstr "Machine: Advanced Settings"
+
+msgid "Base clock"
+msgstr "Base clock"
+
+msgid "Raster layout"
+msgstr "Raster layout"
+
+msgid "Floating bus"
+msgstr "Floating bus"
+
+msgid "Contended memory"
+msgstr "Contended memory"
+
+msgid "contention"
+msgstr "конкуренція за пам'ять"
+
+msgid "ULA snow"
+msgstr "ULA snow"
+
+msgid "ULA plus"
+msgstr "ULA plus"
+
+msgid "your own"
+msgstr "власна"
+
+msgid "Save machine"
+msgstr "Save machine"
+
+msgid "Restore machine"
+msgstr "Restore machine"
+
+msgid "Delete this machine"
+msgstr "Delete this machine"
+
+msgid "machines folder"
+msgstr "папка machines"
+
+msgid "ROM image"
+msgstr "образ ROM"
+
+msgid "roms folder"
+msgstr "папка roms"
+
+msgid "Machine: ROM"
+msgstr "Machine: ROM"
+
+msgid "Font"
+msgstr "Font"
+
+msgid "Expert settings"
+msgstr "Expert settings"
+
+msgid "Machine: ROM Files"
+msgstr "Machine: ROM Files"
+
+msgid "Romset Editor"
+msgstr "Romset Editor"
+

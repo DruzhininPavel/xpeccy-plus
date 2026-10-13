@@ -1,0 +1,1396 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "The Debugger"
+msgstr "Debugger"
+
+msgid ""
+"The Debugger stops the machine and shows what is inside it: the program "
+"as Z80 code, the CPU registers, the memory, the stack and the state of "
+"the devices. From there you run the program one instruction at a time, "
+"change registers and memory, and set breakpoints that stop the machine "
+"where you want it."
+msgstr ""
+"Debugger зупиняє машину й показує, що в ній: програму як код Z80, "
+"регістри CPU, пам'ять, стек і стан пристроїв. Звідси ви виконуєте "
+"програму по одній інструкції, змінюєте регістри й пам'ять і ставите точки"
+" зупинки, що зупиняють машину там, де вам потрібно."
+
+msgid ""
+"This chapter is about the window, running and stepping, the CPU registers"
+" and the small state panels. The rest has chapters of its own: [Code and "
+"labels](debugger-code.md), [Memory](debugger-memory.md), [Breakpoints and"
+" watching](debugger-breakpoints.md) and [Device panels](debugger-"
+"devices.md)."
+msgstr ""
+"Цей розділ — про вікно, виконання й покрокове проходження, регістри CPU "
+"та малі панелі стану. Решта має власні розділи: [Код і мітки](debugger-"
+"code.md), [Пам'ять](debugger-memory.md), [Точки зупинки та спостереження"
+"](debugger-breakpoints.md) і [Панелі пристроїв](debugger-devices.md)."
+
+msgid "The window"
+msgstr "Вікно"
+
+msgid "![The Debugger](images/dbg-window.png)"
+msgstr "![Debugger](images/dbg-window.png)"
+
+msgid "**CPU** - the registers and flags. See [The CPU panel](#the-cpu-panel)."
+msgstr "**CPU** — регістри та прапорці. Див. [Панель CPU](#the-cpu-panel)."
+
+msgid ""
+"**Disasm** - the program as code, with the Debugger's buttons and the "
+"T-state counter above it. See [Code and labels](debugger-code.md)."
+msgstr ""
+"**Disasm** — програма як код, а над нею кнопки Debugger і лічильник "
+"тактів. Див. [Код і мітки](debugger-code.md)."
+
+msgid ""
+"**DUMP** - memory as bytes, with **REG-DUMP**, **FDD** and **CMOS** on "
+"tabs behind it."
+msgstr ""
+"**DUMP** — пам'ять як байти, а за нею на вкладках **REG-DUMP**, **FDD** і"
+" **CMOS**."
+
+msgid ""
+"**Breakpoints** - the list of breakpoints, with **Screen**, **Sound "
+"Chip**, **Tape**, **FDC**, **Heat map** and **Palette** on tabs behind "
+"it. On a ZX Evolution, **ZX Evo** is there in place of **Palette**."
+msgstr ""
+"**Breakpoints** — список точок зупинки, а за ним на вкладках **Screen**, "
+"**Sound Chip**, **Tape**, **FDC**, **Heat map** і **Palette**. На ZX "
+"Evolution замість **Palette** там **ZX Evo**."
+
+msgid ""
+"**MEMMAP** - the memory banks, the watched ports and the state of the "
+"machine. See [The MEMMAP panel](#the-memmap-panel)."
+msgstr ""
+"**MEMMAP** — банки пам'яті, відстежувані порти й стан машини. Див. "
+"[Панель MEMMAP](#the-memmap-panel)."
+
+msgid ""
+"**STACK** - the words on the stack. See [The STACK panel](#the-stack-"
+"panel)."
+msgstr "**STACK** — слова в стеку. Див. [Панель STACK](#the-stack-panel)."
+
+msgid ""
+"Most pictures of the Debugger chapters show it stopped in a game, Exolon "
+"(Raffaele Cecco, Hewson, 1987), with three labels and three breakpoints "
+"set for it."
+msgstr ""
+"Більшість зображень у розділах про Debugger показують його зупиненим у "
+"грі Exolon (Raffaele Cecco, Hewson, 1987), з трьома мітками й трьома "
+"точками зупинки для неї."
+
+msgid ""
+"The window title is **Xpeccy+ Debugger**. The Debugger keeps its own "
+"position and size, and its own font, set on the **Debugger** page of "
+"**Options**."
+msgstr ""
+"Заголовок вікна — **Xpeccy+ Debugger**. Debugger зберігає власні "
+"положення й розмір, а також власний шрифт, що задається на сторінці "
+"**Debugger** вікна **Options**."
+
+msgid "Opening and closing"
+msgstr "Відкриття та закриття"
+
+msgid "Open the Debugger in any of these ways:"
+msgstr "Відкрийте Debugger будь-яким із цих способів:"
+
+#, python-brace-format
+msgid "**Debug > Debugger**, or the {icon}`bug` **Debug** button on the toolbar;"
+msgstr ""
+"**Debug > Debugger** або кнопка {icon}`bug` **Debug** на панелі "
+"інструментів;"
+
+msgid "**Debugger** in the menu that a right-click on the picture opens;"
+msgstr "**Debugger** у меню, яке відкриває клацання правою кнопкою на зображенні;"
+
+msgid "the **Debugger** hotkey: F10 (Modern), Esc (Classic);"
+msgstr "гаряча клавіша **Debugger**: F10 (Modern), Esc (Classic);"
+
+msgid ""
+"`-d` on the command line opens it as soon as the program starts (see "
+"[Command line](command-line.md#debugging));"
+msgstr ""
+"`-d` у командному рядку відкриває його одразу після запуску програми "
+"(див. [Командний рядок](command-line.md#debugging));"
+
+msgid ""
+"a breakpoint opens it by itself when the machine reaches it (see "
+"[Breakpoints and watching](debugger-breakpoints.md))."
+msgstr ""
+"точка зупинки відкриває його сама, коли машина до неї доходить (див. "
+"[Точки зупинки та спостереження](debugger-breakpoints.md))."
+
+msgid ""
+"While the Debugger is open, the machine stands still. There is no sound, "
+"fast mode is switched off, and keys pressed in the main window do not "
+"reach the machine. The picture in the main window shows the frame as far "
+"as the machine had drawn it; the part not drawn yet is the frame before, "
+"darkened. A click on the main window brings the Debugger back to the "
+"front."
+msgstr ""
+"Поки Debugger відкритий, машина стоїть. Звуку немає, швидкий режим "
+"вимкнено, а клавіші, натиснуті в головному вікні, до машини не доходять. "
+"Зображення в головному вікні показує кадр настільки, наскільки машина "
+"встигла його намалювати; ще не намальована частина — це попередній кадр, "
+"затемнений. Клацання на головному вікні знову виводить Debugger на "
+"передній план."
+
+msgid ""
+"To let the machine run on, close the Debugger: press Esc, press the "
+"**Debugger** hotkey again, or close the window. The machine goes on from "
+"the instruction the Debugger shows. That instruction runs first even if a"
+" breakpoint is on it, so the machine does not stop on the same place "
+"again at once."
+msgstr ""
+"Щоб машина працювала далі, закрийте Debugger: натисніть Esc, ще раз "
+"натисніть гарячу клавішу **Debugger** або закрийте вікно. Машина "
+"продовжує з інструкції, яку показує Debugger. Ця інструкція виконується "
+"першою, навіть якщо на ній стоїть точка зупинки, тож машина не "
+"зупиняється одразу знову на тому самому місці."
+
+msgid "The panels"
+msgstr "Панелі"
+
+msgid ""
+"Every part of the window is a panel that can be moved. Panels that share "
+"a place are tabs: click a tab to bring its panel to the front. Some tabs "
+"show only an icon; the name of the panel in front is in its title bar."
+msgstr ""
+"Кожна частина вікна — це панель, яку можна переміщувати. Панелі, що "
+"ділять одне місце, — це вкладки: клацніть вкладку, щоб вивести її панель "
+"наперед. Деякі вкладки показують лише значок; назва передньої панелі — у "
+"її заголовку."
+
+msgid "Panel"
+msgstr "Панель"
+
+msgid "What it shows"
+msgstr "Що показує"
+
+msgid "Explained in"
+msgstr "Де описано"
+
+msgid "**CPU**"
+msgstr "**CPU**"
+
+msgid "the CPU registers and flags"
+msgstr "регістри та прапорці CPU"
+
+msgid "[The CPU panel](#the-cpu-panel)"
+msgstr "[Панель CPU](#the-cpu-panel)"
+
+msgid "**Disasm**"
+msgstr "**Disasm**"
+
+msgid "the program as code"
+msgstr "програму як код"
+
+msgid "[Code and labels](debugger-code.md)"
+msgstr "[Код і мітки](debugger-code.md)"
+
+msgid "**DUMP**"
+msgstr "**DUMP**"
+
+msgid "memory as bytes and text"
+msgstr "пам'ять як байти й текст"
+
+msgid "[Memory](debugger-memory.md)"
+msgstr "[Пам'ять](debugger-memory.md)"
+
+msgid "**REG-DUMP**"
+msgstr "**REG-DUMP**"
+
+msgid "the memory the registers point at"
+msgstr "пам'ять, на яку вказують регістри"
+
+msgid "**CMOS**"
+msgstr "**CMOS**"
+
+msgid "the clock chip's memory"
+msgstr "пам'ять мікросхеми годинника"
+
+msgid "[Device panels](debugger-devices.md#cmos)"
+msgstr "[Панелі пристроїв](debugger-devices.md#cmos)"
+
+msgid "**Heat map**"
+msgstr "**Heat map**"
+
+msgid "how often each memory cell is read, written and run"
+msgstr "як часто кожну комірку пам'яті читають, записують і виконують"
+
+msgid "**Breakpoints**"
+msgstr "**Breakpoints**"
+
+msgid "the breakpoints"
+msgstr "точки зупинки"
+
+msgid "[Breakpoints and watching](debugger-breakpoints.md)"
+msgstr "[Точки зупинки та спостереження](debugger-breakpoints.md)"
+
+msgid "**Screen**"
+msgstr "**Screen**"
+
+msgid "a ZX screen drawn from memory"
+msgstr "екран ZX, намальований із пам'яті"
+
+msgid "[Device panels](debugger-devices.md)"
+msgstr "[Панелі пристроїв](debugger-devices.md)"
+
+msgid "**Sound Chip**"
+msgstr "**Sound Chip**"
+
+msgid "the registers of the sound chips"
+msgstr "регістри звукових мікросхем"
+
+msgid "**Tape**"
+msgstr "**Tape**"
+
+msgid "the tape's state and the signals in and out"
+msgstr "стан стрічки та вхідний і вихідний сигнали"
+
+msgid "**FDC**"
+msgstr "**FDC**"
+
+msgid "the floppy disk controller and the drive"
+msgstr "контролер дисковода й дисковод"
+
+msgid "**FDD**"
+msgstr "**FDD**"
+
+msgid "the bytes on a track of a floppy disk"
+msgstr "байти на доріжці дискети"
+
+msgid "**Palette**"
+msgstr "**Palette**"
+
+msgid "the colors of the machine's palette"
+msgstr "кольори палітри машини"
+
+msgid "**ZX Evo**"
+msgstr "**ZX Evo**"
+
+msgid "the video and memory hardware of a ZX Evolution"
+msgstr "відеоапаратура й апаратура пам'яті ZX Evolution"
+
+msgid "[Device panels](debugger-devices.md#zx-evo)"
+msgstr "[Панелі пристроїв](debugger-devices.md#zx-evo)"
+
+msgid "**MEMMAP**"
+msgstr "**MEMMAP**"
+
+msgid "the memory banks, ports and signals"
+msgstr "банки пам'яті, порти й сигнали"
+
+msgid "[The MEMMAP panel](#the-memmap-panel)"
+msgstr "[Панель MEMMAP](#the-memmap-panel)"
+
+msgid "**STACK**"
+msgstr "**STACK**"
+
+msgid "the words on the stack"
+msgstr "слова в стеку"
+
+msgid "[The STACK panel](#the-stack-panel)"
+msgstr "[Панель STACK](#the-stack-panel)"
+
+msgid ""
+"**CMOS** is there only on machines that have a clock chip: the ZX "
+"Evolution with BaseConf or TSConf, the Pentagon 1024, the Profi v5, and "
+"any machine with a SMUC. **FDC** and **FDD** are there only on a machine "
+"with a disk interface. **ZX Evo** is there only on a ZX Evolution, with "
+"TSConf or BaseConf, and **Palette** on every other machine."
+msgstr ""
+"**CMOS** є лише на машинах із мікросхемою годинника: ZX Evolution із "
+"BaseConf або TSConf, Pentagon 1024, Profi v5 і будь-якій машині зі SMUC. "
+"**FDC** і **FDD** є лише на машині з дисковим інтерфейсом. **ZX Evo** є "
+"лише на ZX Evolution, із TSConf або BaseConf, а **Palette** — на всіх "
+"інших машинах."
+
+#, python-brace-format
+msgid ""
+"**Screen** and **Sound Chip** can also be windows of their own: **Debug >"
+" Screen** and **Debug > Sound Chips** open them, and they work while the "
+"machine runs. **ZX Evo** can be one too, from the {icon}`display` button "
+"at the top right of the panel. See [Device panels](debugger-devices.md)."
+msgstr ""
+"**Screen** і **Sound Chip** можуть бути й окремими вікнами: їх "
+"відкривають **Debug > Screen** і **Debug > Sound Chips**, і вони "
+"працюють, поки машина працює. **ZX Evo** теж може бути окремим вікном — "
+"кнопкою {icon}`display` угорі праворуч на панелі. Див. [Панелі пристроїв"
+"](debugger-devices.md)."
+
+msgid "Arranging the panels"
+msgstr "Розташування панелей"
+
+msgid ""
+"Drag a panel by its title bar and drop it where you want it: beside "
+"another panel, above or below it, or onto it to make the two tabs. Drop "
+"it at the far left or far right edge of the window to give it a column of"
+" its own. Drag the line between two panels to share the room differently."
+msgstr ""
+"Перетягніть панель за заголовок і відпустіть там, де вам треба: поруч з "
+"іншою панеллю, над нею чи під нею або на неї, щоб зробити з двох панелей "
+"вкладки. Відпустіть її біля самого лівого чи правого краю вікна, щоб дати"
+" їй окремий стовпець. Перетягніть лінію між двома панелями, щоб інакше "
+"поділити місце."
+
+msgid "A panel cannot be closed, and it cannot leave the window."
+msgstr "Панель не можна закрити, і вона не може вийти за межі вікна."
+
+#, python-brace-format
+msgid ""
+"The arrangement is kept: the next time the Debugger opens, and the next "
+"time the program starts. To get the arrangement it ships with, choose "
+"**Reset panel layout** from the {icon}`settings` **Options** button over "
+"the listing. It also brings the window back to its first size."
+msgstr ""
+"Розташування зберігається: до наступного відкриття Debugger і до "
+"наступного запуску програми. Щоб повернути початкове розташування, "
+"виберіть **Reset panel layout** у кнопці {icon}`settings` **Options** над"
+" лістингом. Це також повертає вікну початковий розмір."
+
+msgid "The buttons over the listing"
+msgstr "Кнопки над лістингом"
+
+msgid ""
+"A row of buttons above the **Disasm** panel holds the Debugger's menus. "
+"Hold the mouse over a button to see its name. The menus that belong to "
+"the listing are described in full in [The toolbar](debugger-code.md#the-"
+"toolbar)."
+msgstr ""
+"Ряд кнопок над панеллю **Disasm** містить меню Debugger. Затримайте "
+"вказівник миші над кнопкою, щоб побачити її назву. Меню, що стосуються "
+"лістингу, докладно описано в розділі [Панель інструментів](debugger-"
+"code.md#the-toolbar)."
+
+msgid "![The buttons over the listing](images/dbg-toolbar.png)"
+msgstr "![Кнопки над лістингом](images/dbg-toolbar.png)"
+
+msgid "Button"
+msgstr "Кнопка"
+
+msgid "What is in it"
+msgstr "Що в ній"
+
+#, python-brace-format
+msgid "{icon}`stop` **Breakpoints**"
+msgstr "{icon}`stop` **Breakpoints**"
+
+msgid ""
+"**Fetch break**, **Read break**, **Write break** on the line or block - "
+"see [Breakpoints and watching](debugger-breakpoints.md)"
+msgstr ""
+"**Fetch break**, **Read break**, **Write break** на рядку чи блоці — див."
+" [Точки зупинки та спостереження](debugger-breakpoints.md)"
+
+#, python-brace-format
+msgid "{icon}`label` **Labels**"
+msgstr "{icon}`label` **Labels**"
+
+msgid "show, load, save and list labels - see [Code and labels](debugger-code.md)"
+msgstr ""
+"показати, завантажити, зберегти мітки та їхній список — див. [Код і мітки"
+"](debugger-code.md)"
+
+#, python-brace-format
+msgid "{icon}`bars` **View**"
+msgstr "{icon}`bars` **View**"
+
+msgid ""
+"show the lines as **Opcode**, **Byte**, **ASCII**, **Word** or "
+"**Address** - see [Code and labels](debugger-code.md)"
+msgstr ""
+"показувати рядки як **Opcode**, **Byte**, **ASCII**, **Word** або "
+"**Address** — див. [Код і мітки](debugger-code.md)"
+
+#, python-brace-format
+msgid "{icon}`arrGreen` **Trace**"
+msgstr "{icon}`arrGreen` **Trace**"
+
+msgid "the kinds of trace - see [Trace](#trace)"
+msgstr "види трасування — див. [Trace](#trace)"
+
+#, python-brace-format
+msgid "{icon}`other` **Tools**"
+msgstr "{icon}`other` **Tools**"
+
+msgid ""
+"**Search**, **Fill...**, **Sprite scanner** ([Memory](debugger-"
+"memory.md)), **Keyboard** (the [Virtual Keyboard](input.md#virtual-"
+"keyboard)), **Watcher** ([Breakpoints and watching](debugger-"
+"breakpoints.md))"
+msgstr ""
+"**Search**, **Fill...**, **Sprite scanner** ([Пам'ять](debugger-"
+"memory.md)), **Keyboard** ([Virtual Keyboard](input.md#virtual-"
+"keyboard)), **Watcher** ([Точки зупинки та спостереження](debugger-"
+"breakpoints.md))"
+
+#, python-brace-format
+msgid "{icon}`settings` **Options**"
+msgstr "{icon}`settings` **Options**"
+
+msgid ""
+"how the listing looks, writing to ROM, runtime mapping ([Code and labels"
+"](debugger-code.md)), and **Reset panel layout**"
+msgstr ""
+"вигляд лістингу, запис у ROM, відображення під час виконання ([Код і "
+"мітки](debugger-code.md)) і **Reset panel layout**"
+
+#, python-brace-format
+msgid "{icon}`refresh` **Reload snapshot & labels**"
+msgstr "{icon}`refresh` **Reload snapshot & labels**"
+
+msgid "opens the last file again and its labels, as **File > Reload** does"
+msgstr "знову відкриває останній файл і його мітки, як **File > Reload**"
+
+#, python-brace-format
+msgid "{icon}`floppy` (disk)"
+msgstr "{icon}`floppy` (диск)"
+
+msgid ""
+"**Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save "
+"map** - see [Code and labels](debugger-code.md) and [Memory](debugger-"
+"memory.md)"
+msgstr ""
+"**Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save "
+"map** — див. [Код і мітки](debugger-code.md) і [Пам'ять](debugger-"
+"memory.md)"
+
+msgid "Running and stepping"
+msgstr "Виконання й покрокове проходження"
+
+msgid ""
+"These keys work while the Debugger has the focus. The **Hotkeys** page of"
+" **Options** lists them under **Debugger**, and changes them there (see "
+"[Hotkeys](hotkeys.md))."
+msgstr ""
+"Ці клавіші працюють, коли фокус у Debugger. Сторінка **Hotkeys** вікна "
+"**Options** перелічує їх у групі **Debugger** і дає їх там змінити (див. "
+"[Гарячі клавіші](hotkeys.md))."
+
+msgid "Action"
+msgstr "Дія"
+
+msgid "Modern"
+msgstr "Modern"
+
+msgid "Classic"
+msgstr "Classic"
+
+msgid "What it does"
+msgstr "Що робить"
+
+msgid "Step in"
+msgstr "Step in"
+
+msgid "F7"
+msgstr "F7"
+
+msgid "runs one instruction"
+msgstr "виконує одну інструкцію"
+
+msgid "Step over"
+msgstr "Step over"
+
+msgid "F8"
+msgstr "F8"
+
+msgid "runs one instruction; a call or a loop runs to its end"
+msgstr "виконує одну інструкцію; виклик або цикл виконується до кінця"
+
+msgid "Step out"
+msgstr "Step out"
+
+msgid "Shift+F8"
+msgstr "Shift+F8"
+
+msgid "F6"
+msgstr "F6"
+
+msgid "runs until the current subroutine returns"
+msgstr "виконує, доки поточна підпрограма не повернеться"
+
+msgid "Fast step"
+msgstr "Fast step"
+
+msgid "Alt+F7"
+msgstr "Alt+F7"
+
+msgid "runs ten instructions"
+msgstr "виконує десять інструкцій"
+
+msgid "Stop here"
+msgstr "Stop here"
+
+msgid "F4"
+msgstr "F4"
+
+msgid "F9"
+msgstr "F9"
+
+msgid "runs until the line under the cursor"
+msgstr "виконує до рядка під курсором"
+
+msgid "Trace"
+msgstr "Trace"
+
+msgid "Ctrl+T"
+msgstr "Ctrl+T"
+
+msgid "runs instruction by instruction until you press a key"
+msgstr "виконує інструкцію за інструкцією, доки ви не натиснете клавішу"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Esc"
+msgstr "Esc"
+
+msgid "closes the Debugger and lets the machine run"
+msgstr "закриває Debugger і дає машині працювати"
+
+msgid ""
+"After each step every panel shows the new state, and the registers that "
+"changed are marked."
+msgstr ""
+"Після кожного кроку всі панелі показують новий стан, а змінені регістри "
+"позначено."
+
+msgid ""
+"**Step in** runs the instruction at PC, the line marked in the listing. "
+"Hold the key down to keep stepping: it works as **Trace** until you let "
+"go."
+msgstr ""
+"**Step in** виконує інструкцію за адресою PC — рядок, позначений у "
+"лістингу. Утримуйте клавішу, щоб крокувати далі: це працює як **Trace**, "
+"доки ви її не відпустите."
+
+msgid ""
+"**Step over** treats a few instructions as one: CALL, RST, DJNZ, HALT and"
+" the repeating block instructions LDIR, LDDR, CPIR, CPDR, INIR, INDR, "
+"OTIR and OTDR. The Debugger closes, the machine runs at full speed until "
+"it reaches the next instruction, and the Debugger opens again there. Any "
+"other instruction is one step, as with **Step in**."
+msgstr ""
+"**Step over** вважає кілька інструкцій за одну: CALL, RST, DJNZ, HALT і "
+"блокові інструкції з повторенням LDIR, LDDR, CPIR, CPDR, INIR, INDR, OTIR"
+" та OTDR. Debugger закривається, машина працює на повній швидкості, доки "
+"не дійде до наступної інструкції, і там Debugger відкривається знову. "
+"Будь-яка інша інструкція — це один крок, як у **Step in**."
+
+msgid ""
+"**Step out** lets the machine run until the subroutine it is in returns. "
+"Calls and interrupts made on the way are counted, so the RET that ends "
+"this subroutine is the one that stops it. The Debugger opens after that "
+"RET."
+msgstr ""
+"**Step out** дає машині працювати, доки підпрограма, у якій вона "
+"перебуває, не повернеться. Виклики й переривання дорогою враховуються, "
+"тож зупиняє саме той RET, що завершує цю підпрограму. Debugger "
+"відкривається після цього RET."
+
+msgid ""
+"**Stop here** runs the machine at full speed until PC reaches the line "
+"the cursor is on in the listing. Click the line first, so the listing has"
+" the focus."
+msgstr ""
+"**Stop here** запускає машину на повній швидкості, доки PC не дійде до "
+"рядка лістингу, на якому стоїть курсор. Спершу клацніть рядок, щоб фокус "
+"був у лістингу."
+
+msgid ""
+"**Step over**, **Step out** and **Stop here** let the machine run with "
+"the Debugger closed. If a breakpoint stops it first, or you open the "
+"Debugger yourself, the place they were waiting for is forgotten. If the "
+"program never gets there, the machine just runs on."
+msgstr ""
+"**Step over**, **Step out** і **Stop here** дають машині працювати із "
+"закритим Debugger. Якщо її раніше зупинить точка зупинки або ви самі "
+"відкриєте Debugger, місце, на яке вони чекали, забувається. Якщо програма"
+" туди так і не дійде, машина просто працює далі."
+
+msgid ""
+"While you step or trace, breakpoints are not checked. They work again "
+"once the machine runs with the Debugger closed."
+msgstr ""
+"Під час покрокового проходження чи трасування точки зупинки не "
+"перевіряються. Вони знову працюють, щойно машина працює із закритим "
+"Debugger."
+
+msgid ""
+"Trace runs the program one instruction after another, and the panels show"
+" each step as it happens. Press any key to stop it. Trace is much slower "
+"than the machine at full speed."
+msgstr ""
+"Трасування виконує програму інструкцію за інструкцією, а панелі показують"
+" кожен крок, щойно він відбувається. Натисніть будь-яку клавішу, щоб "
+"зупинити його. Трасування значно повільніше, ніж машина на повній "
+"швидкості."
+
+#, python-brace-format
+msgid "The {icon}`arrGreen` **Trace** button over the listing has four kinds:"
+msgstr "Кнопка {icon}`arrGreen` **Trace** над лістингом має чотири види:"
+
+msgid "**Trace** - until you press a key;"
+msgstr "**Trace** — доки ви не натиснете клавішу;"
+
+msgid ""
+"**Trace and stop here** - until PC reaches the line the cursor is on. It "
+"is also in the menu that a right-click on the listing opens;"
+msgstr ""
+"**Trace and stop here** — доки PC не дійде до рядка, на якому стоїть "
+"курсор. Цей пункт є й у меню, що відкривається клацанням правою кнопкою "
+"на лістингу;"
+
+msgid ""
+"**Trace and stop on INT** - until an interrupt comes that the CPU will "
+"take;"
+msgstr "**Trace and stop on INT** — доки не надійде переривання, яке CPU прийме;"
+
+msgid ""
+"**Trace log** - asks for a file name, then traces until you press a key "
+"and writes one line per instruction into the file."
+msgstr ""
+"**Trace log** — запитує ім'я файлу, потім трасує, доки ви не натиснете "
+"клавішу, і записує у файл по рядку на інструкцію."
+
+msgid "![The Trace menu](images/dbg-trace-menu.png)"
+msgstr "![Меню Trace](images/dbg-trace-menu.png)"
+
+msgid "The Trace menu"
+msgstr "Меню Trace"
+
+msgid "The first line of a trace log names the columns. On a Z80 it reads:"
+msgstr "Перший рядок журналу трасування називає стовпці. На Z80 він такий:"
+
+msgid ""
+"Each following line is one instruction: its address, the instruction "
+"itself, and the registers after it ran, in hex. The columns are separated"
+" by `|`, and the numbers are in quotes so that a spreadsheet keeps them "
+"as text: open the file there with `|` as the separator."
+msgstr ""
+"Кожен наступний рядок — одна інструкція: її адреса, сама інструкція та "
+"регістри після її виконання, у шістнадцятковому вигляді. Стовпці "
+"розділено символом `|`, а числа взято в лапки, щоб електронна таблиця "
+"зберегла їх як текст: відкрийте там файл із `|` як роздільником."
+
+msgid "The T-state counter"
+msgstr "Лічильник тактів"
+
+msgid "Above the listing, on the right, are two numbers:"
+msgstr "Над лістингом праворуч — два числа:"
+
+msgid ""
+"the left one is the number of T-states the last step took. After the "
+"machine ran with the Debugger closed - **Step over**, **Stop here**, a "
+"breakpoint - it is the T-states of that whole run;"
+msgstr ""
+"ліве — кількість тактів, яку зайняв останній крок. Після того як машина "
+"працювала із закритим Debugger — **Step over**, **Stop here**, точка "
+"зупинки, — це такти всього цього проміжку;"
+
+msgid ""
+"the right one is the number of T-states since the start of the current "
+"frame, that is, since the last frame interrupt."
+msgstr ""
+"праве — кількість тактів від початку поточного кадру, тобто від "
+"останнього кадрового переривання."
+
+msgid ""
+"Tick **Accumulate T** to add the steps up: the left number keeps growing "
+"from step to step until you untick it. Ticking it starts it again from 0."
+msgstr ""
+"Позначте **Accumulate T**, щоб підсумовувати кроки: ліве число зростає "
+"від кроку до кроку, доки ви не знімете позначку. Позначення знову починає"
+" його з 0."
+
+msgid ""
+"The count is the real time on the machine, with memory contention and the"
+" interrupts that came in between."
+msgstr ""
+"Це реальний час на машині, з урахуванням конкуренції за пам'ять і "
+"переривань, що надійшли тим часом."
+
+msgid "The CPU panel"
+msgstr "Панель CPU"
+
+msgid "![The CPU panel](images/dbg-cpu.png)"
+msgstr "![Панель CPU](images/dbg-cpu.png)"
+
+msgid ""
+"The **CPU** panel shows the Z80 registers: PC, AF, BC, DE, HL, SP, the "
+"alternate set AF', BC', DE', HL', then IX, IY, IR, IM and the interrupt "
+"switches IFF1 and IFF2. Under them are the flags S, Z, 5, H, 3, P, N and "
+"C."
+msgstr ""
+"Панель **CPU** показує регістри Z80: PC, AF, BC, DE, HL, SP, "
+"альтернативний набір AF', BC', DE', HL', далі IX, IY, IR, IM і перемикачі"
+" переривань IFF1 та IFF2. Під ними — прапорці S, Z, 5, H, 3, P, N і C."
+
+msgid ""
+"A register that changed in the last step is marked in the **Changed** "
+"color of the **Debugger** page of **Options**. With **Split pairs** on, "
+"only the byte that changed is marked: after an instruction that changes "
+"only A, only the A half of AF lights up."
+msgstr ""
+"Регістр, що змінився за останній крок, позначено кольором **Changed** зі "
+"сторінки **Debugger** вікна **Options**. Коли ввімкнено **Split pairs**, "
+"позначено лише байт, що змінився: після інструкції, яка змінює тільки A, "
+"підсвічується лише половина A регістра AF."
+
+msgid "Changing registers"
+msgstr "Зміна регістрів"
+
+msgid ""
+"Click a value and type over it in hex. The change takes effect at once. "
+"In a value field:"
+msgstr ""
+"Клацніть значення й введіть нове поверх нього в шістнадцятковому вигляді."
+" Зміна діє одразу. У полі значення:"
+
+msgid "Up and Down, or the mouse wheel, add or take 1;"
+msgstr "Up і Down або коліщатко миші додають чи віднімають 1;"
+
+msgid "PgUp and PgDn add or take 256;"
+msgstr "PgUp і PgDn додають чи віднімають 256;"
+
+msgid "X switches the field between hex and decimal."
+msgstr "X перемикає поле між шістнадцятковим і десятковим виглядом."
+
+msgid "IFF1 and IFF2 are check boxes. Tick or untick a flag to change it in F."
+msgstr ""
+"IFF1 та IFF2 показано як поля позначок. Щоб змінити прапорець у F, "
+"поставте або зніміть його позначку."
+
+msgid ""
+"Click the name of a register to see the code at the address it holds in "
+"the listing. Right-click the name to see that address in the **DUMP** "
+"panel."
+msgstr ""
+"Клацніть назву регістра, щоб побачити в лістингу код за адресою, яку він "
+"містить. Клацніть назву правою кнопкою, щоб побачити цю адресу на панелі "
+"**DUMP**."
+
+msgid "Layouts"
+msgstr "Компонування"
+
+msgid ""
+"Right-click the panel's title bar to choose how the registers are laid "
+"out. A small dot in the corner of a title bar says it has such a menu."
+msgstr ""
+"Клацніть правою кнопкою заголовок панелі, щоб вибрати, як розміщено "
+"регістри. Маленька крапка в куті заголовка означає, що в нього є таке "
+"меню."
+
+msgid "![The registers layout menu](images/dbg-cpu-menu.png)"
+msgstr "![Меню компонування регістрів](images/dbg-cpu-menu.png)"
+
+msgid "The registers layout menu"
+msgstr "Меню компонування регістрів"
+
+msgid ""
+"**Auto** (the default) - one column when the panel is narrow, two when it"
+" is wide enough. It also takes two columns when two panels stand side by "
+"side under it."
+msgstr ""
+"**Auto** (типово) — один стовпець, коли панель вузька, два, коли вона "
+"достатньо широка. Два стовпці буде й тоді, коли під нею поруч стоять дві "
+"панелі."
+
+msgid "**1 column** - a register on each line."
+msgstr "**1 column** — по регістру в рядку."
+
+msgid ""
+"**2 columns** - two on a line, each beside its pair: AF beside AF', PC "
+"beside SP."
+msgstr ""
+"**2 columns** — по два в рядку, кожен поруч зі своєю парою: AF поруч з "
+"AF', PC поруч з SP."
+
+msgid ""
+"**Wide** - a column for each kind: AF, BC, DE, HL; the alternate set; PC,"
+" SP, IX, IY; and IR, IM, IFF1, IFF2. The flags are one more column beside"
+" them, under the title **Flags**."
+msgstr ""
+"**Wide** — стовпець для кожного виду: AF, BC, DE, HL; альтернативний "
+"набір; PC, SP, IX, IY; та IR, IM, IFF1, IFF2. Прапорці — ще один стовпець"
+" поруч, під заголовком **Flags**."
+
+msgid ""
+"**Split pairs** - mark only the byte that changed, as above. On out of "
+"the box."
+msgstr ""
+"**Split pairs** — позначати лише байт, що змінився, як описано вище. "
+"Типово ввімкнено."
+
+msgid "![The CPU panel in the Wide layout](images/dbg-cpu-wide.png)"
+msgstr "![Панель CPU у компонуванні Wide](images/dbg-cpu-wide.png)"
+
+msgid "The CPU panel in the Wide layout"
+msgstr "Панель CPU у компонуванні Wide"
+
+msgid "The STACK panel"
+msgstr "Панель STACK"
+
+msgid "![The STACK panel](images/dbg-stack.png)"
+msgstr "![Панель STACK](images/dbg-stack.png)"
+
+msgid ""
+"Each line of the **STACK** panel is a word in memory, starting near the "
+"address SP holds. The shaded line is the word at SP, named by its "
+"address. The lines above and below it are named by their distance from "
+"SP: `-02:`, `+02:`, `+04:` and so on. The panel shows as many lines as "
+"fit in its height."
+msgstr ""
+"Кожен рядок панелі **STACK** — слово в пам'яті, починаючи біля адреси, "
+"яку містить SP. Затінений рядок — слово за адресою SP, підписане своєю "
+"адресою. Рядки над ним і під ним підписано відстанню від SP: `-02:`, "
+"`+02:`, `+04:` і так далі. Панель показує стільки рядків, скільки "
+"вміщується за висотою."
+
+msgid ""
+"The two arrows at the top move the lines by a word. The first line can be"
+" from 16 bytes before SP to 16 bytes after it. Where the panel starts is "
+"the **Stack offset** on the **Debugger** page of **Options**: `-2` out of"
+" the box, so the word just above SP is in view too."
+msgstr ""
+"Дві стрілки вгорі зсувають рядки на слово. Перший рядок може бути від 16 "
+"байтів перед SP до 16 байтів після нього. Звідки починається панель, "
+"задає **Stack offset** на сторінці **Debugger** вікна **Options**: типово"
+" `-2`, тож слово просто над SP теж видно."
+
+msgid "The MEMMAP panel"
+msgstr "Панель MEMMAP"
+
+msgid "![The MEMMAP panel](images/dbg-memmap.png)"
+msgstr "![Панель MEMMAP](images/dbg-memmap.png)"
+
+msgid ""
+"The **MEMMAP** panel holds a few small blocks, one under another. The "
+"**Debugger** page of **Options** sets which of them are shown."
+msgstr ""
+"Панель **MEMMAP** містить кілька невеликих блоків, один під одним. Які з "
+"них показано, задає сторінка **Debugger** вікна **Options**."
+
+msgid ""
+"The four rows at the top are the four 16K banks of the Z80's memory, with"
+" what is in each: ROM or RAM and the page number. You can put another "
+"page into a bank from here. See [Memory](debugger-memory.md)."
+msgstr ""
+"Чотири рядки вгорі — це чотири банки пам'яті Z80 по 16K і що в кожному: "
+"ROM чи RAM і номер сторінки. Звідси можна підключити в банк іншу "
+"сторінку. Див. [Пам'ять](debugger-memory.md)."
+
+msgid ""
+"**PORTS** lists the watched ports and the last value on each. For a port "
+"the machine keeps a register of its own, such as `7FFD` on a 128K, that "
+"is the register's value; for any other port it is the last byte read from"
+" it or written to it, and `--` until it is used."
+msgstr ""
+"**PORTS** перелічує відстежувані порти й останнє значення на кожному. Для"
+" порту, для якого машина тримає власний регістр, як-от `7FFD` на 128K, це"
+" значення регістра; для будь-якого іншого порту — останній байт, "
+"прочитаний із нього чи записаний у нього, і `--`, доки його не "
+"використано."
+
+msgid "**SIGNALS** are four words that are bold while the signal is on:"
+msgstr "**SIGNALS** — чотири слова, що стають жирними, поки сигнал увімкнено:"
+
+msgid "**DOS** - the TR-DOS ROM is switched in;"
+msgstr "**DOS** — увімкнено ROM TR-DOS;"
+
+msgid ""
+"**ROM** - the ROM bit of port `7FFD` is set; on a 128K that is the 48K "
+"BASIC ROM;"
+msgstr "**ROM** — встановлено біт ROM порту `7FFD`; на 128K це ROM 48K BASIC;"
+
+msgid "**CPM** - the machine is in its CP/M mode;"
+msgstr "**CPM** — машина в режимі CP/M;"
+
+msgid "**INT** - an interrupt is waiting and the CPU will take it."
+msgstr "**INT** — переривання очікує, і CPU його прийме."
+
+msgid ""
+"**FRAME** counts the frames since the last reset. Right-click it and "
+"choose **Reset counter** to start it again from 0, for example to count "
+"the frames until something happens. Breakpoint conditions read the same "
+"number as `FRAME` (see [Breakpoints and watching](debugger-"
+"breakpoints.md))."
+msgstr ""
+"**FRAME** рахує кадри від останнього скидання. Клацніть його правою "
+"кнопкою й виберіть **Reset counter**, щоб почати знову з 0, наприклад щоб"
+" порахувати кадри, доки щось станеться. Умови точок зупинки читають те "
+"саме число як `FRAME` (див. [Точки зупинки та спостереження](debugger-"
+"breakpoints.md))."
+
+msgid ""
+"**RAY** is where the beam is on the frame: X on the first line, Y on the "
+"second. X is bold during the line's blanking, Y during the frame's."
+msgstr ""
+"**RAY** — де промінь на кадрі: X у першому рядку, Y у другому. X жирний "
+"під час гасіння рядка, Y — під час гасіння кадру."
+
+msgid "Watched ports"
+msgstr "Відстежувані порти"
+
+msgid ""
+"Right-click **PORTS**, or any port under it, and choose **Watched "
+"ports...** to change the list."
+msgstr ""
+"Клацніть правою кнопкою **PORTS** або будь-який порт під ним і виберіть "
+"**Watched ports...**, щоб змінити список."
+
+msgid "![The Watched Ports window](images/dbg-watched-ports.png)"
+msgstr "![Вікно Watched Ports](images/dbg-watched-ports.png)"
+
+msgid "The Watched Ports window"
+msgstr "Вікно Watched Ports"
+
+#, python-brace-format
+msgid ""
+"Each line is a port in hex. Four digits are a full address, matched as it"
+" is; two digits are a byte port, matched on the low byte alone. Untick a "
+"port to stop showing it while keeping it in the list. Of the buttons "
+"beside the list, {icon}`add` adds a port and {icon}`cancel` drops the "
+"selected one. Double-click a port to change it."
+msgstr ""
+"Кожен рядок — порт у шістнадцятковому вигляді. Чотири цифри — це повна "
+"адреса, що порівнюється як є; дві цифри — байтовий порт, що порівнюється "
+"лише за молодшим байтом. Зніміть позначку з порту, щоб перестати його "
+"показувати, але залишити в списку. З кнопок біля списку {icon}`add` додає"
+" порт, а {icon}`cancel` прибирає вибраний. Двічі клацніть порт, щоб "
+"змінити його."
+
+msgid ""
+"The ports the machine itself keeps are in the list by themselves; untick "
+"them if you do not need them. The list is kept for the machine that is "
+"running. The **Ports** group of the **Debugger** page of **Options** is "
+"the same list."
+msgstr ""
+"Порти, які тримає сама машина, потрапляють у список самі; зніміть з них "
+"позначку, якщо вони вам не потрібні. Список зберігається для машини, що "
+"працює. Група **Ports** на сторінці **Debugger** вікна **Options** — це "
+"той самий список."
+
+msgid "The Debugger page of Options"
+msgstr "Сторінка Debugger вікна Options"
+
+msgid "![The Debugger page](images/options-debugger.png)"
+msgstr "![Сторінка Debugger](images/options-debugger.png)"
+
+msgid "The Debugger page"
+msgstr "Сторінка Debugger"
+
+msgid "**View**:"
+msgstr "**View**:"
+
+#, python-brace-format
+msgid ""
+"**Font** - the font of all the Debugger's panels. The {icon}`font` button"
+" beside it picks one. The menus keep the font of the rest of the program."
+msgstr ""
+"**Font** — шрифт усіх панелей Debugger. Кнопка {icon}`font` поруч дає "
+"його вибрати. Меню зберігають шрифт решти програми."
+
+msgid ""
+"**DB in row**, **DW in row**, **Max text length** - how many bytes, words"
+" or characters one line of the listing holds when it shows data instead "
+"of code. See [Code and labels](debugger-code.md)."
+msgstr ""
+"**DB in row**, **DW in row**, **Max text length** — скільки байтів, слів "
+"чи символів містить один рядок лістингу, коли він показує дані замість "
+"коду. Див. [Код і мітки](debugger-code.md)."
+
+msgid ""
+"**Stack offset** - where the **STACK** panel starts, from -16 to 16 bytes"
+" from SP. See [The STACK panel](#the-stack-panel)."
+msgstr ""
+"**Stack offset** — звідки починається панель **STACK**, від -16 до 16 "
+"байтів від SP. Див. [Панель STACK](#the-stack-panel)."
+
+msgid ""
+"**State info** - which blocks the **MEMMAP** panel shows: **Ports**, "
+"**Signals**, **Frame** and **Ray**. **Memmap** is always on, since the "
+"panel is dragged by its title."
+msgstr ""
+"**State info** — які блоки показує панель **MEMMAP**: **Ports**, "
+"**Signals**, **Frame** і **Ray**. **Memmap** увімкнено завжди, бо панель "
+"перетягують за її заголовок."
+
+msgid ""
+"**Ports** - the watched ports of the machine that is running. See "
+"[Watched ports](#watched-ports)."
+msgstr ""
+"**Ports** — відстежувані порти машини, що працює. Див. [Відстежувані "
+"порти](#watched-ports)."
+
+msgid ""
+"**Palette** - the Debugger's own colors, each with a background (**BGR**)"
+" and a text (**TXT**) color. Click a color to change it; right-click it "
+"to go back to the color of the interface style."
+msgstr ""
+"**Palette** — власні кольори Debugger, кожен із кольором тла (**BGR**) і "
+"тексту (**TXT**). Клацніть колір, щоб змінити його; клацніть правою "
+"кнопкою, щоб повернути колір стилю інтерфейсу."
+
+msgid "Color"
+msgstr "Колір"
+
+msgid "Where it is used"
+msgstr "Де використовується"
+
+msgid "**Header**"
+msgstr "**Header**"
+
+msgid "the title bars of the panels and the block names of **MEMMAP**"
+msgstr "заголовки панелей і назви блоків **MEMMAP**"
+
+msgid "**Changed**"
+msgstr "**Changed**"
+
+msgid "a value that changed in the last step"
+msgstr "значення, що змінилося за останній крок"
+
+msgid "**PC**"
+msgstr "**PC**"
+
+msgid "the line of the listing at PC"
+msgstr "рядок лістингу за адресою PC"
+
+msgid "**Block**"
+msgstr "**Block**"
+
+msgid "a selected block in the listing and the dump"
+msgstr "виділений блок у лістингу й дампі"
+
+msgid "**Break**"
+msgstr "**Break**"
+
+msgid "the lines that have a breakpoint"
+msgstr "рядки, на яких є точка зупинки"
+
+msgid "**ID / Label**"
+msgstr "**ID / Label**"
+
+msgid "the ID field of a disk track, and labels in the listing"
+msgstr "поле ID доріжки диска й мітки в лістингу"
+
+msgid "**Data**"
+msgstr "**Data**"
+
+msgid "the data of a disk sector"
+msgstr "дані сектора диска"
+
+msgid "**CRC**"
+msgstr "**CRC**"
+
+msgid "the checksums on a disk track"
+msgstr "контрольні суми на доріжці диска"
+
+msgid "**Const**"
+msgstr "**Const**"
+
+msgid "constants in the listing"
+msgstr "константи в лістингу"
+
+msgid ""
+"Choosing another interface style on the **Appearance** page puts these "
+"colors back to that style's own."
+msgstr ""
+"Вибір іншого стилю інтерфейсу на сторінці **Appearance** повертає цим "
+"кольорам власні кольори того стилю."
+
+msgid ""
+"**Misc** - **Auto-load labels**: opening an image also loads a `.labels` "
+"file of the same name, if there is one. See [Code and labels](debugger-"
+"code.md)."
+msgstr ""
+"**Misc** — **Auto-load labels**: під час відкриття образу також "
+"завантажується файл `.labels` із тим самим ім'ям, якщо він є. Див. [Код і"
+" мітки](debugger-code.md)."
+
+msgid "Examples"
+msgstr "Приклади"
+
+msgid "Stop at the start of a loaded program and step through it"
+msgstr "Зупинитися на початку завантаженої програми й пройти її покроково"
+
+msgid ""
+"A program on tape usually loads a code block and starts it at its first "
+"byte. The **Info** column of the **Tape Player** shows where a code block"
+" loads, for example `CODE 32768,6912`: the program starts at 32768, which"
+" is `8000` in hex."
+msgstr ""
+"Програма на стрічці зазвичай завантажує блок коду й запускає його з "
+"першого байта. Стовпець **Info** у **Tape Player** показує, куди "
+"завантажується блок коду, наприклад `CODE 32768,6912`: програма "
+"починається з 32768, тобто `8000` у шістнадцятковому вигляді."
+
+msgid ""
+"Mount the tape - do not run it (see [Run a program](getting-"
+"started.md#run-a-program))."
+msgstr ""
+"Підключіть стрічку — не запускайте її (див. [Запуск програми](getting-"
+"started.md#run-a-program))."
+
+msgid ""
+"Open the Debugger. Click the listing, press G, type `8000` and press "
+"Enter. The listing shows address 8000 (see [Typing an address](debugger-"
+"code.md#typing-an-address))."
+msgstr ""
+"Відкрийте Debugger. Клацніть лістинг, натисніть G, введіть `8000` і "
+"натисніть Enter. Лістинг покаже адресу 8000 (див. [Введення адреси"
+"](debugger-code.md#typing-an-address))."
+
+msgid "Press Space. The line gets a breakpoint, shown in the **Break** color."
+msgstr ""
+"Натисніть Space. На рядку з'явиться точка зупинки, показана кольором "
+"**Break**."
+
+msgid "Press Esc. The machine runs."
+msgstr "Натисніть Esc. Машина працює."
+
+msgid ""
+"Load the tape: `LOAD \"\"` in 48K BASIC, or **Tape Loader** in the 128K "
+"menu."
+msgstr ""
+"Завантажте стрічку: `LOAD \"\"` у 48K BASIC або **Tape Loader** у меню "
+"128K."
+
+msgid ""
+"When the loader jumps to the program, the Debugger opens with the first "
+"instruction at 8000 marked as PC. Nothing of the program has run yet."
+msgstr ""
+"Коли завантажувач переходить до програми, відкривається Debugger, і першу"
+" інструкцію за адресою 8000 позначено як PC. Із програми ще нічого не "
+"виконано."
+
+msgid ""
+"Press F7 to run one instruction at a time and watch the registers change."
+" Press F8 on a CALL to run the whole subroutine at once."
+msgstr ""
+"Натискайте F7, щоб виконувати по одній інструкції й дивитися, як "
+"змінюються регістри. Натисніть F8 на CALL, щоб виконати всю підпрограму "
+"за раз."
+
+msgid ""
+"The breakpoint stays and stops the machine there again the next time. "
+"Press Space on the line again to remove it."
+msgstr ""
+"Точка зупинки лишається й наступного разу знову зупинить там машину. "
+"Натисніть Space на рядку ще раз, щоб її прибрати."
+
+msgid "![Stopped at the start of a program](images/dbg-example-start.png)"
+msgstr "![Зупинено на початку програми](images/dbg-example-start.png)"
+
+msgid "Stopped at the start of a program"
+msgstr "Зупинено на початку програми"
+
+msgid "Count the T-states of a routine"
+msgstr "Порахувати такти підпрограми"
+
+msgid ""
+"Stop the machine on a CALL of the routine, with a breakpoint or by "
+"stepping to it."
+msgstr ""
+"Зупиніть машину на CALL цієї підпрограми — точкою зупинки або дійшовши до"
+" нього кроками."
+
+msgid "Make sure **Accumulate T** is not ticked."
+msgstr "Переконайтеся, що **Accumulate T** не позначено."
+
+msgid ""
+"Press F8 (**Step over**). The routine runs at full speed, and the "
+"Debugger opens again on the line after the CALL."
+msgstr ""
+"Натисніть F8 (**Step over**). Підпрограма виконується на повній "
+"швидкості, і Debugger знову відкривається на рядку після CALL."
+
+msgid ""
+"The left number of the T-state counter is the time the CALL took, the "
+"routine and its RET included."
+msgstr ""
+"Ліве число лічильника тактів — це час, який зайняв CALL, разом із "
+"підпрограмою та її RET."
+
+msgid ""
+"To time a part of a routine instead, step to where the part begins, click"
+" the line where it ends and press **Stop here**: F4 (Modern), F9 "
+"(Classic)."
+msgstr ""
+"Щоб натомість виміряти частину підпрограми, дійдіть кроками до її "
+"початку, клацніть рядок, де вона закінчується, і натисніть **Stop here**:"
+" F4 (Modern), F9 (Classic)."
+
+msgid ""
+"To add up a few instructions, tick **Accumulate T** - the left number "
+"starts from 0 - and press F7 for each one. The left number is their sum."
+msgstr ""
+"Щоб підсумувати кілька інструкцій, позначте **Accumulate T** — ліве число"
+" почнеться з 0 — і натисніть F7 на кожній. Ліве число — їхня сума."
+
+msgid "![The T-state counter after a Step over](images/dbg-example-tstates.png)"
+msgstr "![Лічильник тактів після Step over](images/dbg-example-tstates.png)"
+
+msgid "The T-state counter after a Step over"
+msgstr "Лічильник тактів після Step over"
+
+msgid "Debugger"
+msgstr "Debugger"
+
+msgid "window"
+msgstr "вікно"
+
+msgid "opening and closing"
+msgstr "відкриття та закриття"
+
+msgid "panel"
+msgstr "панель"
+
+msgid "arranging"
+msgstr "розташування"
+
+msgid "Reset panel layout"
+msgstr "Reset panel layout"
+
+msgid "step"
+msgstr "крок"
+
+msgid "keys"
+msgstr "клавіші"
+
+msgid "trace"
+msgstr "трасування"
+
+msgid "Trace and stop here"
+msgstr "Trace and stop here"
+
+msgid "Trace and stop on INT"
+msgstr "Trace and stop on INT"
+
+msgid "Trace log"
+msgstr "Trace log"
+
+msgid "log format"
+msgstr "формат журналу"
+
+msgid "T-state counter"
+msgstr "лічильник тактів"
+
+msgid "Accumulate T"
+msgstr "Accumulate T"
+
+msgid "T-state"
+msgstr "такт"
+
+msgid "counting"
+msgstr "підрахунок"
+
+msgid "CPU panel"
+msgstr "панель CPU"
+
+msgid "register"
+msgstr "регістр"
+
+msgid "flag"
+msgstr "прапорець"
+
+msgid "changing"
+msgstr "зміна"
+
+msgid "layout"
+msgstr "компонування"
+
+msgid "Split pairs"
+msgstr "Split pairs"
+
+msgid "STACK panel"
+msgstr "панель STACK"
+
+msgid "Stack offset"
+msgstr "Stack offset"
+
+msgid "MEMMAP panel"
+msgstr "панель MEMMAP"
+
+msgid "memory bank"
+msgstr "банк пам'яті"
+
+msgid "SIGNALS"
+msgstr "SIGNALS"
+
+msgid "FRAME"
+msgstr "FRAME"
+
+msgid "frame counter"
+msgstr "лічильник кадрів"
+
+msgid "Reset counter"
+msgstr "Reset counter"
+
+msgid "RAY"
+msgstr "RAY"
+
+msgid "beam position"
+msgstr "положення променя"
+
+msgid "Watched Ports"
+msgstr "Watched Ports"
+
+msgid "port"
+msgstr "порт"
+
+msgid "watched"
+msgstr "відстежуваний"
+
+msgid "Debugger page"
+msgstr "сторінка Debugger"
+
+msgid "font"
+msgstr "шрифт"
+
+msgid "colors"
+msgstr "кольори"
+
+msgid "State info"
+msgstr "State info"
+
+msgid "DB in row"
+msgstr "DB in row"
+
+msgid "DW in row"
+msgstr "DW in row"
+
+msgid "Max text length"
+msgstr "Max text length"
+
+msgid "breakpoint"
+msgstr "точка зупинки"
+
+msgid "at the start of a program"
+msgstr "на початку програми"
+
+msgid "timing a routine"
+msgstr "вимірювання часу підпрограми"
+

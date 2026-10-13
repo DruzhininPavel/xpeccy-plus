@@ -1,0 +1,9 @@
+{# the same page in the other languages; a one-language manual shows nothing #}
+{%- if lang_links and lang_links|length > 1 %}
+<div class="xp-languages">
+  {%- for name, url, current in lang_links %}
+  {%- if current %}<span class="xp-lang-current">{{ name }}</span>
+  {%- else %}<a href="{{ url }}">{{ name }}</a>{% endif %}
+  {%- endfor %}
+</div>
+{%- endif %}

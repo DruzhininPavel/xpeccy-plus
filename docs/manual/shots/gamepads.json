@@ -1,0 +1,4 @@
+{
+  "steps": [["wait", 3000], ["run", "run-action key.padwin"], ["wait", 1500]],
+  "frames": []
+}

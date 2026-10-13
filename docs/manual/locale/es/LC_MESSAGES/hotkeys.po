@@ -1,0 +1,994 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Hotkeys"
+msgstr "Atajos de teclado"
+
+msgid ""
+"A command that has a key shows it beside its name in the menu. All the "
+"keys are set on the **Hotkeys** page of **Options**. The **Hotkey List** "
+"action opens that page with its search box ready. It is in no menu and "
+"has no key in either set: give it a key to use it."
+msgstr ""
+"Un comando que tiene tecla la muestra junto a su nombre en el menú. Todas"
+" las teclas se fijan en la página **Hotkeys** de **Options**. La acción "
+"**Hotkey List** abre esa página con su cuadro de búsqueda listo. No está "
+"en ningún menú ni tiene tecla en ninguno de los juegos: asígnale una "
+"tecla para usarla."
+
+msgid "Modern, Classic and Custom"
+msgstr "Modern, Classic y Custom"
+
+msgid ""
+"Two sets of keys come with the program. Pick one in the **Preset** list "
+"at the top of the **Hotkeys** page."
+msgstr ""
+"El programa trae dos juegos de teclas. Elige uno en la lista **Preset** "
+"de la parte superior de la página **Hotkeys**."
+
+msgid ""
+"**Modern** - the set a new installation starts with. The commands you use"
+" while a program runs sit on the F-keys and on the block of keys above "
+"the arrows: F2 saves, F3 opens, F5 and F9 are quick save and quick load, "
+"F6 is the **Tape Player**, F10 the **Debugger**, F12 resets. Most of the "
+"rest use Alt. Esc is not a hotkey here: it goes to the machine as BREAK."
+msgstr ""
+"**Modern** — el juego con el que empieza una instalación nueva. Los "
+"comandos que usas mientras corre un programa están en las teclas F y en "
+"el bloque de teclas sobre las flechas: F2 guarda, F3 abre, F5 y F9 son el"
+" guardado y la carga rápidos, F6 es el **Tape Player**, F10 el "
+"**Debugger**, F12 reinicia. Casi todo lo demás usa Alt. Esc no es un "
+"atajo aquí: va a la máquina como BREAK."
+
+msgid ""
+"**Classic** - the keys of earlier versions of the program: F1 opens "
+"**Options**, Esc opens the **Debugger**, F9 saves the changed disks, F5 "
+"records to tape."
+msgstr ""
+"**Classic** — las teclas de versiones anteriores del programa: F1 abre "
+"**Options**, Esc abre el **Debugger**, F9 guarda los discos cambiados, F5"
+" graba en cinta."
+
+msgid ""
+"**Custom** - your own keys. It starts as a copy of Modern or Classic, and"
+" keeps only what you change; everything else follows the set it was made "
+"from. The list shows it as **Custom (from Modern)** or **Custom (from "
+"Classic)** once you have changed something."
+msgstr ""
+"**Custom** — tus propias teclas. Empieza como copia de Modern o de "
+"Classic, y guarda solo lo que cambias; todo lo demás sigue al juego del "
+"que se hizo. La lista lo muestra como **Custom (from Modern)** o **Custom"
+" (from Classic)** en cuanto has cambiado algo."
+
+msgid ""
+"A Spectrum program needs every key the machine has, so Modern keeps to "
+"the F-keys, the block above the arrows and Alt, which is no Spectrum key."
+" Ctrl is Symbol Shift on the machine, so in Modern only commands that "
+"open a window or a file use it: Ctrl+, for **Options**, Ctrl+S, Ctrl+O."
+msgstr ""
+"Un programa de Spectrum necesita todas las teclas que tiene la máquina, "
+"así que Modern se limita a las teclas F, el bloque sobre las flechas y "
+"Alt, que no es una tecla del Spectrum. Ctrl es Symbol Shift en la "
+"máquina, así que en Modern solo la usan los comandos que abren una "
+"ventana o un archivo: Ctrl+, para **Options**, Ctrl+S, Ctrl+O."
+
+#, python-brace-format
+msgid ""
+"Picking Modern or Classic does not lose Custom: pick Custom again and "
+"your keys are back. The change takes effect when you click {icon}`ok-"
+"apply` **OK** or **Apply** in **Options**."
+msgstr ""
+"Elegir Modern o Classic no hace perder Custom: vuelve a elegir Custom y "
+"tus teclas regresan. El cambio se aplica al hacer clic en {icon}`ok-"
+"apply` **OK** o **Apply** en **Options**."
+
+msgid ""
+"A key works by its place on the keyboard: with a Cyrillic or another "
+"layout switched on in the system, Alt+M is still Alt+M."
+msgstr ""
+"Una tecla funciona por su posición en el teclado: con una distribución "
+"cirílica u otra activada en el sistema, Alt+M sigue siendo Alt+M."
+
+msgid "Change a key"
+msgstr "Cambiar una tecla"
+
+msgid ""
+"The table on the **Hotkeys** page has three columns: **Action**, **Key** "
+"and **Alternate**. Each action can have two keys, and either one works. "
+"The actions are grouped as in the menus: **File**, **Machine**, **Time**,"
+" **Tape**, **Capture**, **RZX**, **View**, **Input**, **Debug**, and then"
+" the keys of the **Debugger**: **Debugger**, **Disassembler** and "
+"**Memory dump**."
+msgstr ""
+"La tabla de la página **Hotkeys** tiene tres columnas: **Action**, "
+"**Key** y **Alternate**. Cada acción puede tener dos teclas, y cualquiera"
+" de ellas funciona. Las acciones se agrupan como en los menús: **File**, "
+"**Machine**, **Time**, **Tape**, **Capture**, **RZX**, **View**, "
+"**Input**, **Debug**, y después las teclas del **Debugger**: "
+"**Debugger**, **Disassembler** y **Memory dump**."
+
+msgid "To change a key:"
+msgstr "Para cambiar una tecla:"
+
+msgid ""
+"Double-click the **Key** or the **Alternate** cell of the action, or "
+"select it and press Enter."
+msgstr ""
+"Haz doble clic en la celda **Key** o **Alternate** de la acción, o "
+"selecciónala y pulsa Enter."
+
+msgid ""
+"Press the new key with its modifiers - Alt, Ctrl, Shift. A modifier alone"
+" is not a key."
+msgstr ""
+"Pulsa la tecla nueva con sus modificadores — Alt, Ctrl, Shift. Un "
+"modificador solo no es una tecla."
+
+#, python-brace-format
+msgid ""
+"Click {icon}`ok-apply` **Confirm**. {icon}`cancel` **Clear** leaves the "
+"action without that key."
+msgstr ""
+"Haz clic en {icon}`ok-apply` **Confirm**. {icon}`cancel` **Clear** deja "
+"la acción sin esa tecla."
+
+msgid "Delete or Backspace on a selected cell clears that key straight away."
+msgstr ""
+"Delete o Backspace sobre una celda seleccionada borra esa tecla al "
+"instante."
+
+msgid ""
+"Right-click an action for the same commands and a few more: **Change "
+"key...**, **Change alternate...**, **No keys**, and on Custom, for a key "
+"you changed, **As in Modern** (or **As in Classic**) to put the key of "
+"the original set back."
+msgstr ""
+"Haz clic derecho en una acción para tener los mismos comandos y algunos "
+"más: **Change key...**, **Change alternate...**, **No keys**, y en "
+"Custom, para una tecla que cambiaste, **As in Modern** (o **As in "
+"Classic**) para volver a poner la tecla del juego original."
+
+msgid ""
+"A change made while Modern or Classic is picked switches the list to "
+"Custom, made from that set. If Custom already holds changes made from the"
+" other set, the program asks first, since starting Custom over loses "
+"them."
+msgstr ""
+"Un cambio hecho con Modern o Classic elegido pasa la lista a Custom, "
+"hecho a partir de ese juego. Si Custom ya tiene cambios hechos a partir "
+"del otro juego, el programa pregunta antes, ya que empezar Custom de "
+"nuevo los pierde."
+
+msgid ""
+"When the key you press already belongs to another action, the program "
+"says which one and asks whether to move it. The main window and the "
+"**Debugger** keep their keys apart, so F7 can be **Screenshot** in one "
+"and **Step in** in the other."
+msgstr ""
+"Cuando la tecla que pulsas ya pertenece a otra acción, el programa dice a"
+" cuál y pregunta si moverla. La ventana principal y el **Debugger** "
+"mantienen sus teclas por separado, así que F7 puede ser **Screenshot** en"
+" una y **Step in** en el otro."
+
+msgid ""
+"In Custom, a key you changed is shown in bold. Hold the mouse over it to "
+"see the key the original set has there. **Reset**, beside the **Preset** "
+"list, drops all your changes and takes Custom back to the set it was made"
+" from."
+msgstr ""
+"En Custom, una tecla que cambiaste se muestra en negrita. Deja el puntero"
+" sobre ella para ver la tecla que tiene ahí el juego original. **Reset**,"
+" junto a la lista **Preset**, descarta todos tus cambios y devuelve "
+"Custom al juego del que se hizo."
+
+msgid "Find a key"
+msgstr "Buscar una tecla"
+
+msgid ""
+"Type in the search box to see only the actions whose name, group or key "
+"fits: \"tape\" shows the tape commands, \"F5\" shows what F5 does. A key "
+"is matched whole, so F1 does not find F10."
+msgstr ""
+"Escribe en el cuadro de búsqueda para ver solo las acciones cuyo nombre, "
+"grupo o tecla coincide: «tape» muestra los comandos de la cinta, «F5» "
+"muestra qué hace F5. Una tecla se compara entera, así que F1 no encuentra"
+" F10."
+
+msgid ""
+"**Find key...** asks you to press a key and puts it into the search, so "
+"you see what that key does."
+msgstr ""
+"**Find key...** te pide pulsar una tecla y la pone en la búsqueda, para "
+"que veas qué hace esa tecla."
+
+msgid "How the keys behave"
+msgstr "Cómo se comportan las teclas"
+
+msgid ""
+"**Grab Keyboard.** While the keyboard is grabbed, every key goes to the "
+"machine and the hotkeys stop working, except the one that lets the "
+"keyboard go. Ctrl+Alt pressed together and released with no other key "
+"between also lets it go. See [Grab Keyboard](input.md#grab-keyboard)."
+msgstr ""
+"**Grab Keyboard.** Mientras el teclado está capturado, todas las teclas "
+"van a la máquina y los atajos dejan de funcionar, salvo el que libera el "
+"teclado. Ctrl+Alt pulsadas juntas y soltadas sin ninguna otra tecla entre"
+" medias también lo liberan. Consulta [Grab Keyboard](input.md#grab-"
+"keyboard)."
+
+msgid ""
+"**Menus.** A command picked from a menu or from the toolbar always works,"
+" grabbed keyboard or not."
+msgstr ""
+"**Menús.** Un comando elegido en un menú o en la barra de herramientas "
+"siempre funciona, con el teclado capturado o no."
+
+msgid ""
+"**Holding a key.** A held hotkey does not repeat, except **Speed Up** and"
+" **Speed Down**, which step on while you hold them. **Rewind (Hold)** "
+"goes back in time for as long as you hold its key. **Fast Mode**, **Slow "
+"Motion** and **Fast Forward** each work in one of three ways, set on the "
+"**Emulation** page of **Options**: **Toggle**, **Hold**, or **Tap or "
+"hold** (the default): a short tap switches the mode on or off, a longer "
+"press keeps it on only while the key is held. See [Speed and "
+"time](time.md)."
+msgstr ""
+"**Mantener una tecla.** Un atajo mantenido no se repite, salvo **Speed "
+"Up** y **Speed Down**, que siguen avanzando mientras los mantienes. "
+"**Rewind (Hold)** retrocede en el tiempo mientras mantengas su tecla. "
+"**Fast Mode**, **Slow Motion** y **Fast Forward** funcionan cada uno de "
+"una de tres formas, fijada en la página **Emulation** de **Options**: "
+"**Toggle**, **Hold** o **Tap or hold** (por defecto): una pulsación corta"
+" activa o desactiva el modo, una más larga lo mantiene activo solo "
+"mientras se mantiene la tecla. Consulta [Velocidad y tiempo](time.md)."
+
+msgid ""
+"**Shift and Ctrl.** A hotkey's own Shift or Ctrl is not passed to the "
+"machine as Caps Shift or Symbol Shift: Shift+F9 in Modern does not leave "
+"Caps Shift pressed. Shift or Ctrl held with a key whose combination is no"
+" hotkey does what the key alone does, and stays pressed for the machine. "
+"So on the ZX Evolution (TSConf), Ctrl+F12 resets into the TS-BIOS setup, "
+"and Shift+F12 into the boot TS-BIOS starts with Caps Shift held."
+msgstr ""
+"**Shift y Ctrl.** El Shift o Ctrl propio de un atajo no se pasa a la "
+"máquina como Caps Shift o Symbol Shift: Shift+F9 en Modern no deja Caps "
+"Shift pulsado. Shift o Ctrl mantenidos con una tecla cuya combinación no "
+"es un atajo hacen lo que hace la tecla sola, y quedan pulsados para la "
+"máquina. Así, en el ZX Evolution (TSConf), Ctrl+F12 reinicia en la "
+"configuración de TS-BIOS, y Shift+F12 en el arranque de TS-BIOS empieza "
+"con Caps Shift pulsado."
+
+msgid ""
+"**Other windows.** In the **Tape Player**, the **Disk Manager**, "
+"**Gamepads** and the other tool windows, the hotkeys on the F-keys, Pause"
+" and Scroll Lock, and those with Alt or Ctrl, still work. A bare key such"
+" as Del, Home or End belongs to the window, and Esc closes it. The **RZX "
+"Player** passes on every hotkey but Esc."
+msgstr ""
+"**Otras ventanas.** En el **Tape Player**, el **Disk Manager**, "
+"**Gamepads** y las demás ventanas de herramientas, siguen funcionando los"
+" atajos de las teclas F, Pause y Scroll Lock, y los que llevan Alt o "
+"Ctrl. Una tecla sola como Del, Home o End pertenece a la ventana, y Esc "
+"la cierra. El **RZX Player** deja pasar todos los atajos menos Esc."
+
+msgid "macOS"
+msgstr "macOS"
+
+msgid ""
+"On a Mac, Cmd takes the place of Alt in the Modern set, and of Ctrl in "
+"the keys that open a window or a file: Cmd+, for **Options**, Cmd+S, "
+"Cmd+O, Cmd+R for **Reset**, Cmd+1 to Cmd+6 for the window size. A few "
+"keys stay on Alt (Option): **Grab Mouse** is Alt+M, since Cmd+M minimizes"
+" a window. **Fullscreen** is Cmd+Ctrl+F or Cmd+Return, and in Modern the "
+"**Debugger** has F10 only. Classic keeps its Alt keys; only **Options** "
+"moves from F1 to Cmd+,."
+msgstr ""
+"En un Mac, Cmd ocupa el lugar de Alt en el juego Modern, y el de Ctrl en "
+"las teclas que abren una ventana o un archivo: Cmd+, para **Options**, "
+"Cmd+S, Cmd+O, Cmd+R para **Reset**, de Cmd+1 a Cmd+6 para el tamaño de la"
+" ventana. Algunas teclas se quedan en Alt (Option): **Grab Mouse** es "
+"Alt+M, ya que Cmd+M minimiza una ventana. **Fullscreen** es Cmd+Ctrl+F o "
+"Cmd+Return, y en Modern el **Debugger** solo tiene F10. Classic conserva "
+"sus teclas con Alt; solo **Options** pasa de F1 a Cmd+,."
+
+msgid ""
+"Ctrl+Cmd, pressed and released together, lets a grabbed keyboard or mouse"
+" go."
+msgstr ""
+"Ctrl+Cmd, pulsadas y soltadas juntas, liberan un teclado o un ratón "
+"capturados."
+
+msgid ""
+"The **Hotkeys** page always shows the keys of your system, so check it "
+"there. The tables below give the keys of Windows and Linux."
+msgstr ""
+"La página **Hotkeys** siempre muestra las teclas de tu sistema, así que "
+"compruébalas ahí. Las tablas de abajo dan las teclas de Windows y Linux."
+
+msgid "All the keys"
+msgstr "Todas las teclas"
+
+msgid ""
+"A dash means no key. Where an action has two keys, both are given. In a "
+"key, Num means a key on the numeric keypad: Alt+Num++ is Alt with the "
+"keypad plus."
+msgstr ""
+"Un guion significa sin tecla. Donde una acción tiene dos teclas, se dan "
+"las dos. En una tecla, Num indica una tecla del teclado numérico: "
+"Alt+Num++ es Alt con el más del teclado numérico."
+
+msgid "File"
+msgstr "File"
+
+msgid "Action"
+msgstr "Acción"
+
+msgid "Modern"
+msgstr "Modern"
+
+msgid "Classic"
+msgstr "Classic"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "F3, Ctrl+O"
+msgstr "F3, Ctrl+O"
+
+msgid "F3"
+msgstr "F3"
+
+msgid "Reload"
+msgstr "Reload"
+
+msgid "-"
+msgstr "-"
+
+msgid "Add to Favorites"
+msgstr "Add to Favorites"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "F2, Ctrl+S"
+msgstr "F2, Ctrl+S"
+
+msgid "F2"
+msgstr "F2"
+
+msgid "Save Changed Disks"
+msgstr "Save Changed Disks"
+
+msgid "F9"
+msgstr "F9"
+
+msgid "Quick Save"
+msgstr "Quick Save"
+
+msgid "F5"
+msgstr "F5"
+
+msgid "Quick Load"
+msgstr "Quick Load"
+
+msgid "Undo Quick Load"
+msgstr "Undo Quick Load"
+
+msgid "Shift+F9"
+msgstr "Shift+F9"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Ctrl+,"
+msgstr "Ctrl+,"
+
+msgid "F1"
+msgstr "F1"
+
+msgid "Hotkey List"
+msgstr "Hotkey List"
+
+msgid "Machine"
+msgstr "Machine"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "F12, Alt+R"
+msgstr "F12, Alt+R"
+
+msgid "F12"
+msgstr "F12"
+
+msgid "Reset to 48K"
+msgstr "Reset to 48K"
+
+msgid "Reset to 128K"
+msgstr "Reset to 128K"
+
+msgid "Reset to DOS"
+msgstr "Reset to DOS"
+
+msgid "Alt+F12"
+msgstr "Alt+F12"
+
+msgid "Reset to Service"
+msgstr "Reset to Service"
+
+msgid "NMI"
+msgstr "NMI"
+
+msgid "Shift+F10"
+msgstr "Shift+F10"
+
+msgid "F10"
+msgstr "F10"
+
+msgid "Switch Turbo"
+msgstr "Switch Turbo"
+
+msgid "Alt+T"
+msgstr "Alt+T"
+
+msgid "Speed Up"
+msgstr "Speed Up"
+
+msgid "Alt+Num++, Alt+="
+msgstr "Alt+Num++, Alt+="
+
+msgid "Alt+Num++"
+msgstr "Alt+Num++"
+
+msgid "Speed Down"
+msgstr "Speed Down"
+
+msgid "Alt+Num+-, Alt+-"
+msgstr "Alt+Num+-, Alt+-"
+
+msgid "Alt+Num+-"
+msgstr "Alt+Num+-"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "Alt+U"
+msgstr "Alt+U"
+
+msgid "Time"
+msgstr "Time"
+
+msgid "Pause"
+msgstr "Pause"
+
+msgid "Pause, Alt+P"
+msgstr "Pause, Alt+P"
+
+msgid "Fast Mode"
+msgstr "Fast Mode"
+
+msgid "Ins, Alt+Up"
+msgstr "Ins, Alt+Up"
+
+msgid "Ins"
+msgstr "Ins"
+
+msgid "Slow Motion"
+msgstr "Slow Motion"
+
+msgid "End, Alt+Down"
+msgstr "End, Alt+Down"
+
+msgid "End"
+msgstr "End"
+
+msgid "Fast Forward"
+msgstr "Fast Forward"
+
+msgid "Home, Alt+Right"
+msgstr "Home, Alt+Right"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Rewind (Hold)"
+msgstr "Rewind (Hold)"
+
+msgid "Del, Alt+Left"
+msgstr "Del, Alt+Left"
+
+msgid "Del"
+msgstr "Del"
+
+msgid "Tape"
+msgstr "Tape"
+
+msgid "Tape Player"
+msgstr "Tape Player"
+
+msgid "F6"
+msgstr "F6"
+
+msgid "Tape Play/Stop"
+msgstr "Tape Play/Stop"
+
+msgid "F4"
+msgstr "F4"
+
+msgid "Tape Record/Stop"
+msgstr "Tape Record/Stop"
+
+msgid "Tape Rewind to Start"
+msgstr "Tape Rewind to Start"
+
+msgid "Shift+F4"
+msgstr "Shift+F4"
+
+msgid "Capture"
+msgstr "Capture"
+
+msgid "Screenshot"
+msgstr "Screenshot"
+
+msgid "F7"
+msgstr "F7"
+
+msgid "Screenshot Series"
+msgstr "Screenshot Series"
+
+msgid "Alt+F7"
+msgstr "Alt+F7"
+
+msgid "Record Video"
+msgstr "Record Video"
+
+msgid "Shift+F7"
+msgstr "Shift+F7"
+
+msgid "Ctrl+F7"
+msgstr "Ctrl+F7"
+
+msgid "Record Sound to WAV"
+msgstr "Record Sound to WAV"
+
+msgid "RZX"
+msgstr "RZX"
+
+msgid "RZX Player"
+msgstr "RZX Player"
+
+msgid "Record"
+msgstr "Record"
+
+msgid "Shift+F6"
+msgstr "Shift+F6"
+
+msgid "Ctrl+F6"
+msgstr "Ctrl+F6"
+
+msgid "Open and Continue"
+msgstr "Open and Continue"
+
+msgid "Add Bookmark"
+msgstr "Add Bookmark"
+
+msgid "Rollback to Bookmark"
+msgstr "Rollback to Bookmark"
+
+msgid "Stop and Finalize"
+msgstr "Stop and Finalize"
+
+msgid "Finalize File"
+msgstr "Finalize File"
+
+msgid "View"
+msgstr "View"
+
+msgid "Size x1"
+msgstr "Size x1"
+
+msgid "Alt+1"
+msgstr "Alt+1"
+
+msgid "Size x2"
+msgstr "Size x2"
+
+msgid "Alt+2"
+msgstr "Alt+2"
+
+msgid "Size x3"
+msgstr "Size x3"
+
+msgid "Alt+3"
+msgstr "Alt+3"
+
+msgid "Size x4"
+msgstr "Size x4"
+
+msgid "Alt+4"
+msgstr "Alt+4"
+
+msgid "Size x5"
+msgstr "Size x5"
+
+msgid "Alt+5"
+msgstr "Alt+5"
+
+msgid "Size x6"
+msgstr "Size x6"
+
+msgid "Alt+6"
+msgstr "Alt+6"
+
+msgid "Fullscreen"
+msgstr "Fullscreen"
+
+msgid "Alt+Return, F11"
+msgstr "Alt+Return, F11"
+
+msgid "Alt+Return"
+msgstr "Alt+Return"
+
+msgid "Keep Aspect Ratio in Fullscreen"
+msgstr "Keep Aspect Ratio in Fullscreen"
+
+msgid "Alt+R"
+msgstr "Alt+R"
+
+msgid "Anti-flicker"
+msgstr "Anti-flicker"
+
+msgid "Alt+N"
+msgstr "Alt+N"
+
+msgid "Reload Shader"
+msgstr "Reload Shader"
+
+msgid "Virtual Keyboard"
+msgstr "Virtual Keyboard"
+
+msgid "Alt+K"
+msgstr "Alt+K"
+
+msgid "Input"
+msgstr "Input"
+
+msgid "Grab Keyboard"
+msgstr "Grab Keyboard"
+
+msgid "ScrollLock, Alt+G"
+msgstr "ScrollLock, Alt+G"
+
+msgid "Alt+G"
+msgstr "Alt+G"
+
+msgid "Grab Mouse"
+msgstr "Grab Mouse"
+
+msgid "Alt+M"
+msgstr "Alt+M"
+
+msgid "Gamepads"
+msgstr "Gamepads"
+
+msgid "Debug"
+msgstr "Debug"
+
+msgid "Debugger"
+msgstr "Debugger"
+
+msgid "F10, Ctrl+Pause"
+msgstr "F10, Ctrl+Pause"
+
+msgid "Esc"
+msgstr "Esc"
+
+msgid "Screen"
+msgstr "Screen"
+
+msgid "Alt+S"
+msgstr "Alt+S"
+
+msgid "Sound Chips"
+msgstr "Sound Chips"
+
+msgid "Alt+A"
+msgstr "Alt+A"
+
+msgid "Debugger keys"
+msgstr "Teclas del Debugger"
+
+msgid ""
+"These work in the **Debugger** window. **Options**, **Open**, **Save**, "
+"**Reset**, **Virtual Keyboard**, **Screen** and **Sound Chips** from the "
+"tables above work there too."
+msgstr ""
+"Estas funcionan en la ventana del **Debugger**. **Options**, **Open**, "
+"**Save**, **Reset**, **Virtual Keyboard**, **Screen** y **Sound Chips** "
+"de las tablas de arriba también funcionan ahí."
+
+msgid "**Debugger**"
+msgstr "**Debugger**"
+
+msgid "Step in"
+msgstr "Step in"
+
+msgid "Step over"
+msgstr "Step over"
+
+msgid "F8"
+msgstr "F8"
+
+msgid "Step out"
+msgstr "Step out"
+
+msgid "Shift+F8"
+msgstr "Shift+F8"
+
+msgid "Fast step"
+msgstr "Fast step"
+
+msgid "Stop here"
+msgstr "Stop here"
+
+msgid "Trace"
+msgstr "Trace"
+
+msgid "Ctrl+T"
+msgstr "Ctrl+T"
+
+msgid "Load dump"
+msgstr "Load dump"
+
+msgid "Ctrl+O"
+msgstr "Ctrl+O"
+
+msgid "Save dump"
+msgstr "Save dump"
+
+msgid "Ctrl+Shift+S"
+msgstr "Ctrl+Shift+S"
+
+msgid "Ctrl+S"
+msgstr "Ctrl+S"
+
+msgid "Load xmap"
+msgstr "Load xmap"
+
+msgid "Save xmap"
+msgstr "Save xmap"
+
+msgid "Find pattern"
+msgstr "Find pattern"
+
+msgid "Ctrl+F"
+msgstr "Ctrl+F"
+
+msgid "Switch labels"
+msgstr "Switch labels"
+
+msgid "Ctrl+L"
+msgstr "Ctrl+L"
+
+msgid "Show labels list"
+msgstr "Show labels list"
+
+msgid "Reload file"
+msgstr "Reload file"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "**Disassembler**"
+msgstr "**Disassembler**"
+
+msgid "Jump to PC"
+msgstr "Jump to PC"
+
+msgid "Set PC"
+msgstr "Set PC"
+
+msgid "Breakpoint"
+msgstr "Breakpoint"
+
+msgid "Space"
+msgstr "Space"
+
+msgid "Breakpoint on read"
+msgstr "Breakpoint on read"
+
+msgid "Alt+Shift+Space"
+msgstr "Alt+Shift+Space"
+
+msgid "Breakpoint on write"
+msgstr "Breakpoint on write"
+
+msgid "Ctrl+Space"
+msgstr "Ctrl+Space"
+
+msgid "Breakpoint on CPU address"
+msgstr "Breakpoint on CPU address"
+
+msgid "Shift+Space"
+msgstr "Shift+Space"
+
+msgid "Bookmark 1"
+msgstr "Bookmark 1"
+
+msgid "Ctrl+1"
+msgstr "Ctrl+1"
+
+msgid "Bookmark 2"
+msgstr "Bookmark 2"
+
+msgid "Ctrl+2"
+msgstr "Ctrl+2"
+
+msgid "Bookmark 3"
+msgstr "Bookmark 3"
+
+msgid "Ctrl+3"
+msgstr "Ctrl+3"
+
+msgid "Bookmark 4"
+msgstr "Bookmark 4"
+
+msgid "Ctrl+4"
+msgstr "Ctrl+4"
+
+msgid "Bookmark 5"
+msgstr "Bookmark 5"
+
+msgid "Ctrl+5"
+msgstr "Ctrl+5"
+
+msgid "Go to bookmark 1"
+msgstr "Go to bookmark 1"
+
+msgid "Go to bookmark 2"
+msgstr "Go to bookmark 2"
+
+msgid "Go to bookmark 3"
+msgstr "Go to bookmark 3"
+
+msgid "Go to bookmark 4"
+msgstr "Go to bookmark 4"
+
+msgid "Go to bookmark 5"
+msgstr "Go to bookmark 5"
+
+msgid "Jump to operand"
+msgstr "Jump to operand"
+
+msgid "Alt+Right"
+msgstr "Alt+Right"
+
+msgid "Return"
+msgstr "Return"
+
+msgid "Alt+Left"
+msgstr "Alt+Left"
+
+msgid "Go to address"
+msgstr "Go to address"
+
+msgid "G, Ctrl+G"
+msgstr "G, Ctrl+G"
+
+msgid "G"
+msgstr "G"
+
+msgid "**Memory dump**"
+msgstr "**Memory dump**"
+
+msgid "Go to (PC)"
+msgstr "Go to (PC)"
+
+msgid "Ctrl+P"
+msgstr "Ctrl+P"
+
+msgid "Go to (SP)"
+msgstr "Go to (SP)"
+
+msgid "Go to (BC)"
+msgstr "Go to (BC)"
+
+msgid "Ctrl+B"
+msgstr "Ctrl+B"
+
+msgid "Go to (DE)"
+msgstr "Go to (DE)"
+
+msgid "Ctrl+D"
+msgstr "Ctrl+D"
+
+msgid "Go to (HL)"
+msgstr "Go to (HL)"
+
+msgid "Ctrl+H"
+msgstr "Ctrl+H"
+
+msgid "Go to (IX)"
+msgstr "Go to (IX)"
+
+msgid "Ctrl+X"
+msgstr "Ctrl+X"
+
+msgid "Go to (IY)"
+msgstr "Go to (IY)"
+
+msgid "Ctrl+Y"
+msgstr "Ctrl+Y"
+
+msgid "hotkeys"
+msgstr "atajos de teclado"
+
+msgid "keyboard shortcut"
+msgstr "combinación de teclas"
+
+msgid "Preset"
+msgstr "Preset"
+
+msgid "Custom"
+msgstr "Custom"
+
+msgid "preset"
+msgstr "preajuste"
+
+msgid "keyboard layout"
+msgstr "distribución del teclado"
+
+msgid "changing"
+msgstr "cambiar"
+
+msgid "Alternate"
+msgstr "Alternate"
+
+msgid "As in Modern"
+msgstr "As in Modern"
+
+msgid "As in Classic"
+msgstr "As in Classic"
+
+msgid "search"
+msgstr "búsqueda"
+
+msgid "Find key"
+msgstr "Find key"
+
+msgid "holding a key"
+msgstr "mantener una tecla"
+
+msgid "in other windows"
+msgstr "en otras ventanas"
+
+msgid "Shift and Ctrl"
+msgstr "Shift y Ctrl"
+
+msgid "TS-BIOS"
+msgstr "TS-BIOS"
+
+msgid "Cmd key"
+msgstr "tecla Cmd"
+
+msgid "list of all"
+msgstr "lista completa"
+

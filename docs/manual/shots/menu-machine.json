@@ -1,0 +1,5 @@
+{
+  "steps": [["wait", 3000], ["run", "open-menu Machine/Machine"], ["wait", 800]],
+  "capture": "menus",
+  "crop": {"menus": true, "top": true}
+}

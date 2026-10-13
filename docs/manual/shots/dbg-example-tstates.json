@@ -1,0 +1,49 @@
+{
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "run-action key.debuger"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "run",
+      "step"
+    ],
+    [
+      "wait",
+      300
+    ],
+    [
+      "run",
+      "step"
+    ],
+    [
+      "wait",
+      500
+    ]
+  ],
+  "crop": {
+    "widgets": [
+      "tbBreak",
+      "labTcount",
+      "cbAccT"
+    ],
+    "pad": 2
+  },
+  "zoom": 2
+}

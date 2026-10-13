@@ -57,9 +57,17 @@ jobs:
       - name: Install dependencies
         run: brew install qt sdl2
 
+      # a venv: Homebrew's python refuses a plain pip install
+      - name: Build the manual
+        run: |
+          python3 -m venv "$RUNNER_TEMP/docs"
+          "$RUNNER_TEMP/docs/bin/python3" -m pip install --disable-pip-version-check -r docs/manual/requirements.txt
+          "$RUNNER_TEMP/docs/bin/python3" tools/manual.py html
+
       - name: Configure
         run: |
           cmake -S . -B "$BUILD_DIR" \
+            -DMANUAL_DIR="$PWD/build/manual" \
             -DCMAKE_BUILD_TYPE=Release \
             -DXRELEASE=${{ inputs.release && 'ON' || 'OFF' }} \
             -DCMAKE_PREFIX_PATH="$(brew --prefix qt)" \
