@@ -15,7 +15,9 @@
 // None of it is meant to be watched: while it runs the machine goes at full
 // speed and the video puts out no pixels, so the frame the gui keeps showing is
 // the blank one it started with. The first picture drawn is the loading one. It
-// all ends on the last key, which is where the loading itself begins.
+// all ends on the last key, which is where the loading itself begins - but on
+// the +3, whose Loader tries drive A for a couple of seconds before it asks for
+// the tape, on the first frame the rom uses the tape.
 //
 // Disks do not go in through a reset into the tr-dos rom: running "boot" off
 // that reset is a TR-DOS 5.04T feature and not every romset has it. Instead
@@ -38,6 +40,7 @@
 #define AS_KEY_GAP	8	// frames between two keys
 #define AS_MENU_GAP	100	// after a menu pick: the rom has an editor to set up
 #define AS_GIVEUP	1500	// frames to wait for a rom that never scans the keyboard
+#define AS_LOAD_WAIT	500	// after the last key: frames to wait for the rom to use the tape
 
 // The keys are named the way the zx keyboard itself sees them, not as host
 // keys: a host key is turned into these by the user's keymap, and a layout that
@@ -161,6 +164,7 @@ static int as_wait = 0;		// frames left before the next press or release
 static int as_down = 0;		// the current key is pressed
 static int as_life = 0;		// frames left before giving up
 static int as_held = 0;		// fast mode and the blank screen are ours to undo
+static int as_block = -1;	// the keys are in: the tape's block then, until the rom uses it
 
 void autostart_key(Computer* comp, const char* keys, int press) {
 	cbHwKey cb = press ? comp->hw->keyp : comp->hw->keyr;
@@ -196,6 +200,7 @@ static void autostart_stop() {
 	as_wait = 0;
 	as_down = 0;
 	as_life = 0;
+	as_block = -1;
 	if (as_held) {
 		conf.emu.fast = 0;
 		if (as_comp) vid_set_nodraw(as_comp->vid, 0);
@@ -279,8 +284,14 @@ void autostart_frame(Computer* comp) {
 	conf.emu.fast = 1;
 	vid_set_nodraw(comp->vid, 1);
 	as_held = 1;
-	if (--as_life < 0) {		// a rom that never got to its keyboard
+	if (--as_life < 0) {		// a rom that never got to its keyboard, or the tape
 		autostart_stop();
+		return;
+	}
+	if (as_block >= 0) {		// the tape plays, or the trap has read a block
+		Tape* tap = comp->tape;
+		if (tap->on || (tap->block != as_block))
+			autostart_stop();
 		return;
 	}
 	if (as_wait < 0) {		// the rom is scanning the matrix: it lives
@@ -298,7 +309,12 @@ void autostart_frame(Computer* comp) {
 		as_step++;
 		if (!as_seq[as_step].keys) {
 			as_start_media(comp);
-			autostart_stop();	// the loading starts right about now
+			if ((as_kind != AS_TAPE) || (comp->dif->type != DIF_P3DOS) || comp->tape->on) {
+				autostart_stop();	// the loading starts right about now
+			} else {
+				as_block = comp->tape->block;
+				as_life = AS_LOAD_WAIT;
+			}
 		}
 	} else {
 		as_key(comp, &as_seq[as_step], 1);
