@@ -45,7 +45,7 @@ The machine list shows them in this order, in four groups.
 
 On the clones and the +3 the disk interface is part of the board, and so are the hard disk
 interfaces of the ATM Turbo 2+, the Profi v5 and the ZX Evolution: Options shows them, but
-does not let you take them out.
+does not let you remove them.
 
 A name with an asterisk after it in the list, such as `Pentagon *`, is a built-in machine
 you have changed (see [Your own machines](#your-own-machines)).
@@ -65,12 +65,13 @@ Pick a machine in any of these places:
 
 ![Machine > Model](images/menu-machine.png)
 
-A switch resets the new machine and shows its name over the picture and in the status bar.
-The tape and the disks stay in: the tape goes back to its start. An RZX recording stops,
-and the rewind history starts over.
+Switching machines resets the new machine and shows its name over the picture and in the
+status bar. The tape and the disks stay in: the tape is rewound to its start. An RZX
+recording stops, and the rewind history starts over.
 
-In **Options**, pick the machine first and change its settings after: an **Apply** that
-switches the machine does nothing else, and the page then shows the new machine's settings.
+In **Options**, pick the machine first and change its settings after: when **Apply**
+switches the machine, it applies nothing else, and the page then shows the new machine's
+settings.
 
 Opening a file can switch the machine too, when the current one cannot run it. See
 [Run a program](getting-started.md#run-a-program).
@@ -80,17 +81,17 @@ Opening a file can switch the machine too, when the current one cannot run it. S
 ```{index} Machine at start, Start Machine
 ```
 
-**Machine at start** on the **Application** page of **Options** says which machine a start
-of Xpeccy+ takes:
+**Machine at start** on the **Application** page of **Options** sets which machine Xpeccy+
+starts with:
 
 - **The last one chosen** - the last machine you picked yourself. A machine that a file
   switched to does not count.
 - **Ask** - the **Start Machine** window asks every time.
 - one of the machines - always that one.
 
-The first start asks (see [The first start](getting-started.md#the-first-start)). A machine
-or a file named on the command line skips the question (see
-[Command line](command-line.md)).
+At the first start you are asked
+(see [The first start](getting-started.md#the-first-start)). When a machine or a file is
+named on the command line, the question is skipped (see [Command line](command-line.md)).
 
 ## Reset
 
@@ -98,27 +99,28 @@ or a file named on the command line skips the question (see
 ```
 
 **Machine > Reset** lists where a reset can take the machine: the ROMs it can start from,
-such as **Basic 128**, **Basic 48**, **Service** and **TR-DOS**. The one in bold is where a
-plain reset goes. **TR-DOS** is there only when the machine has a Beta Disk interface.
+such as **Basic 128**, **Basic 48**, **Service** and **TR-DOS**. The one in bold is the ROM
+a plain reset starts from. **TR-DOS** is there only when the machine has a Beta Disk
+interface.
 
 ![Machine > Reset on a Pentagon](images/menu-reset.png)
 
 On the ATM Turbo 2+, the ZX Evolution and the ALF consoles the list holds only **Boots its
 own firmware**, grayed out: these machines start their own firmware on every reset.
 
-The {icon}`shutdown` **Reset** button on the toolbar resets at a click; the arrow beside it
-opens the list. **Reset** in the right-click menu works the same way. F12 resets in both
-hotkey presets.
+The {icon}`shutdown` **Reset** button on the toolbar resets the machine when clicked; the
+arrow beside it opens the list. **Reset** in the right-click menu works the same way. F12
+resets in both hotkey presets.
 
-To change where a plain reset goes, open the {icon}`settings` **ROM** button on the
-**Machine** page of **Options** and mark another ROM (see [ROM images](#rom-images)).
+To change the ROM a plain reset starts from, click the {icon}`settings` **ROM** button on
+the **Machine** page of **Options** and mark another ROM (see [ROM images](#rom-images)).
 
 ```{index} Reset to 48K, Reset to 128K, Reset to DOS, Reset to Service
 ```
 
 The **Hotkeys** page of **Options** also has **Reset to 48K**, **Reset to 128K**,
-**Reset to DOS** and **Reset to Service**. On a machine that has no such start, the key
-shows a short message and does nothing.
+**Reset to DOS** and **Reset to Service**. On a machine that cannot start from that ROM,
+the key only shows a short message.
 
 ## NMI
 
@@ -138,7 +140,7 @@ preset and Shift+F10 in the Modern one.
 each one gives, for example **x2 (7 MHz)**. It is grayed out on a machine with no turbo, and
 while an RZX recording plays. The **Switch Turbo** hotkey steps through the list.
 
-A board that has a turbo usually lets its programs switch it too. Then the program can
+A board that has a turbo usually lets programs switch the turbo too. Then a program can
 change the step you picked, and Xpeccy+ shows the new clock over the picture.
 
 ```{index} Speed slider, Overclock, Speed Up, Speed Down
@@ -149,7 +151,8 @@ change the step you picked, and Xpeccy+ shows the new clock over the picture.
 - left of the middle, **Slow motion 1/2**, **1/4** and **1/8** slow everything down, and the
   frame rate drops with it;
 - the middle is **Normal speed**;
-- right of it, **Overclock x2**, **x4** and **x8** speed the CPU up and keep the frame rate.
+- right of the middle, **Overclock x2**, **x4** and **x8** speed the CPU up and keep the
+  frame rate.
 
 No real machine ran faster than 14 MHz, so past that the timing of a program is not
 guaranteed. The slider is not saved: the next start is at
@@ -202,10 +205,11 @@ Changes take effect when you press **Apply** or {icon}`ok-apply` **OK**.
 ```{index} Machine: Advanced Settings, Base clock, Raster layout, Floating bus, Contended memory, contention, ULA snow, ULA plus
 ```
 
-**Machine: Advanced Settings** holds what makes the machine what it is, rather than how you
-use it. Leave it alone unless you know the hardware.
+**Machine: Advanced Settings** holds the settings of the hardware itself, not of how you use
+it. Leave them alone unless you know the hardware.
 
-- **CPU** - **Base clock**, the crystal the board runs on. The frame rate comes from it too.
+- **CPU** - **Base clock**, the frequency of the crystal the board runs on. The frame rate
+  is derived from it too.
 - **ULA** - **Raster layout** (the size of the frame and where the interrupt falls in it),
   **ULA pattern**, **Floating bus**, **Ear input**, and check boxes for **Contended memory**,
   **Contended I/O**, **Early timings**, **4T border**, **ULA snow...**,
@@ -220,25 +224,26 @@ Each one is explained beside it, or in a tooltip when you hold the mouse over it
 ```
 
 A change you make to a machine stays with that machine. It is saved when you apply it and
-when you switch to another machine, so coming back finds it as you left it. The machine
-keeps: memory, the ROM set and the marked ROM, base clock, turbo steps, the
-**Advanced settings**, and its devices - disk interface and number of drives, hard disk
-interface, PSG, DAC, General Sound, SAA1099, joystick, mouse and PC keyboard. The rest of
-the page, the tape settings for one, is the same for every machine.
+when you switch to another machine, so when you come back to that machine, you find it as
+you left it. Each machine keeps its own: memory, the ROM set and the marked ROM, base clock,
+turbo steps, the **Advanced settings**, and its devices - disk interface and number of
+drives, hard disk interface, PSG, DAC, General Sound, SAA1099, joystick, mouse and PC
+keyboard. The other settings on the page, such as the tape settings, are the same for every
+machine.
 
-A built-in machine you have changed gets an asterisk after its name. It still takes the fixes a new
-version of Xpeccy+ brings, wherever you did not change it.
+A built-in machine you have changed gets an asterisk after its name. It still gets the
+fixes that a new version of Xpeccy+ brings, in every setting you did not change.
 
 The three buttons on the **Machine** page:
 
-- {icon}`save_all` **Save machine...** keeps the current settings as a new machine under a
-  name you give (it suggests the machine's name with `(mine)` after it). The new machine
-  appears in the machine list and runs at once. It is based on the machine it was made
-  from, so it too takes that machine's fixes where you did not change it. The name must be
-  one no other machine has.
-- {icon}`refresh` **Restore machine** drops every change. A built-in machine goes back to
-  how it ships; one of your own goes back to the machine it was made from, and stays in the
-  list.
+- {icon}`save_all` **Save machine...** saves the current settings as a new machine under a
+  name you give (Xpeccy+ suggests the machine's name with `(mine)` after it). The new
+  machine appears in the machine list and runs at once. It is based on the machine it was
+  made from, so it too gets that machine's fixes in every setting you did not change. The
+  name must be one no other machine has.
+- {icon}`refresh` **Restore machine** undoes every change. A built-in machine goes back to
+  its original settings; one of your own goes back to the settings of the machine it was
+  made from, and stays in the list.
 - {icon}`cancel` **Delete this machine** removes a machine of your own, after asking, and
   switches to the one it was made from. Built-in machines cannot be deleted: use
   **Restore machine**.
@@ -247,8 +252,8 @@ Each machine you have changed or made is a small text file in the `machines` fol
 settings folder (see [Where the settings are](getting-started.md#where-the-settings-are)).
 It holds only what differs from the machine it is based on. Deleting the file of a built-in
 machine, with Xpeccy+ closed, does the same as **Restore machine**.
-{icon}`save_all` **Export settings...** on the **Application** page takes your own machines
-along with the settings.
+{icon}`save_all` **Export settings...** on the **Application** page exports your own
+machines together with the settings.
 
 ## ROM images
 
@@ -256,8 +261,8 @@ along with the settings.
 ```
 
 The ROM images are in the `roms` folder of the settings folder. Xpeccy+ comes with every
-image its machines need. They keep their own terms: `LICENSE` and `PROVENANCE.md` in the
-same folder say where each one came from.
+image its machines need. The images come under their own license terms: `LICENSE` and
+`PROVENANCE.md` in the same folder say where each one came from.
 
 To replace a ROM for every machine that uses it, put your file into `roms` under the same
 name. On Linux and macOS a new version of Xpeccy+ adds the images it is missing but never
@@ -268,7 +273,7 @@ To give one machine a different ROM, click the {icon}`settings` **ROM** button o
 what is in each, such as **ROM 0 (Basic 128)**:
 
 - pick a file from the list, which holds every `.rom` and `.bin` file in the `roms` folder;
-- or click the {icon}`fileopen` folder button beside it to take a file from anywhere;
+- or click the {icon}`fileopen` folder button beside it to pick a file from any folder;
 - mark the bank a plain reset starts from (**Boots from the marked ROM**).
 
 **Font** is the text-mode font, for the machines that have one. The General Sound ROM is in
@@ -277,11 +282,11 @@ the **Machine: General Sound** window, and the TR-DOS ROM in **Machine: Disk**.
 ```{index} Expert settings, Machine: ROM Files, Romset Editor
 ```
 
-{icon}`settings` **Expert settings** opens **Machine: ROM Files**, the same set file by
-file: where each part starts in its file, how much of it is read, and where it lands in the
-machine's ROM. Its buttons {icon}`add` add a file, {icon}`edit` edit or {icon}`cancel`
-remove the one selected, and {icon}`lamp` fill the set with the machine's standard ROMs
-again. Adding or editing opens the **Romset Editor** with **File**, **File offset**,
-**Size** (0 reads to the end of the file) and **ROM pos**, all in KB.
+{icon}`settings` **Expert settings** opens **Machine: ROM Files**, the same ROM set shown
+file by file: where each part starts in its file, how much of it is read, and where it is
+placed in the machine's ROM. Its buttons {icon}`add` add a file, {icon}`edit` edit or
+{icon}`cancel` remove the one selected, and {icon}`lamp` fill the set with the machine's
+standard ROMs again. Adding or editing opens the **Romset Editor** with **File**,
+**File offset**, **Size** (0 reads to the end of the file) and **ROM pos**, all in KB.
 
 The new ROM is in place when you press **Apply**. Reset the machine to start from it.

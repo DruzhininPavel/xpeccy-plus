@@ -2,7 +2,7 @@
 
 Xpeccy+ opens snapshots, tapes, disks, cartridges and RZX recordings, and saves snapshots,
 tapes and disks. This chapter is about the **File** and **Favorites** menus, snapshots, and
-how a file picks the machine it runs on. Tapes and disks have chapters of their own:
+how the machine a file runs on is chosen. Tapes and disks have chapters of their own:
 [Tapes](tapes.md) and [Disks and drives](disks.md).
 
 ## File formats
@@ -43,15 +43,15 @@ Screenshots, video and sound files are in [Screenshots and recording](capture.md
 ```
 
 **File > Open...** opens the program's file dialog. You can also drop a file onto the
-window, pick one from **File > Recent** or from **Favorites**, or give it on the command
+window, pick one from **File > Recent** or from **Favorites**, or name it on the command
 line. Whether a tape or a disk is run or only mounted is explained in
 [Run a program](getting-started.md#run-a-program).
 
-To choose Run or Mount for one file only, hold Shift as you drop it, or as you leave the
-open dialog with **Open**. A small menu asks: **Run** or **Mount**.
+To choose Run or Mount for one file only, hold Shift as you drop it, or as you click
+**Open** in the open dialog. A small menu asks: **Run** or **Mount**.
 
 **File > Recent** lists the last 10 files opened, newest first. Hold the mouse over an item
-to see where the file is. A file that is gone is reported and taken off the list.
+to see where the file is. A file that no longer exists is reported and taken off the list.
 **Clear** empties the list.
 
 **File > Reload** opens the last file again, the way it was opened: into the same drive,
@@ -74,7 +74,7 @@ system. It starts in the folder you used last.
 
 The list of file types at the bottom is more than a filter: the type you pick says what
 the file is opened as. **Disk B** puts a disk into drive B, **RAW file to disk** writes any
-file onto disk A, and **All files** goes by the file's extension.
+file onto disk A, and with **All files** the file's extension decides.
 
 ## Saving
 
@@ -88,18 +88,18 @@ file gets `.szx`, `.tap` or `.trd`.
 
 **WAV recording, export** writes the tape as sound (see
 [Export to WAV](tapes.md#export-to-wav)). It is a copy, not the tape's own file, so the
-tape still counts as changed after it.
+tape still counts as changed after the export.
 
-A file that cannot be saved is not passed over in silence: a message says why, such as a
-tape with blocks a `.tap` cannot hold, or a disk that is not TR-DOS saved as `.trd`.
+When a file cannot be saved, a message says why, for example a tape with blocks a `.tap`
+cannot hold, or a disk that is not TR-DOS saved as `.trd`.
 
 ```{index} Save Changed Disks
 ```
 
 **File > Save Changed Disks** saves every disk that was written to, each to its own file.
-It asks about each disk first: **Yes**, **No** or **Cancel**. The same question comes for
-a changed disk or tape when you close the program, eject it or put another one in;
-**Cancel** keeps it where it is, and the program open.
+It asks about each disk first: **Yes**, **No** or **Cancel**. The same question is asked
+for a changed disk or tape when you close the program, eject it or put another one in;
+**Cancel** keeps the disk or tape where it is, and keeps the program open.
 
 ## Snapshots
 
@@ -113,12 +113,12 @@ A snapshot is the whole machine at one moment. Opening one puts the machine back
 moment, and it runs on from there.
 
 **SZX** is the format to use. A `.szx` saved by Xpeccy+ keeps everything: memory, the
-processor, the sound chips, the disk controller, where the tape stands, and the exact
-point in the frame. It also notes the machine it was taken on, the tape and the disks by
-their file names. The images themselves are not inside: save a changed disk too.
+processor, the sound chips, the disk controller, the tape position, and the exact point in
+the frame. It also records the machine it was taken on, and the file names of the tape and
+the disks. The images themselves are not inside: save a changed disk too.
 
 When an SZX is opened, its tape and disks go back in: from where they were, or from the
-snapshot's own folder. The tape is wound to the block it stood on. A disk that is already
+snapshot's own folder. The tape is wound to the block it was at. A disk that is already
 in its drive is left as it is, so what was written to it since is not lost. Images that a
 snapshot carries inside it are written to the system's temporary folder and put in from
 there.
@@ -126,7 +126,8 @@ there.
 An SZX opens on exactly the model it names. If that model is not one of the built-in
 machines, it opens on the nearest one. When the snapshot was taken with something the
 machine does not have - other ULA timings, ULA+, an AY, a disk interface, a device that
-is not emulated - a warning lists it. The machine's settings are not changed for it.
+is not emulated - a warning lists what is missing. The machine's settings are not changed
+to match.
 
 ```{index} Z80, SNA
 ```
@@ -134,7 +135,7 @@ is not emulated - a warning lists it. The machine's settings are not changed for
 **Z80** and **SNA** are older formats that many programs read. They keep less:
 
 - `.z80` can be saved only on a 48K, 128K, +2, +2A, +3, Pentagon or Scorpion. It keeps the
-  first 128K of memory (256K on a Scorpion), and not TR-DOS being paged in.
+  first 128K of memory (256K on a Scorpion), but not whether TR-DOS is paged in.
 - `.sna` has no place for the point in the frame. A running machine is saved at the next
   interrupt, which is where loading puts it back. If that cannot be done, the message
   **SNA: no frame position, use SZX** appears. It keeps 48K or 128K of memory.
@@ -145,39 +146,40 @@ snapshot runs anywhere, a 128K one on anything but a 48K, a +3 one on a +2A or +
 ```{index} SPG
 ```
 
-**SPG** is a ZX Evolution (TSConf) format. It opens only, on that machine.
+**SPG** is a ZX Evolution (TSConf) format. Xpeccy+ can open it but not save it, and only on
+that machine.
 
 ## Quick save and load
 
 ```{index} Quick Save, Quick Load, Undo Quick Load, snapshot; quick save
 ```
 
-**File > Quick Save** keeps the machine as it is, both in memory and as an `.szx` file in
-the `quick` folder of the [settings folder](getting-started.md#where-the-settings-are).
+**File > Quick Save** saves the machine's current state, both in memory and as an `.szx`
+file in the `quick` folder of the [settings folder](getting-started.md#where-the-settings-are).
 There is one quick save per machine: a new one replaces the last.
 
 **File > Quick Load** puts back the quick save of the machine that is running. It works
 after a restart too, from the file. The message "nothing quick saved" means this machine has none.
 
 **File > Undo Quick Load** takes back the last quick load and returns to where you were.
-Use it again and the quick load is back.
+Use it again to redo the quick load.
 
 ## Which machine opens a file
 
 ```{index} File types page, machine; switched by a file, Opened on, Run opened media, Mount opened media, Remember mounted media
 ```
 
-What a file needs and the machine it switches to are explained in
+What a file needs and which machine it switches to are explained in
 [Run a program](getting-started.md#run-a-program). The **File types** page of **Options**
-sets it for each format.
+sets this for each format.
 
 The **General** group at the top of the page:
 
 - **Run opened media**, **Mount opened media** or **Ask: run or mount** - what opening a
   tape or a disk does. **Ask** shows the **Open Media** question; ticking
-  **Remember my choice** there sets this box.
-- **Remember mounted media** - the tape and the disks in the drives are back on the next
-  start.
+  **Remember my choice** there saves your answer in this setting.
+- **Remember mounted media** - the tape and the disks in the drives are opened again at the
+  next start.
 
 The **File types** group has a row per format:
 
@@ -188,12 +190,13 @@ The **File types** group has a row per format:
   on** (RZX).
 - **Opened on** - **Auto**, **Ask**, **Keep current**, or one machine from the list.
 
-A tape runs on any machine, so its rows have no **Ask**: **Auto** there only returns to
-your own machine after a file switched away from it. A machine picked in **Opened on**
+A tape runs on any machine, so its rows have no **Ask**: **Auto** in these rows only
+switches back to your own machine after another file switched away from it. A machine
+picked in **Opened on**
 is used for every file of that format that it can run. **Restore defaults** sets every
 row back to **Auto**.
 
-Only a file that is about to run decides the machine: a snapshot always, a tape or a disk
+Only a file that is about to run can switch the machine: a snapshot always, a tape or a disk
 only when it is run, and a disk only from drive A.
 
 ## Favorites
@@ -201,12 +204,13 @@ only when it is run, and a disk only from drive A.
 ```{index} Favorites, Add to Favorites, Manage favorites
 ```
 
-The **Favorites** menu keeps files at hand. At the top it offers the file named in the
+The **Favorites** menu keeps a list of files you open often. At the top it offers the file
+named in the
 window title: **Add "name"...** puts it on the list, **Remove "name"** takes it off. Below
 are your favorites; pick one to open it. **Organize...** opens the **Favorites** window.
 
-Adding a favorite asks for its **Name**, the text in the menu, and its **Path**. The
-{icon}`fileopen` button beside it picks the file in the file dialog.
+When you add a favorite, you are asked for its **Name** (the text in the menu) and its
+**Path**. The {icon}`fileopen` button beside **Path** picks the file in the file dialog.
 
 The **Favorites** window lists every favorite with its name and file. Double-click a row
 to change it. The buttons beside the list {icon}`add` add a file, move the selected one
@@ -214,7 +218,7 @@ to change it. The buttons beside the list {icon}`add` add a file, move the selec
 window opens from {icon}`star` **Manage favorites...** on the **Application** page of
 **Options**.
 
-The **Add to Favorites** hotkey adds the file in use, with the same question. It has no
+The **Add to Favorites** hotkey adds the file in use and asks the same questions. It has no
 key until you give it one on the **Hotkeys** page of **Options**.
 
 ## RZX recordings

@@ -17,7 +17,7 @@ shift keys of the Spectrum are on the left of the PC keyboard:
 | Left Shift | Caps Shift |
 | Left Ctrl | Symbol Shift |
 
-The other PC keys give what a Spectrum makes with two keys pressed together:
+Other PC keys press two Spectrum keys together:
 
 | PC key | Spectrum keys | Gives |
 |---|---|---|
@@ -39,10 +39,10 @@ The other PC keys give what a Spectrum makes with two keys pressed together:
 | `,` and `.` | Symbol Shift + N, M | , and . |
 | `/` | Symbol Shift + C | ? |
 
-The F-keys, Alt, Insert, the right Shift and Ctrl and the numeric keypad press nothing on the
+The F-keys, Alt, Insert, the right Shift and Ctrl and the numeric keypad do nothing on the
 machine.
 
-A key that is a hotkey does its command instead of reaching the machine. Which keys those are
+A key that is a hotkey runs its command instead of reaching the machine. Which keys those are
 depends on the set of hotkeys you use: in Modern, Delete, Home, End and Insert are hotkeys,
 while Esc is left to the machine as BREAK. See [Hotkeys](hotkeys.md). To give the machine
 every key, grab the keyboard.
@@ -50,28 +50,29 @@ every key, grab the keyboard.
 ```{index} keyboard; system layout
 ```
 
-On Windows and Linux a key counts by its place on the keyboard, not by the letter the system
-layout puts on it, so a Cyrillic or another layout switched on in the system changes nothing.
+On Windows and Linux a key is recognized by its place on the keyboard, not by the letter the
+system layout puts on it, so a Cyrillic or another layout switched on in the system changes
+nothing.
 
 ## Keymaps
 
 ```{index} keymap
 ```
 
-A keymap says which PC keys the Spectrum keys sit on. Pick one in **Input > Keymap**, or in
+A keymap says which PC key presses which Spectrum key. Pick one in **Input > Keymap**, or in
 the **Keymap** list on the **Input** page of **Options**:
 
 - **Default** - the keys described above;
 - **ZX Spectrum 48K.map** - Caps Shift on both left Shift and left Ctrl, Symbol Shift on both
-  right Shift and right Ctrl, as the two keys sit on a 48K. The `` ` `` key is EDIT (Caps
-  Shift + 1) and `\` is GRAPHICS (Caps Shift + 9);
+  right Shift and right Ctrl, as the two keys are placed on a 48K. The `` ` `` key is EDIT
+  (Caps Shift + 1) and `\` is GRAPHICS (Caps Shift + 9);
 - **ZX Spectrum 128K.map** - Caps Shift on both Shift keys, Symbol Shift on both Ctrl keys.
   The `` ` `` key is EDIT.
 
 A keymap changes only the keys it names; all the others stay as in Default.
 
-On macOS the left and right Shift are one key to the program, and so are the left and right
-Ctrl. The 48K keymap then has no Symbol Shift: use Default or the 128K one there.
+On macOS the program cannot tell the left Shift from the right one, nor the left Ctrl from
+the right one. The 48K keymap then has no Symbol Shift: use Default or the 128K one there.
 
 ### Your own keymap
 
@@ -117,11 +118,11 @@ right, `JF` for fire, `J2` to `J4` for the extra buttons.
 - every key reaches the machine, Esc and the F-keys included;
 - the hotkeys stop working, except the key of **Grab Keyboard** itself (ScrollLock or Alt+G
   in Modern, Alt+G in Classic);
-- a keyboard player set up in **Gamepads** no longer takes its keys: they go to the machine
-  as keys;
+- a player set up in **Gamepads** to use the keyboard no longer gets its keys: they reach
+  the machine as ordinary keys;
 - the commands in the menus and on the toolbar still work.
 
-To let the keyboard go, press the **Grab Keyboard** key again, or press Ctrl and Alt together
+To release the keyboard, press the **Grab Keyboard** key again, or press Ctrl and Alt together
 and release them with no other key between (Ctrl and Cmd on a Mac). A short message on the
 picture says when the keyboard is grabbed and released.
 
@@ -133,11 +134,12 @@ picture says when the keyboard is grabbed and released.
 **Profi.** A Profi has a PC-style keyboard of its own. With the keyboard grabbed, the PC
 keyboard works as that keyboard: the keys type the characters printed on them, Shift
 included, and F1 to F10, Home, End, Page Up, Page Down, Insert and Delete give the Profi's
-own keys. Not grabbed, it is the Spectrum keyboard described above.
+own keys. When the keyboard is not grabbed, the PC keyboard works as the Spectrum keyboard
+described above.
 
-**ATM Turbo 2+ and ZX Evolution.** These machines read a PC keyboard beside the Spectrum
-one, and every key you press reaches both. The **PC keyboard** row in the **Input** group of
-the **Machine** page of **Options** sets the scan codes the machine gets:
+**ATM Turbo 2+ and ZX Evolution.** These machines read a PC keyboard as well as the
+Spectrum one, and every key you press reaches both. The **PC keyboard** row in the **Input**
+group of the **Machine** page of **Options** sets the scan codes the machine gets:
 **As the machine has it**, **Scanset 1 (XT)**, **Scanset 2 (AT)** or
 **Scanset 3 (PS/2)**. Leave it as the machine has it unless a program asks for another set.
 
@@ -148,22 +150,23 @@ the **Machine** page of **Options** sets the scan codes the machine gets:
 
 ![The Virtual Keyboard](images/virtual-keyboard.png)
 
-**View > Virtual Keyboard** opens a picture of the Spectrum keyboard. The keys the machine
-has down light up, whether they come from the PC keyboard, a joystick on keys or a click here.
+**View > Virtual Keyboard** opens a picture of the Spectrum keyboard. The keys that are
+pressed on the machine light up, whether they come from the PC keyboard, a joystick on keys
+or a click here.
 
 - Left button on a key - holds the key down while the button is held.
-- Right button on a key - locks the key down; a second right click lets it go. Lock Caps
+- Right button on a key - locks the key down; a second right click releases it. Lock Caps
   Shift, then click a digit, to get a cursor key.
-- Middle button on a key - lets all the keys go.
+- Middle button on a key - releases all the keys.
 
 Right-click beside the keys for a menu:
 
 - **Zoom x1**, **Zoom x1.5**, **Zoom x2**, **Zoom x3** - the size of the window. You can
   also drag its edge; the picture keeps its shape.
 - **Dock under the emulator** - the keyboard loses its frame and sits under the main window,
-  as wide as it, and moves with it. In fullscreen, or when there is no room below, it lies
-  over the bottom of the picture.
-- **Release all keys** - lets every key go.
+  as wide as the main window, and moves with it. In fullscreen, or when there is no room
+  below, it lies over the bottom of the picture.
+- **Release all keys** - releases every key.
 
 Keys typed while the window is in front go to the machine. Esc closes the window.
 
@@ -177,7 +180,7 @@ The joystick interface of the machine is set on the **Machine** page of **Option
 one has three more fire buttons, **Fire 2** to **Fire 4**.
 
 Sinclair, cursor and QAOP joysticks are keys on the Spectrum keyboard, so they need no
-interface: the **Gamepads** window presses those keys for you.
+interface: a player set up in the **Gamepads** window presses those keys for you.
 
 The ALF TV Game consoles have no keyboard: there the arrows with Space or Enter are the first
 joystick, and W, A, S, D with left Shift or left Ctrl are the second.
@@ -193,9 +196,10 @@ joystick, and W, A, S, D with left Shift or left Ctrl are the second.
 ![The Gamepads window](images/gamepads.png)
 
 **Input > Gamepads > Manage...** opens the **Gamepads** window. It has a tab for each of two
-players, **Player 1** and **Player 2**. A change works at once; there is nothing to apply.
+players, **Player 1** and **Player 2**. A change takes effect at once; there is nothing to
+apply.
 
-**Device** - what the player holds:
+**Device** - what the player plays with:
 
 - **None**;
 - **Keyboard: arrows + Ctrl** - the arrows, and either Ctrl for fire;
@@ -204,10 +208,10 @@ players, **Player 1** and **Player 2**. A change works at once; there is nothing
   **(not connected)**.
 
 Under it, a line shows what the last button or key pressed does, so you can try the pad right
-there. A gamepad plugged in for the first time goes to a player with no device, and the window
-opens by itself to show it (not in fullscreen).
+there. A gamepad plugged in for the first time is given to a player that has no device, and
+the window opens by itself to show it (not in fullscreen).
 
-**Joystick** - what the player's joystick is to the Spectrum:
+**Joystick** - which joystick the Spectrum sees for this player:
 
 | Joystick | Up, down, left, right, fire |
 |---|---|
@@ -219,25 +223,25 @@ opens by itself to show it (not in fullscreen).
 | **Custom** | Spectrum keys of your own; it starts as QAOP and Space |
 
 Picking **Kempston** switches the machine's Kempston joystick on if it is off. The rows
-**Fire 2** to **Fire 4** show when the machine has the 8-bit Kempston.
+**Fire 2** to **Fire 4** are shown only when the machine has the 8-bit Kempston.
 
 ```{index} autofire, Turbo rate, Stick dead zone
 ```
 
 The table lists what the player can do. The first rows, in bold, are the joystick: **Up**,
-**Down**, **Left**, **Right**, **Fire**. The second column shows the buttons or keys that press
-each one. On a gamepad the directions are the D-pad and the left stick, shown as
+**Down**, **Left**, **Right**, **Fire**. The second column shows the buttons or keys for
+each row. On a gamepad the directions are the D-pad and the left stick, shown as
 **Gamepad up** and so on, and **Fire** is every face button no other row uses.
 
 - Double-click a row, or right-click it and choose **Change...**, to set its buttons.
 - {icon}`add` **Add mapping**, or **Add...** on the right-click menu, adds a row of your
   own.
 - Right-click a row of your own and choose **Delete** to remove it; on a joystick row the
-  same place has **Back to defaults**.
+  menu has **Back to defaults** instead.
 - Tick **Turbo** on a row to make it repeat while the button is held. **Turbo rate** sets how
   fast, from 1 to 25 times a second.
-- **Stick dead zone** - how far a stick has to move before it counts. A keyboard player has
-  no stick, and the setting is grayed.
+- **Stick dead zone** - how far a stick has to move before the move counts. A player on the
+  keyboard has no stick, and the setting is grayed out.
 
 ### Setting up a row
 
@@ -272,25 +276,26 @@ changes.
 ```
 
 {icon}`floppy` **Save as...** writes the player's table to a `.pad` file; {icon}`fileopen`
-**Load...** reads one back. It lists the last eight files loaded or saved, by name, with a
-check by the one the table matches, and **Browse...** below them for any other file; with
-none yet, it opens the file dialog at once. {icon}`refresh` **Reset** takes the player back
-to the joystick's defaults and drops the rows of your own.
+**Load...** reads one back. Its menu lists the last eight files loaded or saved, by name,
+with a check by the one the table matches, and **Browse...** below them for any other file;
+when there are no such files yet, **Load...** opens the file dialog at once.
+{icon}`refresh` **Reset** sets the player back to the joystick's defaults and deletes the
+rows you added.
 
 ```{index} Game bindings
 ```
 
 **Game bindings.** When the box **Game bindings** on the **Input** page of **Options** is
 ticked, opening a tape, disk or snapshot looks for a `.pad` file of the same name beside it:
-`Exolon.tzx` takes `Exolon.pad`. Player 1 uses those bindings until the next file is opened,
-and the window says **From Exolon.pad, until the next image** beside a {icon}`cancel`
-**Revert** button, which goes back to your own bindings. **Save as...** offers that name and
-place, so saving a table for a game is one click.
+for `Exolon.tzx` that is `Exolon.pad`. Player 1 uses those bindings until the next file is
+opened, and the window says **From Exolon.pad, until the next image** beside a
+{icon}`cancel` **Revert** button, which goes back to your own bindings. **Save as...**
+offers that name and place, so saving a table for a game is one click.
 
 When you change player 1's bindings while a game's file is in use, the program asks where the
 change goes: **Game config** saves it into the game's `.pad` file, **User config** makes the
 table your own, **Temporary** keeps it until the next file. {icon}`cancel` **Cancel**, Esc or
-closing the question takes the change back.
+closing the question undoes the change.
 
 ### Quick switch
 
@@ -299,9 +304,9 @@ closing the question takes the change back.
 
 **Input > Gamepads** also lists the joysticks for player 1, with the device in use above
 them, so you can switch from Kempston to Sinclair mid-game without opening the window. Below
-them, **Saved presets** are the files of **Load...**, and **Reset to defaults** goes back to
-the joystick's defaults. The **Input** page of **Options** shows what each player has, with a
-**Gamepads...** button that opens the window.
+them, **Saved presets** lists the same files as **Load...**, and **Reset to defaults** goes
+back to the joystick's defaults. The **Input** page of **Options** shows what each player
+has, with a **Gamepads...** button that opens the window.
 
 ## Mouse
 
@@ -312,20 +317,22 @@ To use the PC mouse as a Kempston mouse, set **Mouse** to **Kempston mouse** in 
 group of the **Machine** page of **Options**. The {icon}`settings` button beside it opens
 its settings:
 
-- **Sensitivity** - how fast the pointer moves. In the middle it keeps up with the PC one.
+- **Sensitivity** - how fast the pointer moves. In the middle position the Spectrum pointer
+  moves as fast as the PC pointer.
 - **Wheel** - the wheel is read too, as on the extended Kempston mouse.
 - **Swap buttons** - the left and right buttons trade places.
 
-The mouse belongs to the machine only while it is grabbed. Grab it in one of these ways:
+The machine gets the mouse only while the mouse is grabbed. Grab it in one of these ways:
 
 - click the picture with the middle button;
-- click it with the left button, while a program reads the mouse;
+- click the picture with the left button, while a program reads the mouse;
 - **Input > Grab Mouse**.
 
 While the mouse is grabbed, the PC pointer is hidden and the buttons go to the machine, the
-wheel too when **Wheel** is ticked. A move of the hand takes the Spectrum pointer the same distance whatever size
-the picture is drawn at. To let the mouse go, click the middle button again, use
-**Grab Mouse** again, or press Ctrl and Alt together and release them (Ctrl and Cmd on a Mac).
+wheel too when **Wheel** is ticked. The same hand movement moves the Spectrum pointer the
+same distance, whatever size the picture is drawn at. To release the mouse, click the
+middle button again, use **Grab Mouse** again, or press Ctrl and Alt together and release
+them (Ctrl and Cmd on a Mac).
 
 ## Input Overlay
 

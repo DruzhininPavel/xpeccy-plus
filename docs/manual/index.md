@@ -5,8 +5,8 @@
 Xpeccy+ is an emulator of the ZX Spectrum and its clones, with a debugger built in. This
 manual says what each part of it does and where to find it.
 
-Look a word up in the search box: it works in the copy that comes with the program too,
-with no network.
+Look a word up in the search box. The search also works in the copy of the manual that
+comes with the program, with no network.
 
 :::{only} not builder_singlehtml
 The {ref}`genindex` lists terms, commands and settings from A to Z.

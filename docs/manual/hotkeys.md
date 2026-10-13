@@ -33,7 +33,8 @@ above the arrows and Alt, which is no Spectrum key. Ctrl is Symbol Shift on the 
 Modern only commands that open a window or a file use it: Ctrl+, for **Options**, Ctrl+S,
 Ctrl+O.
 
-Picking Modern or Classic does not lose Custom: pick Custom again and your keys are back. The
+Picking Modern or Classic does not delete your Custom keys: pick Custom again and your keys
+are back. The
 change takes effect when you click {icon}`ok-apply` **OK** or **Apply** in **Options**.
 
 ```{index} hotkeys; keyboard layout
@@ -69,23 +70,24 @@ Right-click an action for the same commands and a few more: **Change key...**,
 
 A change made while Modern or Classic is picked switches the list to Custom, made from that
 set. If Custom already holds changes made from the other set, the program asks first, since
-starting Custom over loses them.
+Custom then starts again from the set now picked and those changes are lost.
 
-When the key you press already belongs to another action, the program says which one and
-asks whether to move it. The main window and the **Debugger** keep their keys apart, so F7
-can be **Screenshot** in one and **Step in** in the other.
+When the key you press already belongs to another action, the program says which action
+and asks whether to move the key to the new one. The main window and the **Debugger** keep
+their keys apart, so F7 can be **Screenshot** in one and **Step in** in the other.
 
 In Custom, a key you changed is shown in bold. Hold the mouse over it to see the key the
-original set has there. **Reset**, beside the **Preset** list, drops all your changes and
-takes Custom back to the set it was made from.
+original set has for that action. **Reset**, beside the **Preset** list, drops all your
+changes and takes Custom back to the set it was made from.
 
 ## Find a key
 
 ```{index} hotkeys; search, Find key
 ```
 
-Type in the search box to see only the actions whose name, group or key fits: "tape" shows
-the tape commands, "F5" shows what F5 does. A key is matched whole, so F1 does not find F10.
+Type in the search box to see only the actions whose name, group or key matches: "tape"
+shows the tape commands, "F5" shows what F5 does. A key is matched whole, so F1 does not
+find F10.
 
 **Find key...** asks you to press a key and puts it into the search, so you see what that
 key does.
@@ -96,30 +98,31 @@ key does.
 ```
 
 **Grab Keyboard.** While the keyboard is grabbed, every key goes to the machine and the
-hotkeys stop working, except the one that lets the keyboard go. Ctrl+Alt pressed together and
-released with no other key between also lets it go. See
+hotkeys stop working, except the hotkey that releases the keyboard. Ctrl+Alt pressed
+together and released with no other key between also releases the keyboard. See
 [Grab Keyboard](input.md#grab-keyboard).
 
 **Menus.** A command picked from a menu or from the toolbar always works, grabbed keyboard
 or not.
 
 **Holding a key.** A held hotkey does not repeat, except **Speed Up** and **Speed Down**,
-which step on while you hold them. **Rewind (Hold)** goes back in time for as long as you
-hold its key. **Fast Mode**, **Slow Motion** and **Fast Forward** each work in one of three
-ways, set on the **Emulation** page of **Options**: **Toggle**, **Hold**, or **Tap or hold**
-(the default): a short tap switches the mode on or off, a longer press keeps it on only while
-the key is held. See [Speed and time](time.md).
+which keep changing the speed while you hold them. **Rewind (Hold)** goes back in time for
+as long as you hold its key. **Fast Mode**, **Slow Motion** and **Fast Forward** each work
+in one of three ways, set on the **Emulation** page of **Options**: **Toggle**, **Hold**,
+or **Tap or hold** (the default): a short tap switches the mode on or off, a longer press
+keeps it on only while the key is held. See [Speed and time](time.md).
 
 **Shift and Ctrl.** A hotkey's own Shift or Ctrl is not passed to the machine as Caps Shift
-or Symbol Shift: Shift+F9 in Modern does not leave Caps Shift pressed. Shift or Ctrl held
-with a key whose combination is no hotkey does what the key alone does, and stays pressed
-for the machine. So on the ZX Evolution (TSConf), Ctrl+F12 resets into the TS-BIOS setup,
-and Shift+F12 into the boot TS-BIOS starts with Caps Shift held.
+or Symbol Shift: Shift+F9 in Modern does not leave Caps Shift pressed. When Shift or Ctrl
+is held with a key and the combination is not a hotkey, the key works as it does alone,
+and Shift or Ctrl stays pressed for the machine. So on the ZX Evolution (TSConf), Ctrl+F12
+resets into the TS-BIOS setup, and Shift+F12 resets into the boot that TS-BIOS is set to
+start when Caps Shift is held.
 
 **Other windows.** In the **Tape Player**, the **Disk Manager**, **Gamepads** and the other
 tool windows, the hotkeys on the F-keys, Pause and Scroll Lock, and those with Alt or Ctrl,
-still work. A bare key such as Del, Home or End belongs to the window, and Esc closes it.
-The **RZX Player** passes on every hotkey but Esc.
+still work. A key with no modifier, such as Del, Home or End, belongs to the window, and
+Esc closes the window. In the **RZX Player** every hotkey works except Esc.
 
 ## macOS
 
@@ -135,7 +138,7 @@ Cmd+,.
 
 Ctrl+Cmd, pressed and released together, lets a grabbed keyboard or mouse go.
 
-The **Hotkeys** page always shows the keys of your system, so check it there. The tables
+The **Hotkeys** page always shows the keys of your system, so check a key there. The tables
 below give the keys of Windows and Linux.
 
 ## All the keys

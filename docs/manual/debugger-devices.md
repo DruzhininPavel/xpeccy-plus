@@ -3,7 +3,7 @@
 Besides the CPU and the memory, the Debugger shows the state of the machine's devices: the
 screen, the sound chips, the tape, the floppy disk controller, the clock chip and the
 palette, and on a ZX Evolution its video hardware. Each is a panel of its own, on a tab
-behind **Breakpoints** or **DUMP** (see [The panels](debugger.md#the-panels)). Like every
+beside **Breakpoints** or **DUMP** (see [The panels](debugger.md#the-panels)). Like every
 panel, they show the state the machine stopped in and change with each step.
 
 The **Screen** and **Sound Chip** panels can also be windows of their own that work while
@@ -21,7 +21,7 @@ So can the **ZX Evo** panel: see [The ZX Evolution window](#the-zx-evolution-win
 | **Palette** | every machine but the ZX Evolution | see the colors of the machine's palette |
 | **ZX Evo** | a ZX Evolution, with TSConf or BaseConf | see what its video and memory hardware is set to, and hide TSConf layers |
 
-**ZX Evo** is the one panel for one machine only. On a ZX Evolution it takes the place of
+**ZX Evo** is the only panel made for one machine. On a ZX Evolution it takes the place of
 **Palette**, and has a **Palette** tab of its own.
 
 ## Screen
@@ -66,9 +66,9 @@ page number. The name of the screen the machine is showing is in the **Header** 
 the **Debugger** page of **Options**; the other one is plain.
 
 In **Custom** mode, type the page into **Page** and the place in the page where the screen
-starts into **Offset**, both in hex. **Offset** goes from 0000 to 3FFF. Use it to look at a
-picture a program keeps elsewhere in memory, for example one it copies to the screen
-later.
+starts into **Offset**, both in hex. **Offset** goes from 0000 to 3FFF. Use **Custom** to
+look at a picture a program keeps elsewhere in memory, for example one it copies to the
+screen later.
 
 ### How it is drawn
 
@@ -77,7 +77,7 @@ later.
 
 | Setting | What it does |
 |---|---|
-| **Zoom Fit** | fills the panel; whole pixels per dot as soon as there is room for them |
+| **Zoom Fit** | fills the panel; when there is room, each dot takes a whole number of pixels |
 | **Zoom x1** to **Zoom x4** | a fixed number of pixels per dot |
 | **no pixels** | attributes only: each cell is its paper color with a small dot of ink in the middle |
 | **no colors** | pixels only, white on black |
@@ -98,8 +98,9 @@ Move the mouse over the picture. The readout shows:
 | **Screen:** | the address of the byte that holds the dot, and after it the bit: `.7` is the leftmost dot of the byte |
 | **Attr:** | the address of the attribute byte that colors the dot's cell |
 
-The addresses are the ones the CPU uses. Page 5 is counted from 4000, the way it always
-sits in memory. Any other page is counted from C000, where a 128K pages it in.
+The addresses are the ones the CPU uses. The addresses of page 5 start at 4000, where this
+page always is in memory. The addresses of any other page start at C000, where a 128K pages
+it in.
 
 Click the picture to hold the readout on a dot: the cell is marked, and the numbers stay
 while you move the mouse away. Click again to let go.
@@ -107,8 +108,8 @@ while you move the mouse away. Click again to let go.
 Right-click the picture for **Copy screen address** and **Copy attribute address**. They
 copy the address of the dot under the mouse, or of the held dot, as four hex digits.
 
-It works the other way too: type an address into **Screen:** or **Attr:** and the cell it
-belongs to is marked on the picture. Move the mouse back over the picture to make the
+The readout works the other way too: type an address into **Screen:** or **Attr:** and the
+cell it belongs to is marked on the picture. Move the mouse back over the picture to make the
 readout follow the mouse again.
 
 ## Sound Chip
@@ -140,8 +141,9 @@ machine has two. A chip with an FM part, as in TurboSound FM, has an **FM** tab 
 ```
 
 **Regs** shows the 16 registers in two rows: `#00` holds registers 0 to 7, `#08` holds
-registers 8 to 15. Click a register and type a new value in hex. It goes to the chip the
-way an OUT to the chip's port would, so the rest of the page changes with it.
+registers 8 to 15. Click a register and type a new value in hex. The value goes to the chip
+as if a program wrote it with an OUT to the chip's port, so the rest of the page changes
+with it.
 
 The table below it shows the same registers by channel:
 
@@ -157,7 +159,8 @@ The table below it shows the same registers by channel:
 **Period** and **Vol** can be changed as the registers can: click and type in hex.
 
 **Lev** is green, amber near the top and red at the end. While the machine runs, the bar
-shows the loudest the channel was since the last refresh. While it stands still, the bar
+shows the loudest level of the channel since the last refresh. While the machine stands
+still, the bar
 and the number on it show exactly what the channel puts out at that moment.
 
 **State** is shown only while the machine stands still. A tone generator flips much too
@@ -167,7 +170,7 @@ fast to be read while the machine runs, so the column shows `-` then.
 same registers, and the other channels play as before. Use it to pick one voice out of a
 tune.
 
-The E row draws the envelope shape set in register 13: two rounds of it, so the eight
+The E row draws the envelope shape set in register 13: two cycles of it, so the eight
 shapes can be told apart.
 
 ### The FM page
@@ -205,11 +208,11 @@ sound chips, the beeper and the rest. While the machine runs it holds the last 4
 milliseconds, enough to see a tune move. While the machine stands still it holds the last
 2 milliseconds, fine enough to count the edges of a beeper routine one step at a time.
 
-The figure beside **Wave** is the highest level in the box, in hex, followed by the time
+The number beside **Wave** is the highest level in the box, in hex, followed by the time
 the box holds. The scale at the left marks the levels.
 
-- **Fit** - centers the wave and scales the box to it, so quiet sound fills it too. Off,
-  the box keeps one fixed scale.
+- **Fit** - centers the wave and scales the box to it, so quiet sound fills the box too.
+  With **Fit** off, the box keeps one fixed scale.
 - **Log** - draws the wave on a curve, so a quiet tune is still visible beside a loud one.
 
 **Beeper** is a bar of the beeper's level.
@@ -222,8 +225,8 @@ the box holds. The scale at the left marks the levels.
 ![The Tape panel](images/dbg-tape.png)
 
 The **Tape** panel draws the tape signal around the place the tape is at. The red
-vertical line is now: on its left is the signal that has played, on its right what comes
-next. The picture covers about two milliseconds of tape at the machine's speed. In the
+vertical line is the current position: on its left is the signal that has played, on its
+right what comes next. The picture covers about two milliseconds of tape at the machine's speed. In the
 picture Exolon is loading, with fast loading off.
 
 | Field | What it shows |
@@ -235,7 +238,7 @@ picture Exolon is loading, with fast loading off.
 | **Tape out** | the bit the machine sends to the tape: the bar is full while it is 1 |
 
 Use it while you step through a loader, to see which pulse it is reading and what comes
-next. The tape itself is worked from the **Tape Player** (see [Tapes](tapes.md)).
+next. The tape itself is controlled from the **Tape Player** (see [Tapes](tapes.md)).
 
 ## FDC
 
@@ -263,7 +266,7 @@ sector, command 80.
 | **CRC** | the checksum the controller has worked out so far |
 | **INT** | an interrupt waiting on the +3's controller |
 | **DMA** | the DMA mode of the +3's controller |
-| **IE** | interrupts from the disk interface enabled |
+| **IE** | 1 when interrupts from the disk interface are enabled |
 
 | Field | What it shows |
 |---|---|
@@ -292,7 +295,7 @@ gaps, the sector headers, the data and the checksums, byte by byte. It is on a t
 - **Drive** - the drive, **A** to **D**.
 - **Track** - the track to show, counted with both sides: 0 is the first track on side 0,
   1 the same track on side 1, 2 the next track on side 0, and so on. On a single-sided
-  drive it steps by 2.
+  drive the number steps by 2.
 - **Bytes per row** - **Auto**, **8/row**, **12/row** or **16/row**.
 - {icon}`target` The target button - jumps to the drive, the track and the byte the head is
   at now.
@@ -366,7 +369,7 @@ Use it to check the colors a program has set, for example after a fade to black.
 1. **Tabs** - the pages of the panel; which there are depends on the machine.
 2. **Layers hidden** - shown while a TSConf layer is kept out of the picture.
 3. {icon}`display` **Show in its own window** - moves the panel into the **ZX Evolution**
-   window; pressed in here, as the panel is in it.
+   window; in this picture the button is pressed in, as the panel is in the window.
 4. **Show** - the six layer switches of TSConf.
 5. **Register list** - the registers in groups, each with what it means.
 
@@ -389,8 +392,8 @@ color, as in the **CPU** panel.
 Right-click a list of registers, or its header, and choose **In words** or **Field names**.
 **In words** says in the last column, **Means**, what a value sets. **Field names** names
 the bit fields instead, the way the TSConf and BaseConf documents name them, for example
-`VM=ZX RRES=256x192`, and the column is called **Fields**. The choice holds for every list
-of the panel and is kept for the next time.
+`VM=ZX RRES=256x192`, and the column is called **Fields**. The choice applies to every list
+of the panel and is remembered for the next time.
 
 ### The Registers tab
 
@@ -410,8 +413,8 @@ ports that end in AF. They are in five groups: **Video**, **Tiles and sprites**,
 
 Some registers, such as **VConfig**, **VPage**, **PalSel** and **GXOffs**, take a new
 value only at the start of the next line. While a new value waits, **Value** shows the
-one in use and the one that comes, as in `00 > 01`, and **Means** describes the one that
-comes.
+value in use and the value that comes next, as in `00 > 01`, and **Means** describes the
+value that comes next.
 
 The **DMA** group is the same as at the top of the **DMA** tab: see
 [The DMA tab](#the-dma-tab).
@@ -422,7 +425,7 @@ The **DMA** group is the same as at the top of the **DMA** tab: see
 ```
 
 TSConf builds its picture from six layers. The switches in the **Show** row at the top of
-the **Registers** tab take each of them out of the picture and put it back:
+the **Registers** tab hide each layer and show it again:
 
 | Switch | Layer |
 |---|---|
@@ -442,13 +445,13 @@ While the machine runs, the change shows from the next line on. While the machin
 stopped in the Debugger, the main window draws the frame again at once with the layers as
 they are now set, as far as the machine had drawn it.
 
-To draw the frame again, the machine runs it once more from a copy of its start. When that
-cannot be done, a note under the switches says why: **Shown from the next frame:**
-followed by the reason, such as **the tape or a disk command is running** or **an RZX is
-playing or recording**. The layers then change once the machine runs on. The copies are
-made only after the Debugger or the **ZX Evolution** window has been open on TSConf once,
-so the first stop may have none yet: the reason is then **no snapshot of the frame
-before**.
+To draw the frame again, the machine runs it once more from a snapshot taken at its start.
+When that cannot be done, a note under the switches says why: **Shown from the next
+frame:** followed by the reason, such as **the tape or a disk command is running** or
+**an RZX is playing or recording**. The layers then change when the machine runs again.
+These snapshots are taken only after the Debugger or the **ZX Evolution** window has been
+open on TSConf once, so at the first stop there may be none yet: the reason is then
+**no snapshot of the frame before**.
 
 While any layer is hidden, **Layers hidden** shows at the top of the panel, on every tab.
 The layers stay hidden after you close the Debugger, until you tick them again.
@@ -473,12 +476,13 @@ The **Sprites** tab lists the 85 sprites of TSConf, a row each.
 | **Flags** | `ACT` active; `XF`, `YF` flipped across or down; `LEAP` the next sprite is on the next layer |
 
 A sprite that is not drawn, because it is not active or comes after the third layer, is
-grayed. **Active only**, ticked out of the box, leaves out the sprites that are not active.
+grayed. **Active only**, ticked by default, leaves the sprites that are not active out of
+the list.
 
 Click a sprite to see it under the list, in the colors it has now and as large as the room
 allows. The dots that are transparent show a checker. Beside the sprite are its size and
 place, the row and column of its tile in the sprite graphics page, and the colors of its
-palette row. Drag the line between the list and the sprite to share the room differently.
+palette row. Drag the line between the list and the sprite to change how much room each gets.
 
 ### The Tiles tab
 
@@ -583,7 +587,7 @@ the frame the machine is in and in the frame before:
 | **Line:dot** | where the beam was when it started |
 | **Transfer** | the kind of transfer |
 | **From**, **To** | the source and the destination: page and offset, in hex |
-| **Size** | words a burst x bursts, such as `256 x 4` |
+| **Size** | words per burst x bursts, such as `256 x 4` |
 | **Took** | how long it took, in T-states and in lines; **running** while it is not done; **cut short** when the program started the next transfer before it ended |
 
 Use it to see when a program moves its graphics during the frame, and how long it takes.
@@ -616,9 +620,9 @@ in; click it again, or close the window, to put the panel back in the Debugger. 
 panel is out, its tab in the Debugger says so, with a **Bring it back** button. Unlike the
 **Screen** and **Sound Chips** windows, this one has no command in the **Debug** menu.
 
-The window works without the Debugger: it follows the machine while it runs, once a frame
-(in fast mode, once in ten frames), and its layer switches work as in the panel. The window
-keeps its place and size, and a window that was open when you quit opens again at the next
+The window works without the Debugger: it follows the machine while the machine runs, once
+a frame (in fast mode, once in ten frames), and its layer switches work as in the panel.
+The window keeps its place and size, and a window that was open when you quit opens again at the next
 start. On a machine that is not a ZX Evolution it shows **Nothing to show on this
 machine**.
 
@@ -641,7 +645,7 @@ the same. In the window it is pressed in; click it again, or close the window, t
 panel back in the Debugger. While the panel is out, its tab in the Debugger says so, with a
 **Bring it back** or **Bring them back** button.
 
-The windows work without the Debugger: they follow the machine while it runs, one
+The windows work without the Debugger: they follow the machine while the machine runs, one
 picture a frame (in fast mode, one in ten frames). The settings are the same as in the
 panel. Each window keeps its place and size, and a window that was open when you quit
 opens again at the next start.
@@ -667,7 +671,7 @@ only the screen the machine shows, the way the main window does.
 ### Find the bytes behind a spot on the screen
 
 1. Open the Debugger and click the **Screen** tab.
-2. Move the mouse onto the spot and click: the cell is marked and the readout holds.
+2. Move the mouse onto the spot and click: the cell is marked and the readout stays on it.
 3. Read **Screen:** for the byte of pixels and **Attr:** for its colors, for example
    `#4000` and `#5800` for the top left corner.
 4. Right-click the picture and choose **Copy screen address**.
@@ -684,7 +688,7 @@ when the program draws there (see [Breakpoints and watching](debugger-breakpoint
 4. Watch channel A: its **Period** changes with each note, its **Mixer** starts with `T`
    for the tone, and its **Lev** bar rises and falls. The wave box shows the square wave
    of the tone.
-5. Tick **Mute** on the A row and play again: the notes go on in the registers, but you
-   hear nothing.
+5. Tick **Mute** on the A row and play again: the registers still change with each note,
+   but you hear nothing.
 
 Untick **Mute** to hear the channel again.
