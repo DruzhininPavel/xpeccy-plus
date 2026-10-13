@@ -298,6 +298,16 @@ static inline void vid_sync_lazy(Video* vid, long long nsFixed) {
 	}
 	vid_sync_lazy_slow(vid, nsFixed);
 }
+// The whole dots vid_sync_lazy() has counted and not walked. They never reach
+// past the next event, and so not past the line end either: the ray stands at
+// ray.x plus these on its line, which is all a reader of the bus timing needs to
+// know - without the walk. The count stays under a line, so it fits 32 bits.
+static inline int vid_lazy_dots(Video* vid) {
+	long long f = vid->nsDrawFixed;
+	if (f < vid->nsPerDotFixed) return 0;
+	if (f < 0x7fffffffLL) return (int)((unsigned)f / (unsigned)vid->nsPerDotFixed);
+	return (int)(f / vid->nsPerDotFixed);
+}
 // only dots vid_sync_lazy() counted: after a change of the dot period the
 // time left over can be a dot or more, and that waits for the next sync as ever
 static inline void vid_settle(Video* vid) {

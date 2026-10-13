@@ -684,9 +684,9 @@ static int contTabB[] = {2,1,0,0,14,13,12,11,10,9,8,7,6,5,4,3};		// +2A +3 (bank
 // what Butler's 48K timing tests pass on; late ones are a tick later. The
 // +2A/+3 gate array has no late version and is three ticks ahead of the
 // early ULA, as photos of Rak's timing test on a real +3 and +2A show.
-static int ula_fetch_x(Video* vid, int dotofs) {
+static int ula_fetch_x(Video* vid, int x, int dotofs) {
 	int base = (vid->ula->conttype == CONT_PATB) ? 14 : (vid->ula->early ? 8 : 6);
-	return vid->ray.x - vid->bord.x + base + dotofs;
+	return x - vid->bord.x + base + dotofs;
 }
 
 // The delay for one bus cycle, read at the dot the cycle starts on. Returns
@@ -708,9 +708,8 @@ int vid_wait_dots(Video* vid, int adr, int mreq) {
 	} else {
 		contTab = contTabA;
 	}
-	vid_settle(vid);
-	if (vid->vbrd) return 0;			// border (vertical)
-	xscr = ula_fetch_x(vid, 0);
+	if (vid->vbrd) return 0;			// border (vertical): the dots counted stay on the line
+	xscr = ula_fetch_x(vid, vid->ray.x + vid_lazy_dots(vid), 0);
 	if (xscr < 0) return 0;				// line before contention
 	if (xscr >= end) return 0;			// line after contention
 	return contTab[xscr & 0x0f];			// wait length in dots
@@ -765,9 +764,9 @@ static int ula_burst_adr(Video* vid, int adr) {
 // refresh cycle the ram did not get.
 int vid_snow(Video* vid, int r, int bank) {
 	if (vid->ula->conttype != CONT_PATA) return 0;	// the Ferranti ULA and nothing else
-	vid_settle(vid);
 	if (vid->vbrd) return 0;
-	switch ((ula_fetch_x(vid, 0) & 15) >> 1) {
+	// what the snow leaves is for the dots drawn: an undrawn frame walks none
+	switch ((ula_fetch_x(vid, vid->ray.x + vid_lazy_dots(vid), 0) & 15) >> 1) {
 		case ULA_SNOW_PH:
 			vid->snowLow = r & 0x7f;
 			vid->snowBank = bank;
@@ -801,7 +800,7 @@ int vid_snow(Video* vid, int r, int bank) {
 int vid_float_bus(Video* vid, int* age) {
 	int x, y, last, col, phase, pix, atr;
 	vid_settle(vid);
-	x = ula_fetch_x(vid, (vid->ula->conttype == CONT_PATB) ? -12 : -8);
+	x = ula_fetch_x(vid, vid->ray.x, (vid->ula->conttype == CONT_PATB) ? -12 : -8);
 	y = vid->ray.y - vid->bord.y;
 	if (!vid->vbrd && (x >= 0) && (x < vid->scrn.x)) {
 		phase = (x >> 1) & 7;			// two dots per read, four reads then idle
