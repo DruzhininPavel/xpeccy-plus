@@ -1137,19 +1137,30 @@ int comp_halt_skip(Computer* comp, int* ns) {
 // TR-DOS in or out (m1p, m1dos leave those pages to stdMRd) and a fetch the
 // snow spoils (no table while snowBad stands; zx_snow takes them away when it
 // sets it). stdMRd() takes m1p away when it pages, for the rest of the step.
+// The +2A/+3's asicMRd/asicMWr are stdMRd/stdMWr outside banks 4-7 (rdpa, wrpa).
+// The fetch table, which stdMRd() takes away when it pages TR-DOS:
+static inline unsigned char* const* comp_m1_tab(Computer* comp) {
+	Memory* mem = comp->mem;
+	int bdi = (comp->dif->type == DIF_BDI);
+	if (comp->hw->mrd == asicMRd)
+		return bdi ? NULL : mem->rdpa;
+	return (comp->flgDOS && bdi) ? mem->m1dos : mem->m1p;
+}
+
 static inline void comp_mem_direct(Computer* comp) {
 	CPU* cpu = comp->cpu;
 	int rd = (comp->hw->mrd == stdMRd);
 	int wr = (comp->hw->mwr == stdMWr);
-	if (!(rd | wr)) return;
+	int asic = (comp->hw->mrd == asicMRd) && (comp->hw->mwr == asicMWr);
+	if (!(rd | wr | asic)) return;
 	if (comp_mem_watched(comp) || comp->snowBad || comp->rzx.play || comp->rzx.rec.on || (cpu->busmask != 0xffff)) return;
 	Memory* mem = comp->mem;
-	if (rd) {
-		cpu->rdp = mem->rdp;
-		cpu->m1p = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? mem->m1dos : mem->m1p;
+	if (rd | asic) {
+		cpu->rdp = asic ? mem->rdpa : mem->rdp;
+		cpu->m1p = comp_m1_tab(comp);
 	}
-	if (wr)
-		cpu->wrp = mem->wrp;
+	if (wr | asic)
+		cpu->wrp = asic ? mem->wrpa : mem->wrp;
 }
 
 // compExec() for a machine nothing looks at between its steps: no breakpoint,
@@ -1238,7 +1249,6 @@ int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 	if (comp->rzx.play || comp->rzx.rec.on || comp->flgNMIRQ || comp->snowBad) return 0;
 	if (!comp_devs_summable(comp)) return 0;
 	Video* vid = comp->vid;
-	Memory* mem = comp->mem;
 	comp->flgBRKPRE = 0;
 	comp->runOn = 1;
 	comp->runIO = 0;
@@ -1273,7 +1283,7 @@ int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 		if (atm) atm2_step_in(comp);
 		comp->runStep = vid->stepFixed;
 		if (direct && !cpu->m1p)		// stdMRd() paged TR-DOS
-			cpu->m1p = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? mem->m1dos : mem->m1p;
+			cpu->m1p = comp_m1_tab(comp);
 	}
 	cpu->rdp = NULL;
 	cpu->m1p = NULL;

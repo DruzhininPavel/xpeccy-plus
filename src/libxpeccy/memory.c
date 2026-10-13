@@ -164,6 +164,9 @@ static void mem_derive_page(Memory* mem, int i) {
 	mem->wrp[i] = (pg->wr == memStdWr) ? (unsigned char*)pg->data : NULL;
 	mem->m1p[i] = ((pg->type == MEM_ROM) && ((i & 0x3f) == 0x3d)) ? NULL : p;
 	mem->m1dos[i] = ram ? NULL : mem->m1p[i];
+	int hi = ram && (((pg->num << mem->pgshift) >> 14) & 4);
+	mem->rdpa[i] = hi ? NULL : p;
+	mem->wrpa[i] = hi ? NULL : mem->wrp[i];
 	mem->cont[i] = ram && ((pg->num << mem->pgshift) & mem->contBit);
 	mem->slow[i] = ram && ((pg->num << mem->pgshift) & 0x4000);
 	mem->bank[i] = ram ? (short)((pg->num << mem->pgshift) >> 14) : -1;

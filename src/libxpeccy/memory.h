@@ -49,6 +49,8 @@ typedef struct {
 	unsigned char* wrp[256];
 	unsigned char* m1p[256];		// rdp less the rom at #3Dxx, whose fetch pages TR-DOS in
 	unsigned char* m1dos[256];		// ...and less the ram, whose fetch pages it out
+	unsigned char* rdpa[256];		// rdp and wrp less the ram banks 4-7, where the +2A/+3
+	unsigned char* wrpa[256];		// gate array latches what passes (asicMRd)
 	unsigned char slow[256];		// ram pages in an odd 16K bank: where the ULA snows from
 	short bank[256];			// the 16K bank of a ram page, -1 for any other
 	unsigned char ramData[MEM_4M];		// 4M
