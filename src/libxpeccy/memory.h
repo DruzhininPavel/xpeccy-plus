@@ -52,6 +52,11 @@ typedef struct {
 	int pgmask;	// number of LSBits in address = page offset (FF or FFFF)
 	int pgshift;	// = log2(page size), 8 for 256-pages, 16 for 64K-pages
 	int busmask;	// cpu addr bus mask (todo: move to CPU)
+	// map[] pages in the ram the ULA contends: a ram page whose address has
+	// contBit set (mem_set_cont). Kept by memSetBank(); the cpu only reports a
+	// bus cycle to the machine where one of these is on the bus (CPU.contp).
+	unsigned char cont[256];
+	int contBit;
 } Memory;
 
 Memory* memCreate(void);
@@ -95,6 +100,7 @@ void memSetSize(Memory*, int, int);
 size_t mem_ram_extent(Memory*);
 void mem_cold_fill(Memory*, const unsigned char*, int, int);
 void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, extmwr wr, void* data);
+void mem_set_cont(Memory*, int bit);	// the address bit of a contended page, 0: none
 
 void memPutData(Memory*,int,int,int,char*);
 

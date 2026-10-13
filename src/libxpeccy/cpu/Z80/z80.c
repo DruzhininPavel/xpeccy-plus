@@ -57,7 +57,7 @@ int z80_mrdx(CPU* cpu, int adr, int m1) {
 	cpu->adr = adr;
 	// A machine that contends nothing has nothing to say here, and the ray
 	// reaches the same dot at the transfer either way
-	if (cpu->flgCONT)
+	if (cpu->flgCONT && (!cpu->contp || cpu->contp[(adr >> 8) & 0xff]))
 		cpu->xcont(cpu->xptr, 1);		// wait states, sampled at T1
 	cpu->t += 2;		// T1, T2
 	// No sync before a read: the ray only has to be where it is for a write,
@@ -73,7 +73,7 @@ int z80_mrdx(CPU* cpu, int adr, int m1) {
 // Ferranti ULA contends it just the same. One call per tick, as in fuse.
 void z80_wait(CPU* cpu, int adr, int n) {
 	cpu->adr = adr;
-	if (!cpu->flgCONT) {		// see z80_mrdx
+	if (!cpu->flgCONT || (cpu->contp && (!cpu->contInt || !cpu->contp[(adr >> 8) & 0xff]))) {	// see z80_mrdx
 		cpu->t += n;
 		return;
 	}
@@ -94,7 +94,7 @@ int z80_mrd(CPU* cpu, int adr) {
 
 void z80_mwr(CPU *cpu, int adr, int data) {
 	cpu->adr = adr;
-	if (cpu->flgCONT)
+	if (cpu->flgCONT && (!cpu->contp || cpu->contp[(adr >> 8) & 0xff]))
 		cpu->xcont(cpu->xptr, 1);		// wait states, sampled at T1
 	cpu->t += 2;		// T1, T2
 	cpu->xsync(cpu);		// the ray up to the transfer: a write can change what is drawn next

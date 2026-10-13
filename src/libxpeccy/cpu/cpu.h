@@ -152,6 +152,10 @@ struct CPU {
 	cbiack xack;			// interrupt vector acknowledge
 	cbirq xirq;			// send signal
 	void (*xcont)(void*, int);	// contend the bus cycle about to start (mreq)
+	// where xcont has something to do: an address's 256-byte page set in contp
+	// (NULL: everywhere), and an internal cycle only if contInt
+	unsigned char* contp;
+	int contInt;
 	// the two signals sent on every instruction, straight to their handlers:
 	// xirq(IRQ_CPU_ACK) and xirq(IRQ_CPU_SYNC) unless the machine says otherwise
 	cbcpu xend;			// the end of an instruction, where INT is sampled

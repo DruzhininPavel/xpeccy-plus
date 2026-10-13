@@ -1245,7 +1245,7 @@ void SetupWin::applyMachine() {
 	comp->vid->brdstep = ui.border4T->isChecked() ? 7 : 1;
 	comp_set_cont(comp, ui.contMem->isChecked());
 	comp->flgCNTI = ui.contIO->isChecked() ? 1 : 0;
-	comp->vid->ula->conttype = getRFIData(ui.cbContPattern);
+	comp_set_cont_pattern(comp, getRFIData(ui.cbContPattern));
 	comp->earback = getRFIData(ui.cbEarBack);
 	comp->fbus = getRFIData(ui.cbFloatBus);
 	comp->vid->ula->early = ui.cbEarlyTiming->isChecked();

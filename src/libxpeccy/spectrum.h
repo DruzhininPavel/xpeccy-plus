@@ -387,6 +387,7 @@ int compSetHardware(Computer*,const char*);
 void comp_set_layout(Computer*, vLayout*);
 void comp_set_snow(Computer*, int);
 void comp_set_cont(Computer*, int);
+void comp_set_cont_pattern(Computer*, int);	// CONT_*: which pattern the ULA contends with
 void comp_snap_map(Computer*);
 void comp_snap_reset(Computer*, int);
 int comp_frame_ticks(Computer*);

@@ -189,10 +189,17 @@ void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, e
 			pg.data = NULL;
 		}
 		mem->map[page] = pg;
+		mem->cont[page] = (type == MEM_RAM) && ((pg.num << mem->pgshift) & mem->contBit);
 		page++;
 		pg.num++;
 		cnt--;
 	}
+}
+
+void mem_set_cont(Memory* mem, int bit) {
+	mem->contBit = bit;
+	for (int i = 0; i < 256; i++)
+		mem->cont[i] = (mem->map[i].type == MEM_RAM) && ((mem->map[i].num << mem->pgshift) & bit);
 }
 
 // set page data
