@@ -44,6 +44,23 @@ QString gethex6(int num) {
 // would go back with it.
 std::atomic<int> xUserResets(0);
 
+// Every write to the machine's keyboard from the gui goes under the emulation's
+// lock: the emulation thread runs the ps/2 repeat and reads the scancode log
+// meanwhile, and run-ahead puts the whole keyboard back as it was.
+void x_key(Computer* comp, keyEntry* ent, int press) {
+	cbHwKey cb = press ? comp->hw->keyp : comp->hw->keyr;
+	if (!cb) return;
+	emu_lock();
+	cb(comp, ent);
+	emu_unlock();
+}
+
+void x_kbd_release_all(Keyboard* kbd) {
+	emu_lock();
+	kbdReleaseAll(kbd);
+	emu_unlock();
+}
+
 void x_user_reset(Computer* comp, int res) {
 	xUserResets.fetch_add(1);
 	x_state_replaced();

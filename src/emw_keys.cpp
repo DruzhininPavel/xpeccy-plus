@@ -137,6 +137,14 @@ void MainWin::keyPressEvent(QKeyEvent *ev) {
 
 #endif
 
+// the grab under the same lock as the key: the profi's press reads it
+void MainWin::machineKey(Computer* comp, keyEntry* kent, bool down) {
+	emu_lock();
+	comp->keyb->grab = pckAct->isChecked();
+	x_key(comp, kent, down);
+	emu_unlock();
+}
+
 // cmd: a hotkey asked for from a menu, which a grabbed keyboard does not take
 void MainWin::xkey_press(int xkey, bool cmd) {
 	keyEntry kent = getKeyEntry(xkey);
@@ -145,11 +153,8 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 	int err;
 	QString path;
 	Computer* comp = conf.zx;
-	comp->keyb->grab = pckAct->isChecked();
 	if (pckAct->isChecked() && !cmd && (xkey != XCUT_GRABKBD)) {
-		// xt_press(comp->keyb, &kent);
-		if (comp->hw->keyp)
-			comp->hw->keyp(comp, &kent);
+		machineKey(comp, &kent, true);
 		if (kent.joyMask) {
 			if (kent.joyMask & XJ_JOYB) {
 				joyPress(comp->joyb, kent.joyMask & 0xff);
@@ -413,9 +418,7 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 				break;
 			default:
 				// printf("%s %c %c\n", kent.name, kent.zxKey.key1, kent.zxKey.key2);
-				//xt_press(comp->keyb, &kent);
-				if (comp->hw->keyp)
-					comp->hw->keyp(comp, &kent);
+				machineKey(comp, &kent, true);
 				if (kent.joyMask & 0xff) {
 					if (kent.joyMask & XJ_JOYB) {
 						joyPress(comp->joyb, kent.joyMask);
@@ -497,10 +500,7 @@ void MainWin::xcut_release(int keyid) {
 void MainWin::xkey_release(int keyid) {
 	Computer* comp = conf.zx;
 	keyEntry kent = getKeyEntry(keyid);
-	comp->keyb->grab = pckAct->isChecked();
-	// xt_release(comp->keyb, &kent);
-	if (comp->hw->keyr)
-		comp->hw->keyr(comp, &kent);
+	machineKey(comp, &kent, false);
 	if (kent.joyMask) {
 		if (kent.joyMask & XJ_JOYB) {
 			joyRelease(comp->joyb, kent.joyMask & 0xff);

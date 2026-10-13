@@ -64,6 +64,10 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **The PC keyboard on ZX Evo** no longer repeats keys by itself: in Wild Commander a
+  short press could run the cursor to the end of the list, and F1 opened and closed its
+  window again. Keys repeated far too fast with antiflicker's look ahead or run-ahead on.
+
 - **HALT on the last byte of contended memory**: a halted CPU runs its idle cycles at the
   byte after the HALT, as a real Z80 does. HALT2INT (Mark Woodmass) now tells early and late
   timings apart on the 48K, 128K and +2.

@@ -317,6 +317,9 @@ int brk_save_list(const char*);
 // hold the emulation thread while the machine is rebuilt (defined in ethread.cpp)
 void emu_lock();
 void emu_unlock();
+// a key to the machine, and all its keys let go, under that lock
+void x_key(Computer*, keyEntry*, int press);
+void x_kbd_release_all(Keyboard*);
 
 // the last finished picture, for the gui to read while the emulation draws on
 void frame_publish();

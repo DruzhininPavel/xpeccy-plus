@@ -423,11 +423,7 @@ void MainWin::mapZxKey(Computer* comp, int ch, bool down) {
 	keyEntry kent = getKeyEntry(ENDKEY);		// the blank one
 	memset(kent.zxKey, 0, sizeof(kent.zxKey));
 	kent.zxKey[0] = ch;
-	if (down) {
-		if (comp->hw->keyp) comp->hw->keyp(comp, &kent);
-	} else {
-		if (comp->hw->keyr) comp->hw->keyr(comp, &kent);
-	}
+	machineKey(comp, &kent, down);
 	emit s_keywin_upd(comp->keyb);
 }
 
@@ -1939,7 +1935,7 @@ void MainWin::initUserMenu() {
 	pckAct->setIconVisibleInMenu(false);	// a setting: its tick, which an icon would take the place of
 	// the Profi changes its layout with the grab, so no key may stay down across it
 	connect(pckAct, &QAction::toggled, this, [this](bool on) {
-		kbdReleaseAll(conf.zx->keyb);
+		x_kbd_release_all(conf.zx->keyb);
 		setMessage(on ? " grab keyboard, " XREL_KEYS " lets go " : " release keyboard ");
 	});
 	cutActs.append({pckAct, pckAct->text(), XCUT_GRABKBD});	// its key, shown; the action is its own

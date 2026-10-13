@@ -183,11 +183,9 @@ static int as_held = 0;		// fast mode and the blank screen are ours to undo
 static int as_block = -1;	// the keys are in: the tape's block then, until the rom uses it
 
 void autostart_key(Computer* comp, const char* keys, int press) {
-	cbHwKey cb = press ? comp->hw->keyp : comp->hw->keyr;
-	if (!cb) return;
 	keyEntry ent = {};
 	strncpy((char*)ent.zxKey, keys, KEYSEQ_MAXLEN - 1);
-	cb(comp, &ent);
+	x_key(comp, &ent, press);
 }
 
 static void as_key(Computer* comp, const asKey* k, int press) {
