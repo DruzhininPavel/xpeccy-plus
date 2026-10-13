@@ -1,8 +1,9 @@
 #include "../spectrum.h"
+#include "zx_step.h"
 
 #include <time.h>
 
-#define flgZ_I	flag[0]
+#define flgZ_I	ATM_FLG_Z_I
 
 #define p77hi	reg[16]
 #define p77lo	reg[17]
@@ -247,12 +248,8 @@ int atm2In(Computer* comp, int port) {
 }
 
 void atm2_sync(Computer* comp, int ns) {
-	// Z_I off masks the frame INT; the call costs an unlazy, so only when a
-	// pulse is actually up. intlen keeps its value either way - a snapshot
-	// saves it - this only cuts the live pulse.
-	if (!comp->flgZ_I && comp->vid->intFRAME)
-		vid_set_int_frame(comp->vid, 0);
-	zx_sync(comp, ns);
+	atm2_step_in(comp);
+	zx_sync_in(comp, ns);
 }
 
 void atm2_keyp(Computer* comp, keyEntry* kent) {

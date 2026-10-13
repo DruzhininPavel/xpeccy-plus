@@ -485,7 +485,7 @@ static void comp_wr_sync(CPU* cpu) {
 // common handler called straight
 static void comp_end(CPU* cpu) {
 	Computer* comp = (Computer*)cpu->xptr;
-	if (comp->hw->irq == zx_irq)
+	if ((comp->hw->irq == zx_irq) || (comp->hw->irq == evo_irq))	// evo_irq acks as zx_irq
 		zx_irq_ack_in(comp);
 	else if (comp->hw->irq == ts_irq)
 		ts_irq_ack_in(comp);
@@ -1139,13 +1139,16 @@ int comp_halt_skip(Computer* comp, int* ns) {
 // sets it). stdMRd() takes m1p away when it pages, for the rest of the step.
 static inline void comp_mem_direct(Computer* comp) {
 	CPU* cpu = comp->cpu;
+	int rd = (comp->hw->mrd == stdMRd);
+	int wr = (comp->hw->mwr == stdMWr);
+	if (!(rd | wr)) return;
 	if (comp_mem_watched(comp) || comp->snowBad || comp->rzx.play || comp->rzx.rec.on || (cpu->busmask != 0xffff)) return;
 	Memory* mem = comp->mem;
-	if (comp->hw->mrd == stdMRd) {
+	if (rd) {
 		cpu->rdp = mem->rdp;
 		cpu->m1p = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? mem->m1dos : mem->m1p;
 	}
-	if (comp->hw->mwr == stdMWr)
+	if (wr)
 		cpu->wrp = mem->wrp;
 }
 
@@ -1157,16 +1160,16 @@ int comp_exec_quiet(Computer* comp) {
 	comp_mem_direct(comp);
 	CPU* cpu = comp->cpu;
 	cbHwIrq irq = comp->hw->irq;
-	if (cpu->core && (cpu->core->exec == z80_exec) && (cpu->xend == comp_end) && ((irq == zx_irq) || (irq == ts_irq))) {
+	if (cpu->core && (cpu->core->exec == z80_exec) && (cpu->xend == comp_end) && ((irq == zx_irq) || (irq == ts_irq) || (irq == evo_irq))) {
 		// comp_end() inline
 		int end;
 		res2 = z80_exec_open(cpu, &end);
 		if (end) {
 			cpu->t--;
-			if (irq == zx_irq)
-				zx_irq_ack_in(comp);
-			else
+			if (irq == ts_irq)
 				ts_irq_ack_in(comp);
+			else
+				zx_irq_ack_in(comp);
 			cpu->t++;
 		}
 	} else {
@@ -1198,7 +1201,10 @@ void comp_run_io_slow(Computer* comp) {
 	int ns = vid->time;
 	vid->time = time;
 	comp->runNs += ns;
-	zx_devs_sync_in(comp, ns);
+	if (comp->hw->sync == alf_sync)
+		alf_sync(comp, ns);		// all its devices take the time in pieces alike
+	else
+		zx_devs_sync_in(comp, ns);
 }
 
 // Fast mode: steps run on in one go while nothing but the instructions happens.
@@ -1214,11 +1220,17 @@ int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 	cbHwIrq irq = comp->hw->irq;
 	cbHwSnc sync = comp->hw->sync;
 	if (!cpu->core || (cpu->core->exec != z80_exec) || (cpu->xend != comp_end)) return 0;
-	if ((irq != zx_irq) && (irq != ts_irq)) return 0;
+	if ((irq != zx_irq) && (irq != ts_irq) && (irq != evo_irq)) return 0;
+	// the machine's own part of a step end, which the run does after every step:
+	// the dma idle on TSConf (its DRAM count starts again), Z_I on ATM. Scorpion's
+	// is the NMI, Profi's and Turbo+'s the board turbo, none of them there.
 	int ts = (sync == ts_sync);
+	int atm = (sync == atm2_sync);
 	if (ts) {
 		if (comp->tsconf.dma.act) return 0;
-	} else if (sync != zx_sync) {
+	} else if ((sync == prfSync) || (sync == scoTpSync)) {
+		if (comp->hwMul > 1) return 0;
+	} else if (!atm && (sync != zx_sync) && (sync != scoSync) && (sync != alf_sync)) {
 		return 0;
 	}
 	if (cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
@@ -1240,10 +1252,10 @@ int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 		int t = z80_exec_open(cpu, &end);
 		if (end) {		// comp_end() inline
 			cpu->t--;
-			if (irq == zx_irq)
-				zx_irq_ack_in(comp);
-			else
+			if (irq == ts_irq)
 				ts_irq_ack_in(comp);
+			else
+				zx_irq_ack_in(comp);
 			cpu->t++;
 		}
 		// comp_step_end() but for the ns and the devices
@@ -1258,6 +1270,7 @@ int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 			if (i < nstops) break;
 		}
 		if (ts) comp->tsconf.cpuDram = 0;		// ts_sync() for this one, the dma idle
+		if (atm) atm2_step_in(comp);
 		comp->runStep = vid->stepFixed;
 		if (direct && !cpu->m1p)		// stdMRd() paged TR-DOS
 			cpu->m1p = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? mem->m1dos : mem->m1p;
@@ -1269,10 +1282,10 @@ int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 	comp_run_io_slow(comp);
 	comp->runOn = 0;
 	int last = vid_step_ns(vid);
-	if (ts)
-		ts_sync(comp, last);
-	else
+	if (sync == zx_sync)
 		zx_sync_in(comp, last);
+	else
+		sync(comp, last);
 	if (vid->newFrame) {
 		vid->newFrame = 0;
 		comp->flgFRM = 1;

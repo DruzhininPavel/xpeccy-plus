@@ -179,6 +179,7 @@ void zx_sync(Computer*, int);
 // the machines' own syncs and reads, for comp_halt_skip() to know them by
 void ts_sync(Computer*, int);
 void ts_irq(Computer*, int);
+void evo_irq(Computer*, int);
 void prfSync(Computer*, int);
 void scoSync(Computer*, int);
 void scoTpSync(Computer*, int);

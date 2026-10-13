@@ -43,6 +43,17 @@ static inline void ts_irq_ack_in(Computer* comp) {
 		comp->cpu->flgACK = 0;
 }
 
+// ATM's (atm2.c names it flgZ_I): the frame INT let through to the cpu
+#define ATM_FLG_Z_I	flag[0]
+
+// what atm2_sync() does before the devices: Z_I off masks the frame INT; the
+// call costs an unlazy, so only when a pulse is actually up. intlen keeps its
+// value either way - a snapshot saves it - this only cuts the live pulse.
+static inline void atm2_step_in(Computer* comp) {
+	if (!comp->ATM_FLG_Z_I && comp->vid->intFRAME)
+		vid_set_int_frame(comp->vid, 0);
+}
+
 static inline void zx_devs_sync_in(Computer* comp, int ns) {
 	// devices. This runs once per instruction, so the ones that are idle or
 	// not there at all are asked by the flag they check first, not by a call
