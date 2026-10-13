@@ -2,9 +2,18 @@
 #include "filer.h"
 #include "libxpeccy/filetypes/filetypes.h"
 
+#include <algorithm>
 #include <QApplication>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QMenu>
+#include <QMenuBar>
 #include <QMouseEvent>
 #include <QContextMenuEvent>
+#include <QDockWidget>
+#include <QTimer>
+#include <QToolButton>
 #include <QPainter>
 
 // socket
@@ -238,12 +247,17 @@ void MainWin::socketRead() {
 				sock->write("\r\n");
 			}
 		}
-	} else if (com == "winshot") {
-		// the window as painted, or the menu or dialog open over it: a path may have spaces
-		QWidget* w = QApplication::activePopupWidget();
-		if (!w) w = QApplication::activeModalWidget();
-		if (!w && QApplication::activeWindow() && (QApplication::activeWindow() != frame))
-			w = QApplication::activeWindow();		// a tool window
+	} else if ((com == "winshot") || (com == "winshot-menus")) {
+		// winshot FILE: the window as painted, or the menu or dialog open over it.
+		// winshot-menus FILE: the window with every menu open over it, where it
+		// stands; the answer adds a "menu x y w h" line for each. A path may have spaces
+		QWidget* w = NULL;
+		if (com == "winshot") {
+			w = QApplication::activePopupWidget();
+			if (!w) w = QApplication::activeModalWidget();
+			if (!w && QApplication::activeWindow() && (QApplication::activeWindow() != frame))
+				w = QApplication::activeWindow();		// a tool window
+		}
 		QPixmap pic = w ? w->grab() : QPixmap();
 #if defined(USEOPENGL) && !BLOCKGL && !ISLEGACYGL
 		// The picture is read from the framebuffer, where the last frame left
@@ -277,15 +291,143 @@ void MainWin::socketRead() {
 		}
 #endif
 		if (pic.isNull()) pic = frame->grab();
+		QString menus;
+		if (com == "winshot-menus") {
+			// the menus are windows of their own: each drawn where it stands, a
+			// submenu after the menu it came out of, over the window they belong
+			// to - a tool window such as the Debugger, or the main window
+			QWidget* base = frame;
+			foreach(QWidget* t, QApplication::topLevelWidgets()) {
+				if ((t != frame) && t->isVisible() && !qobject_cast<QMenu*>(t) && t->isActiveWindow())
+					base = t;
+			}
+			if (base != frame) pic = base->grab();
+			QList<QMenu*> pops;
+			foreach(QWidget* t, QApplication::topLevelWidgets()) {
+				QMenu* m = qobject_cast<QMenu*>(t);
+				if (m && m->isVisible()) pops.append(m);
+			}
+			std::sort(pops.begin(), pops.end(), [](QMenu* a, QMenu* b) {return a->x() < b->x();});
+			QRect all(QPoint(0, 0), base->size());
+			foreach(QMenu* m, pops)
+				all |= QRect(base->mapFromGlobal(m->mapToGlobal(QPoint(0, 0))), m->size());
+			const qreal r = widgetDpr(base);
+			QPixmap out(all.size() * r);
+			out.setDevicePixelRatio(r);
+			out.fill(Qt::transparent);
+			QPainter pnt(&out);
+			pnt.drawPixmap(-all.topLeft(), pic);
+			foreach(QMenu* m, pops) {
+				QRect rc(base->mapFromGlobal(m->mapToGlobal(QPoint(0, 0))), m->size());
+				pnt.drawPixmap(rc.topLeft() - all.topLeft(), m->grab());
+				menus += QString("menu %0 %1 %2 %3\r\n").arg(rc.x() - all.x()).arg(rc.y() - all.y()).arg(rc.width()).arg(rc.height());
+			}
+			pnt.end();
+			pic = out;
+		}
 		QString path = QString(arr).trimmed().mid(com.size()).trimmed();
 		if (!path.isEmpty() && pic.save(path)) {
 			// where it is, in the coordinates click takes
 			QRect rc((w ? w : frame)->geometry());
 			rc.moveTopLeft(frame->mapFromGlobal(w ? w->mapToGlobal(QPoint(0, 0)) : frame->mapToGlobal(QPoint(0, 0))));
 			sock->write(QString("ok %0 %1 %2 %3\r\n").arg(rc.x()).arg(rc.y()).arg(rc.width()).arg(rc.height()).toUtf8());
+			sock->write(menus.toUtf8());
 		} else {
 			sock->write("failed\r\n");
 		}
+	} else if ((com == "open-menu") || (com == "menu-action")) {
+		// open-menu Machine/Reset: a menu bar menu and its submenus, opened as a
+		// click opens them but without the click's wait for the menu to close, so
+		// winshot-menus can be asked next. @picture/Machine starts from the menu
+		// over the picture, @tbTool from the menu of the tool button of that name.
+		// menu-action Machine/Pause: what picking that item does, without opening
+		// anything - the answer comes first, a dialog it opens after it
+		QStringList names = QString(arr).trimmed().mid(com.size()).trimmed().split('/', X_SkipEmptyParts);
+		const bool pick = (com == "menu-action");
+		auto plain = [](QString t) {return t.remove('&').section('\t', 0, 0).trimmed();};
+		QMenu* menu = NULL;
+		QPoint at;
+		if (names.isEmpty()) {
+		} else if (names[0] == "@picture") {
+			menu = userMenu;
+			at = mapToGlobal(QPoint(width() / 4, height() / 5));
+		} else if (names[0].startsWith("@")) {
+			foreach(QWidget* w, QApplication::allWidgets()) {
+				if (w->objectName() != names[0].mid(1)) continue;
+				QToolButton* tb = qobject_cast<QToolButton*>(w);
+				if (tb && tb->menu()) {
+					menu = tb->menu();
+					at = tb->mapToGlobal(QPoint(0, tb->height()));
+					break;
+				}
+				// a button that lists its own actions rather than a menu: those
+				// can be picked, not opened
+				QAction* own = NULL;
+				foreach(QAction* a, w->actions())
+					if ((names.size() == 2) && (plain(a->text()) == names[1])) own = a;
+				if (own && pick) {
+					sock->write("ok\r\n");
+					QTimer::singleShot(0, own, &QAction::trigger);
+					if (sock->isOpen()) sock->write("> ");
+					return;
+				}
+			}
+		} else {
+			QMenuBar* bar = frame->menuBar();
+			foreach(QAction* a, bar->actions()) {
+				if (a->menu() && (plain(a->text()) == names[0])) {
+					menu = a->menu();
+					at = bar->mapToGlobal(bar->actionGeometry(a).bottomLeft());
+					break;
+				}
+			}
+		}
+		if (menu) {
+			if (pick) emit menu->aboutToShow();		// some are filled only then
+			else menu->popup(at);
+		}
+		QAction* hit = NULL;
+		for (int i = 1; menu && (i < names.size()); i++) {
+			hit = NULL;
+			foreach(QAction* a, menu->actions())
+				if (plain(a->text()) == names[i]) hit = a;
+			if (!pick) menu->setActiveAction(hit);
+			if (!hit) {
+				menu = NULL;
+			} else if (hit->menu()) {
+				if (pick) {
+					emit hit->menu()->aboutToShow();
+				} else {
+					hit->menu()->popup(menu->mapToGlobal(menu->actionGeometry(hit).topRight()));
+				}
+				menu = hit->menu();
+			}
+		}
+		if (pick && menu && hit && !hit->menu()) {
+			sock->write("ok\r\n");
+			QTimer::singleShot(0, hit, &QAction::trigger);
+		} else if (pick) {
+			sock->write("no such item\r\n");
+		} else {
+			sock->write(menu ? "ok\r\n" : "no such menu\r\n");
+		}
+	} else if (com == "show-panel") {
+		// show-panel NAME: a panel of a window - a dock, by object name or title -
+		// brought to the front of the tabs it shares its place with
+		QString name = QString(arr).trimmed().mid(com.size()).trimmed();
+		QDockWidget* hit = NULL;
+		foreach(QWidget* w, QApplication::allWidgets()) {
+			QDockWidget* d = qobject_cast<QDockWidget*>(w);
+			if (d && !name.isEmpty() && ((d->objectName() == name) || (d->windowTitle() == name))) {
+				hit = d;
+				break;
+			}
+		}
+		if (hit) {
+			hit->show();
+			hit->raise();
+		}
+		sock->write(hit ? "ok\r\n" : "nothing\r\n");
 	} else if (com == "move") {
 		// move X Y: the pointer seen at a point of the window, buttons up
 		if (prm.size() > 2) {
@@ -320,6 +462,125 @@ void MainWin::socketRead() {
 			sock->write(w ? w->metaObject()->className() : "nothing");
 			sock->write("\r\n");
 		}
+	} else if (com == "click-widget") {
+		// click-widget NAME DX DY [right]: at that point of a widget, by object name or
+		// else class name - the one in the window in front first - wherever the window is
+		QWidget* hit = NULL;
+		if (prm.size() > 3) {
+			foreach(QWidget* w, QApplication::allWidgets()) {
+				if (!w->isVisible() || ((w->objectName() != prm[1]) && (prm[1] != w->metaObject()->className()))) continue;
+				if (!hit || w->window()->isActiveWindow()) hit = w;
+			}
+		}
+		if (hit) {
+			QPoint pos(prm[2].toInt(), prm[3].toInt());
+			QPoint gp = hit->mapToGlobal(pos);
+			// what is under that point takes it, as with a real mouse
+			QWidget* in = hit->childAt(pos);
+			if (in) {
+				pos = in->mapFrom(hit, pos);
+				hit = in;
+			}
+			Qt::MouseButton btn = ((prm.size() > 4) && (prm[4] == "right")) ? Qt::RightButton : Qt::LeftButton;
+			sock->write(QString("%0\r\n").arg(hit->metaObject()->className()).toUtf8());
+			sock->flush();		// a menu or a dialog the click opens holds the rest
+			QMouseEvent prs(QEvent::MouseButtonPress, pos, gp, btn, btn, Qt::NoModifier);
+			QApplication::sendEvent(hit, &prs);
+			QMouseEvent rls(QEvent::MouseButtonRelease, pos, gp, btn, Qt::NoButton, Qt::NoModifier);
+			QApplication::sendEvent(hit, &rls);
+			if (btn == Qt::RightButton) {
+				QContextMenuEvent cme(QContextMenuEvent::Mouse, pos, gp);
+				QApplication::sendEvent(hit, &cme);
+			}
+		} else {
+			sock->write("nothing\r\n");
+		}
+	} else if (com == "set-value") {
+		// set-value NAME VALUE: a field filled in, by object name - the one in the window
+		// in front first. A hex field takes hex, a spin box a number, a list the text of
+		// an item, a box to tick 1 or 0, a line the rest of the command, spaces and all
+		QWidget* hit = NULL;
+		foreach(QWidget* w, QApplication::allWidgets()) {
+			if (!w->isVisible() || (w->objectName() != prm.value(1))) continue;
+			if (!hit || w->window()->isActiveWindow()) hit = w;
+		}
+		QString val = QString(arr).trimmed().mid(com.size()).trimmed().mid(prm.value(1).size()).trimmed();
+		bool ok = (hit != NULL);
+		if (xHexSpin* hs = qobject_cast<xHexSpin*>(hit)) {
+			hs->setValue(val.toInt(&ok, 16));
+		} else if (QSpinBox* sb = qobject_cast<QSpinBox*>(hit)) {
+			sb->setValue(val.toInt(&ok));
+		} else if (QComboBox* cb = qobject_cast<QComboBox*>(hit)) {
+			int idx = cb->findText(val);
+			ok = (idx >= 0);
+			if (ok) cb->setCurrentIndex(idx);
+		} else if (QAbstractButton* ab = qobject_cast<QAbstractButton*>(hit)) {
+			ab->setChecked(val == "1");
+		} else if (QLineEdit* le = qobject_cast<QLineEdit*>(hit)) {
+			le->setText(val);
+		} else {
+			ok = false;
+		}
+		sock->write(ok ? "ok\r\n" : "nothing\r\n");
+	} else if (com == "run-action") {
+		// run-action key.options: what a main window hotkey does, by its config name
+		xShortcut* cut = (prm.size() > 1) ? find_shortcut_name(prm[1].toUtf8().constData()) : NULL;
+		if (cut && (cut->grp & SCG_MAIN)) {
+			// the action may open a modal window and not come back until it is closed
+			sock->write("ok\r\n");
+			sock->flush();
+			xkey_press(cut->id, true);
+			xcut_release(cut->id);
+		} else {
+			sock->write("unknown action\r\n");
+		}
+	} else if (com == "activate-window") {
+		// activate-window TITLE: a window of the program brought to the front, by the
+		// start of its title, object name or class - shown is not always in front
+		QString name = QString(arr).trimmed().mid(com.size()).trimmed();
+		QWidget* hit = NULL;
+		foreach(QWidget* w, QApplication::topLevelWidgets()) {
+			if (w->isVisible() && !name.isEmpty() && (w->windowTitle().startsWith(name)
+					|| (w->objectName() == name) || (name == w->metaObject()->className()))) {
+				hit = w;
+				break;
+			}
+		}
+		if (hit) {
+			hit->raise();
+			hit->activateWindow();
+		}
+		sock->write(hit ? "ok\r\n" : "nothing\r\n");
+	} else if ((com == "widget-rect") || (com == "widget-list")) {
+		// widget-rect NAME: a visible widget, by object name or else class name, as
+		// "x y w h" in the coordinates of its window - the ones winshot pictures have;
+		// one in the window winshot takes comes first.
+		// widget-list [WINDOW]: every visible named widget of that window (or of the
+		// window with this object name), one "name class x y w h" a line
+		QString name = prm.value(1);
+		QWidget* top = QApplication::activePopupWidget();
+		if (!top) top = QApplication::activeModalWidget();
+		if (!top) top = QApplication::activeWindow();
+		if (!top) top = frame;
+		auto line = [](QWidget* w) {
+			QRect rc(w->mapTo(w->window(), QPoint(0, 0)), w->size());
+			return QString("%0 %1 %2 %3").arg(rc.x()).arg(rc.y()).arg(rc.width()).arg(rc.height());
+		};
+		QWidget* hit = NULL;
+		QString list;
+		foreach(QWidget* w, QApplication::allWidgets()) {
+			if (!w->isVisible()) continue;
+			if (com == "widget-list") {
+				if (w->objectName().isEmpty() || w->objectName().startsWith("qt_")) continue;
+				if (name.isEmpty() ? (w->window() != top) : (w->window()->objectName() != name)) continue;
+				list += QString("%0 %1 %2\r\n").arg(w->objectName(), w->metaObject()->className(), line(w));
+			} else if ((w->objectName() == name) || (name == w->metaObject()->className())) {
+				if (!hit || (w->window() == top)) hit = w;
+				if (w->window() == top) break;
+			}
+		}
+		if (hit) list = line(hit) + "\r\n";
+		sock->write(list.isEmpty() ? "nothing\r\n" : list.toUtf8());
 	} else {
 		sock->write("Unrecognized command\r\n");
 	}
