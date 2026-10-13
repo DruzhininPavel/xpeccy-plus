@@ -200,18 +200,18 @@ static void memwr_watched(Computer* comp, int adr, int val) {
 // so the +2A/+3 asic contends no i/o at all. The address is a stand-in for
 // "a contended page" - the caller has already looked at the port itself.
 
+// The slots of an i/o cycle count their dots, as a memory cycle does: the wait
+// is read off where the ray stands (vid_lazy_dots), and the port handler gets
+// the ray settled (iord/iowr).
 void zx_cont_delay(Computer* comp) {
 	int wdots = vid_wait_dots(comp->vid, 5 << 14, 0);	// video is already at end of wait cycle
-	int t0 = comp->cpu->t;
-	comp->cpu->t += comp->contTicks[wdots];
-	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - t0));
-	res4 = comp->cpu->t;
+	comp_vid_to_lazy(comp, comp->cpu->t + comp->contTicks[wdots]);
+	comp->cpu->t = res4;
 }
 
 void zx_free_ticks(Computer* comp, int t) {
-	comp->cpu->t += t;
-	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, t));
-	res4 = comp->cpu->t;
+	comp_vid_to_lazy(comp, comp->cpu->t + t);
+	comp->cpu->t = res4;
 }
 
 // A port is slow where a memory address would be: on a 128K the page at #C000
@@ -374,12 +374,12 @@ int iord(int port, void* ptr) {
 	if (comp->flgCNTI) {
 		// fuse reads the port after both halves of the i/o cycle have
 		// been contended (periph.c readport), so do the waiting first
-		comp_vid_to_t_full(comp);
+		comp_vid_to_t(comp);
 		zx_cont_t1(comp, port);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;		// z80_iord puts the four back
 	} else {
-		comp_vid_to(comp, comp->cpu->t + 3);
+		comp_vid_to_lazy(comp, comp->cpu->t + 3);
 	}
 // play rzx
 	int res = 0xff;
@@ -407,6 +407,7 @@ int iord(int port, void* ptr) {
 		comp->brkev.adr = port;
 	}
 
+	vid_settle(comp->vid);		// some port handlers read the ray (Scorpion, Profi)
 	res = comp->hw->in ? comp->hw->in(comp, port) : 0xff;
 	if (comp->flgCOND) {
 		comp->brkev.in = port;
@@ -423,8 +424,9 @@ void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp->flgBDI = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? 1 : 0;
 	if (comp->flgCNTI) {
-		comp_vid_to_t_full(comp);	// sync video to current T
+		comp_vid_to_t(comp);		// video to current T
 		zx_cont_t1(comp, port);
+		vid_settle(comp->vid);
 		if (comp->vid->nodraw && comp->vid->cb->latch)
 			vid_latch(comp->vid);		// the page or the mode may change (IRQ_CPU_SYNC)
 		comp->hw->out(comp, port, val);
@@ -432,7 +434,8 @@ void iowr(int port, int val, void* ptr) {
 		comp->cpu->t -= 4;
 	} else {
 		// the ray up to T+1 in one step: the OUT reaches the device mid-cycle
-		comp_vid_to(comp, comp->cpu->t + 1);
+		comp_vid_to_lazy(comp, comp->cpu->t + 1);
+		vid_settle(comp->vid);
 		if (comp->vid->nodraw && comp->vid->cb->latch)
 			vid_latch(comp->vid);
 		comp->hw->out(comp, port, val);

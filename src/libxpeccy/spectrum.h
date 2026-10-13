@@ -338,6 +338,13 @@ static inline void comp_vid_to_t_full(Computer* comp) {
 	comp_vid_to(comp, comp->cpu->t);
 }
 
+// the same as comp_vid_to(), the dots only counted where a frame is not drawn:
+// for what reads the ray through vid_settle() or vid_lazy_dots() alone
+static inline void comp_vid_to_lazy(Computer* comp, int t) {
+	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, t - res4));
+	res4 = t;
+}
+
 // A board that drops its turbo for a while owes the next bus cycle what a step
 // took once more: the step's own ticks, not the debt it paid on the way, or the
 // debt grows with every step. Called after each step, owing or not.
