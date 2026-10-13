@@ -486,6 +486,10 @@ static xState* raState = NULL;
 static Computer* raOwner = NULL;	// what raBroken was decided about
 static int mixFrame = -2;		// conf.vid.fcount of the last frame antiflicker mixed
 static int raBroken = 0;		// the snapshot cannot be taken at all: stop trying
+// The keyboard is not in the snapshot - a rewind must not bring back keys let go
+// since - but a frame run ahead reads the ps/2 log and runs its repeat, so it is
+// put back with the machine
+static Keyboard raKbd;
 
 // The snapshot run-ahead and the antiflicker's look ahead wind back to, when this
 // frame allows one. xstate_safe() answers for everything the snapshot does not
@@ -505,7 +509,13 @@ static int ra_snapshot(Computer* comp, int finish) {
 		raBroken = 1;
 		return 0;
 	}
+	raKbd = *comp->keyb;
 	return 1;
+}
+
+static void ra_wind_back(Computer* comp) {
+	xstate_load(raState, comp);
+	*comp->keyb = raKbd;
 }
 
 static int ra_run_frame(Computer* comp) {
@@ -555,7 +565,7 @@ static const uint32_t* af_look_ahead(Computer* comp, int wound, int finish) {
 		af_copy(afFrames.data() + got * wid * hei, wid, af_crop(vid), line, wid, hei);
 		got++;
 	}
-	if (!wound) xstate_load(raState, comp);
+	if (!wound) ra_wind_back(comp);
 	af_copy(af_crop(vid), line, afShown.data(), wid, wid, hei);	// the frames run on drew over it
 	return (got == AF_AHEAD) ? afFrames.data() : NULL;
 }
@@ -728,7 +738,7 @@ void xThread::emuCycle(Computer* comp) {
 
 			vrec_frame(comp);
 			if (frame_hand_over()) emit s_frame();
-			if (wound) xstate_load(raState, comp);
+			if (wound) ra_wind_back(comp);
 		}
 #if LOG_OUTPUT
 // ...
@@ -892,14 +902,16 @@ static unsigned long long bench_mix(unsigned long long h, const unsigned char* p
 // --bench-keys "F:keys[/N],...": pressed at frame F counted from the start of
 // the bench, held N frames (4). keys are matrix names as autostart types them,
 // '_' for space; "joy:" or "joyb:" and joystick rows as a .pad names them (up,
-// fire2...) joined by '+' are the two joysticks, "nmi" is the NMI button.
-enum {BK_KEYS = 0, BK_JOY, BK_JOYB, BK_NMI};
+// fire2...) joined by '+' are the two joysticks, "nmi" is the NMI button, and
+// "pc:" and a keymap name (UP, F1) is a PC key, scancodes and all.
+enum {BK_KEYS = 0, BK_JOY, BK_JOYB, BK_NMI, BK_PC};
 
 typedef struct {
 	int at = 0;
 	int hold = 4;
 	int kind = BK_KEYS;
 	int mask = 0;		// XJ_* for a joystick
+	int id = 0;		// the key id of a PC key
 	int state = 0;		// 0: waiting, 1: down, 2: done
 	std::string keys;
 } benchKey;
@@ -927,6 +939,9 @@ static void bench_keys_parse(const char* spec) {
 		}
 		if (key == "nmi") {
 			k.kind = BK_NMI;
+		} else if (!key.compare(0, 3, "pc:")) {
+			k.kind = BK_PC;
+			k.id = getKeyIdByName(key.substr(3).c_str());
 		} else if (!key.compare(0, 4, "joy:") || !key.compare(0, 5, "joyb:")) {
 			k.kind = (key[3] == 'b') ? BK_JOYB : BK_JOY;
 			std::string rows = key.substr(key.find(':') + 1) + "+";
@@ -956,6 +971,11 @@ static void bench_key_set(Computer* comp, benchKey& k, int press) {
 		case BK_NMI:
 			if (press) comp_irq(IRQ_NMI, comp);
 			break;
+		case BK_PC: {
+			keyEntry ent = getKeyEntry(k.id);
+			x_key(comp, &ent, press);
+			break;
+		}
 		default:
 			autostart_key(comp, k.keys.c_str(), press);
 			break;

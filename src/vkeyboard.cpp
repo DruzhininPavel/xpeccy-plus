@@ -162,7 +162,7 @@ void keyWindow::showMenu(QPoint gpos) {
 	if (act == dck) {
 		setDock(!dock);
 	} else if (act == rall) {
-		if (kb) kbdReleaseAll(kb);
+		if (kb) x_kbd_release_all(kb);
 		xent.zxKey[0] = 0;
 		update();
 	} else if (act->data().isValid()) {
@@ -268,7 +268,7 @@ void keyWindow::upd(Keyboard* k) {
 
 void keyWindow::rall(Keyboard* k) {
 	if (!isVisible()) {
-		kbdReleaseAll(k);
+		x_kbd_release_all(k);
 	}
 }
 
@@ -341,16 +341,20 @@ void keyWindow::mousePressEvent(QMouseEvent* ev) {
 	}
 	xent.zxKey[1] = 0;
 	switch(ev->button()) {
-		case Qt::LeftButton:
+		case Qt::LeftButton:		// the lock: see x_key()
+			emu_lock();
 			kbd_press(kb, &xent);
+			emu_unlock();
 			update();
 			break;
 		case Qt::RightButton:
+			emu_lock();
 			kbdTrigger(kb, &xent);
+			emu_unlock();
 			update();
 			break;
 		case Qt::MiddleButton:
-			kbdReleaseAll(kb);
+			x_kbd_release_all(kb);
 			xent.zxKey[0] = 0;
 			update();
 			break;
@@ -362,7 +366,9 @@ void keyWindow::mousePressEvent(QMouseEvent* ev) {
 void keyWindow::mouseReleaseEvent(QMouseEvent* ev) {
 	if (!kb) return;
 	if (ev->button() == Qt::LeftButton) {
+		emu_lock();
 		kbd_release(kb, &xent);
+		emu_unlock();
 	}
 	update();
 }

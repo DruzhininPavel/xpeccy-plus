@@ -438,6 +438,7 @@ typedef struct {
 		void mapOut(Computer*, const xJoyMapEntry&);
 		long long padTurboNs = 0;	// when turbo was last stepped
 		void mapZxKey(Computer*, int, bool);
+		void machineKey(Computer*, keyEntry*, bool);
 		void mapKeySeq(const xJoyMapEntry&, bool);
 
 		void closeEvent(QCloseEvent*);
