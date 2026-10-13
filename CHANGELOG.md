@@ -68,6 +68,10 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **Tape auto stop after a load** no longer misses a game that waits for a key in a tight
+  loop, or a tape that ends in a long pause: the tape stops and fast loading ends where the
+  load did, so the game starts from its beginning (Destiny Mission, Donald's Alphabet Chase).
+
 - **The PC keyboard on ZX Evo** no longer repeats keys by itself: in Wild Commander a
   short press could run the cursor to the end of the list, and F1 opened and closed its
   window again. Keys repeated far too fast with antiflicker's look ahead or run-ahead on.
