@@ -762,6 +762,21 @@ bool MainWin::eventFilter(QObject* obj, QEvent* ev) {
 				break;
 		}
 	}
+	// the status bar's machine name: either button opens the Machine menu, the left one
+	// over the name as a menu from a bar at the bottom, the right one at the pointer
+	if (obj == sbMachine) {
+		QPoint pos;
+		if ((ev->type() == QEvent::MouseButtonPress) && (static_cast<QMouseEvent*>(ev)->button() == Qt::LeftButton)) {
+			pos = sbMachine->mapToGlobal(QPoint(0, 0)) - QPoint(0, profileMenu->sizeHint().height());
+		} else if (ev->type() == QEvent::ContextMenu) {
+			pos = static_cast<QContextMenuEvent*>(ev)->globalPos();
+		} else {
+			return QObject::eventFilter(obj, ev);
+		}
+		profileMenu->exec(pos);
+		setFocus();
+		return true;
+	}
 	// the status bar's tape and drives: a click opens their window, the right button their menu
 	int drv = -1;
 	for (int i = 0; i < 4; i++)

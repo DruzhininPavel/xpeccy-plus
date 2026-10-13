@@ -447,7 +447,11 @@ void MainWin::initBars() {
 	sbMachine = new QLabel;
 	sbClock = new QLabel;
 	sbFps = new QLabel;
-	sb->addWidget(sbMachine, 1);
+	// the name opens the Machine menu; only the name, not the bar beside it
+	sbMachine->setToolTip("Choose machine");
+	sbMachine->installEventFilter(this);
+	sb->addWidget(sbMachine);
+	sb->addWidget(new QWidget, 1);
 	sbPix[SB_TAPE_PLAY] = QPixmap(":/images/tapeYellow.png");
 	sbPix[SB_TAPE_REC] = QPixmap(":/images/tapeRed.png");
 	sbPix[SB_TAPE_IDLE] = sb_tint(":/images/tapeYellow.png", QColor(200, 200, 200), 1.0);
