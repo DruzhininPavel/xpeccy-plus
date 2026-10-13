@@ -263,6 +263,8 @@ int xstate_load(xState* st, Computer* comp) {
 		memcpy(st->m.chunk[i].ptr, src, st->m.chunk[i].size);
 		src += st->m.chunk[i].size;
 	}
+	mem_derive(comp->mem);			// the map came back without what is worked out of it
+	if (comp->gs && comp->gs->mem) mem_derive(comp->gs->mem);
 	comp->vid->nodraw = nodraw;
 	comp->vid->nodrawNext = nodrawNext;
 	comp->vid->tsconf.hide = hide;

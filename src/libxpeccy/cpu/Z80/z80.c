@@ -64,7 +64,13 @@ int z80_mrdx(CPU* cpu, int adr, int m1) {
 	// which can change what the video is about to draw. A read changes
 	// nothing, and the ticks it took are counted in at the end of the
 	// instruction like the rest.
-	int r = cpu->mrd(adr, m1, cpu->xptr) & 0xff;
+	unsigned char* const* tab = m1 ? cpu->m1p : cpu->rdp;
+	unsigned char* p;
+	int r;
+	if (tab && (p = tab[(adr >> 8) & 0xff]))
+		r = p[adr & 0xff];
+	else
+		r = cpu->mrd(adr, m1, cpu->xptr) & 0xff;
 	cpu->t++;		// T3
 	return r;
 }
@@ -98,7 +104,11 @@ void z80_mwr(CPU *cpu, int adr, int data) {
 		cpu->xcont(cpu->xptr, 1);		// wait states, sampled at T1
 	cpu->t += 2;		// T1, T2
 	cpu->xsync(cpu);		// the ray up to the transfer: a write can change what is drawn next
-	cpu->mwr(adr, data, cpu->xptr);
+	unsigned char* p;
+	if (cpu->wrp && (p = cpu->wrp[(adr >> 8) & 0xff]))
+		p[adr & 0xff] = data;
+	else
+		cpu->mwr(adr, data, cpu->xptr);
 	cpu->t++;		// T3
 }
 
@@ -202,7 +212,7 @@ int z80_exec(CPU* cpu) {
 			// ULA contends those one tick at a time.
 			// T4 is also the refresh cycle: IR goes on the bus with MREQ, and
 			// a machine that emulates ULA snow wants to know when
-			if (cpu->flgRFSH)
+			if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI]))
 				cpu->xirq(IRQ_CPU_RFSH, cpu->xptr);
 			cpu->t++;				// T4
 			if (cpu->op->t > 4)

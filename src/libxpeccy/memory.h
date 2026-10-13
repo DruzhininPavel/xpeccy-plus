@@ -42,6 +42,14 @@ typedef struct {
 
 typedef struct {
 	MemPage map[256];			// 256 x 256 | 256 x 64K
+	// map[] as plain bytes, for the cpu to read and write straight (CPU.rdp/m1p/wrp):
+	// a page memSetBank() gave memStdRd/memStdWr, NULL where its callback has to run.
+	// Worked out from map[] (mem_derive), so no snapshot holds them.
+	unsigned char* rdp[256];
+	unsigned char* wrp[256];
+	unsigned char* m1p[256];		// rdp less the rom at #3Dxx, whose fetch pages TR-DOS in
+	unsigned char* m1dos[256];		// ...and less the ram, whose fetch pages it out
+	unsigned char slow[256];		// ram pages in an odd 16K bank: where the ULA snows from
 	unsigned char ramData[MEM_4M];		// 4M
 	unsigned char romData[MEM_512K];	// 512K
 	int ramSize;
@@ -101,6 +109,7 @@ size_t mem_ram_extent(Memory*);
 void mem_cold_fill(Memory*, const unsigned char*, int, int);
 void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, extmwr wr, void* data);
 void mem_set_cont(Memory*, int bit);	// the address bit of a contended page, 0: none
+void mem_derive(Memory*);		// rdp..slow and cont again, after map[] was written behind memSetBank()
 
 void memPutData(Memory*,int,int,int,char*);
 

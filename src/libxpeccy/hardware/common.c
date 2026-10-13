@@ -92,7 +92,11 @@ void zx_snow(Computer* comp) {
 	// over leaves the ram addressed the way the ULA left it, and the next
 	// opcode fetched from a slow bank comes back from the wrong place. memrd()
 	// is the other half; it wants the same address bits the snow used.
-	if (comp->flgSNOWX) comp->snowBad = 0x80 | (z80_get_r(comp->cpu) & 0x7f);
+	if (comp->flgSNOWX) {
+		comp->snowBad = 0x80 | (z80_get_r(comp->cpu) & 0x7f);
+		comp->cpu->rdp = NULL;		// the next read is memrd()'s (comp_mem_direct)
+		comp->cpu->m1p = NULL;
+	}
 }
 
 void zx_irq(Computer* comp, int t) {

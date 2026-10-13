@@ -939,10 +939,14 @@ void comp_set_cont_pattern(Computer* comp, int type) {
 	comp_cont_map(comp);
 }
 
+// the ULA is disturbed only from a slow bank (zx_snow), so only there is the
+// refresh reported
 void comp_set_snow(Computer* comp, int on) {
 	comp->flgSNOW = on ? 1 : 0;
-	if (comp->cpu)
+	if (comp->cpu) {
 		comp->cpu->flgRFSH = comp->flgSNOW;
+		comp->cpu->rfshp = comp->mem ? comp->mem->slow : NULL;
+	}
 }
 
 void comp_kbd_release(Computer* comp) {
@@ -1110,12 +1114,34 @@ int comp_halt_skip(Computer* comp, int* ns) {
 	return 1;
 }
 
+// The core's straight way to memory for the step about to run (CPU.rdp/m1p/wrp):
+// what memrd() and memwr() come to on a machine whose reads and writes are
+// stdMRd/stdMWr and that nothing watches - but for the opcode fetches that page
+// TR-DOS in or out (m1p, m1dos leave those pages to stdMRd) and a fetch the
+// snow spoils (no table while snowBad stands; zx_snow takes them away when it
+// sets it). stdMRd() takes m1p away when it pages, for the rest of the step.
+static inline void comp_mem_direct(Computer* comp) {
+	CPU* cpu = comp->cpu;
+	if (comp_mem_watched(comp) || comp->snowBad || comp->rzx.play || comp->rzx.rec.on || (cpu->busmask != 0xffff)) return;
+	Memory* mem = comp->mem;
+	if (comp->hw->mrd == stdMRd) {
+		cpu->rdp = mem->rdp;
+		cpu->m1p = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? mem->m1dos : mem->m1p;
+	}
+	if (comp->hw->mwr == stdMWr)
+		cpu->wrp = mem->wrp;
+}
+
 // compExec() for a machine nothing looks at between its steps: no breakpoint,
 // no debugger, no recording playing or being made (the caller makes sure)
 int comp_exec_quiet(Computer* comp) {
 	comp->flgBRKPRE = 0;
 	res4 = 0;
+	comp_mem_direct(comp);
 	res2 = cpu_exec(comp->cpu);
+	comp->cpu->rdp = NULL;
+	comp->cpu->m1p = NULL;
+	comp->cpu->wrp = NULL;
 	if (comp->cpu->flgINTOK) comp->intTaken++;
 	comp->cpu->flgINTOK = 0;
 	comp->cpu->flgNMIOK = 0;

@@ -114,10 +114,12 @@ int stdMRd(Computer* comp, int adr, int m1) {
 		if (comp->flgDOS && bdi_fetch_pages(comp, pg, adr)) {
 			comp->flgDOS = 0;
 			comp->hw->mapMem(comp);
+			comp->cpu->m1p = NULL;		// the fetch table was the other one (comp_mem_direct)
 		}
 		if (!comp->flgDOS && bdi_fetch_pages(comp, pg, adr)) {
 			comp->flgDOS = 1;
 			comp->hw->mapMem(comp);
+			comp->cpu->m1p = NULL;
 		}
 	}
 	return mem_page_rd(pg, adr);

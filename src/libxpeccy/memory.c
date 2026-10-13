@@ -155,6 +155,24 @@ void memStdWr(int adr, int val, void* data) {
 	ptr[adr & 0xff] = val & 0xff;
 }
 
+// What the cpu and the machine read off a page without looking at it again
+static void mem_derive_page(Memory* mem, int i) {
+	MemPage* pg = &mem->map[i];
+	unsigned char* p = (pg->rd == memStdRd) ? (unsigned char*)pg->data : NULL;
+	int ram = (pg->type == MEM_RAM);
+	mem->rdp[i] = p;
+	mem->wrp[i] = (pg->wr == memStdWr) ? (unsigned char*)pg->data : NULL;
+	mem->m1p[i] = ((pg->type == MEM_ROM) && ((i & 0x3f) == 0x3d)) ? NULL : p;
+	mem->m1dos[i] = ram ? NULL : mem->m1p[i];
+	mem->cont[i] = ram && ((pg->num << mem->pgshift) & mem->contBit);
+	mem->slow[i] = ram && ((pg->num << mem->pgshift) & 0x4000);
+}
+
+void mem_derive(Memory* mem) {
+	for (int i = 0; i < 256; i++)
+		mem_derive_page(mem, i);
+}
+
 void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, extmwr wr, void* data) {
 	int cnt = 1;
 //	while (siz > MEM_256) {		// calculate 256b pages count and correct bank number to 256b
@@ -189,7 +207,7 @@ void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, e
 			pg.data = NULL;
 		}
 		mem->map[page] = pg;
-		mem->cont[page] = (type == MEM_RAM) && ((pg.num << mem->pgshift) & mem->contBit);
+		mem_derive_page(mem, page);
 		page++;
 		pg.num++;
 		cnt--;
