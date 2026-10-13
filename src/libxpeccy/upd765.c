@@ -121,6 +121,12 @@ int uGetByte(FDC* fdc) {
 
 static fdcCall utermTab[] = {&ustp, &unothing};
 
+// Parked after a command: unothing alone, for good. It reads nothing an
+// instruction changes, so its time may come in any pieces (dif_quiet)
+int uParked(FDC* fdc) {
+	return (fdc->plan == utermTab) && (fdc->pos == 1);
+}
+
 void uTerm(FDC* fdc) {
 	fdc->plan = utermTab;
 	fdc->pos = 0;
