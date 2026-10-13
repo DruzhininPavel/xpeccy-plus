@@ -2,6 +2,7 @@
 
 #include "vkeyboard.h"
 #include "xcore/xcore.h"
+#include "xgui/xgui.h"
 
 #include <QApplication>
 #include <QIcon>
@@ -56,7 +57,7 @@ keyWindow::keyWindow(QWidget* p):QDialog(p) {
 	setSizeGripEnabled(true);
 	setMinimumSize(pxm.width() / 2, pxm.height() / 2);
 	setZoom(storedZoom());
-	setWindowIcon(QIcon(":/images/keyboard.png"));
+	setWindowIcon(x_icon(":/images/vkeys.png"));
 	setWindowTitle("Virtual Keyboard - ZX Spectrum");
 	if (conf.keywin.dock)
 		setDock(true);

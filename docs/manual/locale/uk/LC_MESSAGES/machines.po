@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-13 20:42+0200\n"
+"POT-Creation-Date: 2026-10-13 22:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -230,15 +230,15 @@ msgstr "Вибір машини"
 msgid "Pick a machine in any of these places:"
 msgstr "Виберіть машину в будь-якому з цих місць:"
 
-msgid "**Machine > Machine** on the menu bar;"
-msgstr "**Machine > Machine** у рядку меню;"
+msgid "**Machine > Model** on the menu bar;"
+msgstr "**Machine > Model** у рядку меню;"
 
 #, python-brace-format
-msgid "the {icon}`computer` **Machine** button on the toolbar;"
-msgstr "кнопка {icon}`computer` **Machine** на панелі інструментів;"
+msgid "the {icon}`model-zx48` **Model** button on the toolbar;"
+msgstr "кнопка {icon}`model-zx48` **Model** на панелі інструментів;"
 
-msgid "**Machine** in the right-click menu over the picture;"
-msgstr "**Machine** у меню правої кнопки над зображенням;"
+msgid "**Model** in the right-click menu over the picture;"
+msgstr "**Model** у меню правої кнопки над зображенням;"
 
 msgid "the machine's name in the status bar, with either mouse button;"
 msgstr "назва машини в рядку стану, будь-якою кнопкою миші;"
@@ -246,11 +246,11 @@ msgstr "назва машини в рядку стану, будь-якою кн
 msgid "**Model** on the **Machine** page of **Options**, then **Apply**."
 msgstr "**Model** на сторінці **Machine** вікна **Options**, потім **Apply**."
 
-msgid "![Machine > Machine](images/menu-machine.png)"
-msgstr "![Machine > Machine](images/menu-machine.png)"
+msgid "![Machine > Model](images/menu-machine.png)"
+msgstr "![Machine > Model](images/menu-machine.png)"
 
-msgid "Machine > Machine"
-msgstr "Machine > Machine"
+msgid "Machine > Model"
+msgstr "Machine > Model"
 
 msgid ""
 "A switch resets the new machine and shows its name over the picture and "

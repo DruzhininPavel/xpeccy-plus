@@ -485,6 +485,14 @@ void xSideButton::paintEvent(QPaintEvent*) {
 
 #define	GROUP_ICON	16
 
+// a "-16" file drawn beside the big one beats scaling the big one down
+QIcon x_icon(const QString& path) {
+	QIcon icon(path);
+	QString small = QString(path).replace(".png", QString("-%0.png").arg(GROUP_ICON));
+	if (QFile::exists(small)) icon.addFile(small, QSize(GROUP_ICON, GROUP_ICON));
+	return icon;
+}
+
 xIconGroup::xIconGroup(const QString& ico, const QString& txt, QWidget* p):QGroupBox(txt, p) {
 	setIcon(ico);
 }
@@ -492,12 +500,9 @@ xIconGroup::xIconGroup(const QString& ico, const QString& txt, QWidget* p):QGrou
 // promoted from a .ui: the title is set there, the icon afterwards
 xIconGroup::xIconGroup(QWidget* p):QGroupBox(p) {}
 
-// a "-16" file drawn beside the big one beats scaling the big one down
 void xIconGroup::setIcon(const QString& path) {
 	if (icon.isNull()) text = title();
-	icon = QIcon(path);
-	QString small = QString(path).replace(".png", QString("-%0.png").arg(GROUP_ICON));
-	if (QFile::exists(small)) icon.addFile(small, QSize(GROUP_ICON, GROUP_ICON));
+	icon = x_icon(path);
 	padTitle();
 }
 

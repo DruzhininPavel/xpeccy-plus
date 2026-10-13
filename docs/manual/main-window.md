@@ -37,9 +37,9 @@ A command that has a key shows it in the menu. The keys are set on the **Hotkeys
 ```
 
 Out of the box it has {icon}`fileopen` **Open**, {icon}`save_all` **Save**,
-{icon}`shutdown` **Reset**, {icon}`computer` **Machine**, {icon}`tape` **Tape Player**,
+{icon}`shutdown` **Reset**, {icon}`model-zx48` **Model**, {icon}`tape` **Tape Player**,
 {icon}`fdd_disk` **Disk Manager**, {icon}`fullscreen_icon_16` **Fullscreen**,
-{icon}`keyboardzx` **Virtual Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debug**,
+{icon}`vkeys` **Virtual Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debug**,
 {icon}`other` **Options** and {icon}`speaker` **Mute**, and at the right end
 {icon}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**,
 {icon}`time-pause` **Pause**, {icon}`time-ffwd` **Fast Forward** and

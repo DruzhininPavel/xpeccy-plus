@@ -56,7 +56,7 @@
           </property>
           <property name="icon">
            <iconset resource="../xpeccy.qrc">
-            <normaloff>:/images/computer.png</normaloff>:/images/computer.png</iconset>
+            <normaloff>:/images/model-zx48.png</normaloff>:/images/model-zx48.png</iconset>
           </property>
          </item>
          <item>
@@ -166,7 +166,7 @@
                   </size>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="../xpeccy.qrc">:/images/computer.png</pixmap>
+                  <pixmap resource="../xpeccy.qrc">:/images/model-zx48.png</pixmap>
                  </property>
                  <property name="scaledContents">
                   <bool>true</bool>

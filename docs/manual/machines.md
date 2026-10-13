@@ -57,13 +57,13 @@ you have changed (see [Your own machines](#your-own-machines)).
 
 Pick a machine in any of these places:
 
-- **Machine > Machine** on the menu bar;
-- the {icon}`computer` **Machine** button on the toolbar;
-- **Machine** in the right-click menu over the picture;
+- **Machine > Model** on the menu bar;
+- the {icon}`model-zx48` **Model** button on the toolbar;
+- **Model** in the right-click menu over the picture;
 - the machine's name in the status bar, with either mouse button;
 - **Model** on the **Machine** page of **Options**, then **Apply**.
 
-![Machine > Machine](images/menu-machine.png)
+![Machine > Model](images/menu-machine.png)
 
 A switch resets the new machine and shows its name over the picture and in the status bar.
 The tape and the disks stay in: the tape goes back to its start. An RZX recording stops,

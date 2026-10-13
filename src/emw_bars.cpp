@@ -399,7 +399,7 @@ void MainWin::initBars() {
 	add("menu.size", "View", sizeMenu->menuAction(), TB_LIST);
 	add("menu.shaders", "View", shdMenu->menuAction(), TB_LIST);
 	add("menu.palette", "View", palMenu->menuAction(), TB_LIST);
-	add("key.keywin", "View", cut("Virtual Keyboard", XCUT_KEYBOARD, "keyboardzx"), TB_PLAIN);
+	add("key.keywin", "View", cut("Virtual Keyboard", XCUT_KEYBOARD, "vkeys"), TB_PLAIN);
 	add("key.keyboard.grab", "Input", pckAct, TB_PLAIN);
 	mouseAct = cut("Grab Mouse", XCUT_MOUSE, "mouse");
 	mouseAct->setCheckable(true);
@@ -447,8 +447,8 @@ void MainWin::initBars() {
 	sbMachine = new QLabel;
 	sbClock = new QLabel;
 	sbFps = new QLabel;
-	// the name opens the Machine menu; only the name, not the bar beside it
-	sbMachine->setToolTip("Choose machine");
+	// the name opens the Model menu; only the name, not the bar beside it
+	sbMachine->setToolTip("Choose model");
 	sbMachine->installEventFilter(this);
 	sb->addWidget(sbMachine);
 	sb->addWidget(new QWidget, 1);

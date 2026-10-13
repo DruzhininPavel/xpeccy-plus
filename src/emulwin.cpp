@@ -1896,12 +1896,12 @@ void MainWin::initUserMenu() {
 // submenu
 	bookmarkMenu = userMenu->addMenu(QIcon(":/images/star.png"),"Favorites");
 	userMenu->addSeparator();
-	profileMenu = userMenu->addMenu(QIcon(":/images/computer.png"),"Machine");
+	profileMenu = userMenu->addMenu(x_icon(":/images/model-zx48.png"),"Model");
 	turboMenu = userMenu->addMenu(QIcon(":/images/clock.png"),"Turbo Mode");
 	resMenu = userMenu->addMenu(QIcon(":/images/shutdown.png"),"Reset");
 	userMenu->addSeparator();
-	keyMenu = userMenu->addMenu(QIcon(":/images/keyboardzx.png"), "Keymap");
-	shdMenu = userMenu->addMenu(QIcon(":/images/shader.png"), "Shaders");
+	keyMenu = userMenu->addMenu(x_icon(":/images/vkeys.png"), "Keymap");
+	shdMenu = userMenu->addMenu(x_icon(":/images/crt.png"), "Shaders");
 	palMenu = userMenu->addMenu(QIcon(":/images/palette.png"), "ZX Palette");
 
 	userMenu->addSeparator();
@@ -1940,7 +1940,7 @@ void MainWin::initUserMenu() {
 		setMessage(on ? " grab keyboard, " XREL_KEYS " lets go " : " release keyboard ");
 	});
 	cutActs.append({pckAct, pckAct->text(), XCUT_GRABKBD});	// its key, shown; the action is its own
-	cutAction(userMenu, "Virtual Keyboard", XCUT_KEYBOARD, "keyboardzx");
+	cutAction(userMenu, "Virtual Keyboard", XCUT_KEYBOARD, "vkeys");
 	padMenu = userMenu->addMenu(QIcon(":/images/gamepad.png"), "Gamepads");
 	// on its own opening only: the presets are files, read for the check marks
 	connect(padMenu, &QMenu::aboutToShow, this, &MainWin::fillPadMenu);
@@ -1983,7 +1983,7 @@ QAction* MainWin::cutAct(const QString& name, int id, const QString& icon) {
 	QAction* act = cutById.value(id);
 	if (act) return act;
 	act = new QAction(name, this);
-	if (!icon.isEmpty()) act->setIcon(QIcon(":/images/" + icon + ".png"));
+	if (!icon.isEmpty()) act->setIcon(x_icon(":/images/" + icon + ".png"));
 	connect(act, &QAction::triggered, this, [this, id]() {
 		xkey_press(id, true);
 		xcut_release(id);
@@ -2087,7 +2087,7 @@ void MainWin::initMenuBar() {
 	bar->addMenu(viewMenu);
 	bar->addAction(favAct);
 	sizeMenu = new xMenu("Size", this);
-	sizeMenu->setIcon(QIcon(":/images/pixels.png"));
+	sizeMenu->setIcon(x_icon(":/images/scale.png"));
 	viewMenu->addMenu(sizeMenu);
 	QActionGroup* grp = new QActionGroup(sizeMenu);
 	for (int i = 0; i < 6; i++) {
@@ -2122,7 +2122,7 @@ void MainWin::initMenuBar() {
 	});
 	sbShowAct->setCheckable(true);
 	viewMenu->addSeparator();
-	cutAction(viewMenu, "Virtual Keyboard", XCUT_KEYBOARD, "keyboardzx");
+	cutAction(viewMenu, "Virtual Keyboard", XCUT_KEYBOARD, "vkeys");
 	initIosdMenu(viewMenu->addMenu("Input Overlay"));
 
 	QMenu* help = new xMenu("Help", this);
