@@ -15,9 +15,9 @@
 // None of it is meant to be watched: while it runs the machine goes at full
 // speed and the video puts out no pixels, so the frame the gui keeps showing is
 // the blank one it started with. The first picture drawn is the loading one. It
-// all ends on the last key, which is where the loading itself begins - but on
-// the +3, whose Loader tries drive A for a couple of seconds before it asks for
-// the tape, on the first frame the rom uses the tape.
+// all ends on the last key, which is where the loading itself begins - but a
+// tape on the +3 holds on to the first frame the rom uses it, a guard against
+// the rom looking at a drive first.
 //
 // Disks do not go in through a reset into the tr-dos rom: running "boot" off
 // that reset is a TR-DOS 5.04T feature and not every romset has it. Instead
@@ -96,6 +96,22 @@ static const asKey as_scorpion[] = {
 	{ZK_QUOTE, AS_KEY_GAP}, {ZK_QUOTE, AS_KEY_GAP},
 	{ZK_ENTER, 0}, {NULL, 0}
 };
+// +3: not the Loader, which boots a disk in drive A before it ever asks for the
+// tape. +3 BASIC and LOAD "t:":LOAD "" - "t:" makes the tape the default for
+// LOAD, so the rom goes straight to it and the disks stay where they are. The
+// +3 editor has no keywords either
+static const asKey as_plus3_tape[] = {
+	{ZK_DOWN, AS_KEY_GAP}, {ZK_ENTER, AS_MENU_GAP},
+	{"l", AS_KEY_GAP}, {"o", AS_KEY_GAP},
+	{"a", AS_KEY_GAP}, {"d", AS_KEY_GAP},
+	{ZK_QUOTE, AS_KEY_GAP}, {"t", AS_KEY_GAP},
+	{ZK_COLON, AS_KEY_GAP}, {ZK_QUOTE, AS_KEY_GAP},
+	{ZK_COLON, AS_KEY_GAP},
+	{"l", AS_KEY_GAP}, {"o", AS_KEY_GAP},
+	{"a", AS_KEY_GAP}, {"d", AS_KEY_GAP},
+	{ZK_QUOTE, AS_KEY_GAP}, {ZK_QUOTE, AS_KEY_GAP},
+	{ZK_ENTER, 0}, {NULL, 0}
+};
 // RANDOMIZE USR 15619: REM: RUN - the beta disk entry that takes its command
 // from the REM, so it lands in tr-dos and runs "boot" in one line. Typed in 48
 // basic: RANDOMIZE is on T, USR needs extended mode.
@@ -149,7 +165,7 @@ static const asMachine as_mtab[] = {
 	{HW_SCORP,	{RES_128, as_scorpion},	{RES_48, as_keyword_code},	{RES_48, as_trdos_basic},	{AS_NOPE, NULL}},
 	{HW_SCORPTP,	{RES_128, as_scorpion},	{RES_48, as_keyword_code},	{RES_48, as_trdos_basic},	{AS_NOPE, NULL}},
 	{HW_PLUS2A,	{RES_128, as_menu},	{RES_48, as_keyword_code},	{AS_NOPE, NULL},		{AS_NOPE, NULL}},
-	{HW_PLUS3,	{RES_128, as_menu},	{RES_48, as_keyword_code},	{AS_NOPE, NULL},		{RES_128, as_menu}},
+	{HW_PLUS3,	{RES_128, as_plus3_tape},	{RES_48, as_keyword_code},	{AS_NOPE, NULL},		{RES_128, as_menu}},
 	{HW_TSLAB,	{RES_128, as_menu},	{AS_NOPE, NULL},	{RES_128, as_menu_last_run},	{AS_NOPE, NULL}},
 	{HW_ATM2,	{RES_48, as_keyword, 1},	{RES_48, as_keyword_code, 1},	{RES_48, as_trdos_basic, 1},	{AS_NOPE, NULL}},
 	{HW_PENTEVO,	{RES_128, as_evo_tape},	{AS_NOPE, NULL},	{RES_128, as_evo_disk},		{AS_NOPE, NULL}},
