@@ -199,6 +199,13 @@ typedef struct Computer {
 	int intTaken;		// maskable interrupts the cpu has taken, for the debugger's spans
 	int frmtCount;		// accumulate T, but reset each INT
 	int hCount;		// T before HALT = frmtCount @ HALT
+	// a quiet run going (comp_run_quiet): the devices are owed the time of the
+	// instructions it has finished, runStep (16.16 ns of the video's step not made
+	// into ns yet); an i/o access gives it to them first (comp_run_io)
+	int runOn;
+	int runIO;		// ...and the run ends with that instruction
+	int runNs;		// ns given to them so far
+	long long runStep;
 	int waitDebt;		// T a board with its own arbiter still owes the next bus cycle
 	int waitPaid;		// what comp_cont_hw() last paid of it, for comp_owe()
 	int fCount;		// T in last frame
@@ -334,8 +341,11 @@ static inline void comp_vid_to_t(Computer* comp) {		// counting allowed
 	res4 = comp->cpu->t;
 }
 
-static inline void comp_vid_to_t_full(Computer* comp) {
-	comp_vid_to(comp, comp->cpu->t);
+// the same as comp_vid_to(), the dots only counted where a frame is not drawn:
+// for what reads the ray through vid_settle() or vid_lazy_dots() alone
+static inline void comp_vid_to_lazy(Computer* comp, int t) {
+	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, t - res4));
+	res4 = t;
 }
 
 // A board that drops its turbo for a while owes the next bus cycle what a step
@@ -351,6 +361,13 @@ static inline void comp_owe(Computer* comp, int ns, int owe) {
 
 // Something of the debugger's looks at every memory access: the map, the heat
 // map, a condition or a memory breakpoint
+// Nothing looks between the steps: no breakpoint, condition or debugger, no run-ahead
+// pass, no recording made or played - what fast mode's quiet loop and its run on need
+static inline int comp_unwatched(Computer* comp) {
+	return !comp->flgCOND && !comp->flgDBG && !comp->flgBRKMEM && !comp->flgIBRK && !x_runahead
+		&& !comp->rzx.play && !comp->rzx.rec.on;
+}
+
 static inline int comp_mem_watched(Computer* comp) {
 	return comp->flgMAP | comp->flgHEAT | comp->flgCOND | comp->flgBRKMEM;
 }
@@ -364,6 +381,13 @@ void compReset(Computer*,int);
 void compUserReset(Computer*,int);
 int compExec(Computer*);
 int comp_skip_ticks(Computer*, int);
+int comp_halt_skip(Computer*, int* ns);		// HALT steps up to the next event at once, fast mode
+int comp_exec_quiet(Computer*);			// compExec() with no breakpoint, debugger or recording
+int comp_run_quiet(Computer*, int* ns, const int* stops, int nstops);	// steps run on in one go, fast mode
+void comp_run_io_slow(Computer*);
+static inline void comp_run_io(Computer* comp) {	// before a port is touched
+	if (comp->runOn) comp_run_io_slow(comp);
+}
 void comp_irq(int, void*);
 
 //void compKeyPress(Computer*, int, keyEntry*);
@@ -378,6 +402,7 @@ int compSetHardware(Computer*,const char*);
 void comp_set_layout(Computer*, vLayout*);
 void comp_set_snow(Computer*, int);
 void comp_set_cont(Computer*, int);
+void comp_set_cont_pattern(Computer*, int);	// CONT_*: which pattern the ULA contends with
 void comp_snap_map(Computer*);
 void comp_snap_reset(Computer*, int);
 int comp_frame_ticks(Computer*);

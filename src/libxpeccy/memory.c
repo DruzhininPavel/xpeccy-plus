@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <assert.h>
 
 long long xhost_time_fixed = 0;
 
@@ -155,6 +156,31 @@ void memStdWr(int adr, int val, void* data) {
 	ptr[adr & 0xff] = val & 0xff;
 }
 
+// What the cpu and the machine read off a page without looking at it again
+// The tables index a page by A15..A8: 256-byte pages, as memCreate() makes them.
+static void mem_derive_page(Memory* mem, int i) {
+	assert(mem->pgshift == 8);
+	MemPage* pg = &mem->map[i];
+	unsigned char* p = (pg->rd == memStdRd) ? (unsigned char*)pg->data : NULL;
+	int ram = (pg->type == MEM_RAM);
+	int bank = ram ? ((pg->num << mem->pgshift) >> 14) : -1;
+	mem->bank[i] = (short)bank;
+	mem->rdp[i] = p;
+	mem->wrp[i] = (pg->wr == memStdWr) ? (unsigned char*)pg->data : NULL;
+	mem->m1p[i] = mem_m1_dos_in(pg, i) ? NULL : p;
+	mem->m1dos[i] = mem_m1_dos_out(pg) ? NULL : mem->m1p[i];
+	int asic = ram && mem_bank_asic(bank);
+	mem->rdpa[i] = asic ? NULL : p;
+	mem->wrpa[i] = asic ? NULL : mem->wrp[i];
+	mem->cont[i] = ram && ((pg->num << mem->pgshift) & mem->contBit);
+	mem->slow[i] = ram && mem_bank_slow(bank);
+}
+
+void mem_derive(Memory* mem) {
+	for (int i = 0; i < 256; i++)
+		mem_derive_page(mem, i);
+}
+
 void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, extmwr wr, void* data) {
 	int cnt = 1;
 //	while (siz > MEM_256) {		// calculate 256b pages count and correct bank number to 256b
@@ -188,11 +214,22 @@ void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, e
 		} else {
 			pg.data = NULL;
 		}
-		mem->map[page] = pg;
+		// a machine pages all of its map in from every port write: what
+		// stays where it was keeps what was worked out of it
+		MemPage* cur = &mem->map[page];
+		if ((cur->type != pg.type) || (cur->num != pg.num) || (cur->data != pg.data) || (cur->rd != pg.rd) || (cur->wr != pg.wr)) {
+			*cur = pg;
+			mem_derive_page(mem, page);
+		}
 		page++;
 		pg.num++;
 		cnt--;
 	}
+}
+
+void mem_set_cont(Memory* mem, int bit) {
+	mem->contBit = bit;
+	mem_derive(mem);
 }
 
 // set page data

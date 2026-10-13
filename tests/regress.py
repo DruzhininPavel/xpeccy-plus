@@ -9,6 +9,8 @@ builds that print the same hashes ran the machine identically.
   regress.py bless [suite...] [-k PATTERN] take the current results as the reference
   regress.py list [suite...]
   regress.py quick [bench...] [-k PATTERN]  the headless libxpeccy benches, no app needed
+  regress.py drawcheck [suite...] [--every N] each case with every frame drawn and with only
+                                            every Nth drawn: the machine must not see the difference
 
 The images and the references are not in this repository: --corpus/XPECCY_CORPUS and
 --golden/XPECCY_GOLDEN point at them.
@@ -16,6 +18,7 @@ The images and the references are not in this repository: --corpus/XPECCY_CORPUS
 
 import argparse
 import concurrent.futures as cf
+import copy
 import fnmatch
 import json
 import os
@@ -243,6 +246,28 @@ def execute(args, cases):
     return results
 
 
+def compare(cases, results, ref_of):
+    """A line for each case that fails or differs from ref_of(case) (None: no reference yet);
+    the counts (same, changed, new, failed)"""
+    same = changed = new = failed = 0
+    for c in cases:
+        r, ref = results[c.key], ref_of(c)
+        err = r.get("error") or (ref or {}).get("error")
+        if err:
+            failed += 1
+            print(f"FAIL     {c.key:28} {err}")
+        elif ref is None:
+            new += 1
+            print(f"NEW      {c.key:28} no reference yet")
+        elif all(r[f] == ref.get(f) for f in FIELDS):
+            same += 1
+        else:
+            changed += 1
+            which = ", ".join(f for f in FIELDS if r[f] != ref.get(f))
+            print(f"DIFFERS  {c.key:28} {which}")
+    return same, changed, new, failed
+
+
 def cmd_run(args):
     cases = pick(args)
     golden = env_path(args.golden, "XPECCY_GOLDEN", "golden")
@@ -253,21 +278,7 @@ def cmd_run(args):
             if r != results[k] and "error" not in r:
                 results[k] = {"error": "not deterministic: two runs differ"}
     refs = {s: load_golden(golden, s) for s in {c.suite for c in cases}}
-    same = changed = new = failed = 0
-    for c in cases:
-        r, ref = results[c.key], refs[c.suite].get(c.name)
-        if "error" in r:
-            failed += 1
-            print(f"FAIL     {c.key:28} {r['error']}")
-        elif ref is None:
-            new += 1
-            print(f"NEW      {c.key:28} no reference yet")
-        elif all(r[f] == ref.get(f) for f in FIELDS):
-            same += 1
-        else:
-            changed += 1
-            which = ", ".join(f for f in FIELDS if r[f] != ref.get(f))
-            print(f"DIFFERS  {c.key:28} {which}")
+    same, changed, new, failed = compare(cases, results, lambda c: refs[c.suite].get(c.name))
     print(f"\n{same} same, {changed} differ, {new} new, {failed} failed")
     if args.json:
         Path(args.json).write_text(json.dumps(results, indent=1), encoding="utf-8")
@@ -295,6 +306,26 @@ def cmd_bless(args):
     return 1 if bad else 0
 
 
+def cmd_drawcheck(args):
+    """Frames left undrawn must change nothing the machine does: the same case run with every
+    frame drawn and with only every Nth drawn, both hashing those Nth frames, agrees in every
+    field. Needs no reference."""
+    cases = pick(args)
+    n = str(args.every)
+    def variant(flag):
+        out = []
+        for c in cases:
+            v = copy.copy(c)
+            v.extra = c.extra + [flag, n]
+            out.append(v)
+        return out
+    drawn = execute(args, variant("--bench-hash-every"))
+    sparse = execute(args, variant("--bench-draw-every"))
+    same, changed, _, failed = compare(cases, sparse, lambda c: drawn[c.key])
+    print(f"\n{same} same, {changed} differ, {failed} failed (every {n})")
+    return 1 if changed or failed else 0
+
+
 def cmd_list(args):
     cases = pick(args)
     for c in cases:
@@ -318,7 +349,7 @@ def cmd_quick(args):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", choices=("run", "bless", "list", "quick"))
+    ap.add_argument("command", choices=("run", "bless", "list", "quick", "drawcheck"))
     ap.add_argument("suite", nargs="*", help="suites in tests/suites (default: all)")
     ap.add_argument("-k", action="append", help="only cases whose name matches (glob, repeatable)")
     ap.add_argument("--app", help="staged build folder (default: newest dev build in build/dist)")
@@ -329,12 +360,14 @@ def main():
     ap.add_argument("--shots", help="write each case's last frame here as .ppm")
     ap.add_argument("--twice", action="store_true", help="run every case twice and flag any that differ")
     ap.add_argument("--json", help="write the raw results here")
+    ap.add_argument("--every", type=int, default=3, help="drawcheck: draw every Nth frame (default 3)")
     ap.add_argument("-v", "--verbose", action="store_true")
     ap.add_argument("--no-build", action="store_true", help="quick: use what build/out/tests holds")
     ap.add_argument("--bless", action="store_true", help="quick: take the current output as expected")
     ap.add_argument("--mingw", help="quick, Windows: MinGW folder (default: $XPECCY_MINGW, then the qt6-x64 one)")
     args = ap.parse_args()
-    return {"run": cmd_run, "bless": cmd_bless, "list": cmd_list, "quick": cmd_quick}[args.command](args)
+    return {"run": cmd_run, "bless": cmd_bless, "list": cmd_list, "quick": cmd_quick,
+            "drawcheck": cmd_drawcheck}[args.command](args)
 
 
 if __name__ == "__main__":

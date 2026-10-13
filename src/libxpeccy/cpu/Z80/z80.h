@@ -91,6 +91,9 @@ enum {
 
 void z80_reset(CPU*);
 int z80_exec(CPU*);
+// z80_exec() short of the end-of-instruction signal: *end is 1 when an instruction
+// ran and wants xend, which the caller sends with cpu->t one tick back
+int z80_exec_open(CPU*, int* end);
 xAsmScan z80_asm(int, const char*, char*);
 xMnem z80_mnem(CPU*, int, cbdmr, void*);
 

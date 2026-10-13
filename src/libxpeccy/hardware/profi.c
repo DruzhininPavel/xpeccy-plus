@@ -277,10 +277,13 @@ xPortDsc zx_port_tab_p[] = {
 	{-1, 0, 0}
 };
 
+// the board turbo owes per step (comp_owe): a run only without it
+static const hwQuiet prf_quiet = {HWQ_ACK_ZX, hwq_no_turbo, NULL, zx_devs_sync, zx_fetch_quiet, 0};
+
 HardWare prf3_hw_core = {HW_PROFI3,"Profi3","Profi v3",MEM_256K | MEM_512K | MEM_768K | MEM_1M,1.0,NULL,zx_port_tab_p,
 			prf_init,prfMapMem,prf3Out,prf3In,stdMRd,stdMWr,zx_irq,zx_ack,prfReset,prfSync,prf_keyp,prf_keyr,zx_vol,
-			NULL,prf_cont};
+			NULL,prf_cont,&prf_quiet};
 
 HardWare prf_hw_core = {HW_PROFI,"Profi","Profi v5",MEM_512K | MEM_1M,1.0,NULL,zx_port_tab_p,
 			prf_init,prfMapMem,prf5Out,prf5In,stdMRd,stdMWr,zx_irq,zx_ack,prfReset,prfSync,prf_keyp,prf_keyr,zx_vol,
-			NULL,prf_cont};
+			NULL,prf_cont,&prf_quiet};

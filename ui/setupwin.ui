@@ -2840,6 +2840,58 @@ Tap or hold: a tap switches it, a longer press holds it</string>
                   </item>
                  </layout>
                 </item>
+                <item row="4" column="0">
+                 <widget class="QComboBox" name="cbFastFps">
+                  <property name="toolTip">
+                   <string>Frames a second Fast Mode shows, fast loading too</string>
+                  </property>
+                  <property name="editable">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="1">
+                 <widget class="QLabel" name="labFastPic">
+                  <property name="toolTip">
+                   <string>The frames between are not drawn</string>
+                  </property>
+                  <property name="text">
+                   <string>Fast Mode render</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>cbFastFps</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="2">
+                 <layout class="QHBoxLayout" name="hlFastPic">
+                  <property name="spacing">
+                   <number>8</number>
+                  </property>
+                  <item>
+                   <widget class="QComboBox" name="cbFastPic"/>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labFastPicHint">
+                    <property name="font">
+                     <font>
+                      <italic>true</italic>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Frames a second, and how they are drawn</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="hlFastPic_sp">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
                </layout>
               </widget>
              </item>

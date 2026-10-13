@@ -1,4 +1,5 @@
 #include "hardware.h"
+#include "zx_step.h"
 
 // ALF TV Game ("Elf"), a ZX48 clone console on the T34VG1 gate array, built in
 // Brest 1991-1995. It has no keyboard: two joysticks, a cartridge slot and the
@@ -119,9 +120,15 @@ void alf_mwr(Computer* comp, int adr, int data) {
 }
 
 void alf_sync(Computer* comp, int ns) {
-	bcSync(comp->beep, ns);
-	tsSync(comp->ts, ns);
+	alf_devs_sync_in(comp, ns);
 }
+
+static void alf_devs_sync(Computer* comp, int ns) {
+	alf_devs_sync_in(comp, ns);
+}
+
+// its own read: the steps run on, a HALT is stepped
+static const hwQuiet alf_quiet = {HWQ_ACK_ZX, NULL, NULL, alf_devs_sync, NULL, 0};
 
 // A beeper and the chips, and a dc blocker for each - see zx_vol().
 sndPair alf_vol(Computer* comp, sndVolume* sv) {
@@ -140,4 +147,5 @@ sndPair alf_vol(Computer* comp, sndVolume* sv) {
 // zx_init, like every other ZX core: it is what sets the dot period from the cpu
 // clock, and without it the machine keeps the dot clock of whatever ran before.
 HardWare alf_hw_core = {HW_ALF,"ALF","ALF TV Game",MEM_64K | MEM_128K,1.0,NULL,NULL,
-			zx_init,alf_mapmem,alf_iwr,alf_ird,alf_mrd,alf_mwr,zx_irq,zx_ack,alf_reset,alf_sync,NULL,NULL,alf_vol};
+			zx_init,alf_mapmem,alf_iwr,alf_ird,alf_mrd,alf_mwr,zx_irq,zx_ack,alf_reset,alf_sync,NULL,NULL,alf_vol,
+			NULL,NULL,&alf_quiet};

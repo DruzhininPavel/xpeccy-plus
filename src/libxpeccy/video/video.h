@@ -92,10 +92,19 @@ typedef struct {
 	// each (a border line is one colour). Takes the dots it wants and returns
 	// how many it drew; 0 leaves the whole run to the dot callback.
 	int (*run)(Video*, int);
-	// Its dots leave nothing the machine can see but the border latch and
-	// atrbyte (vid_atrbyte()), so an undrawn frame skips them (vid_skips()).
-	int blind;
+	// The dots leave nothing the machine can see but the border latch and what
+	// latch says, so an undrawn frame skips them (vid_skips()) - in every mode.
+	int latch;		// VL_*: a byte of the drawing the machine reads back
 } xVideoMode;
+
+// What a mode's dots leave behind that the machine can read: worked out from
+// the memory where the dots are skipped (vid_atrbyte, vid_fntbyte)
+enum {
+	VL_NONE = 0,
+	VL_ATR_ZX,		// atrbyte: the ZX attribute of the cell, 0xff on the border
+	VL_FNT_ATM,		// fntbyte: the font byte of ATM text
+	VL_FNT_EVO		// fntbyte: ...of ZX Evo text
+};
 
 struct Video {
 	unsigned nogfx:1;	// tsl : nogfx flag, pc98xx:disable display
@@ -119,6 +128,10 @@ struct Video {
 	unsigned hbrd:1;	// border.H
 	unsigned vbrd:1;	// border.V
 
+	int nodrawNext;		// nodraw for the next frame, taken as it starts; -1: keep
+	int latchFrm;		// where atrbyte/fntbyte were last taken in an undrawn frame:
+	int latchPos;		// fcnt and the dot (vid_latch)
+
 	int nsPerFrame;
 	long long nsPerDotFixed;	// the dot period, 16.16, and what the ray steps by
 	double nsPerDotExact;	// same value as a double, for vid_upd_layout() to
@@ -126,7 +139,10 @@ struct Video {
 	long long nsDrawFixed;	// time handed in but not yet drawn, 16.16
 	long long nsOwedFixed;	// fraction of a ns owed to vid->time, carried not dropped
 	long long nsCalmFixed;	// nsDrawFixed may grow up to this with no dot drawn (vid_sync_lazy)
-	int time;		// whole ns drawn since the step began
+	long long clkFixed;	// time handed in short of a whole dot (vid_clock)
+	long long stepFixed;	// time handed in since the step began, made into ns at its end
+	int tickWhole;		// every time handed in is a whole number of dots (comp_update_timings)
+	int time;		// whole ns of the dots the last step completed
 	int dotPerFrame;
 
 	int flash;
@@ -242,6 +258,43 @@ Video* vidCreate(cbxrd, cbirq, void*);
 void vidDestroy(Video*);
 
 void vid_reset(Video*);
+// The ns the devices are given come from the dots the time handed in completes,
+// not from the dots walked: a frame not drawn walks them much later
+// (vid_sync_lazy). The time a step hands in only adds up (stepFixed) and is made
+// into ns once, at the step's end: the video stands at the step's end then and
+// has never been past it, so the dots it completes are the same whichever way
+// it was handed in.
+// The whole ns back.
+int vid_clock_slow(Video*, long long);
+static inline int vid_clock(Video* vid, long long nsFixed) {
+	long long p = vid->nsPerDotFixed;
+	long long c = vid->clkFixed;
+	if ((nsFixed < 0) || (c < 0) || (c >= p))
+		return vid_clock_slow(vid, nsFixed);
+	if (vid->tickWhole) {
+		vid->nsOwedFixed += nsFixed;	// all of it whole dots, the fraction left as it was
+	} else if (nsFixed < (p << 3)) {	// a few dots: counted off (a tick of half a dot, 14 MHz)
+		long long f = c + nsFixed;
+		while (f >= p) {
+			f -= p;
+			vid->nsOwedFixed += p;
+		}
+		vid->clkFixed = f;
+	} else {
+		return vid_clock_slow(vid, nsFixed);
+	}
+	long long whole = FIXED_TO_NS(vid->nsOwedFixed);
+	vid->nsOwedFixed -= NS_TO_FIXED(whole);
+	return (int)whole;
+}
+// the step's ns, and the next step starts from nothing; vid->time keeps them for
+// the snapshot, which has always had the field
+static inline int vid_step_ns(Video* vid) {
+	int ns = vid_clock(vid, vid->stepFixed);
+	vid->stepFixed = 0;
+	vid->time = ns;
+	return ns;
+}
 void vid_sync_fixed(Video*,long long);
 void vid_sync_lazy_slow(Video*,long long);
 void vid_unlazy_slow(Video*);
@@ -264,9 +317,20 @@ static inline void vid_sync_lazy(Video* vid, long long nsFixed) {
 	long long d = vid->nsDrawFixed + nsFixed;
 	if ((nsFixed >= 0) && (d < vid->nsCalmFixed)) {
 		vid->nsDrawFixed = d;
+		vid->stepFixed += nsFixed;
 		return;
 	}
 	vid_sync_lazy_slow(vid, nsFixed);
+}
+// The whole dots vid_sync_lazy() has counted and not walked. They never reach
+// past the next event, and so not past the line end either: the ray stands at
+// ray.x plus these on its line, which is all a reader of the bus timing needs to
+// know - without the walk. The count stays under a line, so it fits 32 bits.
+static inline int vid_lazy_dots(Video* vid) {
+	long long f = vid->nsDrawFixed;
+	if (f < vid->nsPerDotFixed) return 0;
+	if (f < 0x7fffffffLL) return (int)((unsigned)f / (unsigned)vid->nsPerDotFixed);
+	return (int)(f / vid->nsPerDotFixed);
 }
 // only dots vid_sync_lazy() counted: after a change of the dot period the
 // time left over can be a dot or more, and that waits for the next sync as ever
@@ -298,11 +362,18 @@ void vid_set_dot_ns(Video*,double);
 // void vid_irq(Video*, int);
 void vid_set_mode(Video*,int);
 void vid_set_nodraw(Video*,int);
+void vid_set_nodraw_next(Video*,int);		// the same from the next frame start on
+void vid_sweep(Video*);				// the memory now as a whole frame, into bufimg
 void vid_set_int_frame(Video*, int);		// dots left of the frame INT pulse, 0: none
 void vid_set_ray(Video*, int);
 int vid_ray_dots(Video*);
 
 int vid_wait_dots(Video*, int, int);		// contention wait in dots, not ns
+// Dots from the ray to the first one the machine would see something on: the
+// frame end, the INT pulse starting or ending, and with lineInt the next hblank
+// (TSConf's line INT). Walking fewer dots than this changes nothing but the
+// picture. For the ray where it stands: settled first.
+long long vid_quiet_dots(Video*, int lineInt);
 // An internal cycle only parks an address on the bus, no MREQ; the Ferranti
 // ULA contends it all the same, the +2A/+3 asic leaves it alone. The one
 // place that rule lives.
@@ -313,17 +384,28 @@ static inline int vid_cont_internal(Video* vid, int mreq) {
 // vid_wait_dots() alone, with the ray left untouched. A miss here means
 // vid_wait_dots() would return 0 without looking at the ray, so the caller may
 // skip the video sync the ray read would have needed.
-static inline int vid_cont_hit(Video* vid, int adr, int mreq) {
-	if (!vid_cont_internal(vid, mreq)) return 0;
+// The address bit of a contended ram page for the pattern, 0 for none - what memory's
+// cont map is made of (comp_cont_map)
+static inline int vid_cont_bit(Video* vid) {
 	switch (vid->ula->conttype) {
-		case CONT_PATA: return adr & 0x4000;		// pages 1,3,5,7
-		case CONT_PATB: return adr & 0x10000;		// pages 4,5,6,7
+		case CONT_PATA: return 0x4000;		// pages 1,3,5,7
+		case CONT_PATB: return 0x10000;		// pages 4,5,6,7
 	}
 	return 0;
+}
+static inline int vid_cont_hit(Video* vid, int adr, int mreq) {
+	return vid_cont_internal(vid, mreq) && (adr & vid_cont_bit(vid));
 }
 int vid_snow(Video*, int, int);			// cpu refresh cycle: disturb the ULA if it is fetching now
 int vid_float_bus(Video*, int*);		// the byte the ULA has on the bus now, -1 if none
 int vid_atrbyte(Video*);			// the attribute the ULA last fetched, 0xff on the border
+int vid_fntbyte(Video*);			// the font byte text mode last fetched
+// In an undrawn frame the bytes the dots would have fetched are worked out when
+// read, from the memory as it is then. Anything about to change that memory, the
+// page or the mode first has them taken here, as the dots would have had them.
+void vid_latch(Video*);
+// ...and whether a write to this ram address (bank << 14 | offset) is one of those
+int vid_latch_hit(Video*, int);
 void vid_dark_tail(Video*);
 
 void vid_clear_image(void);

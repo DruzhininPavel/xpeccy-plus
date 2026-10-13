@@ -131,6 +131,14 @@ BRD  : 00  MODE: 0  TURBO: 1  BEEP: 0  COVOX: 00
 t19_timing_m3.bin: 38 bytes, done after 0 frames, pc=8025
 TICKS: 15502
 BRD  : 00  MODE: 0  TURBO: 4  BEEP: 0  COVOX: 00
+== t20_fntlatch
+t20_fntlatch.bin: 88 bytes, done after 17 frames, pc=8057
+BF01: A4 46 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+BRD  : 00  MODE: 4  TURBO: 1  BEEP: 0  COVOX: 00
+== t20_fntlatch_nd
+t20_fntlatch.bin: 88 bytes, done after 17 frames, pc=8057
+BF01: A4 46 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+BRD  : 00  MODE: 4  TURBO: 1  BEEP: 0  COVOX: 00
 == e01_regs_pager
 t15_pager.bin: 139 bytes, done after 0 frames, pc=808A
 BF01: 01 5A 5A 09 00 00 00 00 00 00 00 00 00 00 00 00

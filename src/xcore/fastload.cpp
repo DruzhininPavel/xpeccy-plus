@@ -18,7 +18,8 @@
 //
 // The picture is held: the video draws nothing, and vid_frame() leaves the
 // buffers alone while it does, so the last frame drawn stays on screen. A new
-// one is drawn 30 times a second of host time, loader's stripes and all.
+// one is drawn as often a second of host time as Fast mode's own (fast.fps),
+// loader's stripes and all.
 //
 // On top of that, a loader's edge loop is skipped through. Most of a load is
 // spent in a few instructions that read the port and count B until the level
@@ -41,6 +42,7 @@
 #include "fastload.h"
 #include "autostart.h"
 #include "rewind.h"
+#include "rzxseek.h"
 #include "../libxpeccy/cpu/Z80/z80.h"
 #include "../libxpeccy/hardware/hardware.h"
 #include "../libxpeccy/xstate.h"
@@ -49,7 +51,6 @@
 // rom's blocks and the loader they started has not asked for the rest yet.
 // Speedlock spends seven seconds decrypting itself there.
 #define FL_ARMED	750
-#define FL_REFRESH	33333333LL	// ns of host time between pictures, 30 a second
 
 static int fl_held = 0;
 static int fl_armed = 0;		// frames the tape has been armed for
@@ -235,6 +236,7 @@ static long long fl_tape_room(Computer* comp) {
 // turn measured here lies there as well.
 static long long fl_time_room(Computer* comp, int per) {
 	Video* vid = comp->vid;
+	vid_settle(vid);		// the ray where it stands, not as counted
 	long long dots;
 	int line = vid->ray.y;
 	long long toEnd = (long long)(vid->full.y - line) * vid->full.x - vid->ray.x;
@@ -283,6 +285,7 @@ typedef struct {
 
 static void fl_probe(Computer* comp, flProbe* p) {
 	memset(p, 0, sizeof(*p));		// the padding is compared too
+	vid_settle(comp->vid);
 	TapePos tp = tape_pos(comp->tape);
 	memcpy(p->regs, comp->cpu->regs, sizeof(p->regs));
 	memcpy(p->flags, comp->cpu->flags, sizeof(p->flags));
@@ -592,7 +595,7 @@ static void fl_frame(Computer* comp) {
 void fast_hold_frame(Computer* comp, long long* drawnAt, int draw) {
 	conf.emu.fast = 1;		// again every frame: a pause or a menu clears it
 	// the next frame is drawn, and its end swaps it into bufimg
-	draw = draw && (conf.vid.fctime - *drawnAt >= FL_REFRESH);
+	draw = draw && (conf.vid.fctime - *drawnAt >= fast_refresh_ns());
 	if (draw)
 		*drawnAt = conf.vid.fctime;
 	vid_set_nodraw(comp->vid, !draw);
@@ -601,6 +604,84 @@ void fast_hold_frame(Computer* comp, long long* drawnAt, int draw) {
 void fast_hold_release(Computer* comp) {
 	conf.emu.fast = 0;
 	vid_set_nodraw(comp->vid, 0);
+}
+
+// ns of host time between the pictures fast mode shows
+long long fast_refresh_ns() {
+	return 1000000000LL / fast_fps_valid(conf.emu.fastFps);
+}
+
+// Fast mode the user switches on. Its frames are not drawn but for one so often
+// in host time, so the machine runs as fast as it can and is still seen to run.
+// The switch is made at a frame start, a frame ahead (vid_set_nodraw_next), so a
+// frame is drawn whole or not at all. Raster: the frame shown is drawn as it runs,
+// multicolour and all. Whole frame: none is, and the memory at a frame end is
+// drawn at once instead (vid_sweep). Nothing the machine sees depends on the
+// drawing - regress.py drawcheck holds every build to that.
+static int fp_held = 0;			// the frames are this policy's
+static int fp_hold = 0;			// the bench draws them itself
+static long long fp_drawn_at = 0;	// host time the picture shown was asked for
+static int fp_swaps = 0;		// bufSwaps at the frame end before
+
+// a break can stop the machine mid-frame, and the picture up to the ray has to be there
+static int fp_watched(Computer* comp) {
+	return comp_mem_watched(comp) || comp->flgIBRK || comp->flgDBG || brk_cond_n || !conf.brk.list.empty();
+}
+
+static void fp_release(Computer* comp) {
+	if (!fp_held) return;
+	fp_held = 0;
+	vid_set_nodraw_next(comp->vid, 0);
+}
+
+void fast_picture_frame(Computer* comp) {
+	Video* vid = comp->vid;
+	int drawn = (bufSwaps != fp_swaps);	// the frame that just ended swapped a picture in
+	fp_swaps = bufSwaps;
+	// a pause asked for in fast mode stops on a frame drawn whole, not on the
+	// picture of a while ago: the next one is drawn, then the machine stops
+	if (conf.emu.pauseReq) {
+		if (drawn || !fp_held) {
+			conf.emu.pause |= conf.emu.pauseReq;
+			conf.emu.pauseReq = 0;
+			conf.emu.fast = 0;
+			fp_release(comp);
+		} else {
+			vid_set_nodraw_next(vid, 0);
+		}
+		return;
+	}
+	int want = conf.emu.fast && !fp_hold && !autostart_busy() && !fastload_busy() && !rzx_seeking()
+		&& !rewind_active() && !fp_watched(comp);
+	if (!want) {
+		fp_release(comp);
+		return;
+	}
+	if (!fp_held) {
+		fp_held = 1;
+		fp_drawn_at = conf.vid.fctime;
+	}
+	int due = (conf.vid.fctime - fp_drawn_at >= fast_refresh_ns());
+	if (conf.emu.fastPic == FPIC_WHOLE) {
+		vid_set_nodraw_next(vid, 1);
+		if (due && vid->nodraw) {
+			vid_sweep(vid);
+			fp_swaps = bufSwaps;		// not a frame drawn by the raster
+			fp_drawn_at = conf.vid.fctime;
+		}
+		return;
+	}
+	if (due)
+		fp_drawn_at = conf.vid.fctime;
+	vid_set_nodraw_next(vid, !due);
+}
+
+int fast_picture_busy() {
+	return fp_held;
+}
+
+void fast_picture_hold(int on) {
+	fp_hold = on;
 }
 
 void fastload_frame(Computer* comp) {

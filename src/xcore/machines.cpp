@@ -1001,7 +1001,7 @@ static void mac_from_def(const xMachine* mac) {
 	comp_set_cont(comp, mac->contmem);
 	comp->flgEM1 = mac->scrpwait;
 	comp->flgDDP = mac->ddpal;
-	comp->vid->ula->conttype = mac->contPattern;
+	comp_set_cont_pattern(comp, mac->contPattern);
 	comp->vid->ula->early = mac->early;
 	comp->vid->ula->enabled = mac->ulaplus;
 	comp->vid->brdstep = mac->brd4t ? 7 : 1;
@@ -1597,7 +1597,7 @@ static void mac_set_old_key(int sect, const std::string& nam, const std::string&
 			else if (nam == "snow") comp_set_snow(comp, arg.b);
 			else if (nam == "snow.crash") comp->flgSNOWX = arg.b;
 			else if (nam == "ULAplus") comp->vid->ula->enabled = arg.b;
-			else if (nam == "contPattern") comp->vid->ula->conttype = arg.i;
+			else if (nam == "contPattern") comp_set_cont_pattern(comp, arg.i);
 			else if (nam == "earlyTiming") comp->vid->ula->early = arg.b;
 			else if (nam == "DDpal") comp->flgDDP = arg.b;
 			else if (nam == "palette") conf.palette = palette_name(val);

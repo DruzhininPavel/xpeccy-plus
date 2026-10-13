@@ -7,6 +7,7 @@
 #include "spectrum.h"
 #include "filetypes/filetypes.h"
 #include "cpu/Z80/z80.h"
+#include "hardware/zx_step.h"
 #include "input/inview.h"
 #include "xreplay.h"
 
@@ -200,18 +201,18 @@ static void memwr_watched(Computer* comp, int adr, int val) {
 // so the +2A/+3 asic contends no i/o at all. The address is a stand-in for
 // "a contended page" - the caller has already looked at the port itself.
 
+// The slots of an i/o cycle count their dots, as a memory cycle does: the wait
+// is read off where the ray stands (vid_lazy_dots), and the port handler gets
+// the ray settled (iord/iowr).
 void zx_cont_delay(Computer* comp) {
 	int wdots = vid_wait_dots(comp->vid, 5 << 14, 0);	// video is already at end of wait cycle
-	int t0 = comp->cpu->t;
-	comp->cpu->t += comp->contTicks[wdots];
-	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, comp->cpu->t - t0));
-	res4 = comp->cpu->t;
+	comp_vid_to_lazy(comp, comp->cpu->t + comp->contTicks[wdots]);
+	comp->cpu->t = res4;
 }
 
 void zx_free_ticks(Computer* comp, int t) {
-	comp->cpu->t += t;
-	vid_sync_fixed(comp->vid, ticks_to_ns_fixed(comp, t));
-	res4 = comp->cpu->t;
+	comp_vid_to_lazy(comp, comp->cpu->t + t);
+	comp->cpu->t = res4;
 }
 
 // A port is slow where a memory address would be: on a 128K the page at #C000
@@ -371,15 +372,16 @@ int comp_pwatch_val(Computer* comp, int idx) {
 
 int iord(int port, void* ptr) {
 	Computer* comp = (Computer*)ptr;
+	comp_run_io(comp);
 	if (comp->flgCNTI) {
 		// fuse reads the port after both halves of the i/o cycle have
 		// been contended (periph.c readport), so do the waiting first
-		comp_vid_to_t_full(comp);
+		comp_vid_to_t(comp);
 		zx_cont_t1(comp, port);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;		// z80_iord puts the four back
 	} else {
-		comp_vid_to(comp, comp->cpu->t + 3);
+		comp_vid_to_lazy(comp, comp->cpu->t + 3);
 	}
 // play rzx
 	int res = 0xff;
@@ -407,6 +409,7 @@ int iord(int port, void* ptr) {
 		comp->brkev.adr = port;
 	}
 
+	vid_settle(comp->vid);		// some port handlers read the ray (Scorpion, Profi)
 	res = comp->hw->in ? comp->hw->in(comp, port) : 0xff;
 	if (comp->flgCOND) {
 		comp->brkev.in = port;
@@ -419,19 +422,29 @@ int iord(int port, void* ptr) {
 	return res;
 }
 
+// the OUT reaching the device, the ray where it is: the page or the mode it may
+// change are latched first in an undrawn frame (vid_latch)
+static inline void iowr_out(Computer* comp, int port, int val) {
+	vid_settle(comp->vid);
+	if (comp->vid->nodraw && comp->vid->cb->latch)
+		vid_latch(comp->vid);
+	comp->hw->out(comp, port, val);
+}
+
 void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
+	comp_run_io(comp);
 	comp->flgBDI = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? 1 : 0;
 	if (comp->flgCNTI) {
-		comp_vid_to_t_full(comp);	// sync video to current T
+		comp_vid_to_t(comp);		// video to current T
 		zx_cont_t1(comp, port);
-		comp->hw->out(comp, port, val);
+		iowr_out(comp, port, val);
 		zx_cont_tn(comp, port);
 		comp->cpu->t -= 4;
 	} else {
 		// the ray up to T+1 in one step: the OUT reaches the device mid-cycle
-		comp_vid_to(comp, comp->cpu->t + 1);
-		comp->hw->out(comp, port, val);
+		comp_vid_to_lazy(comp, comp->cpu->t + 1);
+		iowr_out(comp, port, val);
 	}
 	if (comp->vid->ula->palchan) {
 		zxSetUlaPalete(comp);
@@ -458,13 +471,31 @@ int intrq(void* ptr) {
 	return comp->hw->ack ? comp->hw->ack(comp) : 0xff;
 }
 
+// The ray up to a write: what the write changes may be drawn next. An undrawn
+// frame works out what its dots would have fetched when asked: a write about
+// to change that takes it first.
+static void comp_wr_sync(CPU* cpu) {
+	Computer* comp = (Computer*)cpu->xptr;
+	comp_vid_to_t(comp);
+	if (comp->vid->nodraw && comp->vid->cb->latch) {
+		MemPage* pg = mem_get_page(comp->mem, comp->cpu->adr);
+		if (vid_latch_hit(comp->vid, (pg->type == MEM_RAM) ? ((pg->num << comp->mem->pgshift) | (comp->cpu->adr & comp->mem->pgmask)) : -1))
+			vid_latch(comp->vid);
+	}
+}
+
+// The end of an instruction (CPU.xend): the machine's INT sample (hwQuiet.ack)
+static void comp_end(CPU* cpu) {
+	Computer* comp = (Computer*)cpu->xptr;
+	comp_ack_in(comp, comp_ack_kind(comp));
+}
+
 void comp_irq(int t, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	// a machine's own handler may read or move the video, so the dots counted
 	// are drawn first - but not for what no handler needs it for
 	int unlazy = 1;
 	switch (t) {
-		case IRQ_CPU_ACK:		// every instruction: zx_irq() settles what it reads itself
 		case IRQ_TAP_0:			// no handler acts on these, and unlazying would only
 		case IRQ_TAP_1:			// cut short the calm stretch of a loader's edge loop
 		case IRQ_TAP_BLK:
@@ -490,9 +521,6 @@ void comp_irq(int t, void* ptr) {
 				comp->hCount = comp->fCount;		// if not HALT-ed during frame, count all ticks
 			}
 			break;
-		case IRQ_CPU_SYNC:
-			comp_vid_to_t(comp);
-			return;			// no machine acts on a plain sync
 		case IRQ_CPU_RFSH:
 			comp_vid_to_t(comp);
 			zx_snow(comp);
@@ -546,6 +574,8 @@ Computer* compCreate() {
 	comp_brk_newstep(comp);		// vid is still NULL here, the call copes
 
 	comp->cpu = cpuCreate(CPU_Z80,memrd,memwr,iord,iowr,intrq,comp_irq,comp);
+	comp->cpu->xend = comp_end;
+	comp->cpu->xsync = comp_wr_sync;
 	comp->mem = memCreate();
 	comp->vid = vidCreate(vid_mrd_cb, comp_irq, comp);
 	vid_set_mode(comp->vid, VID_NORMAL);
@@ -802,6 +832,8 @@ void comp_update_timings(Computer* comp) {
 	} else {
 		comp->nsPerTickFixed = NSD_TO_FIXED(comp->nsPerTick);
 	}
+	// the video is only ever handed whole ticks: whole dots too, where a tick is
+	comp->vid->tickWhole = (comp->nsPerTickFixed > 0) && !(comp->nsPerTickFixed % comp->vid->nsPerDotFixed);
 	comp->earTpt = (1e9 / 3.5e6) / comp->nsPerTick;	// machine ticks in a 3.5 MHz T, for zx_ear_edge
 	// contention wait, dots -> ticks: both periods are settled just above, and
 	// nothing moves either without coming back through here
@@ -878,6 +910,17 @@ static void comp_cont_hw(void* ptr, int mreq) {
 // Contended memory. The cpu reports the start of every bus cycle for it, and
 // that is a call per memory access, so it only does so when a machine asks.
 // A board's own arbiter (hw->cont) is its turbo's, so it is asked only in turbo.
+// The pages comp_cont() can contend at all, for the cpu to skip the call
+// everywhere else: ram in the slow banks of the pattern, internal cycles only on
+// the Ferranti ULA (vid_cont_internal, vid_cont_hit). A board's own arbiter
+// wants every cycle.
+static void comp_cont_map(Computer* comp) {
+	if (!comp->cpu || !comp->vid) return;
+	mem_set_cont(comp->mem, vid_cont_bit(comp->vid));
+	comp->cpu->contp = (comp->cpu->xcont == comp_cont) ? comp->mem->cont : NULL;
+	comp->cpu->contInt = vid_cont_internal(comp->vid, 0);
+}
+
 void comp_set_cont(Computer* comp, int on) {
 	comp->flgCNTM = on ? 1 : 0;
 	if (comp->cpu) {
@@ -885,12 +928,22 @@ void comp_set_cont(Computer* comp, int on) {
 		comp->cpu->flgCONT = comp->flgCNTM || own;
 		comp->cpu->xcont = own ? comp_cont_hw : comp_cont;
 	}
+	comp_cont_map(comp);
 }
 
+void comp_set_cont_pattern(Computer* comp, int type) {
+	comp->vid->ula->conttype = type;
+	comp_cont_map(comp);
+}
+
+// the ULA is disturbed only from a slow bank (zx_snow), so only there is the
+// refresh reported
 void comp_set_snow(Computer* comp, int on) {
 	comp->flgSNOW = on ? 1 : 0;
-	if (comp->cpu)
+	if (comp->cpu) {
 		comp->cpu->flgRFSH = comp->flgSNOW;
+		comp->cpu->rfshp = comp->mem ? comp->mem->slow : NULL;
+	}
 }
 
 void comp_kbd_release(Computer* comp) {
@@ -925,14 +978,18 @@ int compSetHardware(Computer* comp, const char* name) {
 // take all of them, the devices follow and a new frame is flagged. Returns the ns
 // the step took.
 static int comp_step_end(Computer* comp, int unsynced, int t) {
+	// counted, not walked: the ns are worked out as the time is handed in, and
+	// what reads the ray settles it first
 	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, unsynced));
-	vid_settle(comp->vid);		// all of it walked, but the way to the next event is kept
-	nsTime = comp->vid->time;
+	nsTime = vid_step_ns(comp->vid);
 	comp->tickCount += t;
 	comp->tickTotal += t;
 	comp->frmtCount += t;
-	if (comp->hw->sync)
-		comp->hw->sync(comp, nsTime);
+	cbHwSnc sync = comp->hw->sync;
+	if (sync == zx_sync)
+		zx_sync_in(comp, nsTime);
+	else if (sync)
+		sync(comp, nsTime);
 	if (comp->vid->newFrame) {
 		comp->vid->newFrame = 0;
 		comp->flgFRM = 1;
@@ -942,7 +999,6 @@ static int comp_step_end(Computer* comp, int unsynced, int t) {
 }
 
 int compExec(Computer* comp) {
-	comp->vid->time = 0;
 	comp->flgBRKPRE = 0;
 // breakpoints. A run-ahead frame is thrown away, so a break there would fire
 // twice: leave it to the pass that keeps its result
@@ -994,12 +1050,211 @@ int compExec(Computer* comp) {
 	return comp_step_end(comp, res2 - res4, res2);
 }
 
+// What fast mode asks of any machine before it puts steps together (comp_halt_skip,
+// comp_run_quiet): the core is the Z80's own, ending in comp_end(); nothing looks
+// between the steps (no watch, breakpoint, debugger, run-ahead pass, recording); no
+// NMI or spoiled fetch waits; the devices take their time summed; and the machine's
+// own step end allows it (hwQuiet.ok). NULL: step one at a time.
+static const hwQuiet* comp_quiet_ok(Computer* comp) {
+	const hwQuiet* q = comp->hw->quiet;
+	CPU* cpu = comp->cpu;
+	if (!q || !cpu->core || (cpu->core->exec != z80_exec) || (cpu->xend != comp_end)) return NULL;
+	if (!comp_unwatched(comp) || comp->flgMAP || comp->flgHEAT) return NULL;
+	if (comp->flgNMIRQ || comp->snowBad) return NULL;
+	if (!comp_devs_summable(comp)) return NULL;
+	if (q->ok && !q->ok(comp)) return NULL;
+	return q;
+}
+
+// An M1 at adr does nothing but fetch, on a machine reading through stdMRd/asicMRd
+// (hwq_zx's fetch): it pages no TR-DOS and the ULA does not contend it
+int zx_fetch_quiet(Computer* comp, int adr) {
+	MemPage* pg = mem_get_page(comp->mem, adr);
+	if ((comp->dif->type == DIF_BDI) && bdi_fetch_pages(comp, pg, adr)) return 0;
+	if (!comp->cpu->flgCONT) return 1;
+	if (comp->cpu->xcont != comp_cont) return 0;
+	return !comp->mem->cont[(adr >> 8) & 0xff];		// the pages vid_cont_hit() hits (comp_cont_map)
+}
+
+// A halted cpu runs an M1 every 4 T at the byte after the HALT, and with nothing to
+// wake it up nothing but the time moves. Up to the next thing the machine would see
+// - the INT, the frame end, a line INT - the steps are taken in one go, leaving what
+// they would have left: R counted on, the ticks counted, the video and the devices
+// given the time (comp_quiet_ok). Not where the fetch itself does anything
+// (hwQuiet.fetch: contention, TR-DOS paging, a cache it changes), nor with the
+// refresh snowing from a slow bank.
+// Fast mode only: in real time the sound takes samples between the steps.
+// 1 when it went, *ns the time it took.
+int comp_halt_skip(Computer* comp, int* ns) {
+	CPU* cpu = comp->cpu;
+	if (!cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
+	const hwQuiet* q = comp_quiet_ok(comp);
+	if (!q || !q->fetch) return 0;
+	if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI])) return 0;	// zx_snow's banks
+	if (!q->fetch(comp, (cpu->regPC + 1) & 0xffff)) return 0;
+	Video* vid = comp->vid;
+	vid_settle(vid);
+	if (vid->nsDrawFixed < 0) return 0;
+	long long d = vid_quiet_dots(vid, q->lineInt && (vid->inten & 2));
+	long long step = 4 * comp->nsPerTickFixed;
+	if (step <= 0) return 0;
+	long long n = (d * vid->nsPerDotFixed - vid->nsDrawFixed - 1) / step;
+	if (n < 2) return 0;
+	if (n > 0x10000) n = 0x10000;
+	cpu->regR = (unsigned char)(cpu->regR + n);
+	cpu->flgQ = 0;			// what the steps before left: HALT writes no flags
+	cpu->flgFW = 0;
+	comp->flgBRKPRE = 0;
+	res4 = 0;
+	*ns = comp_step_end(comp, (int)(n * 4), (int)(n * 4));
+	return 1;
+}
+
+// The core's straight way to memory for the step about to run (CPU.rdp/m1p/wrp):
+// what memrd() and memwr() come to on a machine whose reads and writes are
+// stdMRd/stdMWr and that nothing watches - but for the opcode fetches that page
+// TR-DOS in or out (m1p, m1dos leave those pages to stdMRd) and a fetch the
+// snow spoils (no table while snowBad stands; zx_snow takes them away when it
+// sets it). stdMRd() takes m1p away when it pages, for the rest of the step.
+// The +2A/+3's asicMRd/asicMWr are stdMRd/stdMWr outside banks 4-7 (rdpa, wrpa).
+// The fetch table, which stdMRd() takes away when it pages TR-DOS:
+static inline unsigned char* const* comp_m1_tab(Computer* comp) {
+	Memory* mem = comp->mem;
+	int bdi = (comp->dif->type == DIF_BDI);
+	if (comp->hw->mrd == asicMRd)
+		return bdi ? NULL : mem->rdpa;
+	return (comp->flgDOS && bdi) ? mem->m1dos : mem->m1p;
+}
+
+// The rule for the tables: they are picked from hw->mrd/mwr, the watch flags, snowBad,
+// the rzx state, the bus mask, and flgDOS with a Beta disk. The pages they point to
+// follow every remap by themselves (memSetBank keeps them), so only those inputs
+// matter, and inside a step only two can move under them: stdMRd() paging TR-DOS
+// (drops m1p) and zx_snow() setting snowBad (drops rdp, m1p). Anything else that sets
+// them - an OUT that pages TR-DOS, a debugger flag - comes between steps, where the
+// tables are picked again; a quiet run re-picks m1p after a drop and ends at i/o.
+static inline void comp_mem_direct(Computer* comp) {
+	CPU* cpu = comp->cpu;
+	int rd = (comp->hw->mrd == stdMRd);
+	int wr = (comp->hw->mwr == stdMWr);
+	int asic = (comp->hw->mrd == asicMRd) && (comp->hw->mwr == asicMWr);
+	if (!(rd | wr | asic)) return;
+	if (comp_mem_watched(comp) || comp->snowBad || comp->rzx.play || comp->rzx.rec.on || (cpu->busmask != 0xffff)) return;
+	Memory* mem = comp->mem;
+	if (rd | asic) {
+		cpu->rdp = asic ? mem->rdpa : mem->rdp;
+		cpu->m1p = comp_m1_tab(comp);
+	}
+	if (wr | asic)
+		cpu->wrp = asic ? mem->wrpa : mem->wrp;
+}
+
+// compExec() for a machine nothing looks at between its steps: no breakpoint,
+// no debugger, no recording playing or being made (the caller makes sure)
+int comp_exec_quiet(Computer* comp) {
+	comp->flgBRKPRE = 0;
+	res4 = 0;
+	comp_mem_direct(comp);
+	CPU* cpu = comp->cpu;
+	if (cpu->core && (cpu->core->exec == z80_exec) && (cpu->xend == comp_end))
+		res2 = comp_exec_z80_in(comp, comp_ack_kind(comp));		// comp_end() inline
+	else
+		res2 = cpu_exec(cpu);
+	comp->cpu->rdp = NULL;
+	comp->cpu->m1p = NULL;
+	comp->cpu->wrp = NULL;
+	if (comp->cpu->flgINTOK) comp->intTaken++;
+	comp->cpu->flgINTOK = 0;
+	comp->cpu->flgNMIOK = 0;
+	return comp_step_end(comp, res2 - res4, res2);
+}
+
+// The devices given the time of the instructions a quiet run has finished, as
+// their own step ends would have given it: an i/o access is about to show them
+// to the machine or to change them, and the run ends with that instruction. The
+// NMI is left to the step end.
+void comp_run_io_slow(Computer* comp) {
+	comp->runIO = 1;
+	long long s = comp->runStep;
+	if (!s) return;
+	Video* vid = comp->vid;
+	comp->runStep = 0;
+	vid->stepFixed -= s;
+	int ns = vid_clock(vid, s);		// the dots s completes: what the steps' ns add up to
+	comp->runNs += ns;
+	comp->hw->quiet->devs(comp, ns);
+}
+
+// Fast mode: steps run on in one go while nothing but the instructions happens.
+// Each one is the core's own - fetch, contention, snow, the INT sample - and only
+// its step end is put off: the time made into ns and handed to the devices, which
+// take it in any pieces alike (comp_devs_summable) - at the end of the run, or at
+// an i/o access in between, which ends the run. It ends as well on a new frame,
+// an interrupt the cpu takes next, a HALT (comp_halt_skip's), snow that spoils the
+// next fetch, a breakpoint, or a pc in stops while the rom is in.
+// 0 when the machine is not one to run on (the caller steps), else 1 and *ns.
+int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
+	CPU* cpu = comp->cpu;
+	if (cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
+	const hwQuiet* q = comp_quiet_ok(comp);
+	if (!q) return 0;
+	// the machine's own part of a step end, done after every step but the last,
+	// whose step end is the real one (hwQuiet.step)
+	void (*step)(Computer*) = q->step;
+	int ack = q->ack;
+	cbHwSnc sync = comp->hw->sync;
+	Video* vid = comp->vid;
+	comp->flgBRKPRE = 0;
+	comp->runOn = 1;
+	comp->runIO = 0;
+	comp->runNs = 0;
+	comp->runStep = 0;
+	comp_mem_direct(comp);
+	int direct = (cpu->m1p != NULL);
+	for (;;) {
+		res4 = 0;
+		int t = comp_exec_z80_in(comp, ack);
+		// comp_step_end() but for the ns and the devices
+		vid_sync_lazy(vid, ticks_to_ns_fixed(comp, t - res4));
+		comp->tickCount += t;
+		comp->tickTotal += t;
+		comp->frmtCount += t;
+		if (vid->newFrame || comp->runIO || comp->flgBRK || cpu->flgHALT || (cpu->intrq & cpu->inten) || comp->snowBad) break;
+		if (stops && (cpu->regPC < 0x4000) && zx_rom_active(comp)) {
+			int i;
+			for (i = 0; (i < nstops) && (cpu->regPC != stops[i]); i++);
+			if (i < nstops) break;
+		}
+		if (step) step(comp);
+		comp->runStep = vid->stepFixed;
+		if (direct && !cpu->m1p)		// stdMRd() paged TR-DOS
+			cpu->m1p = comp_m1_tab(comp);
+	}
+	cpu->rdp = NULL;
+	cpu->m1p = NULL;
+	cpu->wrp = NULL;
+	// what the instructions before the last are owed, then the last one's own step end
+	comp_run_io_slow(comp);
+	comp->runOn = 0;
+	int last = vid_step_ns(vid);
+	if (sync == zx_sync)
+		zx_sync_in(comp, last);
+	else
+		sync(comp, last);
+	if (vid->newFrame) {
+		vid->newFrame = 0;
+		comp->flgFRM = 1;
+		if (xreplay_on) xreplay_frame(comp);
+	}
+	*ns = comp->runNs + last;
+	return 1;
+}
+
 // Time passing with the cpu standing still: what compExec() does once the
 // opcode has run, for a caller that has already put the cpu where that time
 // leaves it. Syncing video and devices in one piece gives what a run of
 // opcodes gives them - every one of them carries its fractions over.
 int comp_skip_ticks(Computer* comp, int t) {
-	comp->vid->time = 0;
 	res4 = 0;
 	return comp_step_end(comp, t, t);
 }
@@ -1010,6 +1265,7 @@ int comp_skip_ticks(Computer* comp, int t) {
 // caused are spent, and where the beam stands now is where the next one starts
 
 void comp_brk_newstep(Computer* comp) {
+	if (comp->vid) vid_settle(comp->vid);		// the ray as it stands, not as counted
 	comp->brkev.rd = -1;
 	comp->brkev.wr = -1;
 	comp->brkev.mdt = -1;

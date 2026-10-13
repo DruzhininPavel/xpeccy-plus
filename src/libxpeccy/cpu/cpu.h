@@ -152,6 +152,22 @@ struct CPU {
 	cbiack xack;			// interrupt vector acknowledge
 	cbirq xirq;			// send signal
 	void (*xcont)(void*, int);	// contend the bus cycle about to start (mreq)
+	// where xcont has something to do: an address's 256-byte page set in contp
+	// (NULL: everywhere), and an internal cycle only if contInt
+	unsigned char* contp;
+	int contInt;
+	// the refresh is reported (flgRFSH) where I's page is set in rfshp (NULL: everywhere)
+	unsigned char* rfshp;
+	// Memory straight, where the machine allows it for the instruction about to
+	// run: the bytes of a 256-byte page by A15..A8, NULL for a page that has to
+	// go through mrd/mwr - or the whole table NULL. m1p is for opcode fetches.
+	unsigned char* const* rdp;
+	unsigned char* const* m1p;
+	unsigned char* const* wrp;
+	// the two signals sent on every instruction, straight to their handlers:
+	// xirq(IRQ_CPU_ACK) and xirq(IRQ_CPU_SYNC) unless the machine says otherwise
+	cbcpu xend;			// the end of an instruction, where INT is sampled
+	cbcpu xsync;			// a write is about to go out
 	void* xptr;			// pointer to external data (almost always Computer*)
 	// core: runtime callbacks (depends on type)
 	struct cpuCore* core;

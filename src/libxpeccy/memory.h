@@ -42,6 +42,21 @@ typedef struct {
 
 typedef struct {
 	MemPage map[256];			// 256 x 256 | 256 x 64K
+	// map[] as plain bytes, for the cpu to read and write straight (CPU.rdp/m1p/wrp):
+	// a page memSetBank() gave memStdRd/memStdWr, NULL where its callback has to run.
+	// Worked out from map[] (mem_derive), so no snapshot holds them.
+	unsigned char* rdp[256];
+	unsigned char* wrp[256];
+	unsigned char* m1p[256];		// rdp less the rom at #3Dxx, whose fetch pages TR-DOS in
+	unsigned char* m1dos[256];		// ...and less the ram, whose fetch pages it out
+	unsigned char* rdpa[256];		// rdp and wrp less the ram banks 4-7, where the +2A/+3
+	unsigned char* wrpa[256];		// gate array latches what passes (asicMRd)
+	unsigned char slow[256];		// ram pages in an odd 16K bank: where the ULA snows from
+	short bank[256];			// the 16K bank of a ram page, -1 for any other
+	// ram pages the ULA contends: a page whose address has contBit set (mem_set_cont,
+	// the bit vid_cont_bit() gives); the cpu reports a bus cycle only there (CPU.contp)
+	unsigned char cont[256];
+	int contBit;
 	unsigned char ramData[MEM_4M];		// 4M
 	unsigned char romData[MEM_512K];	// 512K
 	int ramSize;
@@ -53,6 +68,16 @@ typedef struct {
 	int pgshift;	// = log2(page size), 8 for 256-pages, 16 for 64K-pages
 	int busmask;	// cpu addr bus mask (todo: move to CPU)
 } Memory;
+
+// The rules the tables above are made by, each the one copy its users share:
+// a slow 16K bank - the ULA's, which it snows from (zx_snow)
+static inline int mem_bank_slow(int bank) {return bank & 1;}
+// a bank the +2A/+3 gate array latches what passes in (asic_latch)
+static inline int mem_bank_asic(int bank) {return bank & 4;}
+// a page an opcode fetch pages TR-DOS in from: the rom at #3Dxx (bdi_fetch_pages),
+// and one it pages it out from: ram
+static inline int mem_m1_dos_in(const MemPage* pg, int page) {return (pg->type == MEM_ROM) && ((page & 0x3f) == 0x3d);}
+static inline int mem_m1_dos_out(const MemPage* pg) {return pg->type == MEM_RAM;}
 
 Memory* memCreate(void);
 void memDestroy(Memory*);
@@ -95,6 +120,8 @@ void memSetSize(Memory*, int, int);
 size_t mem_ram_extent(Memory*);
 void mem_cold_fill(Memory*, const unsigned char*, int, int);
 void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, extmwr wr, void* data);
+void mem_set_cont(Memory*, int bit);	// the address bit of a contended page, 0: none
+void mem_derive(Memory*);		// rdp..slow and cont again, after map[] was written behind memSetBank()
 
 void memPutData(Memory*,int,int,int,char*);
 

@@ -159,6 +159,9 @@ void conf_init(char* confdir) {
 	conf.emu.slowHold = XHOLD_HYBRID;
 	conf.emu.ffHold = XHOLD_HYBRID;
 	conf.emu.fastHold = XHOLD_HYBRID;
+	conf.emu.fastPic = FPIC_RASTER;
+	conf.emu.fastFps = 30;
+	conf.emu.pauseReq = 0;
 	conf.emu.rewind.on = 1;
 	conf.emu.rewind.step = 3;
 	conf.emu.rewind.secs = 30;
@@ -281,6 +284,8 @@ void saveConfig() {
 	fprintf(cfile, "slowmo.hold = %s\n", holdNames[conf.emu.slowHold]);
 	fprintf(cfile, "ffwd.hold = %s\n", holdNames[conf.emu.ffHold]);
 	fprintf(cfile, "fast.hold = %s\n", holdNames[conf.emu.fastHold]);
+	fprintf(cfile, "fast.picture = %s\n", (conf.emu.fastPic == FPIC_WHOLE) ? "whole" : "raster");
+	fprintf(cfile, "fast.fps = %i\n", conf.emu.fastFps);
 	fprintf(cfile, "rewind = %s\n", YESNO(conf.emu.rewind.on));
 	fprintf(cfile, "rewind.step = %i\n", conf.emu.rewind.step);
 	fprintf(cfile, "rewind.secs = %i\n", conf.emu.rewind.secs);
@@ -1105,6 +1110,8 @@ void loadConfig() {
 					if (pnam=="slowmo.hold") conf.emu.slowHold = hold_mode(pval);
 					if (pnam=="ffwd.hold") conf.emu.ffHold = hold_mode(pval);
 					if (pnam=="fast.hold") conf.emu.fastHold = hold_mode(pval);
+					if (pnam=="fast.picture") conf.emu.fastPic = (pval == "whole") ? FPIC_WHOLE : FPIC_RASTER;
+					if (pnam=="fast.fps") conf.emu.fastFps = fast_fps_valid(atoi(arg.s));
 					if (pnam=="rewind") conf.emu.rewind.on = arg.b;
 					if (pnam=="rewind.step") conf.emu.rewind.step = getRanged(arg.s, 1, 50);
 					if (pnam=="rewind.secs") conf.emu.rewind.secs = getRanged(arg.s, 5, 300);

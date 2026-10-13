@@ -1,14 +1,15 @@
 #include "hardware.h"
 #include "../xlog.h"
 #include "../cpu/Z80/z80.h"
+#include "zx_step.h"
 
 #include <stdio.h>
 #include <string.h>
 
 #define flgMEN	flag[0]		// 15AF[4] = FM_EN
-#define flgVDOS	flag[1]
-#define flgLINT	flag[2]		// 1 on vid->intLINE, 0 on line int ack
-#define flgDINT	flag[3]		// (same for dma int)
+#define flgVDOS	TSL_FLG_VDOS
+#define flgLINT	TSL_FLG_LINT
+#define flgDINT	TSL_FLG_DINT
 
 #define regMADR	reg[16]		// 15AF[0..3] = MapAddr
 #define dmaLen	reg[17]
@@ -136,9 +137,9 @@ void tslUpdatePal(Computer* comp) {
 // 14 MHz a RAM read it cannot answer waits for the 7 MHz DRAM: 2 or 3 ticks by the phase
 // of the DRAM cycle, as unreal counts it. Writes do not wait; one to a cached word drops it.
 static int ts_cache_tag(Computer* comp, int adr) {
-	MemPage* pg = &comp->mem->map[(adr >> 8) & 0xff];
-	if (pg->type != MEM_RAM) return 0;
-	return 0x8000 | ((pg->num >> 6) << 5) | ((adr >> 9) & 0x1f);
+	int bank = comp->mem->bank[(adr >> 8) & 0xff];
+	if (bank < 0) return 0;
+	return 0x8000 | (bank << 5) | ((adr >> 9) & 0x1f);
 }
 
 static void ts_cache_rd(Computer* comp, int adr) {
@@ -182,6 +183,22 @@ int tslMRd(Computer* comp, int adr, int m1) {
 	}
 	ts_cache_rd(comp, adr);
 	return mem_rd_fast(comp->mem, adr);
+}
+
+// What tslMRd() does with an M1 at adr, doing it again: nothing, where TR-DOS is
+// neither entered nor left and the word is the cache's already (ts_cache_rd). A miss
+// writes the tag at any clock and waits at 14 MHz; one in an uncached window writes the
+// tag it holds again, which changes nothing but there. The DRAM cycle it counts is the
+// DMA's business, and the DMA is not running.
+static int ts_fetch_quiet(Computer* comp, int adr) {
+	if (comp->dif->type == DIF_BDI) {
+		if (comp->flgDOS && (adr >= 0x4000) && !comp->flgVDOS) return 0;
+		if (((adr & 0xff00) == 0x3d00) && comp->flgROM && !(comp->tsconf.p21af & 0x04)) return 0;
+	}
+	int tag = ts_cache_tag(comp, adr);
+	if (!tag) return 1;
+	if (comp->tsconf.cache[(adr >> 1) & 0xff] != tag) return 0;
+	return (comp->hwMul != 4) || (comp->tsconf.cacheConf & (1 << ((adr >> 14) & 3)));
 }
 
 static void tslRegWr(Computer* comp, int reg, int val);
@@ -631,6 +648,7 @@ static void ts_dma_rec_start(Computer* comp, int val) {
 	tsDmaRec* r = &comp->tsconf.dmalog.rec[comp->tsconf.dmalog.count % TS_DMALOG];
 	comp->tsconf.dmalog.count++;
 	r->fcnt = comp->vid->fcnt;
+	vid_settle(comp->vid);
 	r->line = comp->vid->ray.y;
 	r->dot = comp->vid->ray.x;
 	r->ctrl = val & 0xff;
@@ -677,7 +695,7 @@ static void ts_dma_run(Computer* comp, int ns) {
 }
 
 void ts_sync(Computer* comp, int ns) {
-	zx_sync(comp, ns);
+	zx_sync_in(comp, ns);
 	if (comp->tsconf.dma.act)
 		ts_dma_run(comp, ns);
 	comp->tsconf.cpuDram = 0;
@@ -826,6 +844,7 @@ static xPort tsPortMap[] = {
 
 // FMAPS register window: writing a byte there is the same as out to the matching #xxAF port
 static void tslRegWr(Computer* comp, int reg, int val) {
+	comp_run_io(comp);		// the ports, through memory
 	hwOut(tsPortMap, comp, (reg << 8) | 0xaf, val, 1);
 }
 
@@ -927,6 +946,18 @@ void ts_get_regs(Computer* comp, tsRegs* r) {
 	r->latT1g = (m & TSL_LAT_T1G) ? vid->tsconf.lat.t1g : r->t1gpage;
 }
 
+// fast mode's run on (hwQuiet): no dma running, whose time the per-step DRAM count
+// sets; with it idle the count only starts again at every step
+static int ts_quiet_ok(Computer* comp) {
+	return !comp->tsconf.dma.act;
+}
+
+static void ts_quiet_step(Computer* comp) {
+	comp->tsconf.cpuDram = 0;
+}
+
+static const hwQuiet ts_quiet = {HWQ_ACK_TS, ts_quiet_ok, ts_quiet_step, zx_devs_sync, ts_fetch_quiet, 1};
+
 // irq
 
 void ts_irq(Computer* comp, int t) {
@@ -961,16 +992,6 @@ void ts_irq(Computer* comp, int t) {
 			comp->vid->intDMA = 0;		// reset on vector request
 			break;
 		case IRQ_NMI:				// the NMI line is tied off on TSConf (top.v)
-			break;
-		case IRQ_CPU_ACK:
-			zx_irq(comp, t);
-			// line and dma hold until acked; the cpu drops INT on every ack it takes
-			if (comp->flgLINT || comp->flgDINT) {
-				comp->cpu->flgACK = 1;
-				comp->cpu->intrq |= Z80_INT;
-			}
-			if (comp->flgVDOS)
-				comp->cpu->flgACK = 0;
 			break;
 		default:
 			zx_irq(comp, t);
@@ -1018,4 +1039,5 @@ xPortDsc zx_port_tab_ts[] = {
 };
 
 HardWare tsl_hw_core = {HW_TSLAB,"TSConf","ZX Evolution (TSConf)",MEM_4M,1.0,NULL,zx_port_tab_ts,
-			zx_init,tslMapMem,tslOut,tslIn,tslMRd,tslMWr,ts_irq,ts_ack,tslReset,ts_sync,ts_keyp,ts_keyr,zx_vol};
+			zx_init,tslMapMem,tslOut,tslIn,tslMRd,tslMWr,ts_irq,ts_ack,tslReset,ts_sync,ts_keyp,ts_keyr,zx_vol,
+			NULL,NULL,&ts_quiet};

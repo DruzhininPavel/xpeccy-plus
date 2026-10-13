@@ -4,6 +4,7 @@
 #include "../ldbytes.h"
 #include "../filetypes/filetypes.h"
 #include "../cpu/Z80/z80.h"
+#include "zx_step.h"
 
 int compflags = 0;
 
@@ -26,25 +27,7 @@ void zx128_map_mem(Computer* comp, int extMask) {
 // INT handle/check
 
 void zx_sync(Computer* comp, int ns) {
-	// devices. This runs once per instruction, so the ones that are idle or
-	// not there at all are asked by the flag they check first, not by a call
-	if (comp->dif->fdc->plan || comp->dif->doors)
-		difSync(comp->dif, ns);
-	if (comp->gs->enable)
-		gsSync(comp->gs, ns);
-	if (comp->saa->enabled)
-		saaSync(comp->saa, ns);
-	tsSync(comp->ts, ns);
-	tapSync(comp->tape, ns);
-	bcSync(comp->beep, ns);
-	if (comp->keyb->per) kbd_sync(comp->keyb, ns);		// a key is held: ps/2 auto-repeat
-	// nmi
-	if ((comp->cpu->regPC > 0x3fff) && comp->flgNMIRQ) {
-		comp->cpu->intrq |= Z80_NMI;	// request nmi
-		comp->flgDOS = 1;			// set dos page
-		comp->flgROM = 1;
-		comp->hw->mapMem(comp);
-	}
+	zx_sync_in(comp, ns);
 }
 
 
@@ -76,13 +59,13 @@ void zx_contend_adr(Computer* comp, int adr, int mreq) {
 // The 16K bank an address sits in, 0 if it is not ram. The odd ones are the
 // slow banks the ULA shares with the cpu.
 int zx_bank_of(Computer* comp, int adr) {
-	MemPage* pg = mem_get_page(comp->mem, adr);
-	return (pg->type == MEM_RAM) ? ((pg->num << comp->mem->pgshift) >> 14) : 0;
+	int bank = comp->mem->bank[(adr >> 8) & 0xff];
+	return (bank < 0) ? 0 : bank;
 }
 
 void zx_snow(Computer* comp) {
 	int bank = zx_bank_of(comp, comp->cpu->regI << 8);
-	if (!(bank & 1)) return;		// not a contended bank
+	if (!mem_bank_slow(bank)) return;		// not a contended bank
 	if (!vid_snow(comp->vid, z80_get_r(comp->cpu),
 			(bank & 4) | (comp->vid->vidPage & 2) | 1)) return;
 	// Some 128K machines hang or reset under snow and others take it without a
@@ -92,7 +75,11 @@ void zx_snow(Computer* comp) {
 	// over leaves the ram addressed the way the ULA left it, and the next
 	// opcode fetched from a slow bank comes back from the wrong place. memrd()
 	// is the other half; it wants the same address bits the snow used.
-	if (comp->flgSNOWX) comp->snowBad = 0x80 | (z80_get_r(comp->cpu) & 0x7f);
+	if (comp->flgSNOWX) {
+		comp->snowBad = 0x80 | (z80_get_r(comp->cpu) & 0x7f);
+		comp->cpu->rdp = NULL;		// the next read is memrd()'s (comp_mem_direct)
+		comp->cpu->m1p = NULL;
+	}
 }
 
 void zx_irq(Computer* comp, int t) {
@@ -133,27 +120,19 @@ void zx_irq(Computer* comp, int t) {
 		case IRQ_NMI:				// zx_sync takes it from here
 			comp->flgNMIRQ = 1;
 			break;
-		case IRQ_CPU_ACK: {
-			// an instruction that ends in an i/o cycle leaves the video at its
-			// end, a tick past the one the cpu samples INT in: a pulse that
-			// began inside that tick is not there yet
-			int ahead = res4 - comp->cpu->t;
-			// lazy: dots still counted cross no event, so they leave intFRAME
-			// zero or not as it is, and a step back (ahead) walks them first
-			comp_vid_to_t(comp);
-			int act = comp->vid->intFRAME;
-			if (act && (ahead > 0) && (comp->vid->intlen - act < ahead * comp->nsPerTickFixed / comp->vid->nsPerDotFixed))
-				act = 0;
-			comp->cpu->flgACK = !!act && !comp->rzx.play;
-			// INT is a level: taken early in the pulse, it is taken again as soon
-			// as interrupts are back on and the pulse is still there (fuse does
-			// the same from EI). Butler's 128K timing tests count on it.
-			if (act && !comp->rzx.play)
-				comp->cpu->intrq |= Z80_INT;
-			break;
-		}
 	}
 }
+
+void zx_devs_sync(Computer* comp, int ns) {
+	zx_devs_sync_in(comp, ns);
+}
+
+int hwq_no_turbo(Computer* comp) {
+	return comp->hwMul < 2;
+}
+
+const hwQuiet hwq_zx = {HWQ_ACK_ZX, NULL, NULL, zx_devs_sync, zx_fetch_quiet, 0};
+const hwQuiet hwq_zx_nohalt = {HWQ_ACK_ZX, NULL, NULL, zx_devs_sync, NULL, 0};
 
 int zx_ack(Computer* comp) {
 	return comp->intVector & 0xff;
@@ -296,10 +275,9 @@ int zx_in_float(Computer* comp, int port) {
 
 // The bus a +2A/+3 hands back between those fetches can be the last byte that
 // went to or came from contended memory, so those two machines watch their own
-// accesses for it. `zx_bank_of() & 4` is banks 4-7, the set their gate array
-// contends.
+// accesses for it: banks 4-7, the set their gate array contends (mem_bank_asic).
 static void asic_latch(Computer* comp, int adr, int val) {
-	if (!(zx_bank_of(comp, adr) & 4)) return;
+	if (!mem_bank_asic(zx_bank_of(comp, adr))) return;
 	comp->fbusLast = val & 0xff;
 	comp->fbusTick = comp->tickCount + comp->cpu->t;
 }

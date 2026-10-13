@@ -35,6 +35,7 @@ bin t19_timing_m0.bin    t19_timing.asm     MODE=0
 bin t19_timing_m1.bin    t19_timing.asm     MODE=1
 bin t19_timing_m2.bin    t19_timing.asm     MODE=2
 bin t19_timing_m3.bin    t19_timing.asm     MODE=3
+bin t20_fntlatch.bin     t20_fntlatch.asm
 
 run t01_vmode_3_00   t01_vmode_3_00.bin   3
 run t01_vmode_3_01   t01_vmode_3_01.bin   3
@@ -69,6 +70,8 @@ run t19_timing_m0    t19_timing_m0.bin    5   TICKS=1
 run t19_timing_m1    t19_timing_m1.bin    5   TICKS=1
 run t19_timing_m2    t19_timing_m2.bin    5   TICKS=1
 run t19_timing_m3    t19_timing_m3.bin    5   TICKS=1
+run t20_fntlatch     t20_fntlatch.bin     40
+run t20_fntlatch_nd  t20_fntlatch.bin     40  NODRAW=1
 
 # The debugger's view of the BaseConf state (evo_get_regs)
 run e01_regs_pager   t15_pager.bin        3   EVOREGS=1

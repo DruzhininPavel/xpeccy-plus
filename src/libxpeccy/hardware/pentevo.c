@@ -189,6 +189,24 @@ static void evo_cache_wr(Computer* comp, int adr) {
 	if (comp->xregData.w == tag) comp->xregData.w = 0;
 }
 
+// What evoMRd() does with an M1 at adr, doing it again: nothing, where TR-DOS is
+// neither entered nor left, no NMI page comes or goes and the cache stays as it is
+// (evo_cache_rd): a ram word it holds, or a rom fetch with both words empty already.
+// A miss takes the word at any clock, and waits only at 14 MHz (comp_halt_skip).
+static int evo_fetch_quiet(Computer* comp, int adr) {
+	if (comp->regM1CNT || (comp->flgNMIS && (adr == 0x0066))) return 0;
+	if ((comp->regBF & 0x10) && (adr == comp->xregBRKA.w)) return 0;
+	if (comp->dif->type == DIF_BDI) {
+		int win = (adr >> 14) & 3;
+		if (comp->flgDOS && (comp->prt2 & 0x40) && (comp->memFlag((comp->flgROM << 2) | win) & 0x40)) return 0;
+		if (((adr & 0x3f00) == 0x3d00) && comp->flgROM && ((comp->memFlag(4 | win) & 0xc0) == 0x80)) return 0;
+	}
+	if (mem_get_page(comp->mem, adr)->type != MEM_RAM)
+		return !comp->xregCode.w && !comp->xregData.w;
+	int tag = 0x8000 | (adr >> 1);
+	return (comp->xregCode.w == tag) || (comp->xregData.w == tag);
+}
+
 int evoMRd(Computer* comp, int adr, int m1) {
 	if (!m1) {
 		evo_cache_rd(comp, adr, 0);
@@ -315,7 +333,7 @@ int evoInCfg(Computer* comp, int port) {
 			// with pal444 the low colour bits (video_palframe.v palcolor)
 			case 0x0d00: res = (((comp->regBF & 0x20) ? comp->regPalLo(comp->vid->nextbrd & 0x0f)
 					: comp->regPal(comp->vid->nextbrd & 0x0f)) & 0xf3) | 0x0c; break;
-			case 0x0e00: res = comp->vid->fntbyte; break;	// font byte the text mode is showing
+			case 0x0e00: res = vid_fntbyte(comp->vid); break;	// font byte the text mode is showing
 			case 0x0f00: res = comp->vid->nextbrd & 0x0f; break;	// last one written
 			case 0x1000: res = comp->xregBRKA.l; break;
 			case 0x1100: res = comp->xregBRKA.h; break;
@@ -856,6 +874,9 @@ xPortDsc evo_port_tab[] = {
 	{-1, 0, 0}
 };
 
+// evo_irq acknowledges as zx_irq; the NMI it arms comes in on the frame INT event
+static const hwQuiet evo_quiet = {HWQ_ACK_ZX, NULL, NULL, zx_devs_sync, evo_fetch_quiet, 0};
+
 HardWare evo_hw_core = {HW_PENTEVO,"Baseconf","ZX Evolution (BaseConf)",MEM_4M,1.0,NULL,evo_port_tab,
 			zx_init,evoMapMem,evoOut,evoIn,evoMRd,evoMWr,evo_irq,evo_ack,evoReset,zx_sync,evo_keyp,evo_keyr,zx_vol,
-			evo_snap_map};
+			evo_snap_map,NULL,&evo_quiet};

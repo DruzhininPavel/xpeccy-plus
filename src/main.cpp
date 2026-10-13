@@ -107,6 +107,8 @@ void help() {
 	printf("--bench-save FILE\ta snapshot at the end, in the format its extension names\n");
 	printf("--bench-state FILE\tthe raw machine state at the end, sizes of its parts in FILE.idx\n");
 	printf("--bench-nodraw\t\tdraw no picture\n");
+	printf("--bench-hash-every N\tonly every Nth frame goes into the frames hash\n");
+	printf("--bench-draw-every N\tthe same, and the frames between are not drawn\n");
 	printf("--bench-heat\t\tcollect the memory heat map, hashed with --bench-hash\n");
 	printf("--bench-prof FILE\tWindows only: a sampled profile of the emulation\n");
 	printf("Checks of the emulator itself:\n");
@@ -668,6 +670,11 @@ int main(int ac,char** av) {
 				ethread.benchRecNmi = atoi(av[i++]);
 			} else if (!strcmp(parg,"--bench-state")) {
 				bnState = av[i++];
+			} else if (!strcmp(parg,"--bench-hash-every")) {
+				ethread.benchHashEvery = atoi(av[i++]);
+			} else if (!strcmp(parg,"--bench-draw-every")) {
+				ethread.benchDrawEvery = atoi(av[i++]);
+				ethread.benchHashEvery = ethread.benchDrawEvery;
 			} else if (!strcmp(parg,"--bench-keys")) {
 				ethread.benchKeys = av[i++];
 			} else if (!strcmp(parg,"--bench-loops")) {

@@ -57,14 +57,20 @@ int z80_mrdx(CPU* cpu, int adr, int m1) {
 	cpu->adr = adr;
 	// A machine that contends nothing has nothing to say here, and the ray
 	// reaches the same dot at the transfer either way
-	if (cpu->flgCONT)
+	if (cpu->flgCONT && (!cpu->contp || cpu->contp[(adr >> 8) & 0xff]))
 		cpu->xcont(cpu->xptr, 1);		// wait states, sampled at T1
 	cpu->t += 2;		// T1, T2
 	// No sync before a read: the ray only has to be where it is for a write,
 	// which can change what the video is about to draw. A read changes
 	// nothing, and the ticks it took are counted in at the end of the
 	// instruction like the rest.
-	int r = cpu->mrd(adr, m1, cpu->xptr) & 0xff;
+	unsigned char* const* tab = m1 ? cpu->m1p : cpu->rdp;
+	unsigned char* p;
+	int r;
+	if (tab && (p = tab[(adr >> 8) & 0xff]))
+		r = p[adr & 0xff];
+	else
+		r = cpu->mrd(adr, m1, cpu->xptr) & 0xff;
 	cpu->t++;		// T3
 	return r;
 }
@@ -73,7 +79,7 @@ int z80_mrdx(CPU* cpu, int adr, int m1) {
 // Ferranti ULA contends it just the same. One call per tick, as in fuse.
 void z80_wait(CPU* cpu, int adr, int n) {
 	cpu->adr = adr;
-	if (!cpu->flgCONT) {		// see z80_mrdx
+	if (!cpu->flgCONT || (cpu->contp && (!cpu->contInt || !cpu->contp[(adr >> 8) & 0xff]))) {	// see z80_mrdx
 		cpu->t += n;
 		return;
 	}
@@ -94,11 +100,15 @@ int z80_mrd(CPU* cpu, int adr) {
 
 void z80_mwr(CPU *cpu, int adr, int data) {
 	cpu->adr = adr;
-	if (cpu->flgCONT)
+	if (cpu->flgCONT && (!cpu->contp || cpu->contp[(adr >> 8) & 0xff]))
 		cpu->xcont(cpu->xptr, 1);		// wait states, sampled at T1
 	cpu->t += 2;		// T1, T2
-	cpu_irq(cpu, IRQ_CPU_SYNC);	// the ray up to the transfer: a write can change what is drawn next
-	cpu->mwr(adr, data, cpu->xptr);
+	cpu->xsync(cpu);		// the ray up to the transfer: a write can change what is drawn next
+	unsigned char* p;
+	if (cpu->wrp && (p = cpu->wrp[(adr >> 8) & 0xff]))
+		p[adr & 0xff] = data;
+	else
+		cpu->mwr(adr, data, cpu->xptr);
 	cpu->t++;		// T3
 }
 
@@ -179,8 +189,9 @@ int z80_int(CPU* cpu) {
 	return res;
 }
 
-int z80_exec(CPU* cpu) {
+static inline __attribute__((always_inline)) int z80_exec_in(CPU* cpu, int* end) {
 	int res = 0;
+	*end = 0;
 	if (cpu->intrq & cpu->inten) {
 		res = z80_int(cpu);
 	}
@@ -191,6 +202,22 @@ int z80_exec(CPU* cpu) {
 		cpu->opTab = npTab;
 		cpu->flgQ = cpu->flgFW;		// what the instruction before did
 		cpu->flgFW = 0;
+		if (cpu->flgHALT) {
+			// Halted, the cpu runs M1 cycles that execute nothing, and their
+			// address is the byte after the HALT - pc stays on the HALT here,
+			// to be stepped past when an interrupt ends it. A HALT on the last
+			// byte of contended memory is fetched there but halts outside it
+			// (Woodmass's HALT2INT, against a real 48K and 128K).
+			z80_mrdx(cpu, (cpu->regPC + 1) & 0xffff, 1);
+			cpu->com = 0x76;
+			cpu->op = &npTab[0x76];
+			cpu->regR++;
+			if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI]))
+				cpu->xirq(IRQ_CPU_RFSH, cpu->xptr);
+			cpu->t++;				// T4
+			*end = 1;
+			return cpu->t;
+		}
 		do {
 			cpu->com = z80_fetch(cpu); // cpu->mrd(cpu->pc++,1,cpu->xptr);
 			cpu->op = &cpu->opTab[cpu->com];
@@ -202,7 +229,7 @@ int z80_exec(CPU* cpu) {
 			// ULA contends those one tick at a time.
 			// T4 is also the refresh cycle: IR goes on the bus with MREQ, and
 			// a machine that emulates ULA snow wants to know when
-			if (cpu->flgRFSH)
+			if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI]))
 				cpu->xirq(IRQ_CPU_RFSH, cpu->xptr);
 			cpu->t++;				// T4
 			if (cpu->op->t > 4)
@@ -210,8 +237,21 @@ int z80_exec(CPU* cpu) {
 			cpu->op->exec(cpu);
 		} while (cpu->op->flag & OF_PREFIX);
 		res = cpu->t;
+		*end = 1;
+	}
+	return res;
+}
+
+int z80_exec_open(CPU* cpu, int* end) {
+	return z80_exec_in(cpu, end);
+}
+
+int z80_exec(CPU* cpu) {
+	int end;
+	int res = z80_exec_in(cpu, &end);
+	if (end) {
 		cpu->t--;
-		cpu_irq(cpu, IRQ_CPU_ACK);
+		cpu->xend(cpu);
 		cpu->t++;
 	}
 	return res;

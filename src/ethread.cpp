@@ -136,6 +136,8 @@ xThread::xThread() {
 	benchRecFinal = 0;
 	benchRecNmi = 0;
 	benchKeys = NULL;
+	benchHashEvery = 1;
+	benchDrawEvery = 0;
 	earBlock = -1;
 	conf.emu.fast = 0;
 	finish = 0;
@@ -558,6 +560,19 @@ static const uint32_t* af_look_ahead(Computer* comp, int wound, int finish) {
 	return (got == AF_AHEAD) ? afFrames.data() : NULL;
 }
 
+// The rom's tape entry points the hooks act on, with the rom in: LD-BYTES from its
+// start and from its edge loop, and SA-BYTES. Fast mode's run on stops on them.
+enum {TAPE_HOOK_LOAD, TAPE_HOOK_EDGE, TAPE_HOOK_SAVE, TAPE_HOOKS};
+static const int tapeHookPc[TAPE_HOOKS] = {LD_ROM_BASE + LDC_START, LD_ROM_BASE + LDC_EDGE1, 0x4d0};
+
+static int tape_hook_at(Computer* comp) {
+	if (!zx_rom_active(comp)) return -1;
+	int pc = comp->cpu->regPC;
+	for (int i = 0; i < TAPE_HOOKS; i++)
+		if (pc == tapeHookPc[i]) return i;
+	return -1;
+}
+
 void xThread::emuCycle(Computer* comp) {
 	int tm;
 	int brkskip = 0;
@@ -586,6 +601,7 @@ void xThread::emuCycle(Computer* comp) {
 			rewinding = false;
 		}
 		// exec 1 opcode (or handle INT, NMI)
+		int hooks = 1;		// the tape hooks below are still to look at the last step
 		if (conf.emu.pause) {
 			sndNsFixed += NS_TO_FIXED(1000);
 		} else {
@@ -595,6 +611,39 @@ void xThread::emuCycle(Computer* comp) {
 				tm = compExec(comp);
 				comp->flgDBG = brkskip;
 				brkskip = 0;
+			} else if (conf.emu.fast && !comp->gs->enable && !brk_cond_n && comp_unwatched(comp)
+					&& !vrecWatch.load(std::memory_order_relaxed)) {
+				// Fast mode with nothing to look at between the steps: run them on
+				// until one ends a frame, breaks, or leaves the cpu where a tape hook
+				// below has something to do; the hooks then see that last one, as
+				// they would have. Fast loading's edge loop is looked at here, after
+				// every step, as below. A HALT is run on to the next event at once,
+				// but not under fast loading, which looks at every step of it.
+				// Between those, the steps run on in one go (comp_run_quiet) up to
+				// the rom's tape entry points the hooks below look for.
+				Tape* tap = comp->tape;
+				for (;;) {
+					if (fastload_on) {
+						tm = comp_exec_quiet(comp);
+					} else if (comp->cpu->flgHALT) {
+						if (!comp_halt_skip(comp, &tm))
+							tm = comp_exec_quiet(comp);
+					} else if (!comp_run_quiet(comp, &tm, tapeHookPc, TAPE_HOOKS)) {
+						tm = comp_exec_quiet(comp);
+					}
+					if (comp->flgFRM || comp->flgBRK || conf.emu.pause) break;
+					if (tape_hook_at(comp) >= 0) break;
+					if ((tap->ldBase >= 0) || (tape_flash() && (tap->portReads != ldcReads))) break;
+					sndNsFixed += NS_TO_FIXED(tm);
+					if (fastload_on) {
+						sndNsFixed += NS_TO_FIXED(fastload_step(comp));
+						if (comp->flgFRM || comp->flgBRK) {
+							tm = 0;
+							hooks = 0;		// all of them done for this step
+							break;
+						}
+					}
+				}
 			} else {
 				tm = compExec(comp);			// TODO: it exits when fetch-brk is occured, pc doesn't changed
 			}
@@ -604,18 +653,16 @@ void xThread::emuCycle(Computer* comp) {
 			// None of the tape tricks while a recording plays or is made: the
 			// machine takes its input from the recording alone, and a recording
 			// holds only what came in through a port.
-			if (!comp->rzx.play && !comp->rzx.rec.on) {
+			if (hooks && !comp->rzx.play && !comp->rzx.rec.on) {
 				// tape trap	TODO: rework it as a system breakpoint
 				// this runs on every instruction, and the rom is paged in for most
 				// of them: the pc straight from the Z80, not through the cpu's
 				// register table.
-				if (zx_rom_active(comp)) {
-					int pc = comp->cpu->regPC;
-					if ((pc == LD_ROM_BASE + LDC_START) || (pc == LD_ROM_BASE + LDC_EDGE1)) {	// load: ix:addr, de:len
-						tap_catch_load(comp, pc == LD_ROM_BASE + LDC_START);
-					} else if (pc == 0x4d0) {				// save: ix:addr, de:len, a:block type(b7), hl:pilot len (1f80/0c98)?
-						tap_catch_save(comp);
-					}
+				int hook = tape_hook_at(comp);
+				if ((hook == TAPE_HOOK_LOAD) || (hook == TAPE_HOOK_EDGE)) {	// load: ix:addr, de:len
+					tap_catch_load(comp, hook == TAPE_HOOK_LOAD);
+				} else if (hook == TAPE_HOOK_SAVE) {		// save: ix:addr, de:len, a:block type(b7), hl:pilot len (1f80/0c98)?
+					tap_catch_save(comp);
 				}
 				// a copy of LD-BYTES in ram is trapped as the rom's is, once seen
 				if (tape_flash()) {
@@ -661,6 +708,7 @@ void xThread::emuCycle(Computer* comp) {
 			rzxr_frame(comp);
 			rewind_frame(comp, &sndNsFixed);
 			rewinding = rewind_active();
+			fast_picture_frame(comp);
 			brk_trace_flush();
 			// before run-ahead: the debugger's screen view wants the machine as
 			// it really stands, not the frame it is about to guess at
@@ -722,6 +770,9 @@ void xThread::emuCycle(Computer* comp) {
 		if (comp->flgCOND)
 			comp_brk_newstep(comp);
 	}
+	// whoever looks next - the debugger, a snapshot, the gui - sees the ray where
+	// it stands, not the dots an undrawn frame has only counted
+	vid_unlazy(comp->vid);
 	comp->flgBRK = 0;
 	comp->flgNMIRQ = 0;
 }
@@ -935,8 +986,10 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 	setOutput("NULL");
 	pacingClose();		// the budget is handed out here, not by the timer
 	conf.emu.pause = 0;
-	// the bench picks its mode itself: fast loading would switch it under a tape
+	// the bench picks its mode itself: fast loading would switch it under a tape,
+	// and it draws the frames fast mode would leave out
 	fastload_hold(1);
+	fast_picture_hold(1);
 	int rwOn = conf.emu.rewind.on;
 	conf.emu.rewind.on = (rw > 0);
 	rzx_begin(comp);
@@ -1017,6 +1070,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 		fflush(stdout);
 		conf.emu.rewind.on = rwOn;
 		fastload_hold(0);
+		fast_picture_hold(0);
 		return 0;
 	}
 	// A recording's frame N, to compare with another player stopped there: the
@@ -1036,6 +1090,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 		fflush(stdout);
 		conf.emu.rewind.on = rwOn;
 		fastload_hold(0);
+		fast_picture_hold(0);
 		return 0;
 	}
 	// warm up: a tape or disk being started, a demo getting to its part. In
@@ -1096,18 +1151,31 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 	int tk0 = comp->tickCount;
 	f0 = conf.vid.fcount;
 	int fl = f0;
+	// --bench-draw-every N: frame j of the run (0 is the one already started) is
+	// drawn when j % N is 0, switched at the frame start as fast mode switches it.
+	// --bench-hash-every N alone draws them all and hashes the same ones, so the
+	// two runs compare frame for frame.
+	int every = (benchHashEvery > 1) ? benchHashEvery : 1;
+	int fd = f0;
+	if (benchDrawEvery > 1)
+		vid_set_nodraw_next(comp->vid, 1 % every != 0);
 	benchStop = f0 + frames;	// the last cycle ends on the frame, whatever the budget
 	while ((conf.vid.fcount - f0 < frames) && !conf.emu.pause) {
 		conf.snd.need = full ? 256 : 0;
 		emu_lock();
 		emuCycle(comp);
 		bench_keys_step(comp, conf.vid.fcount - fk);
+		if ((benchDrawEvery > 1) && (conf.vid.fcount != fd)) {
+			fd = conf.vid.fcount;
+			vid_set_nodraw_next(comp->vid, (fd - f0 + 1) % every != 0);
+		}
 		emu_unlock();
 		if (hash) {
 			if (conf.vid.fcount != fl) {
 				int first = (fl == f0);
+				int done = fl - f0;		// the frame just finished
 				fl = conf.vid.fcount;
-				if (split && first) continue;
+				if ((split && first) || (done % every)) continue;
 				Video* vid = comp->vid;
 				for (int y = 0; y < vid->full.y; y++)
 					hFrm = bench_mix(hFrm, bufimg + y * bytesPerLine, vid->full.x * 8);
@@ -1191,6 +1259,7 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 	conf.emu.rewind.on = rwOn;
 	fflush(stdout);
 	fastload_hold(0);
+	fast_picture_hold(0);
 	return done;
 }
 

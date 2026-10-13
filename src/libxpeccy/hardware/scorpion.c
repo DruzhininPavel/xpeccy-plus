@@ -254,9 +254,14 @@ xPortDsc sco_port_tab[] = {
 	{-1, 0, 0}
 };
 
+// scoSync's NMI waits for flgNMIRQ, which keeps a run off; the Turbo+ owes per step
+// in turbo (comp_owe). scoMRd is a read of its own: a HALT is stepped.
+static const hwQuiet scotp_quiet = {HWQ_ACK_ZX, hwq_no_turbo, NULL, zx_devs_sync, NULL, 0};
+
 HardWare sco_hw_core = {HW_SCORP,"Scorpion","Scorpion ZS 256",MEM_256K,1.0,NULL,sco_port_tab,
-				scrp_init,scoMapMem,scoOut,scoIn,scoMRd,stdMWr,zx_irq,zx_ack,zx_reset,scoSync,zx_keyp,zx_keyr,zx_vol};
+				scrp_init,scoMapMem,scoOut,scoIn,scoMRd,stdMWr,zx_irq,zx_ack,zx_reset,scoSync,zx_keyp,zx_keyr,zx_vol,
+				NULL,NULL,&hwq_zx_nohalt};
 
 HardWare scotp_hw_core = {HW_SCORPTP,"ScorpionTP","Scorpion ZS 256 Turbo+",MEM_256K | MEM_1M,1.0,NULL,sco_port_tab,
 				scrptp_init,scoMapMem,scoTpOut,scoTpIn,scoMRd,stdMWr,zx_irq,zx_ack,zx_reset,scoTpSync,zx_keyp,zx_keyr,zx_vol,
-				NULL,scotp_cont};
+				NULL,scotp_cont,&scotp_quiet};

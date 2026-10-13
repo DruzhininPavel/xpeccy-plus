@@ -181,6 +181,12 @@ typedef struct {
 	const char* s;
 } xArg;
 
+// what fast mode shows
+enum {
+	FPIC_RASTER = 0,	// a frame drawn by the raster as it runs
+	FPIC_WHOLE		// the memory at a frame end, drawn at once
+};
+
 // pause reasons
 #define	PR_FILE		(1<<1)
 #define	PR_OPTS		(1<<2)
@@ -805,6 +811,7 @@ struct xConfig {
 	struct {
 		unsigned fast:1;
 		int pause;
+		int pauseReq;		// PR_*: asked for in fast mode, taken after a frame drawn whole
 		// frames the emulation runs ahead of the timeline it keeps, to hide
 		// the machine's own reaction time. 0 = off (see ethread.cpp)
 		int runahead;
@@ -814,6 +821,8 @@ struct xConfig {
 		int slowHold;		// XHOLD_*: how the key works
 		int ffHold;
 		int fastHold;		// Fast mode's key
+		int fastPic;		// FPIC_*: the frames fast mode shows
+		int fastFps;		// ...this many a second of host time, fast loading's too
 		// rewind (xcore/rewind.cpp): a snapshot every step frames, secs of them
 		// kept; going back shows one snapshot a frame
 		struct {
@@ -1020,4 +1029,6 @@ extern xConfig conf;
 
 // Flash loading and edge detection are refinements of fast loading, on only with it
 static inline int tape_flash() { return conf.tape.fast && conf.tape.flash; }
+// what conf.emu.fastFps may be: 1..100 pictures a second, 30 for anything not a number
+static inline int fast_fps_valid(int fps) { return (fps < 1) ? 30 : ((fps > 100) ? 100 : fps); }
 static inline int tape_edge() { return conf.tape.fast && conf.tape.edge; }

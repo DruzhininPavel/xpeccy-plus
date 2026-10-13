@@ -249,6 +249,7 @@ int xstate_load(xState* st, Computer* comp) {
 	// nodraw is set from outside the machine (fast loading holds it), so
 	// whoever holds the machine keeps it; the layers the debugger hides too
 	int nodraw = comp->vid->nodraw;
+	int nodrawNext = comp->vid->nodrawNext;
 	unsigned char hide = comp->vid->tsconf.hide;
 	// A snapshot from under another playback, or none: its recording's file
 	// is closed, so the playback is the live one's - which the load ends.
@@ -262,7 +263,10 @@ int xstate_load(xState* st, Computer* comp) {
 		memcpy(st->m.chunk[i].ptr, src, st->m.chunk[i].size);
 		src += st->m.chunk[i].size;
 	}
+	mem_derive(comp->mem);			// the map came back without what is worked out of it
+	if (comp->gs && comp->gs->mem) mem_derive(comp->gs->mem);
 	comp->vid->nodraw = nodraw;
+	comp->vid->nodrawNext = nodrawNext;
 	comp->vid->tsconf.hide = hide;
 	if (comp->ts) ts_state_restore(comp->ts);
 	// The image buffers are outside the snapshot and may have been swapped

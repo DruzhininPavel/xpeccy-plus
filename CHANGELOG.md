@@ -42,19 +42,29 @@ before that point is upstream's history and is not repeated here.
   last, the one in play checked, and the Gamepads menu switches between them mid-game or
   resets the table to the defaults. *(thanks to Volutar)*
 
+- **Fast Mode render** in Options -> Emulation, Speed and rewind: how many frames a second
+  Fast Mode and fast loading show, and how they are drawn - a raster as at normal speed, or a
+  simplified dump of video memory at the end of a frame. A pause in Fast Mode stops on a whole
+  frame.
+
 - **The Disk Manager shows +3DOS disks**: each file's type, address, length and size, with
   Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
   which the +3 reads too, show as well.
 
 ### Changed
 
-- **Faster emulation** of the Sinclair machines: about a quarter faster on the 48K, a fifth
-  on the 128K and two fifths on the +2A/+3, with every machine running exactly as before.
+- **Faster emulation**: Fast Mode runs three to six times as fast on every machine, and on
+  TSConf up to fourteen times. Fast loading takes about a third of the time. Every machine
+  runs exactly as before.
 
 - **A tape plays at its real speed on the 128K, +2, +2A and +3**: their tape ran 1.3% fast,
   as it was timed off their CPU clock rather than the 3.5 MHz of a ZX tape.
 
 ### Fixed
+
+- **HALT on the last byte of contended memory**: a halted CPU runs its idle cycles at the
+  byte after the HALT, as a real Z80 does. HALT2INT (Mark Woodmass) now tells early and late
+  timings apart on the 48K, 128K and +2.
 
 - **720K disks on the +3** load again: the second side of a double-sided disk read as an
   error, and the +3 fell back to the tape loader.

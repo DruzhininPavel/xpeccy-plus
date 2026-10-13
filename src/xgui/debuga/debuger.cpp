@@ -279,6 +279,7 @@ void DebugWin::rest_mem_map() {
 	for (int i = 0; i < 256; i++) {
 		comp->mem->map[i] = mem_map[i];
 	}
+	mem_derive(comp->mem);
 	for (int i = 0; i < 4; i++) {
 		mmapForced[i] = -1;
 	}

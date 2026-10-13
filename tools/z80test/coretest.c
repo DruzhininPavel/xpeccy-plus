@@ -99,6 +99,10 @@ static int cb_ack(void* ptr) {return 0xff;}
 static void cb_irq(int id, void* ptr) {
 }
 
+// the end of an instruction and a write about to go out: nothing to say to either
+static void cb_cpu(CPU* c) {
+}
+
 // T1 of a bus cycle, or one internal tick with the address still held
 static void cb_cont(void* ptr, int mreq) {
 	ev(now(), "MC", cpu->adr & 0xffff, -1);
@@ -204,6 +208,8 @@ int main(int argc, char** argv) {
 	cpu->iwr = cb_iwr;
 	cpu->xack = cb_ack;
 	cpu->xirq = cb_irq;
+	cpu->xend = cb_cpu;
+	cpu->xsync = cb_cpu;
 	// fuse's data has the contention events in it, so ask for them: the core
 	// only reports a bus cycle when the machine says it contends one
 	cpu->flgCONT = 1;
