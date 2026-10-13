@@ -59,8 +59,8 @@ void zx_contend_adr(Computer* comp, int adr, int mreq) {
 // The 16K bank an address sits in, 0 if it is not ram. The odd ones are the
 // slow banks the ULA shares with the cpu.
 int zx_bank_of(Computer* comp, int adr) {
-	MemPage* pg = mem_get_page(comp->mem, adr);
-	return (pg->type == MEM_RAM) ? ((pg->num << comp->mem->pgshift) >> 14) : 0;
+	int bank = comp->mem->bank[(adr >> 8) & 0xff];
+	return (bank < 0) ? 0 : bank;
 }
 
 void zx_snow(Computer* comp) {

@@ -137,9 +137,9 @@ void tslUpdatePal(Computer* comp) {
 // 14 MHz a RAM read it cannot answer waits for the 7 MHz DRAM: 2 or 3 ticks by the phase
 // of the DRAM cycle, as unreal counts it. Writes do not wait; one to a cached word drops it.
 static int ts_cache_tag(Computer* comp, int adr) {
-	MemPage* pg = &comp->mem->map[(adr >> 8) & 0xff];
-	if (pg->type != MEM_RAM) return 0;
-	return 0x8000 | ((pg->num >> 6) << 5) | ((adr >> 9) & 0x1f);
+	int bank = comp->mem->bank[(adr >> 8) & 0xff];
+	if (bank < 0) return 0;
+	return 0x8000 | (bank << 5) | ((adr >> 9) & 0x1f);
 }
 
 static void ts_cache_rd(Computer* comp, int adr) {

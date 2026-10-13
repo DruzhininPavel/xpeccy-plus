@@ -166,6 +166,7 @@ static void mem_derive_page(Memory* mem, int i) {
 	mem->m1dos[i] = ram ? NULL : mem->m1p[i];
 	mem->cont[i] = ram && ((pg->num << mem->pgshift) & mem->contBit);
 	mem->slow[i] = ram && ((pg->num << mem->pgshift) & 0x4000);
+	mem->bank[i] = ram ? (short)((pg->num << mem->pgshift) >> 14) : -1;
 }
 
 void mem_derive(Memory* mem) {
@@ -206,8 +207,13 @@ void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, e
 		} else {
 			pg.data = NULL;
 		}
-		mem->map[page] = pg;
-		mem_derive_page(mem, page);
+		// a machine pages all of its map in from every port write: what
+		// stays where it was keeps what was worked out of it
+		MemPage* cur = &mem->map[page];
+		if ((cur->type != pg.type) || (cur->num != pg.num) || (cur->data != pg.data) || (cur->rd != pg.rd) || (cur->wr != pg.wr)) {
+			*cur = pg;
+			mem_derive_page(mem, page);
+		}
 		page++;
 		pg.num++;
 		cnt--;
