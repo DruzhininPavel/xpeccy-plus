@@ -136,6 +136,8 @@ xThread::xThread() {
 	benchRecFinal = 0;
 	benchRecNmi = 0;
 	benchKeys = NULL;
+	benchHashEvery = 1;
+	benchDrawEvery = 0;
 	earBlock = -1;
 	conf.emu.fast = 0;
 	finish = 0;
@@ -1096,18 +1098,31 @@ int xThread::bench(int frames, int skip, int full, int hash, const char* prof, c
 	int tk0 = comp->tickCount;
 	f0 = conf.vid.fcount;
 	int fl = f0;
+	// --bench-draw-every N: frame j of the run (0 is the one already started) is
+	// drawn when j % N is 0, switched at the frame start as fast mode switches it.
+	// --bench-hash-every N alone draws them all and hashes the same ones, so the
+	// two runs compare frame for frame.
+	int every = (benchHashEvery > 1) ? benchHashEvery : 1;
+	int fd = f0;
+	if (benchDrawEvery > 1)
+		vid_set_nodraw_next(comp->vid, 1 % every != 0);
 	benchStop = f0 + frames;	// the last cycle ends on the frame, whatever the budget
 	while ((conf.vid.fcount - f0 < frames) && !conf.emu.pause) {
 		conf.snd.need = full ? 256 : 0;
 		emu_lock();
 		emuCycle(comp);
 		bench_keys_step(comp, conf.vid.fcount - fk);
+		if ((benchDrawEvery > 1) && (conf.vid.fcount != fd)) {
+			fd = conf.vid.fcount;
+			vid_set_nodraw_next(comp->vid, (fd - f0 + 1) % every != 0);
+		}
 		emu_unlock();
 		if (hash) {
 			if (conf.vid.fcount != fl) {
 				int first = (fl == f0);
+				int done = fl - f0;		// the frame just finished
 				fl = conf.vid.fcount;
-				if (split && first) continue;
+				if ((split && first) || (done % every)) continue;
 				Video* vid = comp->vid;
 				for (int y = 0; y < vid->full.y; y++)
 					hFrm = bench_mix(hFrm, bufimg + y * bytesPerLine, vid->full.x * 8);

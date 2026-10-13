@@ -131,6 +131,7 @@ Video* vidCreate(cbxrd cb, cbirq ci, void* dptr) {
 	vid->xptr = dptr;
 	vid_set_dot_ns(vid, 150);
 	vid->snowLow = -1;
+	vid->nodrawNext = -1;
 	vid->res.x = -1;
 	vid->res.y = -1;
 	vid_set_mode(vid, VID_UNKNOWN);
@@ -824,6 +825,12 @@ int vid_float_bus(Video* vid, int* age) {
 void vid_set_nodraw(Video* vid, int on) {
 	vid_unlazy(vid);			// dots counted as undrawn stay undrawn
 	vid->nodraw = on ? 1 : 0;
+	vid->nodrawNext = -1;
+}
+
+// A frame is drawn or not as a whole: the switch waits for the frame end
+void vid_set_nodraw_next(Video* vid, int on) {
+	vid->nodrawNext = on ? 1 : 0;
 }
 
 // The pulse bounds the calm stretch, so the dots counted under the old one are
@@ -1581,6 +1588,10 @@ void vid_tick(Video* vid) {
 		}
 		if (vid->ray.y >= vid->full.y) {		// new frame
 			vid_frame(vid);				// complete frame image
+			if (vid->nodrawNext >= 0) {
+				vid->nodraw = vid->nodrawNext;
+				vid->nodrawNext = -1;
+			}
 			vid->idx = 0;
 			vid->ray.y = 0;
 			vid->vblank = 0;

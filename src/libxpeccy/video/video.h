@@ -108,6 +108,7 @@ struct Video {
 //	unsigned noScreen:1;
 	unsigned nodraw:1;	// emulate the raster but put no pixels out; set at a frame start,
 				// since a blind mode's fetch counter stands still meanwhile
+	int nodrawNext;		// nodraw for the next frame, taken as it starts; -1: keep
 	unsigned debug:1;
 	unsigned upd:1;
 	unsigned tail:1;
@@ -298,6 +299,7 @@ void vid_set_dot_ns(Video*,double);
 // void vid_irq(Video*, int);
 void vid_set_mode(Video*,int);
 void vid_set_nodraw(Video*,int);
+void vid_set_nodraw_next(Video*,int);		// the same from the next frame start on
 void vid_set_int_frame(Video*, int);		// dots left of the frame INT pulse, 0: none
 void vid_set_ray(Video*, int);
 int vid_ray_dots(Video*);
