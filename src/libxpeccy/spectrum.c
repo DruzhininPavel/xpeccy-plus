@@ -1044,6 +1044,7 @@ int compExec(Computer* comp) {
 // 1 when it went, *ns the time it took.
 static int comp_fetch_quiet(Computer* comp, int adr) {
 	if (comp->hw->mrd == tslMRd) return ts_fetch_quiet(comp, adr);
+	if (comp->hw->mrd == evoMRd) return evo_fetch_quiet(comp, adr);
 	if ((comp->hw->mrd != stdMRd) && (comp->hw->mrd != asicMRd)) return 0;
 	MemPage* pg = mem_get_page(comp->mem, adr);
 	if ((comp->dif->type == DIF_BDI) && bdi_fetch_pages(comp, pg, adr)) return 0;

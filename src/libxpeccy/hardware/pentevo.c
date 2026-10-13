@@ -189,6 +189,23 @@ static void evo_cache_wr(Computer* comp, int adr) {
 	if (comp->xregData.w == tag) comp->xregData.w = 0;
 }
 
+// What evoMRd() does with an M1 at adr, doing it again: nothing, where TR-DOS is
+// neither entered nor left, no NMI page comes or goes and the cache answers or
+// costs no time (comp_halt_skip)
+int evo_fetch_quiet(Computer* comp, int adr) {
+	if (comp->regM1CNT || (comp->flgNMIS && (adr == 0x0066))) return 0;
+	if ((comp->regBF & 0x10) && (adr == comp->xregBRKA.w)) return 0;
+	if (comp->dif->type == DIF_BDI) {
+		int win = (adr >> 14) & 3;
+		if (comp->flgDOS && (comp->prt2 & 0x40) && (comp->memFlag((comp->flgROM << 2) | win) & 0x40)) return 0;
+		if (((adr & 0x3f00) == 0x3d00) && comp->flgROM && ((comp->memFlag(4 | win) & 0xc0) == 0x80)) return 0;
+	}
+	if (comp->hwMul != 4) return 1;
+	if (mem_get_page(comp->mem, adr)->type != MEM_RAM) return 1;
+	int tag = 0x8000 | (adr >> 1);
+	return (comp->xregCode.w == tag) || (comp->xregData.w == tag);
+}
+
 int evoMRd(Computer* comp, int adr, int m1) {
 	if (!m1) {
 		evo_cache_rd(comp, adr, 0);

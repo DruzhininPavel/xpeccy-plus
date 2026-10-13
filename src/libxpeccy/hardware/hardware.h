@@ -185,6 +185,8 @@ void atm2_sync(Computer*, int);
 void alf_sync(Computer*, int);
 int tslMRd(Computer*, int, int);
 int ts_fetch_quiet(Computer*, int);	// an M1 at adr pages nothing, stalls nothing, costs no time
+int evoMRd(Computer*, int, int);
+int evo_fetch_quiet(Computer*, int);
 sndPair zx_vol(Computer*, sndVolume*);
 void zx_set_pal(Computer*);	// todo: called from zx_reset only
 
