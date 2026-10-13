@@ -239,31 +239,32 @@ each one. On a gamepad the directions are the D-pad and the left stick, shown as
 - **Stick dead zone** - how far a stick has to move before it counts. A keyboard player has
   no stick, and the setting is grayed.
 
-### Binding a row
+### Setting up a row
 
 ```{index} gamepad; binding
 ```
 
-The binding window has two sides. The right side, **Gamepad** or **PC Keyboard**, lists what
-presses the row: press the buttons on the pad, or click in the box and press the keys. The
-first one replaces what the row had, the next ones are added. {icon}`add` **Add from list**
-picks a pad input by name, with no pad needed. **Clear** empties the list, **Defaults** puts
-back the joystick row's own buttons.
+The window that **Change...** opens has two sides. The right side, **Gamepad** or **PC
+Keyboard**, lists the buttons or keys that work the row: press the buttons on the pad, or
+click in the box and press the keys. The first one replaces what the row had, the next ones
+are added. {icon}`add` **Add from list** picks a pad input by name, with no pad needed.
+**Clear** empties the list, **Defaults** puts back the joystick row's own buttons.
 
-The left side, **Spectrum**, says what the row presses. On a joystick row it is fixed by the
-**Joystick** choice, except on **Custom**, where you pick the key. A row of your own can
-press:
+The left side, **Spectrum**, says what the row does on the Spectrum. On a joystick row that
+is set by the **Joystick** choice, except on **Custom**, where you pick the key. A row you
+added can do one of these:
 
-- **Joystick** - up, down, left, right or fire of the player's joystick, whichever it is;
-- **Key** - a Spectrum key from the list, or click **Press** and press the PC key it is on.
-  **Modifier** adds Caps Shift or Symbol Shift held with it;
-- **Kempston** - a Kempston direction or fire button;
-- **Mouse** - a Kempston mouse move, button or wheel turn. A move gets faster the longer it
-  lasts;
-- **Action** - any command of the emulator, as its hotkey would.
+- **Joystick** - press up, down, left, right or fire of the player's joystick, whichever
+  joystick it is;
+- **Key** - press a Spectrum key: pick it from the list, or click **Press** and press the PC
+  key it is on. **Modifier** holds Caps Shift or Symbol Shift with it;
+- **Kempston** - press a Kempston direction or fire button;
+- **Mouse** - move the Kempston mouse, press its button or turn its wheel. A move gets faster
+  the longer it lasts;
+- **Action** - run any command of the emulator, as its hotkey does.
 
 **Turbo: repeats while held** is the row's **Turbo** box. {icon}`ok-apply` **OK** keeps the
-binding.
+changes.
 
 ### Saving the bindings
 
