@@ -36,6 +36,7 @@ QString getRFSData(QComboBox*);
 void setRFIndex(QComboBox*, QVariant, int = 0);
 int comboFitWidth(QComboBox*);
 QColor bg_tint(const QColor&);
+QIcon x_icon(const QString&);	// with its "-16" file, where one is drawn
 
 // subclasses
 

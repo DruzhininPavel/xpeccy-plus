@@ -64,7 +64,11 @@ before that point is upstream's history and is not repeated here.
 - **A tape plays at its real speed on the 128K, +2, +2A and +3**: their tape ran 1.3% fast,
   as it was timed off their CPU clock rather than the 3.5 MHz of a ZX tape.
 
-- **The machine name in the status bar** opens the Machine menu, with either button.
+- **The machine name in the status bar** opens the Model menu, with either button.
+
+- **Clearer icons**: a rubber 48K for Model, rubber keys for Virtual Keyboard and Keymap, a
+  CRT for Shaders and a new one for Size. The machine list is Machine > Model on the menu
+  bar. *(thanks to Volutar)*
 
 ### Fixed
 

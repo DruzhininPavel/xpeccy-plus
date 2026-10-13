@@ -515,7 +515,7 @@
   <action name="actShowKeys">
    <property name="icon">
     <iconset resource="../../xpeccy.qrc">
-     <normaloff>:/images/keyboardzx.png</normaloff>:/images/keyboardzx.png</iconset>
+     <normaloff>:/images/vkeys.png</normaloff>:/images/vkeys.png</iconset>
    </property>
    <property name="text">
     <string>Keyboard</string>
