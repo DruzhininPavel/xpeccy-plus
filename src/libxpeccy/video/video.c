@@ -195,6 +195,7 @@ void vid_reset(Video* vid) {
 	vid->nsDrawFixed = 0;
 	vid->nsOwedFixed = 0;
 	vid->clkFixed = 0;
+	vid->stepFixed = 0;
 	vid->nsCalmFixed = vid->nsPerDotFixed;
 //	vidSetMode(vid, VID_NORMAL);
 }
@@ -1877,7 +1878,7 @@ void vid_sync_fixed(Video* vid, long long nsFixed) {
 	vid_unlazy(vid);
 	if (!nsFixed) return;			// no time passed: the tail is a no-op
 	vid->nsDrawFixed += nsFixed;
-	vid_clock(vid, nsFixed);
+	vid->stepFixed += nsFixed;
 	vid_take(vid);
 }
 
@@ -1889,7 +1890,7 @@ void vid_sync_lazy_slow(Video* vid, long long nsFixed) {
 	vid->nsCalmFixed = vid->nsPerDotFixed;	// no counting while an event runs
 	if (!nsFixed) return;
 	vid->nsDrawFixed += nsFixed;
-	vid_clock(vid, nsFixed);
+	vid->stepFixed += nsFixed;
 	vid_take_dots(vid);
 	vid_calm(vid);
 }

@@ -140,8 +140,9 @@ struct Video {
 	long long nsOwedFixed;	// fraction of a ns owed to vid->time, carried not dropped
 	long long nsCalmFixed;	// nsDrawFixed may grow up to this with no dot drawn (vid_sync_lazy)
 	long long clkFixed;	// time handed in short of a whole dot (vid_clock)
+	long long stepFixed;	// time handed in since the step began, made into ns at its end
 	int tickWhole;		// every time handed in is a whole number of dots (comp_update_timings)
-	int time;		// whole ns of the dots handed in since the step began
+	int time;		// whole ns of the dots the last step completed
 	int dotPerFrame;
 
 	int flash;
@@ -257,9 +258,12 @@ Video* vidCreate(cbxrd, cbirq, void*);
 void vidDestroy(Video*);
 
 void vid_reset(Video*);
-// The ns the devices are given come from the dots the time handed in completes.
-// They are worked out as it is handed in, not as the dots are walked: a frame not
-// drawn walks them much later (vid_sync_lazy), and the ns come out the same.
+// The ns the devices are given come from the dots the time handed in completes,
+// not from the dots walked: a frame not drawn walks them much later
+// (vid_sync_lazy). The time a step hands in only adds up (stepFixed) and is made
+// into ns once, at the step's end: the video stands at the step's end then and
+// has never been past it, so the dots it completes are the same whichever way
+// it was handed in.
 void vid_clock_slow(Video*, long long);
 static inline void vid_clock(Video* vid, long long nsFixed) {
 	long long p = vid->nsPerDotFixed;
@@ -285,6 +289,13 @@ static inline void vid_clock(Video* vid, long long nsFixed) {
 	vid->nsOwedFixed -= NS_TO_FIXED(whole);
 	vid->time += (int)whole;
 }
+// the step's ns, and the next step starts from nothing
+static inline int vid_step_ns(Video* vid) {
+	vid->time = 0;
+	vid_clock(vid, vid->stepFixed);
+	vid->stepFixed = 0;
+	return vid->time;
+}
 void vid_sync_fixed(Video*,long long);
 void vid_sync_lazy_slow(Video*,long long);
 void vid_unlazy_slow(Video*);
@@ -307,7 +318,7 @@ static inline void vid_sync_lazy(Video* vid, long long nsFixed) {
 	long long d = vid->nsDrawFixed + nsFixed;
 	if ((nsFixed >= 0) && (d < vid->nsCalmFixed)) {
 		vid->nsDrawFixed = d;
-		vid_clock(vid, nsFixed);
+		vid->stepFixed += nsFixed;
 		return;
 	}
 	vid_sync_lazy_slow(vid, nsFixed);

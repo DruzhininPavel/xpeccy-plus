@@ -962,7 +962,7 @@ static int comp_step_end(Computer* comp, int unsynced, int t) {
 	// counted, not walked: the ns are worked out as the time is handed in, and
 	// what reads the ray settles it first
 	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, unsynced));
-	nsTime = comp->vid->time;
+	nsTime = vid_step_ns(comp->vid);
 	comp->tickCount += t;
 	comp->tickTotal += t;
 	comp->frmtCount += t;
