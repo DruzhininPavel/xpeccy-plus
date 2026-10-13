@@ -42,9 +42,10 @@ before that point is upstream's history and is not repeated here.
   last, the one in play checked, and the Gamepads menu switches between them mid-game or
   resets the table to the defaults. *(thanks to Volutar)*
 
-- **Fast Mode picture** in Options -> Emulation, Speed and rewind: how many pictures a second
-  Fast Mode and fast loading show, and whether each is drawn as the machine runs, multicolor
-  and all, or from memory at the end of a frame. A pause in Fast Mode stops on a whole frame.
+- **Fast Mode render** in Options -> Emulation, Speed and rewind: how many frames a second
+  Fast Mode and fast loading show, and how they are drawn - a raster as at normal speed, or a
+  simplified dump of video memory at the end of a frame. A pause in Fast Mode stops on a whole
+  frame.
 
 - **The Disk Manager shows +3DOS disks**: each file's type, address, length and size, with
   Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,

@@ -2843,7 +2843,7 @@ Tap or hold: a tap switches it, a longer press holds it</string>
                 <item row="4" column="0">
                  <widget class="QComboBox" name="cbFastFps">
                   <property name="toolTip">
-                   <string>Pictures a second Fast Mode shows, fast loading too</string>
+                   <string>Frames a second Fast Mode shows, fast loading too</string>
                   </property>
                   <property name="editable">
                    <bool>true</bool>
@@ -2856,7 +2856,7 @@ Tap or hold: a tap switches it, a longer press holds it</string>
                    <string>The frames between are not drawn</string>
                   </property>
                   <property name="text">
-                   <string>Fast Mode picture</string>
+                   <string>Fast Mode render</string>
                   </property>
                   <property name="buddy">
                    <cstring>cbFastFps</cstring>
@@ -2879,7 +2879,7 @@ Tap or hold: a tap switches it, a longer press holds it</string>
                      </font>
                     </property>
                     <property name="text">
-                     <string>Pictures a second, and how they are drawn</string>
+                     <string>Frames a second, and how they are drawn</string>
                     </property>
                    </widget>
                   </item>

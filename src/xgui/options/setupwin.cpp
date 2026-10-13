@@ -524,10 +524,10 @@ SetupWin::SetupWin(QWidget* par):QDialog(par) {
 		ui.cbFastFps->addItem(QString::number(f), f);
 	ui.cbFastFps->setValidator(new QIntValidator(1, 100, ui.cbFastFps));
 	ui.cbFastFps->setInsertPolicy(QComboBox::NoInsert);
-	ui.cbFastPic->addItem("Raster", FPIC_RASTER);
-	ui.cbFastPic->setItemData(0, "Drawn as the machine runs, multicolor and all", Qt::ToolTipRole);
-	ui.cbFastPic->addItem("Whole frame", FPIC_WHOLE);
-	ui.cbFastPic->setItemData(1, "The memory at a frame end, drawn at once", Qt::ToolTipRole);
+	ui.cbFastPic->addItem("Raster (normal)", FPIC_RASTER);
+	ui.cbFastPic->setItemData(0, "Drawn line by line, as at normal speed", Qt::ToolTipRole);
+	ui.cbFastPic->addItem("Video memory dump (simplified)", FPIC_WHOLE);
+	ui.cbFastPic->setItemData(1, "Video memory at a frame end: no multicolor", Qt::ToolTipRole);
 	for (QComboBox* box : {ui.cbSlowmoKey, ui.cbFfwdKey, ui.cbFastKey}) {
 		box->addItem("Toggle", XHOLD_TOGGLE);
 		box->addItem("Hold", XHOLD_HOLD);
