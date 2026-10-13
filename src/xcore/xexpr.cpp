@@ -525,8 +525,8 @@ static unsigned xe_var_value(Computer* comp, unsigned id, int hits, unsigned dt)
 			// >> 6 turns it into the 16K page number deBUGa shows
 			return comp->mem->map[((id - XV_SLOT0) << 6) & 0xff].num >> 6;
 		case XV_FRAME: return comp->frmCount;
-		case XV_RAYX: return comp->vid->ray.x;
-		case XV_RAYY: return comp->vid->ray.y;
+		case XV_RAYX: vid_settle(comp->vid); return comp->vid->ray.x;
+		case XV_RAYY: vid_settle(comp->vid); return comp->vid->ray.y;
 		case XV_HITS: return hits;
 		case XV_DT: return dt;
 	}
@@ -614,6 +614,7 @@ unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits, unsi
 			}
 			unsigned tgt = stk[sp] * fx + stk[sp-1];
 			unsigned was = comp->brkray % total;
+			vid_settle(comp->vid);
 			unsigned now = (comp->vid->ray.y * fx + comp->vid->ray.x) % total;
 			// walked round by hand: the unsigned difference wraps at 2^32,
 			// which is no multiple of the frame, so a plain % lies at the wrap

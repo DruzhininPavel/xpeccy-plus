@@ -462,6 +462,7 @@ void szx_ext_save(szxBuf* b, Computer* comp) {
 		sb_dword(b, (unsigned)comp->mem->map[i].num);
 	}
 	rec_end(b, mark);
+	vid_unlazy(comp->vid);			// the dots an undrawn frame only counted, walked
 	rec_fields(b, XR_VID, comp->vid, fld_vid);
 	if (ext_own_palette(comp))
 		rec_fields(b, XR_PAL, comp->vid, fld_vid_pal);
@@ -681,6 +682,7 @@ static void ext_vid(Computer* comp, const unsigned char* p, size_t n) {
 	vid->intFRAME = tmp_.intFRAME;
 	vid->intlen = tmp_.intlen;
 	vid->nsDrawFixed = tmp_.nsDrawFixed;
+	vid->clkFixed = tmp_.nsDrawFixed;	// saved settled: the dot short of whole is all there is
 	vid->nsOwedFixed = tmp_.nsOwedFixed;
 	vid->nsCalmFixed = tmp_.nsCalmFixed;
 	vid->time = tmp_.time;

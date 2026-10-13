@@ -174,6 +174,7 @@ void vid_set_dot_ns(Video* vid, double nspd) {
 	if (vid->nsPerDotFixed < 1)
 		vid->nsPerDotFixed = 1;		// never let vid_sync_fixed spin forever
 	vid->nsCalmFixed = vid->nsPerDotFixed;
+	vid->tickWhole = 0;			// until the tick is worked out again from it
 }
 
 void vid_upd_timings(Video* vid, double nspd) {
@@ -193,6 +194,7 @@ void vid_reset(Video* vid) {
 	vid->vidPage = 5;
 	vid->nsDrawFixed = 0;
 	vid->nsOwedFixed = 0;
+	vid->clkFixed = 0;
 	vid->nsCalmFixed = vid->nsPerDotFixed;
 //	vidSetMode(vid, VID_NORMAL);
 }
@@ -1812,14 +1814,10 @@ static void vid_run(Video* vid, int k) {
 }
 
 // Draws the whole dots that nsDrawFixed holds. The ray steps in fixed point ns.
-// vid->time stays whole ns for everything downstream (sound pacing among
-// others); the fraction it is owed rides along in nsOwedFixed rather than being
-// dropped once per call.
 static inline void vid_take_dots(Video* vid) {
 	if (vid->nsDrawFixed >= vid->nsPerDotFixed) {
 		long long left;
 		int n = vid_count_dots(vid->nsDrawFixed, vid->nsPerDotFixed, &left);
-		vid->nsOwedFixed += vid->nsDrawFixed - left;
 		vid->nsDrawFixed = left;
 		while (n > 0) {
 			int k = vid_run_len(vid, n);
@@ -1832,8 +1830,21 @@ static inline void vid_take_dots(Video* vid) {
 			}
 		}
 	}
-	// whole nanoseconds out, the rest stays owed. Once per call, not per dot:
-	// the dot loop runs ~143k times a frame.
+}
+
+// What the walk above used to count of the time: the dots the time completes,
+// in whole ns for everything downstream (sound pacing among others), the fraction
+// they are owed riding along in nsOwedFixed rather than dropped once per call.
+// The walk takes the same dots as these, the same way, only later.
+void vid_clock_slow(Video* vid, long long nsFixed) {
+	long long f = vid->clkFixed + nsFixed;
+	if (f >= vid->nsPerDotFixed) {
+		long long left;
+		vid_count_dots(f, vid->nsPerDotFixed, &left);
+		vid->nsOwedFixed += f - left;
+		f = left;
+	}
+	vid->clkFixed = f;
 	long long whole = FIXED_TO_NS(vid->nsOwedFixed);
 	vid->nsOwedFixed -= NS_TO_FIXED(whole);
 	vid->time += (int)whole;
@@ -1863,6 +1874,7 @@ void vid_sync_fixed(Video* vid, long long nsFixed) {
 	vid_unlazy(vid);
 	if (!nsFixed) return;			// no time passed: the tail is a no-op
 	vid->nsDrawFixed += nsFixed;
+	vid_clock(vid, nsFixed);
 	vid_take(vid);
 }
 
@@ -1874,6 +1886,7 @@ void vid_sync_lazy_slow(Video* vid, long long nsFixed) {
 	vid->nsCalmFixed = vid->nsPerDotFixed;	// no counting while an event runs
 	if (!nsFixed) return;
 	vid->nsDrawFixed += nsFixed;
+	vid_clock(vid, nsFixed);
 	vid_take_dots(vid);
 	vid_calm(vid);
 }

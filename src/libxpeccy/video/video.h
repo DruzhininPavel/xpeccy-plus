@@ -139,7 +139,9 @@ struct Video {
 	long long nsDrawFixed;	// time handed in but not yet drawn, 16.16
 	long long nsOwedFixed;	// fraction of a ns owed to vid->time, carried not dropped
 	long long nsCalmFixed;	// nsDrawFixed may grow up to this with no dot drawn (vid_sync_lazy)
-	int time;		// whole ns drawn since the step began
+	long long clkFixed;	// time handed in short of a whole dot (vid_clock)
+	int tickWhole;		// every time handed in is a whole number of dots (comp_update_timings)
+	int time;		// whole ns of the dots handed in since the step began
 	int dotPerFrame;
 
 	int flash;
@@ -255,6 +257,20 @@ Video* vidCreate(cbxrd, cbirq, void*);
 void vidDestroy(Video*);
 
 void vid_reset(Video*);
+// The ns the devices are given come from the dots the time handed in completes.
+// They are worked out as it is handed in, not as the dots are walked: a frame not
+// drawn walks them much later (vid_sync_lazy), and the ns come out the same.
+void vid_clock_slow(Video*, long long);
+static inline void vid_clock(Video* vid, long long nsFixed) {
+	if (vid->tickWhole && (nsFixed >= 0) && (vid->clkFixed >= 0) && (vid->clkFixed < vid->nsPerDotFixed)) {
+		vid->nsOwedFixed += nsFixed;	// all of it whole dots, the fraction left as it was
+		long long whole = FIXED_TO_NS(vid->nsOwedFixed);
+		vid->nsOwedFixed -= NS_TO_FIXED(whole);
+		vid->time += (int)whole;
+	} else {
+		vid_clock_slow(vid, nsFixed);
+	}
+}
 void vid_sync_fixed(Video*,long long);
 void vid_sync_lazy_slow(Video*,long long);
 void vid_unlazy_slow(Video*);
@@ -277,6 +293,7 @@ static inline void vid_sync_lazy(Video* vid, long long nsFixed) {
 	long long d = vid->nsDrawFixed + nsFixed;
 	if ((nsFixed >= 0) && (d < vid->nsCalmFixed)) {
 		vid->nsDrawFixed = d;
+		vid_clock(vid, nsFixed);
 		return;
 	}
 	vid_sync_lazy_slow(vid, nsFixed);

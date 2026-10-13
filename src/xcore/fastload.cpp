@@ -236,6 +236,7 @@ static long long fl_tape_room(Computer* comp) {
 // turn measured here lies there as well.
 static long long fl_time_room(Computer* comp, int per) {
 	Video* vid = comp->vid;
+	vid_settle(vid);		// the ray where it stands, not as counted
 	long long dots;
 	int line = vid->ray.y;
 	long long toEnd = (long long)(vid->full.y - line) * vid->full.x - vid->ray.x;
@@ -284,6 +285,7 @@ typedef struct {
 
 static void fl_probe(Computer* comp, flProbe* p) {
 	memset(p, 0, sizeof(*p));		// the padding is compared too
+	vid_settle(comp->vid);
 	TapePos tp = tape_pos(comp->tape);
 	memcpy(p->regs, comp->cpu->regs, sizeof(p->regs));
 	memcpy(p->flags, comp->cpu->flags, sizeof(p->flags));

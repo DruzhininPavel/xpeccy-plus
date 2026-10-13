@@ -813,6 +813,8 @@ void comp_update_timings(Computer* comp) {
 	} else {
 		comp->nsPerTickFixed = NSD_TO_FIXED(comp->nsPerTick);
 	}
+	// the video is only ever handed whole ticks: whole dots too, where a tick is
+	comp->vid->tickWhole = (comp->nsPerTickFixed > 0) && !(comp->nsPerTickFixed % comp->vid->nsPerDotFixed);
 	comp->earTpt = (1e9 / 3.5e6) / comp->nsPerTick;	// machine ticks in a 3.5 MHz T, for zx_ear_edge
 	// contention wait, dots -> ticks: both periods are settled just above, and
 	// nothing moves either without coming back through here
@@ -936,8 +938,9 @@ int compSetHardware(Computer* comp, const char* name) {
 // take all of them, the devices follow and a new frame is flagged. Returns the ns
 // the step took.
 static int comp_step_end(Computer* comp, int unsynced, int t) {
+	// counted, not walked: the ns are worked out as the time is handed in, and
+	// what reads the ray settles it first
 	vid_sync_lazy(comp->vid, ticks_to_ns_fixed(comp, unsynced));
-	vid_settle(comp->vid);		// all of it walked, but the way to the next event is kept
 	nsTime = comp->vid->time;
 	comp->tickCount += t;
 	comp->tickTotal += t;
@@ -1021,6 +1024,7 @@ int comp_skip_ticks(Computer* comp, int t) {
 // caused are spent, and where the beam stands now is where the next one starts
 
 void comp_brk_newstep(Computer* comp) {
+	if (comp->vid) vid_settle(comp->vid);		// the ray as it stands, not as counted
 	comp->brkev.rd = -1;
 	comp->brkev.wr = -1;
 	comp->brkev.mdt = -1;

@@ -631,6 +631,7 @@ static void ts_dma_rec_start(Computer* comp, int val) {
 	tsDmaRec* r = &comp->tsconf.dmalog.rec[comp->tsconf.dmalog.count % TS_DMALOG];
 	comp->tsconf.dmalog.count++;
 	r->fcnt = comp->vid->fcnt;
+	vid_settle(comp->vid);
 	r->line = comp->vid->ray.y;
 	r->dot = comp->vid->ray.x;
 	r->ctrl = val & 0xff;

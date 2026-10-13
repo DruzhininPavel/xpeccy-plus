@@ -725,6 +725,9 @@ void xThread::emuCycle(Computer* comp) {
 		if (comp->flgCOND)
 			comp_brk_newstep(comp);
 	}
+	// whoever looks next - the debugger, a snapshot, the gui - sees the ray where
+	// it stands, not the dots an undrawn frame has only counted
+	vid_unlazy(comp->vid);
 	comp->flgBRK = 0;
 	comp->flgNMIRQ = 0;
 }
