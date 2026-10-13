@@ -71,8 +71,8 @@ before that point is upstream's history and is not repeated here.
 - **720K disks on the +3** load again: the second side of a double-sided disk read as an
   error, and the +3 fell back to the tape loader.
 
-- **A tape opened on the +3** starts loading as quickly as on the +2A: autostart stays in
-  fast mode while the Loader checks drive A, and fast mode is no longer slowed by an idle
+- **A tape opened on the +3** loads from the tape even with a disk in drive A, which stays
+  in the drive, and starts as quickly as on the +2A; fast mode is no longer slowed by an idle
   disk controller. The disk motor now starts and stops both drives.
 
 - **A TR-DOS program copied to tape** keeps its variables and its autostart line, and one
