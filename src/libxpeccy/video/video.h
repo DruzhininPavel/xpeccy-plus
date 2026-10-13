@@ -262,14 +262,28 @@ void vid_reset(Video*);
 // drawn walks them much later (vid_sync_lazy), and the ns come out the same.
 void vid_clock_slow(Video*, long long);
 static inline void vid_clock(Video* vid, long long nsFixed) {
-	if (vid->tickWhole && (nsFixed >= 0) && (vid->clkFixed >= 0) && (vid->clkFixed < vid->nsPerDotFixed)) {
+	long long p = vid->nsPerDotFixed;
+	long long c = vid->clkFixed;
+	if ((nsFixed < 0) || (c < 0) || (c >= p)) {
+		vid_clock_slow(vid, nsFixed);
+		return;
+	}
+	if (vid->tickWhole) {
 		vid->nsOwedFixed += nsFixed;	// all of it whole dots, the fraction left as it was
-		long long whole = FIXED_TO_NS(vid->nsOwedFixed);
-		vid->nsOwedFixed -= NS_TO_FIXED(whole);
-		vid->time += (int)whole;
+	} else if (nsFixed < (p << 3)) {	// a few dots: counted off (a tick of half a dot, 14 MHz)
+		long long f = c + nsFixed;
+		while (f >= p) {
+			f -= p;
+			vid->nsOwedFixed += p;
+		}
+		vid->clkFixed = f;
 	} else {
 		vid_clock_slow(vid, nsFixed);
+		return;
 	}
+	long long whole = FIXED_TO_NS(vid->nsOwedFixed);
+	vid->nsOwedFixed -= NS_TO_FIXED(whole);
+	vid->time += (int)whole;
 }
 void vid_sync_fixed(Video*,long long);
 void vid_sync_lazy_slow(Video*,long long);

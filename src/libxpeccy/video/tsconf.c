@@ -255,15 +255,18 @@ static int ts_tiles_count(Video* vid, int ln, int lay, unsigned short yoffs, uns
 	return res;
 }
 
+// the bits ts_spr_parse() takes them from: Y, YS, ACT and LEAP in bytes 0-1, XS in byte 3
 static int ts_sprites_count(Video* vid, int ln) {
-	TSpr spr;
 	int res = 0;
 	while (sadr < (0x200 - 6)) {
-		ts_spr_parse(&vid->tsconf.sfile[sadr], &spr);
-		if (spr.act && (((ln - spr.y) & 0x1ff) < ((spr.ys + 1) << 3)))
-			res += (spr.xs + 1) << 1;
+		const unsigned char* p = &vid->tsconf.sfile[sadr];
+		if (p[1] & 0x20) {
+			int y = p[0] | ((p[1] & 1) << 8);
+			if (((ln - y) & 0x1ff) < ((((p[1] >> 1) & 7) + 1) << 3))
+				res += (((p[3] >> 1) & 7) + 1) << 1;
+		}
 		sadr += 6;
-		if (spr.leap) break;
+		if (p[1] & 0x40) break;
 	}
 	return res;
 }
