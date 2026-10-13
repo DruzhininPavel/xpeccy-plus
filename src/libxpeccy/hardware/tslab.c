@@ -184,6 +184,20 @@ int tslMRd(Computer* comp, int adr, int m1) {
 	return mem_rd_fast(comp->mem, adr);
 }
 
+// What tslMRd() does with an M1 at adr, doing it again: nothing, where TR-DOS is
+// neither entered nor left and the cache answers or the cpu is not at 14 MHz (a
+// miss there only counts a DRAM cycle the DMA, not running, would take)
+int ts_fetch_quiet(Computer* comp, int adr) {
+	if (comp->dif->type == DIF_BDI) {
+		if (comp->flgDOS && (adr >= 0x4000) && !comp->flgVDOS) return 0;
+		if (((adr & 0xff00) == 0x3d00) && comp->flgROM && !(comp->tsconf.p21af & 0x04)) return 0;
+	}
+	if (comp->hwMul != 4) return 1;
+	int tag = ts_cache_tag(comp, adr);
+	if (!tag) return 1;
+	return (comp->tsconf.cache[(adr >> 1) & 0xff] == tag) && (comp->tsconf.cacheConf & (1 << ((adr >> 14) & 3)));
+}
+
 static void tslRegWr(Computer* comp, int reg, int val);
 
 void tslMWr(Computer* comp, int adr, int val) {

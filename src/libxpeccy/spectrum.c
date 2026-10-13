@@ -1029,6 +1029,68 @@ int compExec(Computer* comp) {
 	return comp_step_end(comp, res2 - res4, res2);
 }
 
+// A halted cpu fetches the HALT again every 4 T, and with nothing to wake it up
+// nothing but the time moves. Up to the next thing the machine would see - the
+// INT, the frame end, a line INT - the steps are taken in one go, leaving what
+// they would have left: R counted on, the ticks counted, the video and the
+// devices given the time. The devices that run while it passes are the ones
+// whose sync takes the time in any pieces alike (the AY and the GS only count it,
+// the tape at its normal speed, the SAA steps by the clock); the FDC, a beeper
+// still settling, a held PS/2 key, an NMI waiting and a board's own turbo
+// accounting want every step and keep the cpu stepping. So does anything the
+// fetch itself does: contention, snow from I in a slow bank, a watch, TR-DOS
+// paging, TSConf's cache.
+// Fast mode only: in real time the sound takes samples between the steps.
+// 1 when it went, *ns the time it took.
+static int comp_fetch_quiet(Computer* comp, int adr) {
+	if (comp->hw->mrd == tslMRd) return ts_fetch_quiet(comp, adr);
+	if ((comp->hw->mrd != stdMRd) && (comp->hw->mrd != asicMRd)) return 0;
+	MemPage* pg = mem_get_page(comp->mem, adr);
+	if ((comp->dif->type == DIF_BDI) && bdi_fetch_pages(comp, pg, adr)) return 0;
+	if (!comp->cpu->flgCONT) return 1;
+	if (comp->cpu->xcont != comp_cont) return 0;
+	return (pg->type != MEM_RAM) || !vid_cont_hit(comp->vid, pg->num << comp->mem->pgshift, 1);
+}
+
+int comp_halt_skip(Computer* comp, int* ns) {
+	CPU* cpu = comp->cpu;
+	if ((cpu->type != CPU_Z80) || !cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
+	if (comp_mem_watched(comp) || comp->flgIBRK || comp->flgDBG || x_runahead) return 0;
+	if (comp->rzx.play || comp->rzx.rec.on || comp->flgNMIRQ || comp->snowBad) return 0;
+	// the refresh disturbs the ULA only from a slow bank (zx_snow)
+	if (cpu->flgRFSH && (zx_bank_of(comp, cpu->regI << 8) & 1)) return 0;
+	if (comp->dif->fdc->plan || comp->dif->doors || comp->gs->enable || comp->keyb->per) return 0;
+	bitChan* bc = comp->beep;
+	if ((bc->val != (bc->lev ? bc->hi : bc->lo)) || (bc->perH && bc->perL)) return 0;
+	if (comp->tape->on && (comp->tape->speed != 100)) return 0;
+	cbHwSnc sync = comp->hw->sync;
+	if (sync == ts_sync) {
+		if (comp->tsconf.dma.act) return 0;
+	} else if ((sync == prfSync) || (sync == scoTpSync)) {
+		if (comp->hwMul > 1) return 0;
+	} else if ((sync != zx_sync) && (sync != atm2_sync) && (sync != scoSync) && (sync != alf_sync)) {
+		return 0;
+	}
+	if (!comp_fetch_quiet(comp, cpu->regPC)) return 0;
+	Video* vid = comp->vid;
+	vid_settle(vid);
+	if (vid->nsDrawFixed < 0) return 0;
+	long long d = vid_quiet_dots(vid, (sync == ts_sync) && (vid->inten & 2));
+	long long step = 4 * comp->nsPerTickFixed;
+	if (step <= 0) return 0;
+	long long n = (d * vid->nsPerDotFixed - vid->nsDrawFixed - 1) / step;
+	if (n < 2) return 0;
+	if (n > 0x10000) n = 0x10000;
+	cpu->regR = (unsigned char)(cpu->regR + n);
+	cpu->flgQ = 0;			// what the steps before left: HALT writes no flags
+	cpu->flgFW = 0;
+	comp->vid->time = 0;
+	comp->flgBRKPRE = 0;
+	res4 = 0;
+	*ns = comp_step_end(comp, (int)(n * 4), (int)(n * 4));
+	return 1;
+}
+
 // Time passing with the cpu standing still: what compExec() does once the
 // opcode has run, for a caller that has already put the cpu where that time
 // leaves it. Syncing video and devices in one piece gives what a run of

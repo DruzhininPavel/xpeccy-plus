@@ -370,6 +370,11 @@ void vid_set_ray(Video*, int);
 int vid_ray_dots(Video*);
 
 int vid_wait_dots(Video*, int, int);		// contention wait in dots, not ns
+// Dots from the ray to the first one the machine would see something on: the
+// frame end, the INT pulse starting or ending, and with lineInt the next hblank
+// (TSConf's line INT). Walking fewer dots than this changes nothing but the
+// picture. For the ray where it stands: settled first.
+long long vid_quiet_dots(Video*, int lineInt);
 // An internal cycle only parks an address on the bus, no MREQ; the Ferranti
 // ULA contends it all the same, the +2A/+3 asic leaves it alone. The one
 // place that rule lives.

@@ -597,7 +597,8 @@ void xThread::emuCycle(Computer* comp) {
 				tm = compExec(comp);
 				comp->flgDBG = brkskip;
 				brkskip = 0;
-			} else {
+			} else if (!(comp->cpu->flgHALT && conf.emu.fast && !comp->gs->enable && !fastload_on && !brk_cond_n
+					&& !comp->flgCOND && !vrecWatch.load(std::memory_order_relaxed) && comp_halt_skip(comp, &tm))) {
 				tm = compExec(comp);			// TODO: it exits when fetch-brk is occured, pc doesn't changed
 			}
 			sndNsFixed += NS_TO_FIXED(tm);

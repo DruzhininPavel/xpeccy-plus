@@ -176,6 +176,15 @@ void zx_set_vmode(Computer*);	// pick the screen drawer for this ula
 void zx_keyp(Computer*, keyEntry*);
 void zx_keyr(Computer*, keyEntry*);
 void zx_sync(Computer*, int);
+// the machines' own syncs and reads, for comp_halt_skip() to know them by
+void ts_sync(Computer*, int);
+void prfSync(Computer*, int);
+void scoSync(Computer*, int);
+void scoTpSync(Computer*, int);
+void atm2_sync(Computer*, int);
+void alf_sync(Computer*, int);
+int tslMRd(Computer*, int, int);
+int ts_fetch_quiet(Computer*, int);	// an M1 at adr pages nothing, stalls nothing, costs no time
 sndPair zx_vol(Computer*, sndVolume*);
 void zx_set_pal(Computer*);	// todo: called from zx_reset only
 

@@ -943,6 +943,25 @@ static void vid_nodraw_to(Video* vid, int on) {
 	vid->nodraw = on;
 }
 
+long long vid_quiet_dots(Video* vid, int lineInt) {
+	long long fx = vid->full.x;
+	long long d = (vid->full.y - vid->ray.y) * fx - vid->ray.x;
+	if (vid->intFRAME > 0) {
+		if (vid->intFRAME < d) d = vid->intFRAME;
+	} else if (vid->inten & 1) {
+		// counted from the blanking edges, the way vid_tick() counts it
+		long long pos = vid->ray.yb * fx + vid->ray.xb;
+		long long to = vid->intp.y * fx + vid->intp.x - pos;
+		if (to <= 0) to += fx * vid->full.y;
+		if (to < d) d = to;
+	}
+	if (lineInt) {
+		long long to = (vid->ray.x < vid->vend.x) ? (vid->vend.x - vid->ray.x) : (fx - vid->ray.x + vid->vend.x);
+		if (to < d) d = to;
+	}
+	return d;
+}
+
 void vid_set_nodraw(Video* vid, int on) {
 	vid_unlazy(vid);			// dots counted as undrawn stay undrawn
 	vid_nodraw_to(vid, on);
