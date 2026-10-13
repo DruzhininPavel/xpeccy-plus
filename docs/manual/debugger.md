@@ -386,7 +386,8 @@ untick them if you do not need them. The list is kept for the machine that is ru
   [The STACK panel](#the-stack-panel).
 
 **State info** - which blocks the **MEMMAP** panel shows: **Ports**, **Signals**, **Frame**
-and **Ray**. **Memmap** is always on: its title is the title bar the panel is dragged by.
+and **Ray**. **Memmap** cannot be switched off: the panel's title bar, which you drag the
+panel by, is part of it.
 
 **Ports** - the watched ports of the machine that is running. See
 [Watched ports](#watched-ports).

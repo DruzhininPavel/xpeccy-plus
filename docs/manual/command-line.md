@@ -245,8 +245,8 @@ What these set is for this start only: the settings in **Options** stay as they 
   are `app`, `conf`, `core`, `cpu`, `video`, `sound`, `tape`, `disk`, `input`, `hw`,
   `file`, `gui`, `gl`, `net` and `brk`.
 - `--log-console` - write the log to the standard error as well, as **To the console** in
-  **Options** does. On Windows there is a standard error to write to only with `-c` or a
-  redirect.
+  **Options** does. On Windows the program has a standard error only when it is started with
+  `-c` or with its output redirected.
 - `-c`, `--console` - Windows only: write to the console the program was started from, or
   open a console of its own when there is none. That console waits for a key before it
   closes. The log goes there at `debug` level unless `--log-level` says otherwise. Output
