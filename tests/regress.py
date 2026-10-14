@@ -39,7 +39,7 @@ HASH_RE = re.compile(r"^hash: frames (\w+) sound (\w+) ram (\w+) cpu (\w+) pc (\
 
 
 HOWS = ("auto", "open", "boot")
-OPTS = ("cfg", "mac", "nvram", "sd", "hdd", "put", "keys")
+OPTS = ("cfg", "mac", "nvram", "sd", "hdd", "put", "keys", "eeprom", "card1", "card2", "cardimg1", "cardimg2")
 PINNED = 946684800  # 2000-01-01: a folder card's FAT carries the host mtimes
 
 
@@ -111,6 +111,23 @@ def set_up(case, corpus, cfg, tmp):
             shutil.copy(corpus / src, cards[-1] / path)
         elif k == "keys":
             args += ["--bench-keys", v]
+        elif k == "eeprom":		# what a divMMC's EEPROM holds, as the machine keeps it
+            (cfg / "nvram").mkdir(exist_ok=True)
+            shutil.copy(corpus / v, cfg / "nvram" / f"{case.machine}.divmmc")
+        elif k in ("card1", "card2", "cardimg1", "cardimg2"):
+            # a divMMC slot: an image or a folder as it is, or (cardimg) a FAT16 image
+            # made of a folder by tests/core/divmmc/mksd.py
+            src, slot = corpus / v, k[-1]
+            dst = tmp / f"card{slot}-{Path(v).name}"
+            if k.startswith("cardimg"):
+                dst = dst.with_suffix(".img")
+                subprocess.run([sys.executable, str(ROOT / "tests" / "core" / "divmmc" / "mksd.py"), str(dst), str(src)], check=True)
+            elif src.is_dir():
+                shutil.copytree(src, dst)
+            else:
+                shutil.copy(src, dst)
+            cards.append(dst)
+            ini["cfg"].append((f"MEDIA.divmmc.card{slot}", str(dst)))
     for card in cards:
         if card.is_dir():
             pin(card)

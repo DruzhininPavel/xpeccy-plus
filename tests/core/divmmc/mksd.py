@@ -68,7 +68,8 @@ class Vol:
 
     def add_dir(self, folder, parent):
         """the entries of folder; parent: its parent's cluster (0 = root)"""
-        items = sorted(folder.iterdir(), key=lambda p: (not p.is_dir(), p.name.upper())) if folder else []
+        items = sorted((p for p in folder.iterdir() if not p.name.startswith(".")),
+                       key=lambda p: (not p.is_dir(), p.name.upper())) if folder else []
         ents, seen = [], set()
         for p in items:
             n11 = name83(p.name, p.is_dir())
@@ -85,7 +86,7 @@ class Vol:
             out.append(dirent(b"..         ", 0x10, parent, 0))
         for p, n11 in self.add_dir(folder, parent):
             if p.is_dir():
-                sub_n = len(list(p.iterdir())) + 2
+                sub_n = len([q for q in p.iterdir() if not q.name.startswith(".")]) + 2
                 c = self.alloc(sub_n * 32)
                 out.append(dirent(n11, 0x10, c, 0))
                 self.put(c, self.write_tree(p, c, cluster))
