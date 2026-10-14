@@ -84,10 +84,11 @@ static void comp_m1x(void* ptr, int adr) {
 	if (comp->div->model) comp_div_fetch(comp, adr);
 }
 
-// the board's clocks: the bus clock's edges (a contended T is not one), and time
+// the board's clocks: the bus clock's edges (a contended T is not one) at T1 of
+// the i/o cycle it is asked in, and time
 static long long comp_div_edge(void* ptr) {
 	Computer* comp = (Computer*)ptr;
-	return comp->tickTotal + comp->cpu->t - comp->contWait;
+	return comp->ioEdge;
 }
 
 static long long comp_div_ns(void* ptr) {
@@ -401,6 +402,7 @@ int comp_pwatch_val(Computer* comp, int idx) {
 int iord(int port, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp_run_io(comp);
+	comp->ioEdge = comp->tickTotal + comp->cpu->t - comp->contWait;	// before the cycle's waits
 	if (comp->flgCNTI) {
 		// fuse reads the port after both halves of the i/o cycle have
 		// been contended (periph.c readport), so do the waiting first
@@ -462,6 +464,7 @@ static inline void iowr_out(Computer* comp, int port, int val) {
 void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp_run_io(comp);
+	comp->ioEdge = comp->tickTotal + comp->cpu->t - comp->contWait;
 	comp->flgBDI = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? 1 : 0;
 	if (comp->flgCNTI) {
 		comp_vid_to_t(comp);		// video to current T
