@@ -72,6 +72,11 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **Fast loading** no longer gives "R Tape loading error" on tapes whose headers are a byte
+  longer than usual (The Eye of Vartan), and no longer starts the tape by itself while a game
+  between two loads reads the keys (Dragon Breed played its later levels to nobody). Nor does
+  a game that has loaded run fast while the tape plays out its last pause (Havoc 128K).
+
 - **Tape auto stop after a load** no longer misses a game that waits for a key in a tight
   loop, or a tape that ends in a long pause: the tape stops and fast loading ends where the
   load did, so the game starts from its beginning (Destiny Mission, Donald's Alphabet Chase).

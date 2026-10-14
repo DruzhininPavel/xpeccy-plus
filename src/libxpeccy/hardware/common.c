@@ -364,13 +364,25 @@ int zx_rom_code(Computer* comp, int pc) {
 
 // What the code right after an IN from #FE looks at: the ear bit (AND #40,
 // BIT 6,A, RRA and AND #20, maybe XOR C between), which is a loader, else the
-// key bits alone (AND with bits 0-4, BIT 0-4,A, OR #E0), which is a keyboard
-// scan. The ear wins: a loader may test for BREAK first (BIT 0,A, AND #40).
-// pc is the address after the IN.
+// key bits alone (AND with bits 0-4, BIT 0-4,A, OR #E0, AND (HL) with a mask
+// from a table, RRA and a jump on the carry), which is a keyboard scan. The ear
+// wins: a loader may test for BREAK first (BIT 0,A, AND #40, the edge loop's
+// RRA / RET NC before its XOR C / AND #20). A CALL, JP or JR right after the IN
+// is followed: the bits are tested where it goes (Havoc's key scan calls its
+// BIT 0,A .. BIT 4,A). pc is the address after the IN.
 int zx_in_use(Computer* comp, int pc) {
 	unsigned char b[9];
+	int and20 = 0;
+	int op = memRd(comp->mem, pc & 0xffff) & 0xff;
+	if ((op == 0xcd) || (op == 0xc3)) {
+		pc = (memRd(comp->mem, (pc + 1) & 0xffff) & 0xff) | ((memRd(comp->mem, (pc + 2) & 0xffff) & 0xff) << 8);
+	} else if (op == 0x18) {
+		pc += 2 + (signed char)memRd(comp->mem, (pc + 1) & 0xffff);
+	}
 	for (int i = 0; i < 9; i++)
 		b[i] = memRd(comp->mem, (pc + i) & 0xffff) & 0xff;
+	for (int i = 0; i < 8; i++)
+		and20 |= (b[i] == 0xe6) && (b[i + 1] == 0x20);
 	for (int i = 0; i < 6; i++) {
 		unsigned char x = b[i];
 		unsigned char y = b[i + 1];
@@ -385,6 +397,9 @@ int zx_in_use(Computer* comp, int pc) {
 		if ((x == 0xe6) && y && !(y & 0xe0)) return ZX_IN_KEYS;
 		if ((x == 0xcb) && ((y & 0xc7) == 0x47) && (y < 0x68)) return ZX_IN_KEYS;
 		if ((x == 0xf6) && (y == 0xe0)) return ZX_IN_KEYS;
+		if (x == 0xa6) return ZX_IN_KEYS;
+		if ((x == 0x1f) && !and20 && ((y == 0x30) || (y == 0x38) || ((y & 0xf7) == 0xd2) || ((y & 0xf7) == 0xd0)))
+			return ZX_IN_KEYS;
 	}
 	return 0;
 }
