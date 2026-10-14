@@ -511,7 +511,9 @@ int tapUserPlay(Tape* tap) {
 // that follows the rom's part has to be given the tape at the moment it starts
 // listening: a fixed lead-in either cuts into its own set-up or lets the block
 // run past it. tapArmPlay leaves the tape standing on the block, and it is
-// pressed on the first read of the tape port that is not the rom's own.
+// pressed when the loader's reads begin - the reads the detector starts a
+// tape on, not just any read: a game between two loads reads the keys in
+// shapes not known for a key scan (Dragon Breed's ENTER).
 void tapArmPlay(Tape* tap) {
 	if (!tap->userStop)
 		tap->armed = 1;
@@ -567,13 +569,6 @@ void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int
 	tap->detectLastTick = tick;
 	tap->detectLastPc = pc;
 	memcpy(tap->detectRegs, regs, 7);
-	// the arm is flash loading's own doing, so it answers whether or not "auto
-	// play / stop" is on. Stop by hand still blocks it, through tapArmPlay
-	if (!tap->on && tap->armed && fromRam && (kind != TAPE_RD_KEYS)) {
-		tap->armed = 0;
-		tapPlay(tap);
-		return;
-	}
 	if (tap->rec) return;
 	if (tap->on) {
 		int loader = (kind == TAPE_RD_EDGE) || (kind == TAPE_RD_EAR)
@@ -592,7 +587,15 @@ void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int
 			xlog(XLG_TAPE, XLL_INFO, "auto stop: the tape port is read as no loader reads it");
 			tapStop(tap);
 		}
-	} else if (tap->detectOn && (kind != TAPE_RD_EDGE) && (kind != TAPE_RD_KEYS) && (tickDiff <= 500)
+	} else if (tap->armed && (kind == TAPE_RD_EAR)) {
+		// The arm is flash loading's own doing, so it answers whether or
+		// not "auto play / stop" is on; stop by hand still blocks it,
+		// through tapArmPlay. A read that tests the ear bit plays it at
+		// once: a loader may go on with the rom's edge routine, whose
+		// reads are not counted (Licence to Kill jumps into #05EC from its
+		// copy of LD-BYTES).
+		tapPlay(tap);
+	} else if ((tap->detectOn || tap->armed) && (kind != TAPE_RD_EDGE) && (kind != TAPE_RD_KEYS) && (tickDiff <= 500)
 			&& ((kind == TAPE_RD_EAR) || (turn && fromRam))) {
 		if (++tap->detectReads >= 10)
 			tapPlay(tap);
