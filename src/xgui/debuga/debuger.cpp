@@ -375,6 +375,9 @@ void DebugWin::machinePanels() {
 	wid_evo->setVisible((hw == HW_TSLAB) || (hw == HW_PENTEVO));
 	// the ZX Evo panel has a palette tab of its own there
 	wid_pal->setVisible((hw != HW_TSLAB) && (hw != HW_PENTEVO));
+	// a panel shown again gets a new tab with its title only, and the tab is made
+	// when the layout next runs - the icons go back on after that
+	QTimer::singleShot(0, wid_brk, &xDockWidget::moved);
 	// a switch to TSConf with the debugger up: xm_set() disarmed the snapshots
 	if (isVisible()) evo_arm_replay();
 }
