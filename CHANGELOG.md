@@ -36,7 +36,8 @@ before that point is upstream's history and is not repeated here.
 - **A ZX Evo panel in the debugger**: on TSConf, the registers decoded with what waits for
   the next line, the sprites, the tiles and tile maps, the DMA transfers of the last frame and
   the palette rows each layer uses; on BaseConf, the pager, the ports and the palette. Like
-  the Sound and Screen panels, it can be detached into a window of its own.
+  the Sound and Screen panels, it can be detached into a window of its own. The TSConf FMAPS
+  window is marked in the memory dump and the memory map. *(thanks to Sergei Smirnov)*
 
 - **TSConf layers can be hidden** from the picture - the three sprite layers, the two tile
   layers and the bitmap - without changing the machine's timing. With the machine stopped in
@@ -152,7 +153,8 @@ before that point is upstream's history and is not repeated here.
 
 - **Smaller things**: Record in the tape player works on an empty deck, the Fast Mode button
   switches it when the key is set to Hold, a keymap line with many keys no longer overruns,
-  and a number of messages, tooltips and labels are corrected.
+  the debugger's disk dump tab keeps its icon after a switch to another model, and a number
+  of messages, tooltips and labels are corrected.
 
 ## 2026.7 - 2026-10-10
 
