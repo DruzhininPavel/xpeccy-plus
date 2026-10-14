@@ -1305,19 +1305,25 @@ void SetupWin::applyMachine() {
 	// (a new machine does it itself)
 	ide_remount(comp->ide);
 	sdc_remount(comp->sdc);
-// divmmc: a board put on, taken off or given other RAM comes up from its power-on
+// divmmc: a board is put on, taken off or given other RAM with the power off, so
+// the machine comes up from its power-on with it. Left running, the machine would
+// meet a firmware that never started at its first error report or NMI.
 	int divModel = (divBox->currentIndex() && hw_takes_divmmc(comp->hw)) ? DIV_ENJOY : DIV_NONE;
 	int divPages = divRamBox->currentIndex() ? DIV_PAGES_MAX : 16;
-	if ((divModel != comp->div->model) || (divPages != comp->div->pages)) {
+	bool divPower = (divModel != comp->div->model) || (divModel && (divPages != comp->div->pages));
+	if (divPower)
 		div_set_model(comp->div, divModel, divPages);
-		div_power_on(comp->div);
-	}
 	comp->div->eeWrite = divWrBox->isChecked() ? 1 : 0;
 	div_map(comp->div);
 	sdc_remount(comp->div->card[0]);
 	sdc_remount(comp->div->card[1]);
 // debuga
 	setWatchPorts(comp, portwid->getPorts());
+	if (divPower) {
+		emu_lock();
+		xm_power_cycle();
+		emu_unlock();
+	}
 }
 
 // The emulator's own settings, and the user's that live on the machine (mouse,
@@ -1869,13 +1875,13 @@ void SetupWin::buildDevices() {
 	QHBoxLayout* eeLay = new QHBoxLayout(ee);
 	eeLay->setContentsMargins(0, 0, 0, 0);
 	eeLay->addWidget(divEeSum, 1);
-	const char* eeIcon[3] = {":/images/fileopen.png", ":/images/save_all.png", ":/images/cancel.png"};
-	QString eeTip[3] = {tr("Load an image into the EEPROM"), tr("Save the EEPROM to a file"), tr("Erase the EEPROM")};
-	for (int i = 0; i < 3; i++) {
+	const char* eeIcon[2] = {":/images/fileopen.png", ":/images/cancel.png"};
+	QString eeTip[2] = {tr("Load an image into the EEPROM"), tr("Erase the EEPROM")};
+	for (int i = 0; i < 2; i++) {
 		QToolButton* tb = new QToolButton;
 		tb->setIcon(QIcon(eeIcon[i]));
 		tb->setToolTip(eeTip[i]);
-		connect(tb, &QToolButton::released, this, [this, i]() {divEeprom(i);});
+		connect(tb, &QToolButton::released, this, [this, i]() {divEeprom(i != 0);});
 		eeLay->addWidget(tb);
 	}
 	dv.field(tr("EEPROM"), ee);
@@ -2026,24 +2032,24 @@ void SetupWin::fillDevSummary() {
 }
 
 // what the EEPROM holds: the chip on the board, so a change is made at once and
-// kept with the machine (nvram), not left for Apply
-void SetupWin::divEeprom(int op) {
+// kept with the machine (nvram), not left for Apply. A chip written or erased
+// outside the machine goes back in with the power off: a fitted board's machine
+// comes up from its power-on.
+void SetupWin::divEeprom(bool erase) {
 	DivMMC* div = conf.zx->div;
 	QString path;
-	if (op == 0) {
+	if (!erase) {
 		path = QFileDialog::getOpenFileName(this, tr("EEPROM image"), "", tr("Images (*.bin *.rom);;All files (*)"), NULL, QFileDialog::DontUseNativeDialog);
-		if (path.isEmpty()) return;
-	} else if (op == 1) {
-		path = QFileDialog::getSaveFileName(this, tr("Save the EEPROM"), "", tr("Images (*.bin);;All files (*)"), NULL, QFileDialog::DontUseNativeDialog);
 		if (path.isEmpty()) return;
 	} else if (!div_eeprom_erased(div) && !areSure("Erase the EEPROM?")) {
 		return;
 	}
 	emu_lock();
 	bool ok = true;
-	if (op == 0) ok = div_load_eeprom(div, path.toLocal8Bit().constData());
-	else if (op == 1) ok = div_save_eeprom(div, path.toLocal8Bit().constData());
+	if (!erase) ok = div_load_eeprom(div, path.toLocal8Bit().constData());
 	else div_erase_eeprom(div);
+	if (ok && div->model)
+		xm_power_cycle();
 	emu_unlock();
 	if (!ok) shitHappens("Can't do it with that file");
 	fillDevSummary();

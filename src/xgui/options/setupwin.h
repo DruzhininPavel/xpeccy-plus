@@ -49,7 +49,7 @@ class SetupWin : public QDialog {
 		QToolButton* sheetButton(QWidget*, const char*);
 		void buildStart();
 		void fillDevSummary();
-		void divEeprom(int);
+		void divEeprom(bool erase);
 		void showDevRows();
 		void showDriveRows();
 		void tidySoundPage();

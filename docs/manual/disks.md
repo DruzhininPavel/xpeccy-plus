@@ -247,8 +247,8 @@ from the card and adds dot commands to BASIC.
    - **RAM** - **128K** or **512K**.
    - **EEPROM writable** - the board's EEPROM jumper. Leave it off: on, the firmware can be
      written, and the board stays out of the way until the firmware sets MAPRAM.
-   - **EEPROM** - **erased** or **written**, and three buttons: {icon}`fileopen` load an
-     image into the EEPROM, {icon}`save_all` save it to a file, {icon}`cancel` erase it.
+   - **EEPROM** - **erased** or **written**, and two buttons: {icon}`fileopen` load an
+     image into the EEPROM, {icon}`cancel` erase it.
 2. Get the firmware. esxDOS is not shipped with the emulator: download it from
    [esxdos.org](http://www.esxdos.org). Load `ESXMMC.BIN` from its archive with the
    {icon}`fileopen` button, or flash it the way the real board is flashed: turn **EEPROM
@@ -263,8 +263,15 @@ from the card and adds dot commands to BASIC.
 
 ![Machine: divMMC](images/options-divmmc.png)
 
-What the EEPROM holds is kept with the machine and is there again at the next start. A
-change made with the three buttons takes effect at once, without **Apply**.
+A real board is put on and taken off with the power off, and so is this one: **Apply**
+after a change in the **divMMC** row or in **RAM** powers the machine off and on. So does
+loading or erasing the EEPROM while the board is on. What the EEPROM holds is kept with the
+machine and is there again at the next start.
+
+esxDOS looks for the card and loads its system files only when it starts from the power
+on. A card put in later, or changed, is seen after **Machine > Reset > Power off and on**;
+started with no card, esxDOS ignores the NMI button until then. A plain reset is not enough:
+the firmware takes the short way and keeps what it found before.
 
 ### Using it
 
