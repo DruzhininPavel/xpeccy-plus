@@ -367,10 +367,18 @@ int zx_rom_code(Computer* comp, int pc) {
 // key bits alone (AND with bits 0-4, BIT 0-4,A, OR #E0, AND (HL) with a mask
 // from a table, RRA and a jump on the carry), which is a keyboard scan. The ear
 // wins: a loader may test for BREAK first (BIT 0,A, AND #40, the edge loop's
-// RRA / RET NC before its XOR C / AND #20). pc is the address after the IN.
+// RRA / RET NC before its XOR C / AND #20). A CALL, JP or JR right after the IN
+// is followed: the bits are tested where it goes (Havoc's key scan calls its
+// BIT 0,A .. BIT 4,A). pc is the address after the IN.
 int zx_in_use(Computer* comp, int pc) {
 	unsigned char b[9];
 	int and20 = 0;
+	int op = memRd(comp->mem, pc & 0xffff) & 0xff;
+	if ((op == 0xcd) || (op == 0xc3)) {
+		pc = (memRd(comp->mem, (pc + 1) & 0xffff) & 0xff) | ((memRd(comp->mem, (pc + 2) & 0xffff) & 0xff) << 8);
+	} else if (op == 0x18) {
+		pc += 2 + (signed char)memRd(comp->mem, (pc + 1) & 0xffff);
+	}
 	for (int i = 0; i < 9; i++)
 		b[i] = memRd(comp->mem, (pc + i) & 0xffff) & 0xff;
 	for (int i = 0; i < 8; i++)
@@ -408,7 +416,8 @@ void zx_tape_detect(Computer* comp) {
 		if ((pc != tap->inPc) || (comp->frmCount != tap->inFrame)) {
 			tap->inPc = pc;
 			tap->inFrame = comp->frmCount;
-			tap->inUse = zx_in_use(comp, pc);		}
+			tap->inUse = zx_in_use(comp, pc);
+		}
 		ram = !zx_rom_code(comp, pc);
 		kind = (tap->inUse == ZX_IN_KEYS) ? TAPE_RD_KEYS
 			: ((ram && (tap->inUse == ZX_IN_EAR)) ? TAPE_RD_EAR : TAPE_RD_OTHER);
