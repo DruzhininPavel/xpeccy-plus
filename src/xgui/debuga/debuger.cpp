@@ -205,6 +205,7 @@ void DebugWin::updateStyle() {
 		xhs->updatePal();	// takes the new font from the parent
 	}
 	fitMMapBoxes();
+	if (ui_misc.labFMaps->isVisible()) fillFMaps();		// its colors are the debugger's own
 	curCpuCore = nullptr;		// font changed: re-measure the register columns
 	fillStack();			// the font sets the row height, and the offset may be new
 	fillDisasm();
