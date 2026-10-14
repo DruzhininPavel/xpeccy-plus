@@ -592,6 +592,46 @@ static void szx_rd_amxm(Computer* comp, const unsigned char* p, size_t n) {
 		xlog(XLG_FILE, XLL_INFO, "szx: the snapshot has a mouse, this machine has none on");
 }
 
+// divMMC (Fuse's DMMC and DMRP). A board this machine does not have on is not
+// switched on for a file: the user's machine is what it is.
+static void szx_rd_dmmc(Computer* comp, const unsigned char* p, size_t n) {
+	DivMMC* div = comp->div;
+	unsigned char ee[DIV_EE_SIZE];
+	if (n < 4) return;
+	if (!div->model) {
+		szx_rd_ignore("divMMC", 1);
+		return;
+	}
+	int flags = rd_word(p);
+	int ok = (flags & SZD_COMPRESSED) ? szx_inflate(p + 4, n - 4, ee, DIV_EE_SIZE)
+			: ((n - 4 >= DIV_EE_SIZE) && memcpy(ee, p + 4, DIV_EE_SIZE));
+	if (ok && memcmp(div->data, ee, DIV_EE_SIZE)) {
+		memcpy(div->data, ee, DIV_EE_SIZE);
+		div->eeDirty = 1;
+	}
+	div->eeWrite = (flags & SZD_EPROM_WP) ? 0 : 1;
+	div->bank = p[2] & 0x3f;
+	div->mapram = (p[2] >> 6) & 1;
+	div->conmem = (p[2] >> 7) & 1;
+	// in, and not by CONMEM: in esxDOS, where an off-area fetch is the way out
+	div->mapcond = div->automap = ((flags & SZD_PAGED) && !div->conmem) ? 1 : 0;
+	div_map(div);
+}
+
+static void szx_rd_dmrp(Computer* comp, const unsigned char* p, size_t n) {
+	DivMMC* div = comp->div;
+	if (!div->model || (n < 3)) return;
+	int page = p[2];
+	if (page >= div->pages) {
+		xlog(XLG_FILE, XLL_WARN, "szx: divMMC page %i is past this board's RAM", page);
+		return;
+	}
+	unsigned char* dst = div->data + DIV_EE_SIZE + (page << 13);
+	if (!((rd_word(p) & SZR_COMPRESSED) ? szx_inflate(p + 3, n - 3, dst, 0x2000)
+			: ((n - 3 >= 0x2000) && memcpy(dst, p + 3, 0x2000))))
+		xlog(XLG_FILE, XLL_WARN, "szx: divMMC page %i is broken", page);
+}
+
 // --- loading ---
 
 // what the header says, -1 when it is no zx-state file
@@ -696,6 +736,8 @@ int loadSZX_buf(Computer* comp, const unsigned char* buf, size_t len) {
 			case BID('Z','X','P','R'): break;		// the printer: no state worth a word
 			case BID('D','R','U','M'): szx_rd_ignore("SpecDrum", 1); break;
 			case BID('M','F','C','E'): szx_rd_ignore("Multiface", (n >= 2) && !(p[1] & SZF_MF_DISABLED)); break;
+			case BID('D','M','M','C'): szx_rd_dmmc(comp, p, n); break;
+			case BID('D','M','R','P'): szx_rd_dmrp(comp, p, n); break;
 			default:
 				xlog(XLG_FILE, XLL_INFO, "szx: block %.4s skipped", (const char*)(buf + pos));
 				break;
@@ -986,6 +1028,16 @@ int szx_build(Computer* comp, szxBuf* out) {
 	}
 	if (comp->gs && comp->gs->enable)
 		szx_wr_gs(&b, &d, comp);
+	if (comp->div->model) {
+		DivMMC* div = comp->div;
+		sb_word(&d, (div->eeWrite ? 0 : SZD_EPROM_WP) | (div->shown ? SZD_PAGED : 0));
+		sb_byte(&d, (div->conmem << 7) | (div->mapram << 6) | (div->bank & 0x3f));
+		sb_byte(&d, div->pages);
+		sb_put(&d, div->data, DIV_EE_SIZE);
+		sb_block(&b, BID('D','M','M','C'), &d);
+		for (i = 0; i < div->pages; i++)
+			szx_wr_page(&b, &d, BID('D','M','R','P'), i, div->data + DIV_EE_SIZE + (i << 13), 0x2000);
+	}
 	sb_free(&d);
 	if (b.fail) {
 		sb_free(&b);
@@ -1007,11 +1059,12 @@ int szx_write(szxBuf* b, const char* name) {
 		unsigned id = rd_dword(b->data + pos);
 		size_t n = rd_dword(b->data + pos + 4);
 		const unsigned char* p = b->data + pos + 8;
-		size_t head = ((id == BID('R','A','M','P')) || (id == BID('G','S','R','P'))) ? 3 : (id == BID('R','O','M',0)) ? 6 : 0;
+		size_t head = ((id == BID('R','A','M','P')) || (id == BID('G','S','R','P')) || (id == BID('D','M','R','P'))) ? 3
+				: (id == BID('R','O','M',0)) ? 6 : (id == BID('D','M','M','C')) ? 4 : 0;
 		if (head && (n > head)) {
 			sb_put(&d, p, head);
 			if (sb_deflate(&d, p + head, n - head))
-				d.data[0] |= SZR_COMPRESSED;
+				d.data[0] |= (id == BID('D','M','M','C')) ? SZD_COMPRESSED : SZR_COMPRESSED;
 			sb_block(&o, id, &d);
 		} else {
 			sb_put(&o, b->data + pos, 8 + n);

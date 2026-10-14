@@ -302,6 +302,27 @@ static const szxField fld_sdc[] = {
 	FLD(SDCard, blkSize),
 	FLD(SDCard, addr),
 	FLD(SDCard, buf),
+	FLD(SDCard, out),		// a spec card's: what goes out next, and busy
+	FLD(SDCard, busyLeft),
+	FLDEND
+};
+
+// a divMMC: what DMMC has not (the automapper, the SPI engine, the EEPROM's cycle).
+// Its times are taken as offsets from the moment of the file (ext_div_save)
+static const szxField fld_div[] = {
+	FLD(DivMMC, conmem),
+	FLD(DivMMC, mapram),
+	FLD(DivMMC, bank),
+	FLD(DivMMC, mapcond),
+	FLD(DivMMC, automap),
+	FLD(DivMMC, cs),
+	FLD(DivMMC, spiS),
+	FLD(DivMMC, spiRes),
+	FLD(DivMMC, spiLat),
+	FLD(DivMMC, spiNxt),
+	FLD(DivMMC, nmiLine),
+	FLD(DivMMC, eeWrite),
+	FLD(DivMMC, ee),
 	FLDEND
 };
 
@@ -393,12 +414,54 @@ static const szxField fld_tape[] = {
 #define XR_ATA	BID('A','T','A','0')	// master, 1 slave
 #define XR_SMNV	BID('S','M','N','V')	// SMUC's nvram
 #define XR_SDC	BID('S','D','C',' ')
+#define XR_DIV	BID('D','I','V',' ')
+#define XR_DCD	BID('D','C','D','0')	// 1, a divMMC's cards
 #define XR_GS	BID('G','S','X',' ')
 #define XR_TAPE	BID('T','A','P','E')
 #define XR_GSCPU	BID('G','S','C','P')
 #define XR_GSRAM	BID('G','S','R','X')	// a 32K page past what the GS block holds
 
 static void ext_gs_save(szxBuf*, Computer*);
+
+// a divMMC's clocks, as the machine has them now
+static long long ext_div_edge(Computer* comp) {
+	return comp->tickTotal + comp->cpu->t - comp->contWait;
+}
+
+static long long ext_div_ns(Computer* comp) {
+	return (long long)((double)(comp->tickTotal + comp->cpu->t) * comp->nsPerTick);
+}
+
+// the EEPROM's timers moved by d (0 stays 0: no cycle)
+static void ext_div_times(DivMMC* div, long long d) {
+	if (div->ee.loadEnd) div->ee.loadEnd += d;
+	if (div->ee.busyEnd) div->ee.busyEnd += d;
+}
+
+static void ext_div(Computer* comp, const unsigned char* p, size_t n) {
+	DivMMC* div = comp->div;
+	if (!div->model) return;
+	DivMMC tmp = *div;
+	fld_get(&tmp, fld_div, p, n);
+	tmp.spiS += ext_div_edge(comp);
+	ext_div_times(&tmp, ext_div_ns(comp));
+	div->conmem = tmp.conmem;
+	div->mapram = tmp.mapram;
+	div->bank = tmp.bank;
+	div->mapcond = tmp.mapcond;
+	div->automap = tmp.automap;
+	div->cs = tmp.cs;
+	div->card[0]->cs = div->cs & 1;
+	div->card[1]->cs = (div->cs >> 1) & 1;
+	div->spiS = tmp.spiS;
+	div->spiRes = tmp.spiRes;
+	div->spiLat = tmp.spiLat;
+	div->spiNxt = tmp.spiNxt;
+	div->nmiLine = tmp.nmiLine;
+	div->eeWrite = tmp.eeWrite;
+	div->ee = tmp.ee;
+	div_map(div);
+}
 static void ext_gs_ram(GSound*, const unsigned char*, size_t);
 
 static int ext_chip_index(TSound* ts, aymChip* chip) {
@@ -527,6 +590,14 @@ void szx_ext_save(szxBuf* b, Computer* comp) {
 	}
 	if (comp->sdc)
 		rec_fields(b, XR_SDC, comp->sdc, fld_sdc);
+	if (comp->div->model) {
+		DivMMC tmp = *comp->div;
+		tmp.spiS -= ext_div_edge(comp);
+		ext_div_times(&tmp, -ext_div_ns(comp));
+		rec_fields(b, XR_DIV, &tmp, fld_div);
+		for (i = 0; i < 2; i++)
+			rec_fields(b, XR_DCD + ((unsigned)i << 24), comp->div->card[i], fld_sdc);
+	}
 	if (comp->gs && comp->gs->enable)
 		ext_gs_save(b, comp);
 	if (comp->tape && comp->tape->blkCount) {
@@ -938,6 +1009,7 @@ int szx_ext_load(Computer* comp, const unsigned char* ext, size_t len) {
 			case XR_SDC:
 				if (comp->sdc) fld_get(comp->sdc, fld_sdc, p, n);
 				break;
+			case XR_DIV: ext_div(comp, p, n); break;
 			case XR_GS:
 				if (comp->gs && comp->gs->enable) ext_gs(comp->gs, p, n);
 				break;
@@ -956,6 +1028,20 @@ int szx_ext_load(Computer* comp, const unsigned char* ext, size_t len) {
 					ext_chip_load(comp, idx, p, n);
 				} else if ((idx = xr_slot(id, XR_FM, 4)) >= 0) {
 					ext_fm_load(comp, idx, p, n);
+				} else if ((idx = xr_slot(id, XR_DCD, 2)) >= 0) {
+					if (comp->div->model) {
+						SDCard* card = comp->div->card[idx];
+						SDCard keep = *card;	// what names its medium is not the file's
+						fld_get(card, fld_sdc, p, n);
+						card->image = keep.image;
+						card->file = keep.file;
+						card->vfat = keep.vfat;
+						card->capacity = keep.capacity;
+						card->maxlba = keep.maxlba;
+						card->lock = keep.lock;
+						card->sdhc = keep.sdhc;
+						card->spec = 1;
+					}
 				} else if ((idx = xr_slot(id, XR_ATA, 2)) >= 0) {
 					if (comp->ide && (comp->ide->type != IDE_NONE))
 						ext_ata(idx ? comp->ide->slave : comp->ide->master, p, n);

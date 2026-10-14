@@ -88,6 +88,9 @@ void div_set_model(DivMMC*, int model, int pages);
 
 void div_power_on(DivMMC*);	// the supply: registers, flip-flops and the cards
 void div_reset(DivMMC*);	// /RESET: card selects and the SPI engine only
+// a snapshot is loaded: the board out of the machine's memory until the file says
+// otherwise (its RAM, EEPROM and MAPRAM are the board's own and stay)
+void div_snap_clear(DivMMC*);
 
 // an opcode fetch at adr, before its byte is read: 1 when the map changed
 int div_m1(DivMMC*, int adr);

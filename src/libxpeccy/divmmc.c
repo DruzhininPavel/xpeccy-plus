@@ -348,3 +348,11 @@ int div_eeprom_erased(DivMMC* div) {
 		if (div->data[i] != 0xff) return 0;
 	return 1;
 }
+
+void div_snap_clear(DivMMC* div) {
+	div->conmem = 0;
+	div->mapcond = 0;
+	div->automap = 0;
+	div_spi_reset(div);
+	div_map(div);
+}

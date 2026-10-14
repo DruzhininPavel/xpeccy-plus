@@ -840,6 +840,7 @@ void comp_snap_reset(Computer* comp, int res) {
 	int play = comp->rzx.play;
 	comp->rzx.play = 0;
 	compReset(comp, res);
+	div_snap_clear(comp->div);
 	comp->rzx.play = play;
 	comp_snap_map(comp);
 	comp_heat_reset(comp);
