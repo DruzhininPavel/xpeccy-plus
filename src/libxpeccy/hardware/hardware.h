@@ -232,6 +232,10 @@ typedef struct {
 } tsRegs;
 void ts_get_regs(Computer*, tsRegs*);
 
+// What a cpu write to adr lands in besides memory: the FMAPS window of FMAddr (zmaps.v)
+enum {TS_FM_NONE = 0, TS_FM_CRAM, TS_FM_SFILE, TS_FM_REGS};
+int ts_fmaps_part(Computer*, int adr);
+
 // The ZX Evolution BaseConf state, for the debugger: what the #xxBE/BD readback block
 // gives, taken from the same places
 typedef struct {

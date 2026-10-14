@@ -17,6 +17,8 @@ dbg.disk.data.txt = #002b36
 dbg.disk.crc.bg = #f2dbe4
 dbg.disk.crc.txt = #002b36
 dbg.asm.const.txt = #d33682
+dbg.fmaps.bg = #d9ece4
+dbg.fmaps.txt = #002b36
 
 ; links in every window, see README.md
 ui.link = #1e6fa8

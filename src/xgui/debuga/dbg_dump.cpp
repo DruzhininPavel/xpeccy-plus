@@ -146,6 +146,8 @@ QVariant xDumpModel::data(const QModelIndex& idx, int role) const {
 	int adr = (dmpadr + (row * dmpsize)) % maxadr;
 	int cadr = (adr + col - 1) % maxadr;
 	int flg = mrd(cadr) >> 8;
+	// TSConf: a cpu write here goes to CRAM, SFILE or a register too
+	int fm = ((mode == XVIEW_CPU) && (col > 0) && (col < 17)) ? ts_fmaps_part(conf.zx, cadr) : TS_FM_NONE;
 	QByteArray arr;
 	QColor clr;
 	switch(role) {
@@ -157,6 +159,8 @@ QVariant xDumpModel::data(const QModelIndex& idx, int role) const {
 			if ((col > 0) && (col < 17)) {
 				if ((cadr >= blockStart) && (cadr <= blockEnd) && (mode == XVIEW_CPU)) {	// selection
 					clr = conf.pal["dbg.sel.bg"];
+				} else if (fm != TS_FM_NONE) {
+					clr = conf.pal["dbg.fmaps.bg"];
 				//} else {
 				//	clr = conf.pal["dbg.table.bg"];
 				}
@@ -172,6 +176,8 @@ QVariant xDumpModel::data(const QModelIndex& idx, int role) const {
 					clr = conf.pal["dbg.brk.txt"];
 				} else if ((cadr >= blockStart) && (cadr <= blockEnd) && (mode == XVIEW_CPU)) {	// selection
 					clr = conf.pal["dbg.sel.txt"];
+				} else if (fm != TS_FM_NONE) {
+					clr = conf.pal["dbg.fmaps.txt"];
 				//} else {
 				//	clr = conf.pal["dbg.table.txt"];
 				}
@@ -180,6 +186,13 @@ QVariant xDumpModel::data(const QModelIndex& idx, int role) const {
 			}
 			if (clr.isValid())
 				res = clr;
+			break;
+		case Qt::ToolTipRole:
+			switch (fm) {
+				case TS_FM_CRAM: res = QString("FMAPS: CRAM, color #%0").arg(gethexbyte((cadr & 0x1ff) >> 1)); break;
+				case TS_FM_SFILE: res = QString("FMAPS: SFILE, sprite %0").arg((cadr & 0x1ff) / 6); break;
+				case TS_FM_REGS: res = QString("FMAPS: port #%0AF").arg(gethexbyte(cadr & 0xff)); break;
+			}
 			break;
 		case Qt::TextAlignmentRole:
 			if (col == 17) {

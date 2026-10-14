@@ -775,6 +775,7 @@ SetupWin::SetupWin(QWidget* par):QDialog(par) {
 		ui.tbDbgDskIdBG, ui.tbDbgDskIdFG,
 		ui.tbDbgDskDataBG, ui.tbDbgDskDataFG,
 		ui.tbDbgDskCrcBG, ui.tbDbgDskCrcFG,
+		ui.tbDbgFmBG, ui.tbDbgFmFG,
 		ui.tbDbgAsmConstFG,
 		NULL
 	};
@@ -867,6 +868,7 @@ void SetupWin::fillDbgPalette() {
 		"dbg.disk.id.bg", "dbg.disk.id.txt",
 		"dbg.disk.data.bg", "dbg.disk.data.txt",
 		"dbg.disk.crc.bg", "dbg.disk.crc.txt",
+		"dbg.fmaps.bg", "dbg.fmaps.txt",
 		"dbg.asm.const.txt",
 		NULL
 	};
@@ -879,6 +881,7 @@ void SetupWin::fillDbgPalette() {
 		ui.tbDbgDskIdBG, ui.tbDbgDskIdFG,
 		ui.tbDbgDskDataBG, ui.tbDbgDskDataFG,
 		ui.tbDbgDskCrcBG, ui.tbDbgDskCrcFG,
+		ui.tbDbgFmBG, ui.tbDbgFmFG,
 		ui.tbDbgAsmConstFG
 	};
 	// the default a right click puts back is the same one the emulator starts

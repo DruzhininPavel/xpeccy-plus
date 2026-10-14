@@ -71,6 +71,16 @@
       <item row="3" column="1">
        <widget class="xHexSpin" name="numPG3"/>
       </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QLabel" name="labFMaps">
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

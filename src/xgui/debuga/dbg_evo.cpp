@@ -491,9 +491,10 @@ void xTsRegsPage::draw(Computer* comp) {
 		list->put(g, QString("page%0").arg(i), {gethexbyte(0x10 + i) + "AF", QString("Page%0").arg(i), gethexbyte(r.page[i]), means});
 	}
 	list->put(g, "memconf", {"21AF", "MemConfig", gethexbyte(r.memconf), memconf_means(r.memconf)});
-	QString fmat = "#" + gethexbyte(r.fmaddr << 4) + "00";
-	list->put(g, "fm", {"15AF", "FMAddr", gethexbyte(r.fmaddr | (r.fmen ? 0x10 : 0)), nm ? QString("FM_EN=%0 FM_ADDR=%1").arg(r.fmen).arg(fmat)
-		: (r.fmen ? QString("CRAM and SFILE at %0").arg(fmat) : "off")});
+	// the three parts of the window (zmaps.v), written to and never read from
+	auto fmpart = [&r](int ofs) {return "#" + gethexword((r.fmaddr << 12) | ofs);};
+	list->put(g, "fm", {"15AF", "FMAddr", gethexbyte(r.fmaddr | (r.fmen ? 0x10 : 0)), nm ? QString("FM_EN=%0 FM_ADDR=%1").arg(r.fmen).arg(fmpart(0))
+		: (r.fmen ? QString("CRAM %0, SFILE %1, regs %2").arg(fmpart(0), fmpart(0x200), fmpart(0x400)) : "off")});
 	list->put(g, "cache", {"2BAF", "CacheConfig", gethexbyte(r.cacheconf), evo_bits(r.cacheconf, cacheBits, "off")});
 	list->put(g, "fdd", {"29AF", "FDDVirt", gethexbyte(r.fddvirt), evo_bits(r.fddvirt, fddBits, "none virtual")});
 
