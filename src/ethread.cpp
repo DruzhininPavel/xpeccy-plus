@@ -217,6 +217,12 @@ void xThread::tap_catch_load(Computer* comp, int atStart, int base, int dir) {
 	// automatics is on - Play does it.
 	if (atStart && (tape_flash() || conf.tape.autostart))
 		tap_rewind_for(tap, comp->cpu->regAa & 0xff, comp->cpu->regDE);
+	// A tape stopped past its block's pilot holds no pilot the rom can find
+	// before the next block's - the detector stops it between the rom's
+	// header and its data (Eye of Vartan's LOAD "" takes three frames there)
+	if (atStart && !tap->on && (tap->block < tap->blkCount) && (tap->pos > 0)
+			&& (tap_block_done(tap) || tap_past_pilot(tap)))
+		tapNextBlock(tap);
 	int blk = tap->block;
 	if (blk >= tap->blkCount) return;
 	// A loader that has the rom read only the first part of a block and reads
