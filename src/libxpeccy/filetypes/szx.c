@@ -603,18 +603,18 @@ static void szx_rd_dmmc(Computer* comp, const unsigned char* p, size_t n) {
 		return;
 	}
 	int flags = rd_word(p);
-	int ok = (flags & SZD_COMPRESSED) ? szx_inflate(p + 4, n - 4, ee, DIV_EE_SIZE)
+	int ok = (flags & SZDM_COMPRESSED) ? szx_inflate(p + 4, n - 4, ee, DIV_EE_SIZE)
 			: ((n - 4 >= DIV_EE_SIZE) && memcpy(ee, p + 4, DIV_EE_SIZE));
 	if (ok && memcmp(div->data, ee, DIV_EE_SIZE)) {
 		memcpy(div->data, ee, DIV_EE_SIZE);
 		div->eeDirty = 1;
 	}
-	div->eeWrite = (flags & SZD_EPROM_WP) ? 0 : 1;
+	div->eeWrite = (flags & SZDM_EPROM_WP) ? 0 : 1;
 	div->bank = p[2] & 0x3f;
 	div->mapram = (p[2] >> 6) & 1;
 	div->conmem = (p[2] >> 7) & 1;
 	// in, and not by CONMEM: in esxDOS, where an off-area fetch is the way out
-	div->mapcond = div->automap = ((flags & SZD_PAGED) && !div->conmem) ? 1 : 0;
+	div->mapcond = div->automap = ((flags & SZDM_PAGED) && !div->conmem) ? 1 : 0;
 	div_map(div);
 }
 
@@ -1030,7 +1030,7 @@ int szx_build(Computer* comp, szxBuf* out) {
 		szx_wr_gs(&b, &d, comp);
 	if (comp->div->model) {
 		DivMMC* div = comp->div;
-		sb_word(&d, (div->eeWrite ? 0 : SZD_EPROM_WP) | (div->shown ? SZD_PAGED : 0));
+		sb_word(&d, (div->eeWrite ? 0 : SZDM_EPROM_WP) | (div->shown ? SZDM_PAGED : 0));
 		sb_byte(&d, (div->conmem << 7) | (div->mapram << 6) | (div->bank & 0x3f));
 		sb_byte(&d, div->pages);
 		sb_put(&d, div->data, DIV_EE_SIZE);
@@ -1064,7 +1064,7 @@ int szx_write(szxBuf* b, const char* name) {
 		if (head && (n > head)) {
 			sb_put(&d, p, head);
 			if (sb_deflate(&d, p + head, n - head))
-				d.data[0] |= (id == BID('D','M','M','C')) ? SZD_COMPRESSED : SZR_COMPRESSED;
+				d.data[0] |= (id == BID('D','M','M','C')) ? SZDM_COMPRESSED : SZR_COMPRESSED;
 			sb_block(&o, id, &d);
 		} else {
 			sb_put(&o, b->data + pos, 8 + n);

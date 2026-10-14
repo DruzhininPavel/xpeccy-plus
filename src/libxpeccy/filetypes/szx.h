@@ -102,9 +102,9 @@ void sb_free(szxBuf*);
 
 #define SZR_COMPRESSED	1	// RAMP, ROM, GSRP, DMRP: the data is zlib
 // DMMC (divMMC, Fuse's block; DMRP holds its 8K RAM pages as RAMP does 16K)
-#define SZD_EPROM_WP	1	// the EEPROM jumper closed
-#define SZD_PAGED	2	// the board's memory is in
-#define SZD_COMPRESSED	4	// the EEPROM is zlib
+#define SZDM_EPROM_WP	1	// the EEPROM jumper closed
+#define SZDM_PAGED	2	// the board's memory is in
+#define SZDM_COMPRESSED	4	// the EEPROM is zlib
 
 #define BID(a,b,c,d)	((unsigned)(a) | ((unsigned)(b) << 8) | ((unsigned)(c) << 16) | ((unsigned)(d) << 24))
 
