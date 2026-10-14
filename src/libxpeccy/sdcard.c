@@ -34,6 +34,11 @@
 #define	CMD58		0x3A	// + reads the OCR register
 #define	CMD59		0x3B	// + turn CRC
 
+// A spec card is what a card of its size would be: up to 2 GB an SDSC one
+static void sdc_set_kind(SDCard* sdc) {
+	if (sdc->spec) sdc->sdhc = (sdc->maxlba > (0x80000000u >> 9));
+}
+
 // The machine's reset: the card keeps its power, so it drops the command it was
 // in but stays initialised - a firmware that finds it back in idle takes it
 // for gone (ZX Evo's service rom: "SD card lost").
@@ -95,6 +100,7 @@ void sdcSetFolder(SDCard* sdc, const char* name, vFat* vf) {
 	sdc->vfat = vf;
 	sdc->maxlba = vf->volume;
 	sdc->capacity = vf->volume >> 11;	// 512-byte sectors -> Mb
+	sdc_set_kind(sdc);
 	sdcSetLock(sdc, 0);
 }
 
@@ -336,6 +342,7 @@ void sdcOpenFile(SDCard* sdc) {
 				sz2 <<= 1;
 			sdc->capacity = sz2 >> 20;	// MegaBytes
 			sdc->maxlba = sz2 >> 9;		// 512-byte sectors
+			sdc_set_kind(sdc);
 		}
 	}
 }
@@ -347,4 +354,368 @@ void sdcCloseFile(SDCard* sdc) {
 	if (sdc->vfat)
 		vfat_free(sdc->vfat);
 	sdc->vfat = NULL;
+}
+
+// A card on an SPI bus, as the SD specification (physical layer, part 1, ch. 7)
+// has it. Every transfer is a byte each way: what the card says goes out while
+// the host's byte comes in. A host clocks FF to read, and the card says FF when
+// it has nothing to say.
+//
+// Times are counted in transfers. The card's own delays are its own, the
+// specification gives ranges only, so a plain mid-range card is taken:
+#define	SDS_NCR		1	// FF before an R1: 1..8 bytes
+#define	SDS_NAC		8	// FF before a data token on a read: up to 100 ms on a slow card
+#define	SDS_BUSY	100	// 00 after a written block: about 1 ms at a Spectrum's pace
+
+// CRC7 of a command or a register, shifted with its end bit
+static int sds_crc7(const unsigned char* p, int n) {
+	int crc = 0;
+	for (int i = 0; i < n; i++) {
+		int b = p[i];
+		for (int k = 0; k < 8; k++) {
+			crc <<= 1;
+			if ((b ^ crc) & 0x80) crc ^= 0x09;
+			b <<= 1;
+		}
+		crc &= 0x7f;
+	}
+	return (crc << 1) | 1;
+}
+
+// CRC16-CCITT of a data block
+static int sds_crc16(const unsigned char* p, int n) {
+	int crc = 0;
+	for (int i = 0; i < n; i++) {
+		crc ^= p[i] << 8;
+		for (int k = 0; k < 8; k++)
+			crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+		crc &= 0xffff;
+	}
+	return crc;
+}
+
+SDCard* sdc_create_spec(void) {
+	SDCard* sdc = sdcCreate();
+	if (!sdc) return NULL;
+	sdc->spec = 1;
+	sdc_power_on(sdc);
+	return sdc;
+}
+
+void sdc_power_on(SDCard* sdc) {
+	sdc_idle(sdc);
+	sdc->spimode = 0;
+	sdc->checkCrc = 0;
+	sdc->blkSize = 512;
+	sdc->out.pos = sdc->out.len = 0;
+	sdc->busyLeft = 0;
+	sdc->argCnt = 6;
+}
+
+static void sds_put(SDCard* sdc, int val) {
+	if (sdc->out.len < (int)sizeof(sdc->out.data))
+		sdc->out.data[sdc->out.len++] = val & 0xff;
+}
+
+static void sds_gap(SDCard* sdc, int n) {
+	while (n-- > 0) sds_put(sdc, 0xff);
+}
+
+static int sds_r1(SDCard* sdc, int flags) {
+	return (flags | (sdc->idle ? R1_IDLE : 0)) & 0xff;
+}
+
+// a new answer: what was left of the last one is dropped
+static void sds_answer(SDCard* sdc, int r1) {
+	sdc->out.pos = sdc->out.len = 0;
+	sds_gap(sdc, SDS_NCR);
+	sds_put(sdc, r1);
+}
+
+// a data token, the bytes and their CRC16
+static void sds_block(SDCard* sdc, const unsigned char* p, int n) {
+	sds_gap(sdc, SDS_NAC);
+	sds_put(sdc, 0xfe);
+	for (int i = 0; i < n; i++) sds_put(sdc, p[i]);
+	int crc = sds_crc16(p, n);
+	sds_put(sdc, crc >> 8);
+	sds_put(sdc, crc);
+}
+
+// the sectors the card holds
+static unsigned int sds_sectors(SDCard* sdc) {
+	return sdc->maxlba;
+}
+
+// CSD: version 2.0 for an SDHC card, 1.0 for an SDSC one, sized to the medium
+static void sds_csd(SDCard* sdc, unsigned char* p) {
+	memset(p, 0, 16);
+	unsigned int sec = sds_sectors(sdc);
+	if (sdc->sdhc) {
+		unsigned int cs = (sec >> 10) ? (sec >> 10) - 1 : 0;
+		p[0] = 0x40;		// CSD_STRUCTURE 1
+		p[1] = 0x0e;		// TAAC 1 ms
+		p[2] = 0x00;		// NSAC
+		p[3] = 0x32;		// TRAN_SPEED 25 MHz
+		p[4] = 0x5b;		// CCC 010110110101
+		p[5] = 0x59;		// ... READ_BL_LEN 9
+		p[6] = 0x00;
+		p[7] = (cs >> 16) & 0x3f;
+		p[8] = (cs >> 8) & 0xff;
+		p[9] = cs & 0xff;
+		p[10] = 0x7f;		// ERASE_BLK_EN, SECTOR_SIZE 7F
+		p[11] = 0x80;
+		p[12] = 0x0a;		// R2W_FACTOR 2, WRITE_BL_LEN 9
+		p[13] = 0x40;
+		p[14] = 0x00;
+	} else {
+		// capacity = (C_SIZE + 1) * 2^(C_SIZE_MULT + 2) * 2^READ_BL_LEN
+		int bl = (sec > 0x200000) ? 10 : 9;	// a 2 GB card counts 1K blocks
+		unsigned int blocks = sec >> (bl - 9);
+		int m = 0;
+		while ((m < 7) && ((blocks >> (m + 2)) > 4096)) m++;
+		unsigned int cs = (blocks >> (m + 2)) ? (blocks >> (m + 2)) - 1 : 0;
+		if (cs > 4095) cs = 4095;
+		p[0] = 0x00;		// CSD_STRUCTURE 0
+		p[1] = 0x26;		// TAAC
+		p[2] = 0x00;
+		p[3] = 0x32;
+		p[4] = 0x5f;		// CCC
+		p[5] = 0x50 | bl;
+		p[6] = 0x80 | ((cs >> 10) & 0x03);	// READ_BL_PARTIAL
+		p[7] = (cs >> 2) & 0xff;
+		p[8] = ((cs & 0x03) << 6) | 0x3f;	// VDD_R_CURR_MIN/MAX
+		p[9] = 0xfc | ((m >> 1) & 0x03);	// VDD_W_CURR_MIN/MAX
+		p[10] = ((m & 1) << 7) | 0x7f;		// ERASE_BLK_EN, SECTOR_SIZE
+		p[11] = 0x80;
+		p[12] = 0x08 | (bl >> 2);		// R2W_FACTOR 2
+		p[13] = (bl & 3) << 6;
+		p[14] = 0x00;
+	}
+	p[15] = sds_crc7(p, 15);
+}
+
+// CID: a card of no maker in particular
+static void sds_cid(SDCard* sdc, unsigned char* p) {
+	static const unsigned char cid[15] = {0x00, 'X', 'P', 'X', 'P', 'C', 'R', 'D', 0x10, 0x00, 0x00, 0x00, 0x01, 0x01, 0x9a};
+	(void)sdc;
+	memcpy(p, cid, 15);
+	p[15] = sds_crc7(p, 15);
+}
+
+// the sector a read or a write command names: a byte address on an SDSC card
+static unsigned int sds_lba(SDCard* sdc) {
+	unsigned int arg = sdcGetArg(sdc, 0xffffffff);
+	return sdc->sdhc ? arg : (arg >> 9);
+}
+
+static void sds_read_block(SDCard* sdc) {
+	sdcRdSector(sdc);
+	sds_block(sdc, sdc->buf.data + 1, 512);
+}
+
+static void sds_exec(SDCard* sdc) {
+	int cmd = sdc->arg[0] & 0x3f;
+	int crc_ok = (sds_crc7(sdc->arg, 5) == sdc->arg[5]);
+	unsigned char reg[16];
+	if (!sdc->spimode) {
+		// SD mode: only a CMD0 with its CRC is heard, and it puts the card in SPI mode
+		if ((cmd != CMD00) || !crc_ok) return;
+		sdc->spimode = 1;
+	}
+	// CMD0 and CMD8 are always checked, the rest once CMD59 asks for it
+	if (!crc_ok && (sdc->checkCrc || (cmd == CMD00) || (cmd == CMD08)) && !sdc->acmd) {
+		sds_answer(sdc, sds_r1(sdc, R1_CRC_ERROR));
+		return;
+	}
+	if (sdc->acmd) {
+		sdc->acmd = 0;
+		switch (cmd) {
+			case ACMD41:
+				// an SDHC card stays idle for a host that does not say it knows them
+				if (!sdc->sdhc || (sdc->arg[1] & 0x40))
+					sdc->idle = 0;
+				sds_answer(sdc, sds_r1(sdc, 0));
+				break;
+			default:
+				sds_answer(sdc, sds_r1(sdc, R1_ILLEGAL));
+				break;
+		}
+		return;
+	}
+	unsigned int lba;
+	switch (cmd) {
+		case CMD00:
+			sdc_idle(sdc);
+			sds_answer(sdc, sds_r1(sdc, 0));
+			break;
+		case CMD01:			// the MMC way out of idle, which an SD card takes too
+			sdc->idle = 0;
+			sds_answer(sdc, sds_r1(sdc, 0));
+			break;
+		case CMD08:			// R7: the voltage accepted and the check pattern back
+			sds_answer(sdc, sds_r1(sdc, 0));
+			sds_put(sdc, 0x00);
+			sds_put(sdc, 0x00);
+			sds_put(sdc, sdc->arg[3] & 0x0f);
+			sds_put(sdc, sdc->arg[4]);
+			break;
+		case CMD09:
+		case CMD10:
+			sds_answer(sdc, sds_r1(sdc, 0));
+			if (cmd == CMD09) sds_csd(sdc, reg); else sds_cid(sdc, reg);
+			sds_block(sdc, reg, 16);
+			break;
+		case CMD12:			// a stuff byte, R1, and busy for a moment
+			sdc->cont = 0;
+			sdc->state = SDC_FREE;
+			sdc->out.pos = sdc->out.len = 0;
+			sds_put(sdc, 0xff);
+			sds_gap(sdc, SDS_NCR);
+			sds_put(sdc, sds_r1(sdc, 0));
+			sdc->busyLeft = 2;
+			break;
+		case CMD13:			// R2: nothing wrong
+			sds_answer(sdc, sds_r1(sdc, 0));
+			sds_put(sdc, 0x00);
+			break;
+		case CMD16:
+			if (!sdc->sdhc) {
+				unsigned int len = sdcGetArg(sdc, 0xffffffff);
+				if ((len == 0) || (len > 512)) {
+					sds_answer(sdc, sds_r1(sdc, R1_PARAM_ERR));
+					break;
+				}
+				sdc->blkSize = len;
+			}
+			sds_answer(sdc, sds_r1(sdc, 0));
+			break;
+		case CMD17:
+		case CMD18:
+			lba = sds_lba(sdc);
+			if (sdc->idle || (lba >= sdc->maxlba)) {
+				sds_answer(sdc, sds_r1(sdc, sdc->idle ? R1_ILLEGAL : R1_PARAM_ERR));
+				break;
+			}
+			sdc->addr = lba;
+			sdc->cont = (cmd == CMD18);
+			sdc->state = sdc->cont ? SDC_READ : SDC_FREE;
+			sds_answer(sdc, sds_r1(sdc, 0));
+			sds_read_block(sdc);
+			break;
+		case CMD24:
+		case CMD25:
+			lba = sds_lba(sdc);
+			if (sdc->idle || (lba >= sdc->maxlba)) {
+				sds_answer(sdc, sds_r1(sdc, sdc->idle ? R1_ILLEGAL : R1_PARAM_ERR));
+				break;
+			}
+			sdc->addr = lba;
+			sdc->cont = (cmd == CMD25);
+			sdc->state = SDC_WRITE;
+			sdc->buf.pos = -1;		// waiting for the token
+			sds_answer(sdc, sds_r1(sdc, 0));
+			break;
+		case CMD55:
+			sdc->acmd = 1;
+			sds_answer(sdc, sds_r1(sdc, 0));
+			break;
+		case CMD58:			// R3: OCR, the power-up done bit once out of idle, CCS
+			sds_answer(sdc, sds_r1(sdc, 0));
+			sds_put(sdc, sdc->idle ? 0x00 : (0x80 | (sdc->sdhc ? 0x40 : 0x00)));
+			sds_put(sdc, 0xff);
+			sds_put(sdc, 0x80);
+			sds_put(sdc, 0x00);
+			break;
+		case CMD59:
+			sdc->checkCrc = sdc->arg[4] & 1;
+			sds_answer(sdc, sds_r1(sdc, 0));
+			break;
+		default:
+			sds_answer(sdc, sds_r1(sdc, R1_ILLEGAL));
+			break;
+	}
+}
+
+// a byte of a block being written
+static void sds_write_byte(SDCard* sdc, int val) {
+	if (sdc->buf.pos < 0) {			// waiting for the token
+		if (val == 0xff) return;
+		if (sdc->cont && (val == 0xfd)) {	// stop: busy, then free
+			sdc->state = SDC_FREE;
+			sdc->cont = 0;
+			sdc->out.pos = sdc->out.len = 0;
+			sds_put(sdc, 0xff);
+			sdc->busyLeft = SDS_BUSY;
+			return;
+		}
+		if (val == (sdc->cont ? 0xfc : 0xfe))
+			sdc->buf.pos = 0;
+		return;
+	}
+	sdc->buf.data[1 + sdc->buf.pos] = val & 0xff;
+	sdc->buf.pos++;
+	if (sdc->buf.pos < 514) return;		// 512 data and 2 crc
+	int resp;
+	if (sdc->checkCrc && (sds_crc16(sdc->buf.data + 1, 512) != ((sdc->buf.data[513] << 8) | sdc->buf.data[514]))) {
+		resp = 0x0b;			// crc error
+	} else if (sdc->lock) {
+		resp = 0x0d;			// write error
+	} else {
+		sdcWrSector(sdc);
+		resp = 0x05;
+	}
+	sdc->out.pos = sdc->out.len = 0;
+	sds_put(sdc, resp);
+	sdc->busyLeft = (resp == 0x05) ? SDS_BUSY : 0;
+	sdc->buf.pos = -1;
+	if ((resp == 0x05) && sdc->cont) {
+		sdc->addr++;
+		if (sdc->addr >= sdc->maxlba) sdc->cont = 0;
+	}
+	if (!sdc->cont) sdc->state = SDC_FREE;
+}
+
+static int sds_next_out(SDCard* sdc) {
+	if (sdc->out.pos < sdc->out.len)
+		return sdc->out.data[sdc->out.pos++];
+	if (sdc->busyLeft > 0) {
+		sdc->busyLeft--;
+		return 0x00;
+	}
+	if ((sdc->state == SDC_READ) && sdc->cont) {	// CMD18: the next block, until CMD12
+		sdc->addr++;
+		if (sdc->addr >= sdc->maxlba) {
+			sdc->cont = 0;
+			sdc->state = SDC_FREE;
+			return 0xff;
+		}
+		sdc->out.pos = sdc->out.len = 0;
+		sds_read_block(sdc);
+		return sdc->out.data[sdc->out.pos++];
+	}
+	return 0xff;
+}
+
+int sdc_xfer(SDCard* sdc, int mosi) {
+	if (!sdc || !sdc->image || sdc->cs) return 0xff;
+	mosi &= 0xff;
+	int miso = sds_next_out(sdc);
+	if (sdc->state == SDC_WRITE) {
+		sds_write_byte(sdc, mosi);
+	} else if (sdc->state == SDC_WAIT) {
+		sdc->arg[6 - sdc->argCnt] = mosi;
+		if (--sdc->argCnt == 0) {
+			sdc->argCnt = 6;
+			sdc->state = SDC_FREE;
+			sds_exec(sdc);
+		}
+	} else if (((sdc->state == SDC_FREE) || (mosi == (0x40 | CMD12))) && ((mosi & 0xc0) == 0x40)) {
+		// a command starts: a byte 01xxxxxx while the card takes commands, or
+		// CMD12 in the middle of a multi-block read
+		sdc->arg[0] = mosi;
+		sdc->argCnt = 5;
+		sdc->state = SDC_WAIT;
+	}
+	return miso;
 }

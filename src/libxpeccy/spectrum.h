@@ -14,6 +14,7 @@ extern "C" {
 #include "fdc.h"
 #include "hdd.h"
 #include "sdcard.h"
+#include "divmmc.h"
 #include "cartridge.h"
 
 #include "sound/ayym.h"
@@ -196,6 +197,8 @@ typedef struct Computer {
 	int frmCount;		// frames since reset (for breakpoint conditions)
 	int tickCount;		// accumulate T
 	long long tickTotal;	// T since the machine was made: tickCount wraps in minutes
+	long long contWait;	// of those, T the ULA held the clock for (contention): the
+				// bus clock a board on the edge connector runs on stood still
 	int intTaken;		// maskable interrupts the cpu has taken, for the debugger's spans
 	int frmtCount;		// accumulate T, but reset each INT
 	int hCount;		// T before HALT = frmtCount @ HALT
@@ -243,6 +246,7 @@ typedef struct Computer {
 	IDE* ide;
 	SDCard* sdc;
 	xCartridge* slot;		// cartridge slot (Interface II, ALF)
+	DivMMC* div;			// divMMC on the edge connector
 // sound
 	bitChan* beep;
 	TSound* ts;

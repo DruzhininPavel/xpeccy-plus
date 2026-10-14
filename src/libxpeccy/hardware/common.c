@@ -42,6 +42,7 @@ void zx_contend_adr(Computer* comp, int adr, int mreq) {
 	int wdots = vid_wait_dots(comp->vid, adr, mreq);
 	if (!wdots) return;
 	comp->cpu->t += comp->contTicks[wdots];
+	comp->contWait += comp->contTicks[wdots];
 	comp_vid_to_t(comp);
 }
 
@@ -216,6 +217,7 @@ void zx_set_pal(Computer* comp) {
 // in
 
 int zx_dev_wr(Computer* comp, int adr, int val) {
+	if (div_out(comp->div, adr, val)) return 1;
 	if (gsWrite(comp->gs, adr, val)) return 1;
 	if (!comp->flgBDI && saaWrite(comp->saa, adr, val)) return 1;
 	if (!comp->flgBDI && sdrvWrite(comp->sdrv, adr, val)) return 1;
@@ -225,6 +227,7 @@ int zx_dev_wr(Computer* comp, int adr, int val) {
 }
 
 int zx_dev_rd(Computer* comp, int adr, int* ptr) {
+	if (div_in(comp->div, adr, ptr)) return 1;
 	if (gsRead(comp->gs, adr, ptr)) return 1;
 	if (ideIn(comp->ide, adr, ptr, comp->flgBDI)) return 1;
 	if (ula_rd(comp->vid->ula, adr, ptr)) return 1;

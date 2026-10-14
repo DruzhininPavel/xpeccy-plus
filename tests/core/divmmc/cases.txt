@@ -1,0 +1,26 @@
+# divMMC bench cases, see README.md.
+#
+#   bin  <file in bin/>  <source in asm/>  [DEFINE=value ...]   how mkbins.py assembles it
+#   run  <case>  <file in bin/>  <frames>  [ENV=value ...]      one run of divmmc-bench
+#
+# An ENV value ending in .img names a blank 1 MB image made for the run. EEPROM=
+# names a file in bin/.
+
+bin ee_test.bin          ee_test.asm
+bin t01_conmem.bin       t01_conmem.asm
+bin t02_traps.bin        t02_traps.asm
+bin t03_mapram.bin       t03_mapram.asm
+bin t04_eeprom.bin       t04_eeprom.asm
+bin t05_reset.bin        t05_reset.asm
+bin t06_nmi.bin          t06_nmi.asm        GATED=0
+bin t06_nmi_gated.bin    t06_nmi.asm        GATED=1
+
+run t01_conmem           t01_conmem.bin     5   EEPROM=ee_test.bin
+run t01_conmem_512       t01_conmem.bin     5   EEPROM=ee_test.bin RAM512=1
+run t02_traps            t02_traps.bin      5   EEPROM=ee_test.bin
+run t03_mapram           t03_mapram.bin     5   EEPROM=ee_test.bin
+run t04_eeprom           t04_eeprom.bin     20  EEPROM=ee_test.bin JUMPER=1
+run t05_reset            t05_reset.bin      5   EEPROM=ee_test.bin RESETAFTER=1 POWERAFTER=1
+run t06_nmi              t06_nmi.bin        60  EEPROM=ee_test.bin NMIAT=1
+run t06_nmi_gated        t06_nmi_gated.bin  60  EEPROM=ee_test.bin NMIAT=1
+bin e01_mkdir.bin         e01_mkdir.asm

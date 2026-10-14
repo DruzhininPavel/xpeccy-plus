@@ -121,6 +121,8 @@ int z80_int(CPU* cpu) {
 		cpu->regR++;
 		cpu->flgIFF2 = cpu->flgIFF1;
 		cpu->flgIFF1 = 0;
+		if (cpu->xm1x)			// the acknowledge is a fetch at PC, its byte unused
+			cpu->xm1x(cpu->xptr, (cpu->regPC + (cpu->flgHALT ? 1 : 0)) & 0xffff);
 		if (cpu->flgHALT) {		// an NMI leaves HALT the way an int does
 			cpu->regPC++;
 			cpu->flgHALT = 0;

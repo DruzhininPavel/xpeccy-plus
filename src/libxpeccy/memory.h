@@ -13,7 +13,8 @@ enum {
 	MEM_ROM,
 	MEM_SLOT,
 	MEM_EXT,
-	MEM_IO
+	MEM_IO,
+	MEM_DIV		// a divMMC's EEPROM and SRAM: num counts 256-byte pages of div->mem
 };
 
 typedef struct {
@@ -51,6 +52,7 @@ typedef struct {
 	unsigned char* m1dos[256];		// ...and less the ram, whose fetch pages it out
 	unsigned char* rdpa[256];		// rdp and wrp less the ram banks 4-7, where the +2A/+3
 	unsigned char* wrpa[256];		// gate array latches what passes (asicMRd)
+	unsigned char* m1pa[256];		// rdpa for the fetches: less the m1trap pages too
 	unsigned char slow[256];		// ram pages in an odd 16K bank: where the ULA snows from
 	short bank[256];			// the 16K bank of a ram page, -1 for any other
 	// ram pages the ULA contends: a page whose address has contBit set (mem_set_cont,
@@ -67,6 +69,14 @@ typedef struct {
 	int pgmask;	// number of LSBits in address = page offset (FF or FFFF)
 	int pgshift;	// = log2(page size), 8 for 256-pages, 16 for 64K-pages
 	int busmask;	// cpu addr bus mask (todo: move to CPU)
+	// Pages a device lays over the machine's (divMMC at #0000-#3FFF): map[] holds the
+	// device's page and under[] what the machine set there. memSetBank() writes under[]
+	// while the overlay stands, so a machine pages as it always does from wherever it
+	// pages, and mem_ovl_clear() puts its page back.
+	unsigned char ovl[256];
+	MemPage under[256];
+	// pages whose opcode fetches a device has to see (divMMC's automapper): no m1p there
+	unsigned char m1trap[256];
 } Memory;
 
 // The rules the tables above are made by, each the one copy its users share:
@@ -120,6 +130,10 @@ void memSetSize(Memory*, int, int);
 size_t mem_ram_extent(Memory*);
 void mem_cold_fill(Memory*, const unsigned char*, int, int);
 void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, extmwr wr, void* data);
+// a device's page over the machine's: plain bytes at data, read only without wr
+void mem_ovl_set(Memory* mem, int page, int type, int num, unsigned char* data, extmrd rd, extmwr wr);
+void mem_ovl_clear(Memory* mem, int page);
+void mem_set_m1trap(Memory* mem, int page, int on);
 void mem_set_cont(Memory*, int bit);	// the address bit of a contended page, 0: none
 void mem_derive(Memory*);		// rdp..slow and cont again, after map[] was written behind memSetBank()
 
