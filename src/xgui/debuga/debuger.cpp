@@ -205,6 +205,7 @@ void DebugWin::updateStyle() {
 		xhs->updatePal();	// takes the new font from the parent
 	}
 	fitMMapBoxes();
+	if (ui_misc.labFMaps->isVisible()) fillFMaps();		// its colors are the debugger's own
 	curCpuCore = nullptr;		// font changed: re-measure the register columns
 	fillStack();			// the font sets the row height, and the offset may be new
 	fillDisasm();
@@ -375,6 +376,11 @@ void DebugWin::machinePanels() {
 	wid_evo->setVisible((hw == HW_TSLAB) || (hw == HW_PENTEVO));
 	// the ZX Evo panel has a palette tab of its own there
 	wid_pal->setVisible((hw != HW_TSLAB) && (hw != HW_PENTEVO));
+	// MEMMAP says where FMAPS is: always a line on TSConf, so the panel keeps its height
+	ui_misc.labFMaps->setVisible(hw == HW_TSLAB);
+	// a panel shown again gets a new tab with its title only, and the tab is made
+	// when the layout next runs - the icons go back on after that
+	QTimer::singleShot(0, wid_brk, &xDockWidget::moved);
 	// a switch to TSConf with the debugger up: xm_set() disarmed the snapshots
 	if (isVisible()) evo_arm_replay();
 }
@@ -2102,6 +2108,22 @@ void DebugWin::fillMem() {
 		setMMapMark(i, mmapForced[i] >= 0);
 	}
 	block = 0;
+	if (ui_misc.labFMaps->isVisible()) fillFMaps();
+}
+
+// TSConf: where FMAPS is, the window written through to CRAM, SFILE and the registers
+void DebugWin::fillFMaps() {
+	tsRegs r;
+	ts_get_regs(conf.zx, &r);
+	int adr = r.fmaddr << 12;
+	QString txt = r.fmen ? QString("FM #%0").arg(gethexword(adr)) : QString("FM off");
+	QString tip = r.fmen ? QString("FMAPS: CRAM #%0, SFILE #%1, regs #%2").arg(gethexword(adr),
+		gethexword(adr + 0x200), gethexword(adr + 0x400)) : QString("FMAPS window off");
+	QString stl = r.fmen ? QString("QLabel{%0}").arg(getStyleString("dbg.fmaps.bg", "dbg.fmaps.txt")) : QString();
+	// a style pass each, so only when they change
+	if (ui_misc.labFMaps->text() != txt) ui_misc.labFMaps->setText(txt);
+	if (ui_misc.labFMaps->toolTip() != tip) ui_misc.labFMaps->setToolTip(tip);
+	if (ui_misc.labFMaps->styleSheet() != stl) ui_misc.labFMaps->setStyleSheet(stl);
 }
 
 // Forcing a bank in: this writes into the map behind the machine's back, so it

@@ -320,6 +320,17 @@ The four rows at the top are the four 16K banks of the Z80's memory, with what i
 ROM or RAM and the page number. You can put another page into a bank from here. See
 [Memory](debugger-memory.md).
 
+```{index} FMAPS, TSConf; FMAPS
+```
+
+On the **ZX Evolution (TSConf)** a fifth row says where the FMAPS window is: `FM #0000`
+when port `15AF` (**FMAddr**) has switched it on at `#0000`, `FM off` when it is off. The
+window is for writing only: a write in its first `#0500` bytes also goes to the palette
+(CRAM, from `+#000`), the sprite descriptors (SFILE, from `+#200`) or the TSConf registers
+(from `+#400`, one byte for each port `#xxAF`), and a read gives what is in the bank. The
+row and these bytes in the dump are drawn in the **FMAPS** color; the tooltip of a byte
+in the dump says where a write to it goes.
+
 **PORTS** lists the watched ports and the last value on each. For a port whose value the
 machine keeps in a register, such as `7FFD` on a 128K, the value shown is that register's;
 for any other port it is the last byte read from it or written to it, and `--` until the
@@ -407,6 +418,7 @@ the interface style.
 | **Data** | the data of a disk sector |
 | **CRC** | the checksums on a disk track |
 | **Const** | constants in the listing |
+| **FMAPS** | the TSConf FMAPS window in the dump and **MEMMAP** |
 
 Choosing another interface style on the **Appearance** page puts these colors back to that
 style's own.

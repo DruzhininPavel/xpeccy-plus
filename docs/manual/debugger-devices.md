@@ -416,6 +416,10 @@ value only at the start of the next line. While a new value waits, **Value** sho
 value in use and the value that comes next, as in `00 > 01`, and **Means** describes the
 value that comes next.
 
+**FMAddr** in the **Memory** group gives where the three parts of the FMAPS window start:
+CRAM, SFILE and the registers. The dump marks the same bytes: see
+[The FMAPS window on TSConf](debugger-memory.md#the-fmaps-window-on-tsconf).
+
 The **DMA** group is the same as at the top of the **DMA** tab: see
 [The DMA tab](#the-dma-tab).
 

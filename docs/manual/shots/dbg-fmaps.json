@@ -1,0 +1,150 @@
+{
+  "args": [
+    "-m",
+    "evo-tsconf"
+  ],
+  "steps": [
+    [
+      "wait",
+      3000
+    ],
+    [
+      "run",
+      "pause"
+    ],
+    [
+      "run",
+      "poke #8000 #F3"
+    ],
+    [
+      "run",
+      "poke #8001 #01"
+    ],
+    [
+      "run",
+      "poke #8002 #AF"
+    ],
+    [
+      "run",
+      "poke #8003 #15"
+    ],
+    [
+      "run",
+      "poke #8004 #3E"
+    ],
+    [
+      "run",
+      "poke #8005 #10"
+    ],
+    [
+      "run",
+      "poke #8006 #ED"
+    ],
+    [
+      "run",
+      "poke #8007 #79"
+    ],
+    [
+      "run",
+      "poke #8008 #3E"
+    ],
+    [
+      "run",
+      "poke #8009 #E0"
+    ],
+    [
+      "run",
+      "poke #800A #32"
+    ],
+    [
+      "run",
+      "poke #800B #04"
+    ],
+    [
+      "run",
+      "poke #800C #00"
+    ],
+    [
+      "run",
+      "poke #800D #3E"
+    ],
+    [
+      "run",
+      "poke #800E #7C"
+    ],
+    [
+      "run",
+      "poke #800F #32"
+    ],
+    [
+      "run",
+      "poke #8010 #05"
+    ],
+    [
+      "run",
+      "poke #8011 #00"
+    ],
+    [
+      "run",
+      "poke #8012 #3E"
+    ],
+    [
+      "run",
+      "poke #8013 #02"
+    ],
+    [
+      "run",
+      "poke #8014 #32"
+    ],
+    [
+      "run",
+      "poke #8015 #0F"
+    ],
+    [
+      "run",
+      "poke #8016 #04"
+    ],
+    [
+      "run",
+      "poke #8017 #18"
+    ],
+    [
+      "run",
+      "poke #8018 #FE"
+    ],
+    [
+      "run",
+      "setreg PC #8000"
+    ],
+    [
+      "run",
+      "cont"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "run-action key.debuger"
+    ],
+    [
+      "wait",
+      1500
+    ],
+    [
+      "run",
+      "activate-window Xpeccy+ Debugger"
+    ],
+    [
+      "wait",
+      800
+    ]
+  ],
+  "crop": [
+    466,
+    0,
+    511,
+    140
+  ]
+}

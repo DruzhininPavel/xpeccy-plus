@@ -457,6 +457,7 @@ static const struct { const char* name; const char* color; } dbgPalTab[] = {
 	{"dbg.disk.data.bg", "#dcffdc"},{"dbg.disk.data.txt", "#000000"},
 	{"dbg.disk.crc.bg", "#ffdcff"},	{"dbg.disk.crc.txt", "#000000"},
 	{"dbg.asm.const.txt", "#762d9b"},				// constants in the listing
+	{"dbg.fmaps.bg", "#ffe6b3"},	{"dbg.fmaps.txt", "#000000"},	// TSConf FMAPS window
 	{NULL, NULL}
 };
 

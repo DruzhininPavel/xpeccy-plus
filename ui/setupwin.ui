@@ -3254,6 +3254,36 @@ and the ones it skips</string>
                     </property>
                    </widget>
                   </item>
+                  <item row="13" column="0">
+                   <widget class="QLabel" name="label_fmaps">
+                    <property name="text">
+                     <string>FMAPS</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>The TSConf FMAPS window in the dump and MEMMAP</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="1">
+                   <widget class="QToolButton" name="tbDbgFmBG">
+                    <property name="contextMenuPolicy">
+                     <enum>Qt::CustomContextMenu</enum>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="2">
+                   <widget class="QToolButton" name="tbDbgFmFG">
+                    <property name="contextMenuPolicy">
+                     <enum>Qt::CustomContextMenu</enum>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
                    <item row="7" column="0">
                    <widget class="QLabel" name="label_49">
                     <property name="text">

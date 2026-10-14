@@ -203,19 +203,32 @@ static int ts_fetch_quiet(Computer* comp, int adr) {
 
 static void tslRegWr(Computer* comp, int reg, int val);
 
+// zmaps.v: a[11:8] = 4 registers, a[11:9] = 0 CRAM, 1 SFILE, the rest nothing
+static inline int ts_fm_part(Computer* comp, int adr) {
+	if (!comp->flgMEN || (((adr & 0xf000) >> 12) != comp->regMADR)) return TS_FM_NONE;
+	if ((adr & 0xf00) == 0x400) return TS_FM_REGS;
+	if ((adr & 0xc00) == 0x000) return (adr & 0x200) ? TS_FM_SFILE : TS_FM_CRAM;
+	return TS_FM_NONE;
+}
+
+// flag[]/reg[] mean other things on other boards
+int ts_fmaps_part(Computer* comp, int adr) {
+	if (comp->hw->id != HW_TSLAB) return TS_FM_NONE;
+	return ts_fm_part(comp, adr & 0xffff);
+}
+
 void tslMWr(Computer* comp, int adr, int val) {
-	if (comp->flgMEN && (((adr & 0xf000) >> 12) == comp->regMADR)) {
-		if ((adr & 0xf00) == 0x400) {				// ts registers
-			tslRegWr(comp, adr & 0xff, val);
-		} else if ((adr & 0xc00) == 0x000) {			// cram, sfile: a word on its odd byte (zmaps.v)
-			unsigned char* ptr = (adr & 0x200) ? comp->vid->tsconf.sfile : comp->vid->tsconf.cram;
-			if (adr & 1) {
-				ptr[adr & 0x1fe] = comp->fmLow;
-				ptr[adr & 0x1ff] = val & 0xff;
-				if (~adr & 0x200) tslUpdatePalEntry(comp, (adr & 0x1fe) >> 1);
-			} else {
-				comp->fmLow = val & 0xff;
-			}
+	int part = ts_fm_part(comp, adr);
+	if (part == TS_FM_REGS) {
+		tslRegWr(comp, adr & 0xff, val);
+	} else if (part != TS_FM_NONE) {				// cram, sfile: a word on its odd byte (zmaps.v)
+		unsigned char* ptr = (part == TS_FM_SFILE) ? comp->vid->tsconf.sfile : comp->vid->tsconf.cram;
+		if (adr & 1) {
+			ptr[adr & 0x1fe] = comp->fmLow;
+			ptr[adr & 0x1ff] = val & 0xff;
+			if (part == TS_FM_CRAM) tslUpdatePalEntry(comp, (adr & 0x1fe) >> 1);
+		} else {
+			comp->fmLow = val & 0xff;
 		}
 	}
 	ts_cache_wr(comp, adr);

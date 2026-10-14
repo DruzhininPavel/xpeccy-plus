@@ -183,6 +183,7 @@ class DebugWin : public QMainWindow {
 		void fillCPU();
 		void fillFlags(const char*);
 		void fillMem();
+		void fillFMaps();
 		void setMMapMark(int, bool);
 		void fillStack();
 		void fillPorts();
