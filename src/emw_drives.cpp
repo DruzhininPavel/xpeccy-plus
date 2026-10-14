@@ -29,6 +29,36 @@ int drive_count(Computer* comp) {
 	return (comp->dif->type == DIF_BDI) ? 4 : (comp->dif->type == DIF_P3DOS) ? 2 : 0;
 }
 
+// an SD card by its place: -1 the Z-controller's, 0 and 1 a divMMC's slots
+static SDCard* sd_card(Computer* comp, int card) {
+	return (card < 0) ? comp->sdc : comp->div->card[card & 1];
+}
+
+// a card's own actions: what is in it, putting one in or taking it out, its lock
+void MainWin::fillCardMenu(QMenu* m, int card) {
+	SDCard* sdc = sd_card(conf.zx, card);
+	bool dir = sdc->image && QFileInfo(QString::fromLocal8Bit(sdc->image)).isDir();
+	QAction* act;
+	if (card < 0) {
+		act = m->addAction(sdc->image ? drive_media(sdc->image, true) : QString("(no card)"));
+		act->setEnabled(false);
+		m->addSeparator();
+	}
+	m->addAction(QIcon(":/images/sdcard.png"), "Open Image...", this, [this, card]() {sdcOpen(card, false);});
+	m->addAction(QIcon(":/images/fileopen.png"), "Open Folder...", this, [this, card]() {sdcOpen(card, true);});
+	act = m->addAction(QIcon(":/images/tape-eject.png"), "Eject", this, [this, card]() {
+		driveOp([card]() {sdc_mount(sd_card(conf.zx, card), QString());});
+	});
+	act->setEnabled(sdc->image != NULL);
+	m->addSeparator();
+	// the card's lock switch; a folder is served read only whatever it says
+	act = m->addAction("Write Protect");
+	act->setCheckable(true);
+	act->setChecked(sdc->lock || dir);
+	act->setEnabled(!dir);
+	connect(act, &QAction::toggled, this, [card](bool on) {sdcSetLock(sd_card(conf.zx, card), on ? 1 : 0);});
+}
+
 void MainWin::fillDrivesMenu() {
 	Computer* comp = conf.zx;
 	QAction* act;
@@ -84,24 +114,14 @@ void MainWin::fillDrivesMenu() {
 
 	int hw = comp->hw->id;
 	if ((hw == HW_PENTEVO) || (hw == HW_TSLAB)) {
-		SDCard* sdc = comp->sdc;
-		bool dir = sdc->image && QFileInfo(QString::fromLocal8Bit(sdc->image)).isDir();
-		act = sdcMenu->addAction(sdc->image ? drive_media(sdc->image, true) : QString("(no card)"));
-		act->setEnabled(false);
-		sdcMenu->addSeparator();
-		sdcMenu->addAction(QIcon(":/images/sdcard.png"), "Open Image...", this, [this]() {sdcOpen(false);});
-		sdcMenu->addAction(QIcon(":/images/fileopen.png"), "Open Folder...", this, [this]() {sdcOpen(true);});
-		act = sdcMenu->addAction(QIcon(":/images/tape-eject.png"), "Eject", this, [this]() {
-			driveOp([]() {sdc_mount(conf.zx->sdc, QString());});
-		});
-		act->setEnabled(sdc->image != NULL);
-		sdcMenu->addSeparator();
-		// the card's lock switch; a folder is served read only whatever it says
-		act = sdcMenu->addAction("Write Protect");
-		act->setCheckable(true);
-		act->setChecked(sdc->lock || dir);
-		act->setEnabled(!dir);
-		connect(act, &QAction::toggled, this, [](bool on) {sdcSetLock(conf.zx->sdc, on ? 1 : 0);});
+		fillCardMenu(sdcMenu, -1);
+	} else if (comp->div->model) {		// a divMMC's two slots
+		for (int i = 0; i < 2; i++) {
+			SDCard* sdc = comp->div->card[i];
+			QMenu* m = sdcMenu->addMenu(QIcon(":/images/sdcard.png"),
+				QString("Card %0: %1").arg(i + 1).arg(sdc->image ? drive_media(sdc->image, true) : QString("(no card)")));
+			fillCardMenu(m, i);
+		}
 	}
 
 	if ((hw == HW_ZX48) || (hw == HW_ALF)) {
@@ -213,13 +233,13 @@ void MainWin::hddOpen(int dev, bool dir) {
 	if (!path.isEmpty()) driveOp([dev, path]() {ide_mount(conf.zx->ide, dev, path);});
 }
 
-void MainWin::sdcOpen(bool dir) {
+void MainWin::sdcOpen(int card, bool dir) {
 	pause(true, PR_FILE);
 	QString path = dir
 		? QFileDialog::getExistingDirectory(this, "Folder to serve as the card (read only)", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly)
 		: QFileDialog::getOpenFileName(this, "SD card image", "", "All files (*)", NULL, QFileDialog::DontUseNativeDialog);
 	pause(false, PR_FILE);
-	if (!path.isEmpty()) driveOp([path]() {sdc_mount(conf.zx->sdc, path);});
+	if (!path.isEmpty()) driveOp([card, path]() {sdc_mount(sd_card(conf.zx, card), path);});
 }
 
 // What the image in a hard disk is. The geometry comes from the image and is

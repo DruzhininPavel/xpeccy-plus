@@ -145,6 +145,17 @@ static int xst_build(Computer* comp, xStateChunk* list) {
 		ADD(comp->sdc, offsetof(SDCard, capacity));
 		ADD((char*)comp->sdc + offsetof(SDCard, buf), sizeof(SDCard) - offsetof(SDCard, buf));
 	}
+	// a divMMC: what it holds up to its memory, the EEPROM and the SRAM fitted,
+	// and its two cards the way the one above is taken
+	if (comp->div && comp->div->model) {
+		DivMMC* div = comp->div;
+		ADD(div, offsetof(DivMMC, data));
+		ADD(div->data, DIV_EE_SIZE + (size_t)div->pages * 0x2000);
+		for (i = 0; i < 2; i++) {
+			ADD(div->card[i], offsetof(SDCard, capacity));
+			ADD((char*)div->card[i] + offsetof(SDCard, buf), sizeof(SDCard) - offsetof(SDCard, buf));
+		}
+	}
 
 	return n;
 }

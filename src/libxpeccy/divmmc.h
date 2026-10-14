@@ -109,8 +109,11 @@ int div_trap_page(int page);
 // gone low (an NMI to take). The line follows mapcond too.
 int div_nmi(DivMMC*, int held);
 
+// the EEPROM's 8K from a file (a shorter one leaves the rest erased) and to one
 int div_load_eeprom(DivMMC*, const char* path);
 int div_save_eeprom(DivMMC*, const char* path);
+void div_erase_eeprom(DivMMC*);
+int div_eeprom_erased(DivMMC*);
 
 #ifdef __cplusplus
 }

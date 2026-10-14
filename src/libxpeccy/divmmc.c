@@ -324,7 +324,7 @@ int div_load_eeprom(DivMMC* div, const char* path) {
 	memset(div->data, 0xff, DIV_EE_SIZE);
 	size_t n = fread(div->data, 1, DIV_EE_SIZE, f);
 	fclose(f);
-	div->eeDirty = 0;
+	div->eeDirty = 1;
 	div_map(div);
 	return n > 0;
 }
@@ -334,6 +334,17 @@ int div_save_eeprom(DivMMC* div, const char* path) {
 	if (!f) return 0;
 	size_t n = fwrite(div->data, 1, DIV_EE_SIZE, f);
 	fclose(f);
-	if (n == DIV_EE_SIZE) div->eeDirty = 0;
 	return n == DIV_EE_SIZE;
+}
+
+void div_erase_eeprom(DivMMC* div) {
+	memset(div->data, 0xff, DIV_EE_SIZE);
+	div->eeDirty = 1;
+	div_map(div);
+}
+
+int div_eeprom_erased(DivMMC* div) {
+	for (int i = 0; i < DIV_EE_SIZE; i++)
+		if (div->data[i] != 0xff) return 0;
+	return 1;
 }

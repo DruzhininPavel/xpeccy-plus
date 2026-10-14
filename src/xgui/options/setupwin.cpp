@@ -1045,6 +1045,9 @@ void SetupWin::start() {
 // sound
 	gsBox->setCurrentIndex(comp->gs->enable ? 1 : 0);
 	gsrbox->setChecked(comp->gs->reset);
+	divBox->setCurrentIndex(comp->div->model ? 1 : 0);
+	divRamBox->setCurrentIndex((comp->div->pages > 16) ? 1 : 0);
+	divWrBox->setChecked(comp->div->eeWrite);
 
 	sdrvBox->setCurrentIndex(sdrvBox->findData(comp->sdrv->type));
 
@@ -1302,6 +1305,17 @@ void SetupWin::applyMachine() {
 	// (a new machine does it itself)
 	ide_remount(comp->ide);
 	sdc_remount(comp->sdc);
+// divmmc: a board put on, taken off or given other RAM comes up from its power-on
+	int divModel = (divBox->currentIndex() && hw_takes_divmmc(comp->hw)) ? DIV_ENJOY : DIV_NONE;
+	int divPages = divRamBox->currentIndex() ? DIV_PAGES_MAX : 16;
+	if ((divModel != comp->div->model) || (divPages != comp->div->pages)) {
+		div_set_model(comp->div, divModel, divPages);
+		div_power_on(comp->div);
+	}
+	comp->div->eeWrite = divWrBox->isChecked() ? 1 : 0;
+	div_map(comp->div);
+	sdc_remount(comp->div->card[0]);
+	sdc_remount(comp->div->card[1]);
 // debuga
 	setWatchPorts(comp, portwid->getPorts());
 }
@@ -1839,6 +1853,32 @@ void SetupWin::buildDevices() {
 	btn = devRow(grid, tr("SD card"), sdSum, NULL, NULL);
 	sdRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << sdSum << btn;
 
+	// a divMMC on the edge connector; its cards are the Drives menu's
+	divBox = devCombo(QStringList() << tr("None") << tr("divMMC EnJOY!"));
+	xOptSheet dv;
+	divRamBox = devCombo(QStringList() << tr("128K") << tr("512K"));
+	dv.field(tr("RAM"), divRamBox);
+	divWrBox = new QCheckBox;
+	dv.check(divWrBox, tr("EEPROM writable"), tr("The jumper open: firmware can be written, automap needs MAPRAM"));
+	dv.line();
+	divEeSum = new QLabel;
+	QWidget* ee = new QWidget;
+	QHBoxLayout* eeLay = new QHBoxLayout(ee);
+	eeLay->setContentsMargins(0, 0, 0, 0);
+	eeLay->addWidget(divEeSum, 1);
+	const char* eeIcon[3] = {":/images/fileopen.png", ":/images/save_all.png", ":/images/tape-eject.png"};
+	QString eeTip[3] = {tr("Load an image into the EEPROM"), tr("Save the EEPROM to a file"), tr("Erase the EEPROM")};
+	for (int i = 0; i < 3; i++) {
+		QToolButton* tb = new QToolButton;
+		tb->setIcon(QIcon(eeIcon[i]));
+		tb->setToolTip(eeTip[i]);
+		connect(tb, &QToolButton::released, this, [this, i]() {divEeprom(i);});
+		eeLay->addWidget(tb);
+	}
+	dv.field(tr("EEPROM"), ee);
+	btn = devRow(grid, tr("divMMC"), divBox, dv.body, "Machine: divMMC");
+	divRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << divBox << btn;
+
 	slotSum = new QLabel;
 	btn = devRow(grid, tr("Cartridge"), slotSum, NULL, NULL);
 	slotRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << slotSum << btn;
@@ -1978,6 +2018,31 @@ void SetupWin::fillDevSummary() {
 	QString slot = comp->slot->path ? QString::fromLocal8Bit(comp->slot->path) : QString();
 	sdSum->setText(sd.isEmpty() ? tr("(no card)") : QFileInfo(sd).fileName());
 	slotSum->setText(slot.isEmpty() ? tr("(empty)") : QFileInfo(slot).fileName());
+	divEeSum->setText(div_eeprom_erased(comp->div) ? tr("erased") : tr("written"));
+}
+
+// what the EEPROM holds: the chip on the board, so a change is made at once and
+// kept with the machine (nvram), not left for Apply
+void SetupWin::divEeprom(int op) {
+	DivMMC* div = conf.zx->div;
+	QString path;
+	if (op == 0) {
+		path = QFileDialog::getOpenFileName(this, tr("EEPROM image"), "", tr("Images (*.bin *.rom);;All files (*)"), NULL, QFileDialog::DontUseNativeDialog);
+		if (path.isEmpty()) return;
+	} else if (op == 1) {
+		path = QFileDialog::getSaveFileName(this, tr("Save the EEPROM"), "", tr("Images (*.bin);;All files (*)"), NULL, QFileDialog::DontUseNativeDialog);
+		if (path.isEmpty()) return;
+	} else if (!div_eeprom_erased(div) && !areSure("Erase the EEPROM?")) {
+		return;
+	}
+	emu_lock();
+	bool ok = true;
+	if (op == 0) ok = div_load_eeprom(div, path.toLocal8Bit().constData());
+	else if (op == 1) ok = div_save_eeprom(div, path.toLocal8Bit().constData());
+	else div_erase_eeprom(div);
+	emu_unlock();
+	if (!ok) shitHappens("Can't do it with that file");
+	fillDevSummary();
 }
 
 // the rows of the drives that are fitted; a +3 has two at most
@@ -1998,6 +2063,7 @@ void SetupWin::showDevRows() {
 	// only these read PC scancodes
 	bool kbd = (hw == HW_ATM2) || (hw == HW_PENTEVO) || (hw == HW_TSLAB);
 	foreach(QWidget* w, sdRow) w->setVisible(sd);
+	foreach(QWidget* w, divRow) w->setVisible(hw_takes_divmmc(conf.zx->hw));
 	foreach(QWidget* w, slotRow) w->setVisible(slot);
 	foreach(QWidget* w, kbdRow) w->setVisible(kbd);
 	showDriveRows();

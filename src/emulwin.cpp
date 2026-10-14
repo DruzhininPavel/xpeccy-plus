@@ -2561,6 +2561,9 @@ void MainWin::fillUserMenu() {
 		act = resMenu->addAction("Boots its own firmware");
 		act->setEnabled(false);
 	}
+	resMenu->addSeparator();
+	act = resMenu->addAction("Power off and on");
+	act->setData(RES_POWER);
 	// fill keymaps menu
 	keyMenu->clear();
 	act = keyMenu->addAction("Default");
@@ -2996,7 +2999,14 @@ void MainWin::askStartMachine() {
 }
 
 void MainWin::reset(QAction* act) {
-	resetMachine(act->data().toInt());
+	int res = act->data().toInt();
+	if (res == RES_POWER) {
+		emu_lock();
+		xm_power_cycle();
+		emu_unlock();
+		return;
+	}
+	resetMachine(res);
 }
 
 // A reset to one of the ROMs, from a hotkey: a machine that has no such start

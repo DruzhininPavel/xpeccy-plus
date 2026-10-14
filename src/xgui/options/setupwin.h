@@ -49,6 +49,7 @@ class SetupWin : public QDialog {
 		QToolButton* sheetButton(QWidget*, const char*);
 		void buildStart();
 		void fillDevSummary();
+		void divEeprom(int);
 		void showDevRows();
 		void showDriveRows();
 		void tidySoundPage();
@@ -112,6 +113,11 @@ class SetupWin : public QDialog {
 		QLabel* sdSum;
 		QLabel* slotSum;
 		QList<QWidget*> sdRow;
+		QComboBox* divBox;		// a divMMC: the board, its RAM, its jumper
+		QComboBox* divRamBox;
+		QCheckBox* divWrBox;
+		QLabel* divEeSum;
+		QList<QWidget*> divRow;
 		QList<QWidget*> slotRow;
 		QList<QWidget*> kbdRow;
 		QList<QWidget*> drvRow[4];
