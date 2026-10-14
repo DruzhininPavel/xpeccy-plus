@@ -105,6 +105,21 @@ A right-click on a byte opens a menu of **Fetch break**, **Read break** and **Wr
 tick one to stop the machine when the CPU runs, reads or writes that byte. See
 [Breakpoints and watching](debugger-breakpoints.md).
 
+### The FMAPS window on TSConf
+
+```{index} FMAPS, TSConf; FMAPS
+```
+
+![The FMAPS window at #0000 in the dump and MEMMAP](images/dbg-fmaps.png)
+
+On the **ZX Evolution (TSConf)**, while port `15AF` (**FMAddr**) has the FMAPS window on,
+the **CPU** view draws its bytes in the **FMAPS** color. The dump shows what is in the bank
+there, since a read never reaches the window; a write by the program goes to the bank and
+also to the palette, the sprite descriptors or a TSConf register. Hold the mouse over a
+byte to see which: `FMAPS: CRAM, color #02`, `FMAPS: SFILE, sprite 3`,
+`FMAPS: port #15AF`. The **MEMMAP** row `FM` says where the window is: see
+[The MEMMAP panel](debugger.md#the-memmap-panel).
+
 ## REG-DUMP
 
 ```{index} REG-DUMP panel
@@ -137,6 +152,9 @@ itself pages that window.
 
 Right-click the rows, or the **MEMMAP** title, and choose **Restore mapping** to put back
 all four windows as they were when the Debugger opened.
+
+On TSConf a fifth row, `FM`, shows where the FMAPS window is (see
+[The FMAPS window on TSConf](#the-fmaps-window-on-tsconf)).
 
 The rest of the panel - ports, signals, frames and the beam - is described in
 [The Debugger](debugger.md).
