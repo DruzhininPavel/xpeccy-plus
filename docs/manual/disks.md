@@ -4,7 +4,8 @@
 ```
 
 A machine can have floppy drives, hard disks, an SD card or a cartridge slot, depending on
-the hardware it copies. The **Media** menu lists only what the running machine has.
+the hardware it copies, and a divMMC can be added to the Sinclair models. The **Media** menu
+lists only what the running machine has.
 
 ## Which machine has what
 
@@ -13,9 +14,9 @@ the hardware it copies. The **Media** menu lists only what the running machine h
 
 | Machine | Floppy | Hard disk | Other |
 |---|---|---|---|
-| ZX Spectrum 48K | - | - | cartridge |
-| ZX Spectrum 128K, +2, +2A | - | - | |
-| ZX Spectrum +3 | +3 drives | - | |
+| ZX Spectrum 48K | - | - | cartridge, divMMC |
+| ZX Spectrum 128K, +2, +2A | - | - | divMMC |
+| ZX Spectrum +3 | +3 drives | - | divMMC |
 | Pentagon, Pentagon 1024 SL | Beta Disk | - | |
 | Scorpion ZS 256 | Beta Disk | - | |
 | Scorpion ZS 256 Turbo+ | Beta Disk | SMUC | |
@@ -224,6 +225,60 @@ the slot, or **(no card)**, and has:
 
 What the machine writes to a card image goes into the image file at once. To start with a
 card, use `--sdcard <file or folder>` on the [command line](command-line.md).
+
+## divMMC
+
+```{index} divMMC, esxDOS, EEPROM, MAPRAM, Power off and on
+```
+
+```{index} see: DivMMC EnJOY!; divMMC
+```
+
+The divMMC is an SD card interface for the ZX Spectrum 48K, 128K, +2, +2A and +3. The one
+emulated is the **divMMC EnJOY!** by ByteDelight, built on the original design by Mario
+Prato: 8 KB of EEPROM for the firmware, 128 KB or 512 KB of RAM, and two SD card slots. The
+firmware most people run on it is esxDOS, which loads `.tap`, `.sna`, `.z80` and `.trd` files
+from the card and adds dot commands to BASIC.
+
+### Setting it up
+
+1. On the **Machine** page of **Options**, set the **divMMC** row to **divMMC EnJOY!**.
+   The {icon}`settings` gear opens **Machine: divMMC**:
+   - **RAM** - **128K** or **512K**.
+   - **EEPROM writable** - the board's EEPROM jumper. Leave it off: on, the firmware can be
+     written, and the board stays out of the way until the firmware sets MAPRAM.
+   - **EEPROM** - **erased** or **written**, and three buttons: {icon}`fileopen` load an
+     image into the EEPROM, {icon}`save_all` save it to a file, {icon}`cancel` erase it.
+2. Get the firmware. esxDOS is not shipped with the emulator: download it from
+   [esxdos.org](http://www.esxdos.org). Load `ESXMMC.BIN` from its archive with the
+   {icon}`fileopen` button, or flash it the way the real board is flashed: turn **EEPROM
+   writable** on, load `ESXMMC.TAP` and follow it, turn the option off, then use
+   **Machine > Reset > Power off and on**. With the EEPROM erased and the option off, the
+   machine stops at its first interrupt, as it does with a real board that has no firmware.
+3. Prepare a card: an image with an MBR and one FAT16 or FAT32 partition, holding the `SYS`,
+   `BIN` and `TMP` folders from the esxDOS archive. A folder with these three works too.
+4. Put the card in: **Media > SD Card > Card 1** has **Open Image...**, **Open Folder...**,
+   **Eject** and **Write Protect**, as the ZX Evolution's card has. **Card 2** is the second
+   slot.
+
+![Machine: divMMC](images/options-divmmc.png)
+
+What the EEPROM holds is kept with the machine and is there again at the next start. A
+change made with the three buttons takes effect at once, without **Apply**.
+
+### Using it
+
+- The firmware starts on every reset, then goes to 48K BASIC. Type `.ls` for the files on
+  the card and `.cd` to go into a folder; the dot commands are the files in `BIN`.
+- **Machine > NMI** (Shift+F10 in the Modern preset, F10 in the Classic one) is the board's
+  NMI button: esxDOS opens its file browser.
+- A folder used as a card is read only: esxDOS reports `I/O ERROR` when it tries to write.
+  Use an image to save.
+- **Machine > Reset > Power off and on** clears what a reset keeps: the board's MAPRAM
+  setting and its RAM. A firmware flashed by `ESXMMC.TAP` runs from RAM until then.
+- esxDOS runs in 48K BASIC. 128 BASIC and +3 BASIC stop working with the board on, as they
+  do on the real one.
+- A snapshot saved as SZX keeps the board's state; other formats leave it out.
 
 ## Hard disks
 

@@ -1855,10 +1855,13 @@ void SetupWin::buildDevices() {
 
 	// a divMMC on the edge connector; its cards are the Drives menu's
 	divBox = devCombo(QStringList() << tr("None") << tr("divMMC EnJOY!"));
+	divBox->setObjectName("divBox");
 	xOptSheet dv;
 	divRamBox = devCombo(QStringList() << tr("128K") << tr("512K"));
+	divRamBox->setObjectName("divRamBox");
 	dv.field(tr("RAM"), divRamBox);
 	divWrBox = new QCheckBox;
+	divWrBox->setObjectName("divWrBox");
 	dv.check(divWrBox, tr("EEPROM writable"), tr("The jumper open: firmware can be written, automap needs MAPRAM"));
 	dv.line();
 	divEeSum = new QLabel;
@@ -1866,7 +1869,7 @@ void SetupWin::buildDevices() {
 	QHBoxLayout* eeLay = new QHBoxLayout(ee);
 	eeLay->setContentsMargins(0, 0, 0, 0);
 	eeLay->addWidget(divEeSum, 1);
-	const char* eeIcon[3] = {":/images/fileopen.png", ":/images/save_all.png", ":/images/tape-eject.png"};
+	const char* eeIcon[3] = {":/images/fileopen.png", ":/images/save_all.png", ":/images/cancel.png"};
 	QString eeTip[3] = {tr("Load an image into the EEPROM"), tr("Save the EEPROM to a file"), tr("Erase the EEPROM")};
 	for (int i = 0; i < 3; i++) {
 		QToolButton* tb = new QToolButton;
@@ -1877,6 +1880,7 @@ void SetupWin::buildDevices() {
 	}
 	dv.field(tr("EEPROM"), ee);
 	btn = devRow(grid, tr("divMMC"), divBox, dv.body, "Machine: divMMC");
+	btn->setObjectName("divGear");
 	divRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << divBox << btn;
 
 	slotSum = new QLabel;

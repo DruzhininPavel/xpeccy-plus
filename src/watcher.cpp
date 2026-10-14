@@ -93,6 +93,7 @@ QString getBankType(int type) {
 		case MEM_ROM: res = "ROM"; break;
 		case MEM_RAM: res = "RAM"; break;
 		case MEM_SLOT: res = "SLT"; break;
+		case MEM_DIV: res = "DIV"; break;
 		default: res = "EXT"; break;
 	}
 	return res;

@@ -1,0 +1,21 @@
+{
+  "config": {
+    "GENERAL": {
+      "machine": "zx48"
+    }
+  },
+  "steps": [
+    ["wait", 3000],
+    ["run", "run-action key.options"],
+    ["wait", 1200],
+    ["click", "pageList", 60, 16],
+    ["wait", 800],
+    ["run", "set-value divBox divMMC EnJOY!"],
+    ["wait", 300],
+    ["click", "divGear", 8, 8],
+    ["wait", 800],
+    ["run", "activate-window Machine: divMMC"],
+    ["wait", 500]
+  ],
+  "frames": []
+}

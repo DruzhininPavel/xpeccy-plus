@@ -414,6 +414,7 @@ void xHeatView::mouseMoveEvent(QMouseEvent* ev) {
 			case MEM_RAM: tp = "RAM"; break;
 			case MEM_ROM: tp = "ROM"; break;
 			case MEM_SLOT: tp = "SLT"; break;
+			case MEM_DIV: tp = "DIV"; break;
 			case MEM_IO: tp = "IO"; break;
 		}
 		// every number in the readout carries the listing's own hash, the way

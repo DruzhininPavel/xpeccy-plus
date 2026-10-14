@@ -115,6 +115,13 @@ resets in both hotkey presets.
 To change the ROM a plain reset starts from, click the {icon}`settings` **ROM** button on
 the **Machine** page of **Options** and mark another ROM (see [ROM images](#rom-images)).
 
+```{index} Power off and on
+```
+
+**Power off and on**, at the end of the list, switches the machine off and on again. The RAM
+comes up as the machine's does at power-on, and so does a [divMMC](disks.md#divmmc), which a
+reset leaves as it is. The CMOS memory, an EEPROM and the media keep what they hold.
+
 ```{index} Reset to 48K, Reset to 128K, Reset to DOS, Reset to Service
 ```
 
@@ -129,7 +136,8 @@ the key only shows a short message.
 
 **Machine > NMI** sends a non-maskable interrupt to the CPU. What happens then is up to the
 machine's ROM. It does nothing while an RZX recording plays. The key is F10 in the Classic
-preset and Shift+F10 in the Modern one.
+preset and Shift+F10 in the Modern one. With a [divMMC](disks.md#divmmc) on, it is the
+board's NMI button.
 
 ## Turbo and speed
 
@@ -188,6 +196,7 @@ set.
 | | **Disk** | **None**, **Beta Disk (WD1793)** or **+3 (uPD765)**; drives and the TR-DOS ROM in its window (see [Disks and drives](disks.md)) |
 | | **Hard disk** | the IDE interface; **Master** and **Slave** in its window |
 | | **SD card** | ZX Evolution only: the card in use |
+| | **divMMC** | 48K, 128K, +2, +2A and +3 only: **None** or **divMMC EnJOY!**; RAM, EEPROM jumper and the EEPROM image in its window (see [divMMC](disks.md#divmmc)) |
 | | **Cartridge** | 48K and ALF only: the cartridge in use |
 | **Input** | **Joystick** | **None**, **Kempston 5-bit**, **Kempston 8-bit** |
 | | **Mouse** | **None** or **Kempston mouse**; sensitivity and wheel in its window |

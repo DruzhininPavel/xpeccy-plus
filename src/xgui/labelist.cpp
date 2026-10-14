@@ -80,6 +80,7 @@ QVariant xLabelistModel::data(const QModelIndex& idx, int role) const {
 					case MEM_RAM: adrstr.prepend("RAM:"); break;
 					case MEM_ROM: adrstr.prepend("ROM:"); break;
 					case MEM_SLOT: adrstr.prepend("SLT:"); break;
+					case MEM_DIV: adrstr.prepend("DIV:"); break;
 					case MEM_EXT: adrstr.prepend("EXT:"); break;
 					case MEM_IO: adrstr = QString("CPU:%0").arg(gethexword(xadr.adr));
 				}
