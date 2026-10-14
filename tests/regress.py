@@ -111,9 +111,9 @@ def set_up(case, corpus, cfg, tmp):
             shutil.copy(corpus / src, cards[-1] / path)
         elif k == "keys":
             args += ["--bench-keys", v]
-        elif k == "eeprom":		# what a divMMC's EEPROM holds, as the machine keeps it
+        elif k == "eeprom":		# what the divMMC's EEPROM holds, kept for all machines
             (cfg / "nvram").mkdir(exist_ok=True)
-            shutil.copy(corpus / v, cfg / "nvram" / f"{case.machine}.divmmc")
+            shutil.copy(corpus / v, cfg / "nvram" / "divmmc.eeprom")
         elif k in ("card1", "card2", "cardimg1", "cardimg2"):
             # a divMMC slot: an image or a folder as it is, or (cardimg) a FAT16 image
             # made of a folder by tests/core/divmmc/mksd.py

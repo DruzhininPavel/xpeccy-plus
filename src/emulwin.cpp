@@ -2562,7 +2562,7 @@ void MainWin::fillUserMenu() {
 		act->setEnabled(false);
 	}
 	resMenu->addSeparator();
-	act = resMenu->addAction("Power off and on");
+	act = resMenu->addAction("Hard Reset");
 	act->setData(RES_POWER);
 	// fill keymaps menu
 	keyMenu->clear();
@@ -3001,12 +3001,17 @@ void MainWin::askStartMachine() {
 void MainWin::reset(QAction* act) {
 	int res = act->data().toInt();
 	if (res == RES_POWER) {
-		emu_lock();
-		xm_power_cycle();
-		emu_unlock();
+		hardReset();
 		return;
 	}
 	resetMachine(res);
+}
+
+// off and on again: what a reset keeps (RAM, a divMMC's MAPRAM) goes too
+void MainWin::hardReset() {
+	emu_lock();
+	xm_power_cycle();
+	emu_unlock();
 }
 
 // A reset to one of the ROMs, from a hotkey: a machine that has no such start

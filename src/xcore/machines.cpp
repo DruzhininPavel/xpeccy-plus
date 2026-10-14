@@ -633,6 +633,10 @@ static std::string mac_nv_path(const char* ext) {
 	return conf.path.nvDir + SLASH + conf.macId + ext;
 }
 
+static std::string div_nv_path() {
+	return conf.path.nvDir + SLASH + "divmmc.eeprom";
+}
+
 static void mac_nv_read(const std::string& path, unsigned char* dst, int size, const char* seed) {
 	FILE* file = fopen(path.c_str(), "rb");
 	if (!file && seed) {			// first run of this machine: give it its own
@@ -666,9 +670,10 @@ static void xm_load_nvram() {
 		if (i == 0x100) memcpy(nv + 0x80, nv, 0x80);
 	}
 	mac_nv_read(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE, NULL);
-	// a divMMC's EEPROM keeps what was written to it: erased until something was
+	// a divMMC's EEPROM keeps what was written to it: erased until something was.
+	// One board goes from machine to machine, so its file is not any one machine's.
 	memset(conf.zx->div->data, 0xff, DIV_EE_SIZE);
-	mac_nv_read(mac_nv_path(".divmmc"), conf.zx->div->data, DIV_EE_SIZE, NULL);
+	mac_nv_read(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE, NULL);
 	conf.zx->div->eeDirty = 0;
 	div_map(conf.zx->div);
 }
@@ -678,8 +683,8 @@ void xm_save_nvram() {
 	mac_nv_write(mac_nv_path(".cmos"), conf.zx->cmos.data, 256);
 	if (conf.zx->ide->type == IDE_SMUC)
 		mac_nv_write(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE);
-	if (conf.zx->div->model && conf.zx->div->eeDirty) {
-		mac_nv_write(mac_nv_path(".divmmc"), conf.zx->div->data, DIV_EE_SIZE);
+	if (conf.zx->div->eeDirty) {		// loaded in Options with the board off, too
+		mac_nv_write(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE);
 		conf.zx->div->eeDirty = 0;
 	}
 }

@@ -228,7 +228,7 @@ card, use `--sdcard <file or folder>` on the [command line](command-line.md).
 
 ## divMMC
 
-```{index} divMMC, esxDOS, EEPROM, MAPRAM, Power off and on
+```{index} divMMC, esxDOS, EEPROM, MAPRAM, Hard Reset
 ```
 
 ```{index} see: DivMMC EnJOY!; divMMC
@@ -253,7 +253,7 @@ from the card and adds dot commands to BASIC.
    [esxdos.org](http://www.esxdos.org). Load `ESXMMC.BIN` from its archive with the
    {icon}`fileopen` button, or flash it the way the real board is flashed: turn **EEPROM
    writable** on, load `ESXMMC.TAP` and follow it, turn the option off, then use
-   **Machine > Reset > Power off and on**. With the EEPROM erased and the option off, the
+   **Machine > Reset > Hard Reset**. With the EEPROM erased and the option off, the
    machine stops at its first interrupt, as it does with a real board that has no firmware.
 3. Prepare a card: an image with an MBR and one FAT16 or FAT32 partition, holding the `SYS`,
    `BIN` and `TMP` folders from the esxDOS archive. A folder with these three works too.
@@ -265,11 +265,12 @@ from the card and adds dot commands to BASIC.
 
 A real board is put on and taken off with the power off, and so is this one: **Apply**
 after a change in the **divMMC** row or in **RAM** powers the machine off and on. So does
-loading or erasing the EEPROM while the board is on. What the EEPROM holds is kept with the
-machine and is there again at the next start.
+loading or erasing the EEPROM while the board is on. There is one board, as if the same one
+went from machine to machine: the RAM size and the EEPROM jumper are set for each machine,
+but the EEPROM is the same on all of them, and is there again at the next start.
 
 esxDOS looks for the card and loads its system files only when it starts from the power
-on. A card put in later, or changed, is seen after **Machine > Reset > Power off and on**;
+on. A card put in later, or changed, is seen after **Machine > Reset > Hard Reset**;
 started with no card, esxDOS ignores the NMI button until then. A plain reset is not enough:
 the firmware takes the short way and keeps what it found before.
 
@@ -281,7 +282,7 @@ the firmware takes the short way and keeps what it found before.
   NMI button: esxDOS opens its file browser.
 - A folder used as a card is read only: esxDOS reports `I/O ERROR` when it tries to write.
   Use an image to save.
-- **Machine > Reset > Power off and on** clears what a reset keeps: the board's MAPRAM
+- **Machine > Reset > Hard Reset** clears what a reset keeps: the board's MAPRAM
   setting and its RAM. A firmware flashed by `ESXMMC.TAP` runs from RAM until then.
 - esxDOS runs in 48K BASIC. 128 BASIC and +3 BASIC stop working with the board on, as they
   do on the real one.

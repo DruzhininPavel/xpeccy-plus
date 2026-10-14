@@ -115,10 +115,10 @@ resets in both hotkey presets.
 To change the ROM a plain reset starts from, click the {icon}`settings` **ROM** button on
 the **Machine** page of **Options** and mark another ROM (see [ROM images](#rom-images)).
 
-```{index} Power off and on
+```{index} Hard Reset, power off and on
 ```
 
-**Power off and on**, at the end of the list, switches the machine off and on again. The RAM
+**Hard Reset**, at the end of the list, switches the machine off and on again. The RAM
 comes up as the machine's does at power-on, and so does a [divMMC](disks.md#divmmc), which a
 reset leaves as it is. The CMOS memory, an EEPROM and the media keep what they hold.
 
@@ -126,8 +126,8 @@ reset leaves as it is. The CMOS memory, an EEPROM and the media keep what they h
 ```
 
 The **Hotkeys** page of **Options** also has **Reset to 48K**, **Reset to 128K**,
-**Reset to DOS** and **Reset to Service**. On a machine that cannot start from that ROM,
-the key only shows a short message.
+**Reset to DOS**, **Reset to Service** and **Hard Reset**, with no keys set to start with.
+On a machine that cannot start from that ROM, the key only shows a short message.
 
 ## NMI
 

@@ -135,6 +135,7 @@ typedef struct {
 		void askStartMachine();
 		void resetMachine(int);
 		void resetTo(int);
+		void hardReset();
 		void fillDrivesMenu();
 		void driveOp(std::function<void()>);
 		void diskOp(int, int);
