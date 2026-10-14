@@ -517,6 +517,16 @@ void tapArmPlay(Tape* tap) {
 		tap->armed = 1;
 }
 
+// A pulse is still to come on the tape: a pause playing now is a gap before it
+static int tap_pulse_ahead(Tape* tap) {
+	for (int b = tap->block, p = tap->pos; b < tap->blkCount; b++, p = 0) {
+		TapeBlock* blk = &tap->blkData[b];
+		for (; p < blk->sigCount; p++)
+			if (!TAP_VOL_PAUSE(blk->data[p].vol)) return 1;
+	}
+	return 0;
+}
+
 // Auto play / stop, after Fuse's loader_detect_loader(). Ten reads in a row
 // within 500 T of each other, from the same place with one register moved,
 // start a stopped tape: an edge loop moves its counter and that is all (ZXMAK2
@@ -540,7 +550,10 @@ void tapArmPlay(Tape* tap) {
 // the pilot is kept for a loader that sits out the rom's second of LD-WAIT
 // (Saigon Combat Unit's). Nor does a key scan stop it in a pause: a deck plays
 // the whole gap, and a loader may time it. Once the next pulses come and only
-// the keys are read, the loader has gone.
+// the keys are read, the loader has gone - and in the last pause on the tape
+// there is nothing to wait for (Destiny Mission's 27 s after its game). A loop
+// that moves nothing but A, which holds what it read, is waiting for a key on a
+// playing tape too (Donald's Alphabet Chase's SPACE).
 void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int kind, int fromRam) {
 	int tickDiff = tick - tap->detectLastTick;
 	int bDiff = (regs[1] - tap->detectRegs[1]) & 0xff;
@@ -550,6 +563,7 @@ void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int
 	for (int i = 0; i < 7; i++)
 		moved += (regs[i] != tap->detectRegs[i]);
 	int turn = (pc == tap->detectLastPc) && (moved == 1);
+	int idle = (pc == tap->detectLastPc) && !memcmp(regs + 1, tap->detectRegs + 1, 6);
 	tap->detectLastTick = tick;
 	tap->detectLastPc = pc;
 	memcpy(tap->detectRegs, regs, 7);
@@ -563,13 +577,13 @@ void tapDetectLoader(Tape* tap, int tick, int pc, const unsigned char* regs, int
 	if (tap->rec) return;
 	if (tap->on) {
 		int loader = (kind == TAPE_RD_EDGE) || (kind == TAPE_RD_EAR)
-			|| ((kind != TAPE_RD_KEYS) && (tickDiff <= 1000) && (step || !bDiff));
+			|| ((kind != TAPE_RD_KEYS) && (tickDiff <= 1000) && (step || !bDiff) && !idle);
 		if (loader) {
 			tap->alien = 0;
 			tap->loaderReads++;		// fast loading's too: where the loader left
 		} else if (!tap->detectOn) {
 			return;
-		} else if ((kind == TAPE_RD_KEYS) && TAP_VOL_PAUSE(tap->volPlay)) {
+		} else if ((kind == TAPE_RD_KEYS) && TAP_VOL_PAUSE(tap->volPlay) && tap_pulse_ahead(tap)) {
 			return;
 		} else if (!tap->alien) {
 			tap->alien = 1;

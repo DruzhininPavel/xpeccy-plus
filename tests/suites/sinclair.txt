@@ -4,6 +4,7 @@ ninjaman        zx48      auto  4000  300     tape/ninjaman.tap
 chuckie_fast    zx48      auto  1500  300     "tape/CHUCKIE EGG.tzx"                cfg:TAPE.fast=yes
 techted         zx48      auto  16000 300     "tape/Technician Ted.tzx"
 techted_edge    zx48      auto  16000 300     "tape/Technician Ted.tzx"             --bench-loops 2
+donald          zx48      auto  7000  300     "tape/Donald's Alphabet Chase.tzx"    keys:4500:_/10,4700:_/10
 dizzy1_full     zx48      auto  1500  300     "tape/Dizzy1-TheUltimateCartoonAdventure(48K).tzx" cfg:TAPE.fast=yes --bench-full
 zexdoc          zx48      auto  3000  300     "tape/Z80 Documented Instruction Set Exerciser for Spectrum (2018)(Harston, Jonathan Graham)[!].tap"
 knighttyme      zx128     auto  20000 300     tape/KnightTyme_ZX0_DeciLoad12k8.tzx
