@@ -14,6 +14,8 @@ bin t04_eeprom.bin       t04_eeprom.asm
 bin t05_reset.bin        t05_reset.asm
 bin t06_nmi.bin          t06_nmi.asm        GATED=0
 bin t06_nmi_gated.bin    t06_nmi.asm        GATED=1
+bin t07_spi.bin          t07_spi.asm
+bin e01_mkdir.bin        e01_mkdir.asm
 
 run t01_conmem           t01_conmem.bin     5   EEPROM=ee_test.bin
 run t01_conmem_512       t01_conmem.bin     5   EEPROM=ee_test.bin RAM512=1
@@ -23,4 +25,4 @@ run t04_eeprom           t04_eeprom.bin     20  EEPROM=ee_test.bin JUMPER=1
 run t05_reset            t05_reset.bin      5   EEPROM=ee_test.bin RESETAFTER=1 POWERAFTER=1
 run t06_nmi              t06_nmi.bin        60  EEPROM=ee_test.bin NMIAT=1
 run t06_nmi_gated        t06_nmi_gated.bin  60  EEPROM=ee_test.bin NMIAT=1
-bin e01_mkdir.bin         e01_mkdir.asm
+run t07_spi              t07_spi.bin        50  EEPROM=ee_test.bin SDCARD=t07.img

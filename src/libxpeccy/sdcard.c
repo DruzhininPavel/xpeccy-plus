@@ -599,7 +599,7 @@ static void sds_exec(SDCard* sdc) {
 			}
 			sdc->addr = lba;
 			sdc->cont = (cmd == CMD18);
-			sdc->state = sdc->cont ? SDC_READ : SDC_FREE;
+			sdc->state = SDC_READ;		// no command heard until the block is out
 			sds_answer(sdc, sds_r1(sdc, 0));
 			sds_read_block(sdc);
 			break;
@@ -677,8 +677,12 @@ static void sds_write_byte(SDCard* sdc, int val) {
 }
 
 static int sds_next_out(SDCard* sdc) {
-	if (sdc->out.pos < sdc->out.len)
-		return sdc->out.data[sdc->out.pos++];
+	if (sdc->out.pos < sdc->out.len) {
+		int val = sdc->out.data[sdc->out.pos++];
+		if ((sdc->out.pos == sdc->out.len) && (sdc->state == SDC_READ) && !sdc->cont)
+			sdc->state = SDC_FREE;		// a single block read is over
+		return val;
+	}
 	if (sdc->busyLeft > 0) {
 		sdc->busyLeft--;
 		return 0x00;
@@ -700,8 +704,11 @@ static int sds_next_out(SDCard* sdc) {
 int sdc_xfer(SDCard* sdc, int mosi) {
 	if (!sdc || !sdc->image || sdc->cs) return 0xff;
 	mosi &= 0xff;
+	int busy = (sdc->busyLeft > 0);
 	int miso = sds_next_out(sdc);
-	if (sdc->state == SDC_WRITE) {
+	if (busy && (sdc->out.pos >= sdc->out.len)) {
+		// programming: nothing it is sent is heard
+	} else if (sdc->state == SDC_WRITE) {
 		sds_write_byte(sdc, mosi);
 	} else if (sdc->state == SDC_WAIT) {
 		sdc->arg[6 - sdc->argCnt] = mosi;

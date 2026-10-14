@@ -35,3 +35,10 @@ DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000
 == t06_nmi_gated
 t06_nmi_gated.bin: 69 bytes, done after 49 frames, pc=8034
 DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t07_spi
+t07_spi.bin: 619 bytes, done after 13 frames, pc=808E
+BF01: 02 00 00 02 04 06 02 00 00 02 04 06 00 02 00 01
+BF11: 02 03 00 02 00 01 02 03 00 02 00 01 02 03 00 02
+BF21: 00 01 02 03 02 00 00 00 01 01 02 00 00 00 01 01
+BF31: 00 02 00 01 02 03 00 02 00 01 02 03 04 FF 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
