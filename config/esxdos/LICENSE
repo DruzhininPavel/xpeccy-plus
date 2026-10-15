@@ -1,0 +1,16 @@
+esxDOS in this directory is NOT covered by the license of Xpeccy+
+=================================================================
+
+esxDOS (c) 2005-2021 Papaya Dezign.
+
+This is esxDOS 0.8.9 exactly as Papaya Dezign released it
+(http://www.esxdos.org/files/esxdos089.zip): the divMMC firmware ESXMMC.BIN,
+the SYS and BIN folders a card needs, README.TXT and ESX089.NFO. No file was
+modified.
+
+It is redistributed with Xpeccy+ with the permission of Papaya Dezign. Many
+thanks to Miguel Guerreiro / Papaya Dezign for allowing esxDOS to be bundled.
+
+Xpeccy+ itself is distributed under the MIT license (see LICENSE_eng /
+LICENSE_rus in the root of the project); that license does not apply to the
+files in this directory. config/roms/PROVENANCE.md lists them with their MD5.
