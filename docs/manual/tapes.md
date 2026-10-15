@@ -212,11 +212,13 @@ to the tape, in the **Disk Manager** (see [Disk Manager](disks.md#disk-manager))
 ```{index} tape; indicator
 ```
 
-The status bar shows the tape's {icon}`tapeYellow` light and the block being played, with
-the commands of the deck on a right-click: see [Status bar](main-window.md#status-bar).
+The status bar shows the tape's {icon}`tapeGreen` light, the block being played, how far
+the tape is through it and what it is, with the commands of the deck on a right-click: see
+[Status bar](main-window.md#status-bar). The light stays with no tape in, dimmed, and a
+click on it opens the **Tape Player**.
 
-With the status bar hidden, a light over the picture shows the tape playing (yellow) or
-recording (red). **Tape** in the **Indicators** group of the **Appearance** page of
+With the status bar hidden, a light over the picture blinks while the tape plays (green) or
+records (red). **Tape** in the **Indicators** group of the **Appearance** page of
 **Options** turns this light on and off.
 
 ## Tape settings

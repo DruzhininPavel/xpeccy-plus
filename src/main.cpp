@@ -7,6 +7,7 @@
 #include <QStyleFactory>
 #include <QUrl>
 #include <QFileInfo>
+#include <QtPlugin>
 
 #include <locale.h>
 #include <string>
@@ -43,6 +44,9 @@
 #include <mmsystem.h>
 #include <conio.h>
 #endif
+
+// icons out of :/images take the pictures drawn for 16 and 24 px with them (xgui/iconengine.h)
+Q_IMPORT_PLUGIN(xIconPlugin)
 
 // what a run with no window exits with, so a script can tell why it ended
 enum {

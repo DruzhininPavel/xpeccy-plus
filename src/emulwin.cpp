@@ -236,7 +236,7 @@ MainWin::MainWin(QMainWindow* frm) {
 	leds[led_joy].load(":/images/joystick.png");
 	leds[led_mouse].load(":/images/mouse.png");
 	leds[led_tap_red].load(":/images/tapeRed.png");
-	leds[led_tap_yellow].load(":/images/tapeYellow.png");
+	leds[led_tap_green].load(":/images/tapeGreen.png");
 	leds[led_disk_green].load(":/images/diskGreen.png");
 	leds[led_disk_red].load(":/images/diskRed.png");
 	leds[led_wav].load(":/images/wav.png");
@@ -572,6 +572,7 @@ void MainWin::timerEvent(QTimerEvent* ev) {
 			comp->vid->upd = 0;
 			updateWindow();
 		}
+		lightLook();
 		updateStatus();
 		syncActions();
 	} else if (ev->timerId() == cmsid) {	// 1-sec: cmos interrupt
@@ -1367,25 +1368,23 @@ void MainWin::drawIcons(QPainter& pnt) {
 		if (conf.led.mouse && osd) pnt.drawImage(3, 50, leds[led_mouse]);
 		comp->mouse->used = 0;
 	}
-// tape
-	if (comp->tape->on && conf.led.tape && osd) {
-		pnt.drawImage(3, 70, comp->tape->rec ? leds[led_tap_red] : leds[led_tap_yellow]);
+// tape and disc: as the last look at the lights found them (lightLook), blinking the same way
+	if (conf.led.tape && osd) {
+		if (tapeLight == SB_TAPE_RD) pnt.drawImage(3, 70, leds[led_tap_green]);
+		if (tapeLight == SB_TAPE_WR) pnt.drawImage(3, 70, leds[led_tap_red]);
 	}
-// disc
-	// a write reads the sector headers on the way, so it wins over a read, or
-	// the led flickers green all through it
 	if (conf.led.disk && osd) {
-		Floppy* flp = comp->dif->fdc->flp;
-		if (flp->wr) {
-			pnt.drawImage(3, 90, leds[led_disk_red]);
-		} else if (flp->rd) {
-			pnt.drawImage(3, 90, leds[led_disk_green]);
+		for (int i = 0; i < 4; i++) {
+			if (comp->dif->flp[i] != comp->dif->fdc->flp) continue;		// the drive the controller has
+			if (diskLight[i] == SB_DISK_RD) pnt.drawImage(3, 90, leds[led_disk_green]);
+			if (diskLight[i] == SB_DISK_WR) pnt.drawImage(3, 90, leds[led_disk_red]);
 		}
 	}
-	// kept for the status bar, which looks a few times a second
+	// kept for the next look at the lights
 	for (int i = 0; i < 4; i++) {
 		Floppy* flp = comp->dif->flp[i];
-		flpSeen[i] |= (flp->rd ? 1 : 0) | (flp->wr ? 2 : 0);
+		flpSeen[i] |= (flp->rd ? 1 : 0) | (flp->wr ? 2 : 0) | ((flp->trk != flpTrk[i]) ? 4 : 0);
+		flpTrk[i] = flp->trk;
 		flp->rd = 0;
 		flp->wr = 0;
 	}
@@ -1912,12 +1911,12 @@ void MainWin::initUserMenu() {
 // submenu
 	bookmarkMenu = userMenu->addMenu(QIcon(":/images/star.png"),"Favorites");
 	userMenu->addSeparator();
-	profileMenu = userMenu->addMenu(x_icon(":/images/model-zx48.png"),"Model");
+	profileMenu = userMenu->addMenu(QIcon(":/images/model-zx48.png"),"Model");
 	turboMenu = userMenu->addMenu(QIcon(":/images/clock.png"),"Turbo Mode");
 	resMenu = userMenu->addMenu(QIcon(":/images/shutdown.png"),"Reset");
 	userMenu->addSeparator();
-	keyMenu = userMenu->addMenu(x_icon(":/images/vkeys.png"), "Keymap");
-	shdMenu = userMenu->addMenu(x_icon(":/images/crt.png"), "Shaders");
+	keyMenu = userMenu->addMenu(QIcon(":/images/vkeys.png"), "Keymap");
+	shdMenu = userMenu->addMenu(QIcon(":/images/crt.png"), "Shaders");
 	palMenu = userMenu->addMenu(QIcon(":/images/palette.png"), "ZX Palette");
 
 	userMenu->addSeparator();
@@ -2003,7 +2002,7 @@ QAction* MainWin::cutAct(const QString& name, int id, const QString& icon) {
 	QAction* act = cutById.value(id);
 	if (act) return act;
 	act = new QAction(name, this);
-	if (!icon.isEmpty()) act->setIcon(x_icon(":/images/" + icon + ".png"));
+	if (!icon.isEmpty()) act->setIcon(QIcon(":/images/" + icon + ".png"));
 	connect(act, &QAction::triggered, this, [this, id]() {
 		xkey_press(id, true);
 		xcut_release(id);
@@ -2107,7 +2106,7 @@ void MainWin::initMenuBar() {
 	bar->addMenu(viewMenu);
 	bar->addAction(favAct);
 	sizeMenu = new xMenu("Size", this);
-	sizeMenu->setIcon(x_icon(":/images/scale.png"));
+	sizeMenu->setIcon(QIcon(":/images/scale.png"));
 	viewMenu->addMenu(sizeMenu);
 	QActionGroup* grp = new QActionGroup(sizeMenu);
 	for (int i = 0; i < 6; i++) {
@@ -2116,11 +2115,23 @@ void MainWin::initMenuBar() {
 		grp->addAction(act);
 		sizeActs.append(act);
 	}
-	fullAct = cutAction(viewMenu, "Fullscreen", XCUT_FULLSCR, "");
-	QIcon fullIcon;		// drawn at each size the toolbar can take, 32 for a scaled screen
-	for (int px : {16, 24, 32})
-		fullIcon.addFile(QString(":/images/fullscreen_icon_%0.png").arg(px));
-	fullAct->setIcon(fullIcon);
+	// the border sizes Options has, taken at once as its Apply takes them
+	brdMenu = new xMenu("Border", this);
+	viewMenu->addMenu(brdMenu);
+	QActionGroup* bgrp = new QActionGroup(brdMenu);
+	for (int i = VID_BRD_NONE; i <= VID_BRD_OVERSCAN; i++) {
+		act = brdMenu->addAction(QString());
+		act->setCheckable(true);
+		act->setData(i);
+		bgrp->addAction(act);
+		connect(act, &QAction::triggered, this, [this, i]() {
+			vid_set_border_mode(i);
+			optResize();
+			saveConfig();
+		});
+	}
+	connect(viewMenu, &QMenu::aboutToShow, this, &MainWin::fillBorderMenu);	// the submenu itself may be off
+	fullAct = cutAction(viewMenu, "Fullscreen", XCUT_FULLSCR, "fullscreen");
 	fullAct->setCheckable(true);
 	ratioAct = cutAction(viewMenu, "Keep Aspect Ratio in Fullscreen", XCUT_RATIO, "display");
 	ratioAct->setCheckable(true);
@@ -2637,6 +2648,28 @@ void MainWin::fillUserMenu() {
 void MainWin::doOptions() {
 	pause(true, PR_OPTS);
 	emit s_options();
+}
+
+// Each size as the Options label gives it on this machine: overscan's is the machine's own.
+// A machine whose screen modes need more border shows that much whatever is picked, so the
+// sizes under it are off, with no size of their own to give, and the whole submenu is off
+// where the machine always shows its whole frame.
+void MainWin::fillBorderMenu() {
+	Video* vid = conf.zx->vid;
+	int shown = qMax(conf.vid.border, vid->brdmin);
+	brdMenu->setEnabled(vid->brdmin < VID_BRD_OVERSCAN);
+	foreach(QAction* act, brdMenu->actions()) {
+		int mode = act->data().toInt();
+		QString name = QString(brd_mode_name(mode));
+		name[0] = name[0].toUpper();
+		act->setEnabled(mode >= vid->brdmin);
+		if (act->isEnabled()) {
+			vCoord sze = vid_crop_size(vid, mode);
+			name += QString(" (%0×%1)").arg(sze.x).arg(sze.y);
+		}
+		act->setText(name);
+		act->setChecked(mode == shown);
+	}
 }
 
 // Apply in the options dialog, with the dialog still open. The border size may

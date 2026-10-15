@@ -594,8 +594,16 @@ static void fl_frame(Computer* comp) {
 	fast_hold_frame(comp, &fl_drawn_at, !fl_back.ok);
 }
 
+// The frames shown are a few out of hundreds, each in whatever FLASH phase the machine is in:
+// a strobe. The picture keeps FLASH's own rate in host time instead - 16 frames on, 16 off.
+static void fast_flash(Computer* comp) {
+	Video* vid = comp->vid;
+	vid->flashShow = (conf.vid.fctime / (16LL * vid->nsPerFrame)) & 1;
+}
+
 void fast_hold_frame(Computer* comp, long long* drawnAt, int draw) {
 	conf.emu.fast = 1;		// again every frame: a pause or a menu clears it
+	fast_flash(comp);
 	// the next frame is drawn, and its end swaps it into bufimg
 	draw = draw && (conf.vid.fctime - *drawnAt >= fast_refresh_ns());
 	if (draw)
@@ -606,6 +614,7 @@ void fast_hold_frame(Computer* comp, long long* drawnAt, int draw) {
 void fast_hold_release(Computer* comp) {
 	conf.emu.fast = 0;
 	vid_set_nodraw(comp->vid, 0);
+	comp->vid->flashShow = -1;
 }
 
 // ns of host time between the pictures fast mode shows
@@ -634,6 +643,7 @@ static void fp_release(Computer* comp) {
 	if (!fp_held) return;
 	fp_held = 0;
 	vid_set_nodraw_next(comp->vid, 0);
+	comp->vid->flashShow = -1;
 }
 
 void fast_picture_frame(Computer* comp) {
@@ -663,6 +673,7 @@ void fast_picture_frame(Computer* comp) {
 		fp_held = 1;
 		fp_drawn_at = conf.vid.fctime;
 	}
+	fast_flash(comp);
 	int due = (conf.vid.fctime - fp_drawn_at >= fast_refresh_ns());
 	if (conf.emu.fastPic == FPIC_WHOLE) {
 		vid_set_nodraw_next(vid, 1);

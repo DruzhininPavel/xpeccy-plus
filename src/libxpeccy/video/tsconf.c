@@ -605,7 +605,7 @@ void vidDrawTSLNormal(Video* vid) {
 				scrbyte = nxtbyte;
 				adr = zx_atr_adr_xy(xscr + 4, yscr);
 				vid->atrbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
-				if ((vid->atrbyte & 0x80) && vid->flash) scrbyte ^= 0xff;
+				if ((vid->atrbyte & 0x80) && vid_flash_shown(vid)) scrbyte ^= 0xff;
 				ink = (vid->atrbyte & 0x07) | ((vid->atrbyte & 0x40) >> 3);
 				pap = (vid->atrbyte & 0x78) >> 3;
 			}

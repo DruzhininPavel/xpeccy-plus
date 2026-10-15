@@ -25,8 +25,6 @@
 #include "xcore/vidrec.h"
 
 #define TB_MIME "application/x-xpeccy-toolbar-item"
-enum {SB_TAPE_IDLE = 0, SB_TAPE_PLAY, SB_TAPE_REC, SB_DISK_EMPTY, SB_DISK_IN, SB_DISK_RD, SB_DISK_WR,
-	SB_JOY_IDLE, SB_JOY_READ, SB_MOUSE_IDLE, SB_MOUSE_READ};		// each READ right after its IDLE
 
 // a status light's picture, every pixel put through f
 static QPixmap sb_map(const QString& path, std::function<QRgb(QRgb)> f) {
@@ -453,13 +451,15 @@ void MainWin::initBars() {
 	sbMachine->installEventFilter(this);
 	sb->addWidget(sbMachine);
 	sb->addWidget(new QWidget, 1);
-	sbPix[SB_TAPE_PLAY] = QPixmap(":/images/tapeYellow.png");
-	sbPix[SB_TAPE_REC] = QPixmap(":/images/tapeRed.png");
-	sbPix[SB_TAPE_IDLE] = sb_tint(":/images/tapeYellow.png", QColor(200, 200, 200), 1.0);
+	// tape and drives in one set: dim with nothing in, gray with something, green reading, red writing
+	sbPix[SB_TAPE_EMPTY] = sb_tint(":/images/tapeGreen.png", QColor(170, 170, 170), 0.45);
+	sbPix[SB_TAPE_IN] = sb_tint(":/images/tapeGreen.png", QColor(200, 200, 200), 1.0);
+	sbPix[SB_TAPE_RD] = QPixmap(":/images/tapeGreen.png");
+	sbPix[SB_TAPE_WR] = QPixmap(":/images/tapeRed.png");
+	sbPix[SB_DISK_EMPTY] = sb_tint(":/images/diskGreen.png", QColor(170, 170, 170), 0.45);
+	sbPix[SB_DISK_IN] = sb_tint(":/images/diskGreen.png", QColor(200, 200, 200), 1.0);
 	sbPix[SB_DISK_RD] = QPixmap(":/images/diskGreen.png");
 	sbPix[SB_DISK_WR] = QPixmap(":/images/diskRed.png");
-	sbPix[SB_DISK_IN] = sb_tint(":/images/diskGreen.png", QColor(90, 150, 255), 1.0);
-	sbPix[SB_DISK_EMPTY] = sb_tint(":/images/diskGreen.png", QColor(170, 170, 170), 0.45);
 	sbPix[SB_JOY_READ] = QPixmap(":/images/joystick.png");
 	sbPix[SB_JOY_IDLE] = sb_tint(":/images/joystick.png", QColor(150, 150, 150), 0.3);
 	sbPix[SB_MOUSE_READ] = sb_bright(":/images/mouse.png", 1.3);	// gray of its own, so lit up instead of coloured
@@ -479,6 +479,16 @@ void MainWin::initBars() {
 	sbTape = new QLabel;
 	sbTapeIcon = new QLabel;
 	sbTapeBox = pair(sbTapeIcon, sbTape);		// the light first: the count is what follows it
+	// then where the tape stands in the block it plays, and what that block is
+	sbTapeBar = new QProgressBar;
+	sbTapeBar->setTextVisible(false);
+	sbTapeBar->setFixedSize(36, 8);
+	sbTapeName = new QLabel;
+	// one width for every name, or the light would move each time a block begins
+	sbTapeName->ensurePolished();
+	sbTapeName->setFixedWidth(sbTapeName->fontMetrics().horizontalAdvance("Program: MMMMMMMMMM"));
+	sbTapeBox->layout()->addWidget(sbTapeBar);
+	sbTapeBox->layout()->addWidget(sbTapeName);
 	for (int i = 0; i < 4; i++) {
 		sbDisk[i] = new QLabel(QString("%0:").arg(QChar('A' + i)));
 		sbDiskIcon[i] = new QLabel;
@@ -725,6 +735,52 @@ void MainWin::tapeMenu(const QPoint& pos) {
 	menu.exec(pos);
 }
 
+// Five times a second, for the status bar and the lights over the picture alike. Something
+// going on blinks: a moving tape every other look; a drive reading or writing is lit, and out
+// for one look after its head stepped - never two looks running, so a seek does not put it out.
+void MainWin::lightLook() {
+	Computer* comp = conf.zx;
+	Tape* tape = comp->tape;
+	lightPhase ^= 1;
+	// the tape counts as playing when it moves, not when it waits to be started or the machine stands
+	if (tape->on && !conf.emu.pause) {
+		tapeLight = !lightPhase ? SB_TAPE_IN : tape->rec ? SB_TAPE_WR : SB_TAPE_RD;
+	} else {
+		tapeLight = (tape->blkCount > 0) ? SB_TAPE_IN : SB_TAPE_EMPTY;
+	}
+	for (int i = 0; i < 4; i++) {
+		Floppy* flp = comp->dif->flp[i];
+		int seen = flpSeen[i];
+		flpSeen[i] = 0;
+		bool busy = (seen & 3);
+		bool dark = busy && (seen & 4) && !diskDark[i];
+		diskDark[i] = dark;
+		if (!flp->insert) {
+			diskLight[i] = SB_DISK_EMPTY;
+		} else if (!busy || dark) {
+			diskLight[i] = SB_DISK_IN;
+		} else {
+			// a write reads the sector headers on the way, so it wins over a read
+			diskLight[i] = (seen & 2) ? SB_DISK_WR : SB_DISK_RD;
+		}
+	}
+}
+
+// What the block playing is, the way the ROM says it as it loads: "Bytes: SCREEN$". The
+// data a header announces goes by the header's name; anything else by what the image calls
+// it, or by its kind. Only a header is decoded: sizing a data block reads all of it.
+static QString tape_block_label(Tape* tape, int blk) {
+	static const char* kind[] = {"Program", "Number array", "Character array", "Bytes"};
+	TapeBlock* cur = &tape->blkData[blk];
+	TapeBlock* head = cur->isHeader ? cur : ((blk > 0) && tape->blkData[blk - 1].isHeader) ? &tape->blkData[blk - 1] : nullptr;
+	TapeBlockInfo inf;
+	if (head && tapGetBlockHeader(head, &inf) && (inf.htype >= TAPE_HT_PROG) && (inf.htype <= TAPE_HT_CODE))
+		return QString("%0: %1").arg(kind[inf.htype]).arg(zx_text(inf.name, TAPE_NAME_LEN));
+	if (cur->text[0])
+		return QString::fromLocal8Bit(cur->text);
+	return cur->hasBytes ? QString("data") : QString("custom");
+}
+
 // a few times a second: QLabel leaves the text alone when it has not changed
 void MainWin::updateStatus() {
 	if (!statusBar->isVisible()) return;
@@ -733,25 +789,35 @@ void MainWin::updateStatus() {
 	sbMachine->setText(mac ? QString::fromLocal8Bit(mac->name.c_str()) : QString());
 	sbClock->setText(QString(" %0 MHz ").arg(xspeed_clock(), 0, 'g', 4));
 	sbFps->setText(conf.emu.pause ? QString(" paused ") : QString(" %0 fps ").arg(conf.vid.curfps, 0, 'f', 1));
-	// the tape counts as playing when it moves, not when it waits to be started
+	// the light stays with no tape in: a click on it is the way to one
 	Tape* tape = comp->tape;
-	sbTapeBox->setVisible(tape->blkCount > 0);
-	if (tape->blkCount > 0) {
-		int st = tape->on ? (tape->rec ? SB_TAPE_REC : SB_TAPE_PLAY) : SB_TAPE_IDLE;
-		if (st != sbTapeShown) {
-			sbTapeIcon->setPixmap(sbPix[st]);
-			sbTapeShown = st;
-		}
-		// a tape played out stands past its last block (tapNextBlock)
-		sbTape->setText(QString("%0/%1").arg(qMin(tape->block + 1, tape->blkCount)).arg(tape->blkCount));
-		QString tip = QString::fromLocal8Bit(tape->path ? tape->path : "");
-		if (sbTapeBox->toolTip() != tip) sbTapeBox->setToolTip(tip);	// a change is an event
+	if (tapeLight != sbTapeShown) {
+		sbTapeIcon->setPixmap(sbPix[tapeLight]);
+		sbTapeShown = tapeLight;
 	}
+	bool got = (tape->blkCount > 0);
+	// a tape played out stands past its last block (tapNextBlock)
+	bool inBlock = got && !tape->rec && (tape->block < tape->blkCount);
+	sbTape->setVisible(got);
+	sbTapeBar->setVisible(got);
+	sbTapeName->setVisible(got);
+	if (got)
+		sbTape->setText(QString("%0/%1").arg(qMin(tape->block + 1, tape->blkCount)).arg(tape->blkCount));
+	if (inBlock) {
+		sbTapeBar->setMaximum(qMax(1, tape->blkData[tape->block].sigCount));
+		sbTapeBar->setValue(tape->pos);
+		QString name = tape_block_label(tape, tape->block);
+		sbTapeName->setText(sbTapeName->fontMetrics().elidedText(name, Qt::ElideRight, sbTapeName->width()));
+	} else {
+		sbTapeBar->setValue(0);		// past the last block, or recording
+		sbTapeName->clear();
+	}
+	QString tip = got ? QString::fromLocal8Bit(tape->path ? tape->path : "") : QString("empty");
+	if (sbTapeBox->toolTip() != tip) sbTapeBox->setToolTip(tip);	// a change is an event
 	for (int i = 0; i < 4; i++) {
 		Floppy* flp = comp->dif->flp[i];
 		sbDiskBox[i]->setVisible(flp->fitted && (comp->dif->type != DIF_NONE));
-		int st = !flp->insert ? SB_DISK_EMPTY : (flpSeen[i] & 2) ? SB_DISK_WR : (flpSeen[i] & 1) ? SB_DISK_RD : SB_DISK_IN;
-		flpSeen[i] = 0;
+		int st = diskLight[i];
 		if (st != sbDiskShown[i]) {
 			sbDiskIcon[i]->setPixmap(sbPix[st]);
 			sbDiskShown[i] = st;

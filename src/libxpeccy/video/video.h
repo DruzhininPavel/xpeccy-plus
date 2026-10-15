@@ -18,6 +18,10 @@ typedef struct Video Video;
 #include "ulaplus.h"
 
 #define vid_irq(_v, _n) _v->xirq(_n, _v->xptr)
+// FLASH as a picture drawn shows it. Fast loading and Fast mode show a frame now and then in
+// host time, and the machine's own phase would land anywhere each time: a strobe. They give
+// the picture one of their own (flashShow); the machine's FLASH is not touched.
+#define vid_flash_shown(_v) (((_v)->flashShow < 0) ? (_v)->flash : (_v)->flashShow)
 
 // How much of the border is shown. The frame is the same size on every ZX
 // machine, with the screen in the middle of it; see vid_upd_crop.
@@ -146,6 +150,7 @@ struct Video {
 	int dotPerFrame;
 
 	int flash;
+	int flashShow;		// -1: a picture drawn shows the FLASH above; 0/1: the one whoever shows the frames gives it
 	int vidPage;
 
 	int brdstep;

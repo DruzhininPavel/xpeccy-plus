@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QLabel>
+#include <QProgressBar>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QStatusBar>
@@ -68,12 +69,17 @@ enum {
 	led_joy,
 	led_mouse,
 	led_tap_red,
-	led_tap_yellow,
+	led_tap_green,
 	led_disk_green,
 	led_disk_red,
 	led_wav,
 	leds_count
 };
+
+// The lights of the tape, the drives and the inputs, in the status bar and over the picture.
+// Each READ right after its IDLE.
+enum {SB_TAPE_EMPTY = 0, SB_TAPE_IN, SB_TAPE_RD, SB_TAPE_WR, SB_DISK_EMPTY, SB_DISK_IN, SB_DISK_RD, SB_DISK_WR,
+	SB_JOY_IDLE, SB_JOY_READ, SB_MOUSE_IDLE, SB_MOUSE_READ, SB_COUNT};
 
 // what the machine's speed is doing, shown in the top right corner
 enum {
@@ -352,6 +358,8 @@ typedef struct {
 		QAction* cutAct(const QString& name, int id, const QString& icon = QString());
 		QAction* cutAction(QMenu*, const QString& name, int id, const QString& icon = QString());
 		QMenu* sizeMenu;
+		QMenu* brdMenu;
+		void fillBorderMenu();
 		QMenu* recentMenu;
 		void fillRecent();
 		// the toolbar and the status bar (emw_bars.cpp)
@@ -361,6 +369,8 @@ typedef struct {
 		QLabel* sbMachine = nullptr;
 		QLabel* sbClock;
 		QLabel* sbTape;
+		QProgressBar* sbTapeBar;	// where the tape stands in this block
+		QLabel* sbTapeName;
 		QLabel* sbDisk[4];	// "A:" and so on
 		QLabel* sbDiskIcon[4];
 		QWidget* sbDiskBox[4] = {nullptr, nullptr, nullptr, nullptr};
@@ -369,12 +379,18 @@ typedef struct {
 		QLabel* sbJoyIcon;
 		QLabel* sbMouseIcon;
 		QWidget* sbInputBox = nullptr;
-		QPixmap sbPix[11];	// SB_*
+		QPixmap sbPix[SB_COUNT];
 		int sbTapeShown = -1;
 		int sbDiskShown[4] = {-1, -1, -1, -1};
 		int sbJoyShown = -1;
 		int sbMouseShown = -1;
-		int flpSeen[4] = {0, 0, 0, 0};	// bit 0 read, bit 1 written since the status bar last looked
+		int flpSeen[4] = {0, 0, 0, 0};	// bit 0 read, bit 1 written, bit 2 the head stepped, since the last look
+		int flpTrk[4] = {0, 0, 0, 0};	// the track the head was on the frame before
+		int tapeLight = SB_TAPE_EMPTY;	// SB_* as the last look found them
+		int diskLight[4] = {SB_DISK_EMPTY, SB_DISK_EMPTY, SB_DISK_EMPTY, SB_DISK_EMPTY};
+		bool diskDark[4] = {false, false, false, false};	// put out for a step at the last look
+		int lightPhase = 0;
+		void lightLook();
 		bool joySeen = false;		// read since the status bar last looked
 		bool mouseSeen = false;
 		QMenu* flpMenu[4] = {nullptr, nullptr, nullptr, nullptr};	// each drive's own, from the Drives menu

@@ -132,6 +132,7 @@ Video* vidCreate(cbxrd cb, cbirq ci, void* dptr) {
 	vid_set_dot_ns(vid, 150);
 	vid->snowLow = -1;
 	vid->nodrawNext = -1;
+	vid->flashShow = -1;
 	vid->res.x = -1;
 	vid->res.y = -1;
 	vid_set_mode(vid, VID_UNKNOWN);
@@ -536,7 +537,7 @@ static void zx_attr_cols(Video* vid, unsigned char abyte, unsigned char* sbyte,
 		*ink = ((abyte & 0xc0) >> 2) | (abyte & 0x07);
 		*pap = ((abyte & 0xc0) >> 2) | ((abyte & 0x38) >> 3) | 8;
 	} else {
-		if ((abyte & 0x80) && vid->flash && !noflash) *sbyte ^= 0xff;
+		if ((abyte & 0x80) && vid_flash_shown(vid) && !noflash) *sbyte ^= 0xff;
 		*ink = (abyte & 0x07) | ((abyte & 0x40) >> 3);
 		*pap = (abyte & 0x78) >> 3;
 	}
@@ -1485,7 +1486,7 @@ void vidDrawHwmc(Video* vid) {
 				adr = zx_pix_adr_xy(xscr, yscr);
 				adr |= 0x2000;		// the cell's attribute, one per 8x1 (video_addrgen.v addr_phm)
 				vid->atrbyte = vid->mrd(MADR(vid->vidPage, adr), vid->xptr);
-				if ((vid->atrbyte & 0x80) && vid->flash) scrbyte ^= 0xff;
+				if ((vid->atrbyte & 0x80) && vid_flash_shown(vid)) scrbyte ^= 0xff;
 				ink = (vid->atrbyte & 0x07) | ((vid->atrbyte & 0x40) >> 3);
 				pap = (vid->atrbyte & 0x78) >> 3;
 			}

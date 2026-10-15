@@ -53,9 +53,12 @@ machine pixels:
 | **full** | 352 x 288 |
 | **overscan** | the whole frame the machine draws |
 
+**View > Border** has the same sizes, taken at once, with the machine running or paused.
+
 The setting is the same for every machine, but some machines need more of their frame
 than others: ATM Turbo 2+ and ZX Evolution (BaseConf) show at least **medium**, and ZX
-Evolution (TSConf) always shows its whole frame - the slider is grayed out there.
+Evolution (TSConf) always shows its whole frame - the slider and **View > Border** are
+grayed out there.
 
 ## Palette
 
