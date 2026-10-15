@@ -212,8 +212,8 @@ to the tape, in the **Disk Manager** (see [Disk Manager](disks.md#disk-manager))
 ```{index} tape; indicator
 ```
 
-The status bar shows the tape's {icon}`tapeGreen` light, the block being played, how far
-the tape is through it and what it is, with the commands of the deck on a right-click: see
+The status bar shows the tape's {icon}`tapeGreen` light, the block being played and how far
+the tape is through it, with the commands of the deck on a right-click: see
 [Status bar](main-window.md#status-bar). The light stays with no tape in, dimmed, and a
 click on it opens the **Tape Player**.
 

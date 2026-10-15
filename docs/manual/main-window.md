@@ -71,9 +71,8 @@ changes the volume too.
 
 1. the name of the running machine; a click or a right-click on it opens the list of
    machines;
-2. {icon}`tapeGreen` **tape** - the tape light, the block being played (`3/7`), how far
-   the tape is through that block and what the block is, as the ROM says it while
-   loading (`Bytes: SCREEN$`);
+2. {icon}`tapeGreen` **tape** - the tape light, the block being played (`3/7`) and how far
+   the tape is through that block;
 3. {icon}`diskGreen` **A: B: C: D:** - a light for each floppy drive the machine has;
 4. {icon}`joystick` **joystick** and {icon}`mouse` **mouse** - lit while the running
    program reads them;
@@ -82,7 +81,8 @@ changes the volume too.
 
 The tape and the drives light up the same way: dim - nothing is in, gray - a tape or a disk
 is in, green - reading, red - writing. While it reads or writes, a light blinks: the tape's
-all the time it moves, a drive's each time its head steps to another track.
+between its color and a brighter one all the time it moves, a drive's each time its head
+steps to another track.
 
 Hold the mouse over the tape or a drive to see which file is in it. A click opens the
 **Tape Player** or the **Disk Manager**; a right-click opens a short menu of the same

@@ -235,8 +235,6 @@ MainWin::MainWin(QMainWindow* frm) {
 	leds[led_kbd].load(":/images/scanled.png");
 	leds[led_joy].load(":/images/joystick.png");
 	leds[led_mouse].load(":/images/mouse.png");
-	leds[led_tap_red].load(":/images/tapeRed.png");
-	leds[led_tap_green].load(":/images/tapeGreen.png");
 	leds[led_disk_green].load(":/images/diskGreen.png");
 	leds[led_disk_red].load(":/images/diskRed.png");
 	leds[led_wav].load(":/images/wav.png");
@@ -1370,8 +1368,8 @@ void MainWin::drawIcons(QPainter& pnt) {
 	}
 // tape and disc: as the last look at the lights found them (lightLook), blinking the same way
 	if (conf.led.tape && osd) {
-		if (tapeLight == SB_TAPE_RD) pnt.drawImage(3, 70, leds[led_tap_green]);
-		if (tapeLight == SB_TAPE_WR) pnt.drawImage(3, 70, leds[led_tap_red]);
+		if ((tapeLight >= SB_TAPE_RD) && (tapeLight <= SB_TAPE_WR_HI))
+			pnt.drawPixmap(3, 70, sbPix[tapeLight]);
 	}
 	if (conf.led.disk && osd) {
 		for (int i = 0; i < 4; i++) {
