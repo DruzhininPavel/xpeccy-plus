@@ -24,7 +24,7 @@ static const char* cw_bad[] = {"", "a line that does not read", "a number out of
 xCheatWin::xCheatWin(QWidget* p) : QDialog(p) {
 	setWindowTitle("Cheats");
 	setObjectName("cheatWin");
-	setWindowIcon(x_icon(":/images/cheats.png"));
+	setWindowIcon(QIcon(":/images/cheats.png"));
 	serial = -1;
 	rzx = false;
 

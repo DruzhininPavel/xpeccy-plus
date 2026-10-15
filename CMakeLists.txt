@@ -256,6 +256,7 @@ set(MOCFILES
 	./src/xcore/gamepad.h
 	./src/xgui/xgui.h
 	./src/xgui/classes.h
+	./src/xgui/iconengine.h
 	./src/xgui/labelist.h
 )
 

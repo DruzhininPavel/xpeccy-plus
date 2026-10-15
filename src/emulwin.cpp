@@ -1912,12 +1912,12 @@ void MainWin::initUserMenu() {
 // submenu
 	bookmarkMenu = userMenu->addMenu(QIcon(":/images/star.png"),"Favorites");
 	userMenu->addSeparator();
-	profileMenu = userMenu->addMenu(x_icon(":/images/model-zx48.png"),"Model");
+	profileMenu = userMenu->addMenu(QIcon(":/images/model-zx48.png"),"Model");
 	turboMenu = userMenu->addMenu(QIcon(":/images/clock.png"),"Turbo Mode");
 	resMenu = userMenu->addMenu(QIcon(":/images/shutdown.png"),"Reset");
 	userMenu->addSeparator();
-	keyMenu = userMenu->addMenu(x_icon(":/images/vkeys.png"), "Keymap");
-	shdMenu = userMenu->addMenu(x_icon(":/images/crt.png"), "Shaders");
+	keyMenu = userMenu->addMenu(QIcon(":/images/vkeys.png"), "Keymap");
+	shdMenu = userMenu->addMenu(QIcon(":/images/crt.png"), "Shaders");
 	palMenu = userMenu->addMenu(QIcon(":/images/palette.png"), "ZX Palette");
 
 	userMenu->addSeparator();
@@ -2003,7 +2003,7 @@ QAction* MainWin::cutAct(const QString& name, int id, const QString& icon) {
 	QAction* act = cutById.value(id);
 	if (act) return act;
 	act = new QAction(name, this);
-	if (!icon.isEmpty()) act->setIcon(x_icon(":/images/" + icon + ".png"));
+	if (!icon.isEmpty()) act->setIcon(QIcon(":/images/" + icon + ".png"));
 	connect(act, &QAction::triggered, this, [this, id]() {
 		xkey_press(id, true);
 		xcut_release(id);
@@ -2107,7 +2107,7 @@ void MainWin::initMenuBar() {
 	bar->addMenu(viewMenu);
 	bar->addAction(favAct);
 	sizeMenu = new xMenu("Size", this);
-	sizeMenu->setIcon(x_icon(":/images/scale.png"));
+	sizeMenu->setIcon(QIcon(":/images/scale.png"));
 	viewMenu->addMenu(sizeMenu);
 	QActionGroup* grp = new QActionGroup(sizeMenu);
 	for (int i = 0; i < 6; i++) {
@@ -2116,11 +2116,7 @@ void MainWin::initMenuBar() {
 		grp->addAction(act);
 		sizeActs.append(act);
 	}
-	fullAct = cutAction(viewMenu, "Fullscreen", XCUT_FULLSCR, "");
-	QIcon fullIcon;		// drawn at each size the toolbar can take, 32 for a scaled screen
-	for (int px : {16, 24, 32})
-		fullIcon.addFile(QString(":/images/fullscreen_icon_%0.png").arg(px));
-	fullAct->setIcon(fullIcon);
+	fullAct = cutAction(viewMenu, "Fullscreen", XCUT_FULLSCR, "fullscreen");
 	fullAct->setCheckable(true);
 	ratioAct = cutAction(viewMenu, "Keep Aspect Ratio in Fullscreen", XCUT_RATIO, "display");
 	ratioAct->setCheckable(true);
