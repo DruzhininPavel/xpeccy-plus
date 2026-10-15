@@ -56,7 +56,17 @@ before that point is upstream's history and is not repeated here.
   Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
   which the +3 reads too, show as well.
 
+- **esxDOS comes with the emulator**: a divMMC starts with esxDOS 0.8.9 in its EEPROM, and
+  New esxDOS Folder in a card's menu makes a card ready to fill with programs. *(thanks to
+  Miguel Guerreiro / Papaya Dezign for the permission to bundle it)*
+
 ### Changed
+
+- **Ok and Cancel in the windows Options opens**: Cancel puts back what a window showed when
+  it opened.
+
+- **Hard Reset reads a folder used as a card or a disk again**, so files copied into it are
+  there.
 
 - **Faster emulation**: Fast Mode runs three to six times as fast on every machine, and on
   TSConf up to fourteen times. Fast loading takes about a third of the time. Every machine
