@@ -1697,22 +1697,110 @@ void SetupWin::layEditorOK() {
 	if (ok) layeditor->hide();
 }
 
-// A box taken out of the page, in a window with one button to put it away.
-// The button wears the cross the main dialog's Cancel wears, so the three
-// windows read as one family.
+// A box taken out of the page, in a window of its own with Ok and Cancel, which
+// wear the icons the main dialog's do. Ok keeps what the box shows for the main
+// dialog's Apply; Cancel (Esc, the close box) puts back what it showed when it
+// opened. The window only edits the page, so either way nothing reaches the
+// machine before Apply.
 //
 // Modal, so the page it came from cannot be closed out from under it.
 
+// what a sheet's fields hold, to put back on Cancel
+struct xSheetState {
+	QList<QPair<QPointer<QWidget>, QVariant> > vals;
+	xRomset roms;		// the ROM pickers write the page's set as they go
+	int resTarget;
+};
+
+class xSheetWin : public QDialog {
+	public:
+		xSheetWin(QWidget* par) : QDialog(par) {}
+		std::function<void()> onOpen;
+		std::function<void()> onCancel;
+	protected:
+		void showEvent(QShowEvent* ev) override {
+			if (!ev->spontaneous() && onOpen) onOpen();
+			QDialog::showEvent(ev);
+		}
+	public:
+		void reject() override {
+			if (isVisible() && onCancel) onCancel();
+			QDialog::reject();
+		}
+};
+
+static QVariant sheet_value(QWidget* w) {
+	if (QComboBox* cb = qobject_cast<QComboBox*>(w)) {
+		QVariantList v;
+		v << cb->currentIndex() << cb->currentData() << cb->currentText();
+		return v;
+	}
+	if (QAbstractButton* ab = qobject_cast<QAbstractButton*>(w))
+		return ab->isCheckable() ? QVariant(ab->isChecked()) : QVariant();
+	if (QAbstractSlider* sl = qobject_cast<QAbstractSlider*>(w)) return sl->value();
+	if (QSpinBox* sb = qobject_cast<QSpinBox*>(w)) return sb->value();
+	if (QDoubleSpinBox* ds = qobject_cast<QDoubleSpinBox*>(w)) return ds->value();
+	// an editable combo's own line is the combo's
+	if (QLineEdit* le = qobject_cast<QLineEdit*>(w))
+		return qobject_cast<QComboBox*>(le->parentWidget()) ? QVariant() : QVariant(le->text());
+	return QVariant();
+}
+
+static void sheet_put(QWidget* w, const QVariant& val) {
+	if (QComboBox* cb = qobject_cast<QComboBox*>(w)) {
+		QVariantList v = val.toList();
+		int idx = v[0].toInt();
+		// the list may have been filled again: the item goes by its data then
+		if ((idx >= cb->count()) || (cb->itemData(idx) != v[1]) || (cb->itemText(idx) != v[2])) {
+			int alt = v[1].isValid() ? cb->findData(v[1]) : cb->findText(v[2].toString());
+			if (alt >= 0) idx = alt;
+		}
+		if (idx < cb->count()) cb->setCurrentIndex(idx);
+		if (cb->isEditable()) cb->setEditText(v[2].toString());
+	} else if (QAbstractButton* ab = qobject_cast<QAbstractButton*>(w)) {
+		ab->setChecked(val.toBool());
+	} else if (QAbstractSlider* sl = qobject_cast<QAbstractSlider*>(w)) {
+		sl->setValue(val.toInt());
+	} else if (QSpinBox* sb = qobject_cast<QSpinBox*>(w)) {
+		sb->setValue(val.toInt());
+	} else if (QDoubleSpinBox* ds = qobject_cast<QDoubleSpinBox*>(w)) {
+		ds->setValue(val.toDouble());
+	} else if (QLineEdit* le = qobject_cast<QLineEdit*>(w)) {
+		le->setText(val.toString());
+	}
+}
+
 QDialog* SetupWin::popOut(QWidget* box, const char* title) {
-	QDialog* win = new QDialog(this);
+	xSheetWin* win = new xSheetWin(this);
 	win->setModal(true);
 	win->setWindowTitle(title);
 	QVBoxLayout* lay = new QVBoxLayout(win);
 	lay->addWidget(box);
-	QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Close, win);
-	bbox->button(QDialogButtonBox::Close)->setIcon(QIcon(":/images/cancel.png"));
+	QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, win);
+	bbox->button(QDialogButtonBox::Ok)->setIcon(QIcon(":/images/ok-apply.png"));
+	bbox->button(QDialogButtonBox::Cancel)->setIcon(QIcon(":/images/cancel.png"));
 	lay->addWidget(bbox);
-	connect(bbox, SIGNAL(rejected()), win, SLOT(hide()));
+	connect(bbox, SIGNAL(accepted()), win, SLOT(accept()));
+	connect(bbox, SIGNAL(rejected()), win, SLOT(reject()));
+	QSharedPointer<xSheetState> st(new xSheetState);
+	win->onOpen = [this, box, st]() {
+		st->vals.clear();
+		foreach(QWidget* w, box->findChildren<QWidget*>()) {
+			QVariant v = sheet_value(w);
+			if (v.isValid()) st->vals << qMakePair(QPointer<QWidget>(w), v);
+		}
+		st->roms = roms;
+		st->resTarget = resTarget;
+	};
+	win->onCancel = [this, st]() {
+		roms = st->roms;
+		resTarget = st->resTarget;
+		rsmodel->fill(&roms);
+		fillRomSlots();		// the slot rows are made from the set: new ones, already right
+		for (int i = 0; i < st->vals.size(); i++) {
+			if (st->vals[i].first) sheet_put(st->vals[i].first, st->vals[i].second);
+		}
+	};
 	return win;
 }
 
