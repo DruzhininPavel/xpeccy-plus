@@ -78,9 +78,10 @@ before that point is upstream's history and is not repeated here.
   between two loads reads the keys (Dragon Breed played its later levels to nobody). Nor does
   a game that has loaded run fast while the tape plays out its last pause (Havoc 128K).
 
-- **Tape auto stop after a load** no longer misses a game that waits for a key in a tight
-  loop, or a tape that ends in a long pause: the tape stops and fast loading ends where the
-  load did, so the game starts from its beginning (Destiny Mission, Donald's Alphabet Chase).
+- **Tape auto stop after a load** no longer misses a game that waits for a key, or a tape
+  that ends in a long pause: the tape stops and fast loading ends where the load did, so the
+  game starts from its beginning (Destiny Mission, Donald's Alphabet Chase, Joe Blade 2, Kat
+  Trap).
 
 - **The PC keyboard on ZX Evo** no longer repeats keys by itself: in Wild Commander a
   short press could run the cursor to the end of the list, and F1 opened and closed its
@@ -128,8 +129,9 @@ before that point is upstream's history and is not repeated here.
   and Moonlighter load.
 
 - **Flash loading** leaves the registers as the ROM's loader does and keeps the tape playing
-  through a short gap after the block, so Action Force 2 and Rick Dangerous load. A keyboard
-  scan during a pause no longer stops the tape.
+  through a short gap after the block, so Action Force 2, Rick Dangerous and Loco-Motion
+  load. A keyboard scan during a pause no longer stops the tape.
+  *(Loco-Motion reported by Volutar)*
 
 - **Apply with another model** in Options keeps what was changed on the other pages.
 

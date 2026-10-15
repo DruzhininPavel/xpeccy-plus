@@ -369,19 +369,23 @@ void xThread::tap_hand_over(Computer* comp, int blk, int base, int dir) {
 	}
 	// the block is in memory and the tape never moved for it, so a loader of
 	// its own that reads the next one is handed the tape when it asks - one
-	// the trap reads waits for the rom (Fuse leaves it at the block's pause)
+	// the trap reads waits for the rom after a real pause (Fuse leaves it at
+	// the block's pause)
 	int nxt = blk + 1;
 	int arm = (nxt < tap->blkCount) && !tap_block_rom(&tap->blkData[nxt]);
 	// A block with no pause after it, or one too short to end a block, runs
 	// on into the next as on a deck: a loader reading that one times it from
 	// here. It plays now, after that pause, from the level the block ended on.
+	// A block the trap reads too: a program may let it play by unread (Loco-
+	// Motion's dummy, under its puzzle), and the trap, asked with the tape
+	// past that block's pilot, moves on to the next.
 	int last = tb->sigCount ? tb->data[tb->sigCount - 1].vol : 0x80;
 	int gap = 0;
 	for (int i = tb->sigCount - 1; (i >= 0) && TAP_VOL_PAUSE(tb->data[i].vol); i--)
 		gap += tb->data[i].size;
 	tapNextBlock(tap);
 	fastload_forget();
-	if ((tap->block < tap->blkCount) && (!TAP_VOL_PAUSE(last) || (arm && (gap < TAPE_PAUSE_TICKS)))) {
+	if ((tap->block < tap->blkCount) && (!TAP_VOL_PAUSE(last) || (gap < TAPE_PAUSE_TICKS))) {
 		tap_play_on(tap, last);
 		tap->sigLen = gap;
 	} else if (arm) {

@@ -371,11 +371,20 @@ int zx_rom_code(Computer* comp, int pc) {
 // wins: a loader may test for BREAK first (BIT 0,A, AND #40, the edge loop's
 // RRA / RET NC before its XOR C / AND #20). A CALL, JP or JR right after the IN
 // is followed: the bits are tested where it goes (Havoc's key scan calls its
-// BIT 0,A .. BIT 4,A). pc is the address after the IN.
+// BIT 0,A .. BIT 4,A). An AND r right after the IN is the same test with its
+// mask in a register, read as it stands (Joe Blade 2's AND L, Kat Trap's AND D:
+// a key bit each). pc is the address after the IN.
 int zx_in_use(Computer* comp, int pc) {
 	unsigned char b[9];
 	int and20 = 0;
 	int op = memRd(comp->mem, pc & 0xffff) & 0xff;
+	if (((op & 0xf8) == 0xa0) && (op != 0xa6) && (op != 0xa7)) {
+		CPU* cpu = comp->cpu;
+		int regs[6] = {cpu->regB, cpu->regC, cpu->regD, cpu->regE, cpu->regH, cpu->regL};
+		int mask = regs[op & 7] & 0xff;
+		if (mask & 0x40) return ZX_IN_EAR;
+		if (mask && !(mask & 0xe0)) return ZX_IN_KEYS;
+	}
 	if ((op == 0xcd) || (op == 0xc3)) {
 		pc = (memRd(comp->mem, (pc + 1) & 0xffff) & 0xff) | ((memRd(comp->mem, (pc + 2) & 0xffff) & 0xff) << 8);
 	} else if (op == 0x18) {
