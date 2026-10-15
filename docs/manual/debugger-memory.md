@@ -153,6 +153,10 @@ itself pages that window.
 Right-click the rows, or the **MEMMAP** title, and choose **Restore mapping** to put back
 all four windows as they were when the Debugger opened.
 
+While a [divMMC](disks.md#divmmc) has its memory in the first 16K window, that row says
+**DIV** and the number of the board's 8K RAM page at `#2000`. The board pages it by
+itself, so this row cannot be changed then.
+
 On TSConf a fifth row, `FM`, shows where the FMAPS window is (see
 [The FMAPS window on TSConf](#the-fmaps-window-on-tsconf)).
 

@@ -36,7 +36,31 @@
     ],
     [
       "run",
+      "pause"
+    ],
+    [
+      "run",
       "activate-window ZX Evolution"
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "click",
+      "xTsRegsPage",
+      212,
+      8
+    ],
+    [
+      "wait",
+      800
+    ],
+    [
+      "click",
+      "xTsRegsPage",
+      212,
+      8
     ],
     [
       "wait",

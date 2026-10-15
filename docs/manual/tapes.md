@@ -93,7 +93,9 @@ commands are **Media > Tape Play/Stop** and the status bar's right-click menu.
 
 **Auto play / stop** lets the machine start and stop the tape. The tape starts when a
 program reads the tape the way a loader does, and stops when the loader stops reading,
-between blocks and at the end. A program that only reads the keyboard never starts it.
+between blocks and at the end. A program that only reads the keyboard never starts it. A
+game that has loaded and waits for a key stops the tape too, even when the tape still has a
+long pause to play.
 
 When you press **Stop**, it overrides **Auto play / stop**: the tape stays stopped until
 you press **Play**, rewind it, or put another tape in.
