@@ -208,7 +208,7 @@ QVariant xDiskDumpModel::data(const QModelIndex& idx, int role) const {
 			break;
 		case Qt::DisplayRole:
 			if (col == 0) {
-				sprintf(buf, "%.2X:%.4X", trk, adr);
+				snprintf(buf, sizeof(buf), "%.2X:%.4X", trk, adr);
 			} else if (col == DUMP_TEXTCOL) {
 				pos = 0;
 				while (pos < rowBytes) {
@@ -225,7 +225,7 @@ QVariant xDiskDumpModel::data(const QModelIndex& idx, int role) const {
 				buf[pos] = 0;
 			} else if (offset < flp->trklen) {
 				if (flp->insert) {
-					sprintf(buf, "%.2X", flp->data[trk].byte[offset]);
+					snprintf(buf, sizeof(buf), "%.2X", flp->data[trk].byte[offset]);
 				} else {
 					strcpy(buf, "FF");
 				}

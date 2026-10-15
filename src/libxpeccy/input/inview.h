@@ -37,12 +37,12 @@ typedef struct {
 	int mouseFrm;
 } InView;
 
-typedef struct Computer Computer;
+struct Computer;
 
 extern InView inview;
 
 void iview_reset(InView*);
-void iview_in(InView*, Computer*, int port, int val);
+void iview_in(InView*, struct Computer*, int port, int val);
 void iview_state(InView*, int frm, InState*);
 
 #ifdef __cplusplus

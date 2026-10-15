@@ -212,7 +212,7 @@ void MainWin::socketRead() {
 			cnt = (prm.size() > 2) ? prm[2].toInt() : 1;
 			// qDebug() << cnt;
 			while (cnt > 0) {
-				sprintf(dasmbuf, "%.6X : ", adr);
+				snprintf(dasmbuf, sizeof(dasmbuf), "%.6X : ", adr);
 				sock->write(dasmbuf);
 				mnm = cpuDisasm(comp->cpu, adr, dasmbuf, dasmrd, comp);
 				sock->write(dasmbuf);
@@ -235,11 +235,11 @@ void MainWin::socketRead() {
 				cnt = 16;
 			}
 			while (cnt > 0) {
-				sprintf(dasmbuf, "%.6X : ", adr);
+				snprintf(dasmbuf, sizeof(dasmbuf), "%.6X : ", adr);
 				sock->write(dasmbuf);
 				dasmbuf[0] = 0x00;
 				do {
-					sprintf(dasmbuf, "%.2X ", dasmrd(adr, comp));
+					snprintf(dasmbuf, sizeof(dasmbuf), "%.2X ", dasmrd(adr, comp));
 					sock->write(dasmbuf);
 					adr++;
 					cnt--;
@@ -280,7 +280,11 @@ void MainWin::socketRead() {
 			if (!around.isEmpty())		// an empty region would render the lot
 				frame->render(&pic, QPoint(), around);
 			QPainter pnt(&pic);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+			pnt.drawImage(scr.topLeft(), img.flipped(Qt::Vertical));
+#else
 			pnt.drawImage(scr.topLeft(), img.mirrored());
+#endif
 			if (fsBar && fsBar->isVisible())		// it is over the picture
 				fsBar->render(&pnt, fsBar->pos());
 			if (fsTool && fsTool->isVisible())

@@ -515,7 +515,7 @@ QColor stylePaletteColor(const std::string& style, const QString& name) {
 
 void copyFile(const char* src, const char* dst) {
 	QFile fle(QString::fromLocal8Bit(src));
-	fle.open(QFile::ReadOnly);
+	if (!fle.open(QFile::ReadOnly)) return;
 	QByteArray fdata = fle.readAll();
 	fle.close();
 	fle.setFileName(QString::fromLocal8Bit(dst));

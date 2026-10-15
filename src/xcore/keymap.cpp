@@ -811,9 +811,10 @@ void hotkeys_load_line(const std::string& name, const std::string& val) {
 		int p = hotkeys_preset_id(val.c_str());
 		if ((p >= 0) && (p != HKP_CUSTOM)) hkSet.base = p;
 	} else {
-		std::string& v = hkLines[name] = val;
 #ifdef _WIN32
-		v = QString::fromStdString(v).replace("Cancel", "Pause").toStdString();	// no key is Cancel since hotkey_key() names it
+		hkLines[name] = QString::fromStdString(val).replace("Cancel", "Pause").toStdString();	// no key is Cancel since hotkey_key() names it
+#else
+		hkLines[name] = val;
 #endif
 	}
 }
