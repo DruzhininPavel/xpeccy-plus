@@ -9,6 +9,7 @@
 #include <QSpinBox>
 #include <QMenu>
 #include <QMenuBar>
+#include <QKeyEvent>
 #include <QMouseEvent>
 #include <QContextMenuEvent>
 #include <QDockWidget>
@@ -526,6 +527,33 @@ void MainWin::socketRead() {
 			ok = false;
 		}
 		sock->write(ok ? "ok\r\n" : "nothing\r\n");
+	} else if (com == "type") {
+		// type NAME TEXT: keys typed into a widget, by object name or else class name - the
+		// one in the window in front first - as its own key events, so it reacts as to
+		// typing; \n is Enter
+		QWidget* hit = NULL;
+		foreach(QWidget* w, QApplication::allWidgets()) {
+			if (!w->isVisible() || ((w->objectName() != prm.value(1)) && (prm.value(1) != w->metaObject()->className()))) continue;
+			if (!hit || w->window()->isActiveWindow() || (w->window() == QApplication::activeModalWidget())) hit = w;
+		}
+		QString txt = QString(arr).trimmed().mid(com.size()).trimmed().mid(prm.value(1).size()).trimmed();
+		txt.replace("\\n", "\n");
+		if (hit) {
+			hit->setFocus();
+			foreach(QChar ch, txt) {
+				// to whatever has the focus in that window now: Enter may have moved it
+				QWidget* to = hit->window()->focusWidget();
+				if (!to) to = hit;
+				bool enter = (ch == '\n');
+				int key = enter ? Qt::Key_Return : ch.toUpper().unicode();
+				QString text = enter ? QString("\r") : QString(ch);
+				QKeyEvent prs(QEvent::KeyPress, key, Qt::NoModifier, text);
+				QApplication::sendEvent(to, &prs);
+				QKeyEvent rls(QEvent::KeyRelease, key, Qt::NoModifier, text);
+				QApplication::sendEvent(to, &rls);
+			}
+		}
+		sock->write(hit ? "ok\r\n" : "nothing\r\n");
 	} else if (com == "run-action") {
 		// run-action key.options: what a main window hotkey does, by its config name
 		xShortcut* cut = (prm.size() > 1) ? find_shortcut_name(prm[1].toUtf8().constData()) : NULL;
