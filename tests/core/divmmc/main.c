@@ -13,7 +13,7 @@
 // SDCARD1=img put cards in the slots (a name ending in .img is made blank, 1 MB);
 // NMIAT=n holds the NMI button through frame n; RESETAFTER=1 the state a reset
 // leaves, POWERAFTER=1 the state a power cycle leaves; EEOUT=file writes the
-// EEPROM after the run; TICKS=1 the T the program took.
+// EEPROM after the run; TICKS=1 the T the program took; MHZ=n the CPU clock (3.5).
 
 #include "../bench.h"
 
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
 	memSetSize(comp->mem, MEM_64K, MEM_32K);
 	if (!load_rom(comp, root, "48.rom"))
 		return 1;
-	compSetBaseFrq(comp, 3.5);
+	compSetBaseFrq(comp, getenv("MHZ") ? atof(getenv("MHZ")) : 3.5);
 	comp->resbank = RES_48;
 	comp->flgCNTI = 1;
 	comp_set_cont(comp, 1);
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 	comp->vid->ula->early = 1;
 	comp->fbus = FBUS_NONE;
 	xhost_time_fixed = 1759665600;		// runs repeat
-	div_set_model(comp->div, DIV_ENJOY, getenv("RAM512") ? 64 : 16);
+	div_set_model(comp->div, DIV_MMC, getenv("RAM512") ? 64 : 16);
 	comp->div->eeWrite = getenv("JUMPER") ? 1 : 0;
 	const char* ee = getenv("EEPROM");
 	if (ee && !div_load_eeprom(comp->div, ee)) {

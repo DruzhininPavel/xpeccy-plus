@@ -197,9 +197,6 @@ typedef struct Computer {
 	int frmCount;		// frames since reset (for breakpoint conditions)
 	int tickCount;		// accumulate T
 	long long tickTotal;	// T since the machine was made: tickCount wraps in minutes
-	long long contWait;	// of those, T the ULA held the clock for (contention): the
-				// bus clock a board on the edge connector runs on stood still
-	long long ioEdge;	// that clock's edges at T1 of the i/o cycle going on (iord/iowr)
 	int intTaken;		// maskable interrupts the cpu has taken, for the debugger's spans
 	int frmtCount;		// accumulate T, but reset each INT
 	int hCount;		// T before HALT = frmtCount @ HALT

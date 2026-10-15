@@ -42,7 +42,6 @@ void zx_contend_adr(Computer* comp, int adr, int mreq) {
 	int wdots = vid_wait_dots(comp->vid, adr, mreq);
 	if (!wdots) return;
 	comp->cpu->t += comp->contTicks[wdots];
-	comp->contWait += comp->contTicks[wdots];
 	comp_vid_to_t(comp);
 }
 

@@ -235,19 +235,20 @@ card, use `--sdcard <file or folder>` on the [command line](command-line.md).
 ```
 
 The divMMC is an SD card interface for the ZX Spectrum 48K, 128K, +2, +2A and +3, and the
-Pentagons take it on their ZX-BUS. The one
-emulated is the **divMMC EnJOY!** by ByteDelight, built on the original design by Mario
-Prato: 8 KB of EEPROM for the firmware, 128 KB or 512 KB of RAM, and two SD card slots. The
-firmware most people run on it is esxDOS, which loads `.tap`, `.sna`, `.z80` and `.trd` files
-from the card and adds dot commands to BASIC.
+Pentagons take it on their ZX-BUS. The one emulated follows Mario Prato's original design,
+which the boards sold since, such as the divMMC EnJOY!, are built on: 8 KB of EEPROM for the
+firmware, 128 KB or 512 KB of RAM, and two SD card slots. Its SD card port runs on a clock of
+its own and keeps up with the Z80 at any usual speed. The firmware most people run on it is
+esxDOS, which loads `.tap`, `.sna`, `.z80` and `.trd` files from the card and adds dot
+commands to BASIC.
 
 ### Setting it up
 
-1. On the **Machine** page of **Options**, set the **divMMC** row to **divMMC EnJOY!**.
+1. On the **Machine** page of **Options**, set the **divMMC** row to **divMMC**.
    The {icon}`settings` gear opens **Machine: divMMC**:
    - **RAM** - **128K** or **512K**.
    - **EEPROM writable** - the board's EEPROM jumper. Leave it off: on, the firmware can be
-     written, and the board stays out of the way until the firmware sets MAPRAM.
+     flashed from the Spectrum, and it does not start at a reset.
    - **EEPROM** - **erased** or **written**, and two buttons: {icon}`fileopen` load an
      image into the EEPROM, {icon}`cancel` erase it.
 2. Get the firmware. esxDOS is not shipped with the emulator: download it from

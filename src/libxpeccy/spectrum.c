@@ -84,13 +84,7 @@ static void comp_m1x(void* ptr, int adr) {
 	if (comp->div->model) comp_div_fetch(comp, adr);
 }
 
-// the board's clocks: the bus clock's edges (a contended T is not one) at T1 of
-// the i/o cycle it is asked in, and time
-static long long comp_div_edge(void* ptr) {
-	Computer* comp = (Computer*)ptr;
-	return comp->ioEdge;
-}
-
+// the board's time: its oscillators run whatever the CPU does
 static long long comp_div_ns(void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	return (long long)((double)(comp->tickTotal + comp->cpu->t) * comp->nsPerTick);
@@ -233,10 +227,8 @@ static void memwr_watched(Computer* comp, int adr, int val) {
 // the ray settled (iord/iowr).
 void zx_cont_delay(Computer* comp) {
 	int wdots = vid_wait_dots(comp->vid, 5 << 14, 0);	// video is already at end of wait cycle
-	int was = comp->cpu->t;
 	comp_vid_to_lazy(comp, comp->cpu->t + comp->contTicks[wdots]);
 	comp->cpu->t = res4;
-	comp->contWait += comp->cpu->t - was;
 }
 
 void zx_free_ticks(Computer* comp, int t) {
@@ -402,7 +394,6 @@ int comp_pwatch_val(Computer* comp, int idx) {
 int iord(int port, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp_run_io(comp);
-	comp->ioEdge = comp->tickTotal + comp->cpu->t - comp->contWait;	// before the cycle's waits
 	if (comp->flgCNTI) {
 		// fuse reads the port after both halves of the i/o cycle have
 		// been contended (periph.c readport), so do the waiting first
@@ -464,7 +455,6 @@ static inline void iowr_out(Computer* comp, int port, int val) {
 void iowr(int port, int val, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	comp_run_io(comp);
-	comp->ioEdge = comp->tickTotal + comp->cpu->t - comp->contWait;
 	comp->flgBDI = (comp->flgDOS && (comp->dif->type == DIF_BDI)) ? 1 : 0;
 	if (comp->flgCNTI) {
 		comp_vid_to_t(comp);		// video to current T
@@ -624,7 +614,7 @@ Computer* compCreate() {
 	comp->ide->smuc.cmos = &comp->cmos;
 	comp->sdc = sdcCreate();
 	comp->slot = sltCreate();
-	comp->div = div_create(comp->mem, comp, comp_div_edge, comp_div_ns);
+	comp->div = div_create(comp->mem, comp, comp_div_ns);
 	comp->cpu->xm1x = comp_m1x;
 // sound
 	comp->ts = tsCreate(TS_NONE,SND_AY,SND_NONE);

@@ -98,7 +98,7 @@ static xMacWord diskTab[] = {
 };
 
 static xMacWord divTab[] = {
-	{"none", DIV_NONE}, {"enjoy", DIV_ENJOY}, {NULL, 0}
+	{"none", DIV_NONE}, {"divmmc", DIV_MMC}, {NULL, 0}
 };
 
 static xMacWord ideTab[] = {

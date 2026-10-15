@@ -1,16 +1,16 @@
-; t07: the SPI engine's timing, against a card (SDCARD=x.img). The engine runs on
-; the CPU clock: 1 T to sample, 16 T a byte, and looks at the bus again only at
-; its last edge. Measured from T1 of one #EB I/O cycle to T1 of the next:
-;   OUT after OUT: lost at <= 14, chained at 15..17, a new transfer from 18
-;   IN after IN:   starts nothing at <= 15 (reads the old byte), starts from 16
-; and an IN sends what the shifter was left with: #7F after an even byte written.
+; t07: the SPI port's timing, against a card (SDCARD=x.img). The port runs on an
+; oscillator of its own and takes 720 ns a byte; an access while a byte is going
+; is not taken (an OUT is lost, an IN reads the old byte and starts nothing), and
+; an IN sends #FF. At 3.5 MHz every pair below is far enough apart; at 28 MHz
+; (MHZ=28: 11..18 T = 393..643 ns) none is.
 ;
 ; Sector 1 is written with the data bytes in pairs at a given distance and read
 ; back safely; sector 0 (written safely) is read with IN pairs at a distance. Each
 ; reports how many of the 512 bytes came out right, and the first four.
 ;   OUT pairs: 11 12 15 16 17 18   -> MBOX+1.. (count lo, hi, 4 bytes) x 6
 ;   IN pairs:  11 15 16 17         -> MBOX+#25..
-;   7F test: the first answer after OUT 00 : IN, and after OUT 01 : IN -> MBOX+#3D, +#3E
+;   after OUT 00 : IN, and after OUT 01 : IN, the first answer -> MBOX+#3D, +#3E
+;   (FF: an IN sends FF, which is no command)
 	include "common.inc"
 	org #8000
 

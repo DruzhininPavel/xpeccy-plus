@@ -196,7 +196,7 @@ set.
 | | **Disk** | **None**, **Beta Disk (WD1793)** or **+3 (uPD765)**; drives and the TR-DOS ROM in its window (see [Disks and drives](disks.md)) |
 | | **Hard disk** | the IDE interface; **Master** and **Slave** in its window |
 | | **SD card** | ZX Evolution only: the card in use |
-| | **divMMC** | 48K, 128K, +2, +2A, +3 and the Pentagons: **None** or **divMMC EnJOY!**; RAM, EEPROM jumper and the EEPROM image in its window (see [divMMC](disks.md#divmmc)) |
+| | **divMMC** | 48K, 128K, +2, +2A, +3 and the Pentagons: **None** or **divMMC**; RAM, EEPROM jumper and the EEPROM image in its window (see [divMMC](disks.md#divmmc)) |
 | | **Cartridge** | 48K and ALF only: the cartridge in use |
 | **Input** | **Joystick** | **None**, **Kempston 5-bit**, **Kempston 8-bit** |
 | | **Mouse** | **None** or **Kempston mouse**; sensitivity and wheel in its window |

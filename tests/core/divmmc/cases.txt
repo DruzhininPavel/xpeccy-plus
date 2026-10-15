@@ -26,3 +26,4 @@ run t05_reset            t05_reset.bin      5   EEPROM=ee_test.bin RESETAFTER=1 
 run t06_nmi              t06_nmi.bin        60  EEPROM=ee_test.bin NMIAT=1
 run t06_nmi_gated        t06_nmi_gated.bin  60  EEPROM=ee_test.bin NMIAT=1
 run t07_spi              t07_spi.bin        50  EEPROM=ee_test.bin SDCARD=t07.img
+run t07_spi_28mhz        t07_spi.bin        400 EEPROM=ee_test.bin SDCARD=t07.img MHZ=28

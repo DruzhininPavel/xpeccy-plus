@@ -3,8 +3,11 @@
 // divMMC: an SD card interface on the Spectrum's edge connector. 8K of EEPROM and
 // 128K (or 512K) of SRAM paged over #0000-#3FFF by port #E3 and by an automapper
 // that watches the opcode fetches; two card slots on an SPI port (#E7 selects,
-// #EB moves a byte). The model is the board Mario Prato published (CPLD source
-// divmmc.vhd v1.0, 2012) that the divMMC EnJOY! boards are built on.
+// #EB moves a byte). The memory and the automapper are the board Mario Prato
+// published (CPLD source divmmc.vhd v1.0, 2012), which the boards sold since are
+// built on. Their SPI port runs on an oscillator of its own (divTIESUS: half of
+// 25 MHz), not on the Spectrum's clock as Prato's does: a byte is done long before
+// a Z80 at a usual clock can ask for the next one.
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,17 +23,15 @@ extern "C" {
 // models
 enum {
 	DIV_NONE = 0,
-	DIV_ENJOY		// divMMC EnJOY! (Prato's logic)
+	DIV_MMC
 };
 
-// SPI engines (the board's own, its clock and what a read sends)
-enum {
-	DIV_SPI_PRATO = 0	// the CPLD's, on the Spectrum's clock: 1 T to sample, 16 T a byte
-};
+// a byte on the SPI port: 16 cycles of a 25 MHz oscillator (SCK 12.5 MHz) and two
+// to take the request
+#define DIV_SPI_NS	720
 
 typedef struct {
 	int model;		// DIV_NONE: not fitted
-	int spi;		// DIV_SPI_*
 	int pages;		// 8K SRAM pages fitted: 16 or 64
 	int eeWrite;		// jumper J1 open: the EEPROM takes writes, automap needs MAPRAM
 	int tWC;		// the EEPROM's write cycle, us
@@ -46,10 +47,9 @@ typedef struct {
 
 	// SPI: #E7 bits 1,0 = /CS of card 1,0; the engine (div_spi in divmmc.c)
 	int cs;
-	long long spiS;		// the bus clock edge the transfer in progress started at
-	int spiRes;		// what the card gave in it
-	int spiLat;		// what an IN reads
-	int spiNxt;		// what an IN sends: what the last transfer left in the shifter
+	long long spiEnd;	// the transfer going on ends (ns)
+	int spiRes;		// what the card gave in the last transfer
+	int spiLat;		// what an IN reads: taken from spiRes by the last IN that started one
 
 	// the NMI button: /NMI is pulled while it is held and mapcond is low
 	int nmiBtn;
@@ -75,14 +75,13 @@ typedef struct {
 	unsigned char data[DIV_EE_SIZE + DIV_RAM_MAX];	// the EEPROM, then the SRAM
 	SDCard* card[2];
 
-	// the machine: its memory map, and its clocks
+	// the machine: its memory map, and its time
 	Memory* mem;
 	void* host;
-	long long (*edge)(void*);	// bus clock edges since the machine started (no wait states)
-	long long (*ns)(void*);		// time, ns
+	long long (*ns)(void*);		// ns since the machine started
 } DivMMC;
 
-DivMMC* div_create(Memory* mem, void* host, long long (*edge)(void*), long long (*ns)(void*));
+DivMMC* div_create(Memory* mem, void* host, long long (*ns)(void*));
 void div_destroy(DivMMC*);
 void div_set_model(DivMMC*, int model, int pages);
 

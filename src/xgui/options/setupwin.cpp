@@ -1308,7 +1308,7 @@ void SetupWin::applyMachine() {
 // divmmc: a board is put on, taken off or given other RAM with the power off, so
 // the machine comes up from its power-on with it. Left running, the machine would
 // meet a firmware that never started at its first error report or NMI.
-	int divModel = (divBox->currentIndex() && hw_takes_divmmc(comp->hw)) ? DIV_ENJOY : DIV_NONE;
+	int divModel = (divBox->currentIndex() && hw_takes_divmmc(comp->hw)) ? DIV_MMC : DIV_NONE;
 	int divPages = divRamBox->currentIndex() ? DIV_PAGES_MAX : 16;
 	bool divPower = (divModel != comp->div->model) || (divModel && (divPages != comp->div->pages));
 	if (divPower)
@@ -1860,7 +1860,7 @@ void SetupWin::buildDevices() {
 	sdRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << sdSum << btn;
 
 	// a divMMC on the edge connector; its cards are the Drives menu's
-	divBox = devCombo(QStringList() << tr("None") << tr("divMMC EnJOY!"));
+	divBox = devCombo(QStringList() << tr("None") << tr("divMMC"));
 	divBox->setObjectName("divBox");
 	xOptSheet dv;
 	divRamBox = devCombo(QStringList() << tr("128K") << tr("512K"));
@@ -1868,7 +1868,7 @@ void SetupWin::buildDevices() {
 	dv.field(tr("RAM"), divRamBox);
 	divWrBox = new QCheckBox;
 	divWrBox->setObjectName("divWrBox");
-	dv.check(divWrBox, tr("EEPROM writable"), tr("The jumper open: firmware can be written, automap needs MAPRAM"));
+	dv.check(divWrBox, tr("EEPROM writable"), tr("For flashing; the firmware does not start"));
 	dv.line();
 	divEeSum = new QLabel;
 	QWidget* ee = new QWidget;

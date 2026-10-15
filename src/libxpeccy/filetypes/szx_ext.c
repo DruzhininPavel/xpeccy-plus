@@ -316,10 +316,9 @@ static const szxField fld_div[] = {
 	FLD(DivMMC, mapcond),
 	FLD(DivMMC, automap),
 	FLD(DivMMC, cs),
-	FLD(DivMMC, spiS),
+	FLD(DivMMC, spiEnd),
 	FLD(DivMMC, spiRes),
 	FLD(DivMMC, spiLat),
-	FLD(DivMMC, spiNxt),
 	FLD(DivMMC, nmiLine),
 	FLD(DivMMC, eeWrite),
 	FLD(DivMMC, ee),
@@ -424,10 +423,6 @@ static const szxField fld_tape[] = {
 static void ext_gs_save(szxBuf*, Computer*);
 
 // a divMMC's clocks, as the machine has them now
-static long long ext_div_edge(Computer* comp) {
-	return comp->tickTotal + comp->cpu->t - comp->contWait;
-}
-
 static long long ext_div_ns(Computer* comp) {
 	return (long long)((double)(comp->tickTotal + comp->cpu->t) * comp->nsPerTick);
 }
@@ -436,6 +431,7 @@ static long long ext_div_ns(Computer* comp) {
 static void ext_div_times(DivMMC* div, long long d) {
 	if (div->ee.loadEnd) div->ee.loadEnd += d;
 	if (div->ee.busyEnd) div->ee.busyEnd += d;
+	div->spiEnd += d;
 }
 
 static void ext_div(Computer* comp, const unsigned char* p, size_t n) {
@@ -443,7 +439,6 @@ static void ext_div(Computer* comp, const unsigned char* p, size_t n) {
 	if (!div->model) return;
 	DivMMC tmp = *div;
 	fld_get(&tmp, fld_div, p, n);
-	tmp.spiS += ext_div_edge(comp);
 	ext_div_times(&tmp, ext_div_ns(comp));
 	div->conmem = tmp.conmem;
 	div->mapram = tmp.mapram;
@@ -453,10 +448,9 @@ static void ext_div(Computer* comp, const unsigned char* p, size_t n) {
 	div->cs = tmp.cs;
 	div->card[0]->cs = div->cs & 1;
 	div->card[1]->cs = (div->cs >> 1) & 1;
-	div->spiS = tmp.spiS;
+	div->spiEnd = tmp.spiEnd;
 	div->spiRes = tmp.spiRes;
 	div->spiLat = tmp.spiLat;
-	div->spiNxt = tmp.spiNxt;
 	div->nmiLine = tmp.nmiLine;
 	div->eeWrite = tmp.eeWrite;
 	div->ee = tmp.ee;
@@ -592,7 +586,6 @@ void szx_ext_save(szxBuf* b, Computer* comp) {
 		rec_fields(b, XR_SDC, comp->sdc, fld_sdc);
 	if (comp->div->model) {
 		DivMMC tmp = *comp->div;
-		tmp.spiS -= ext_div_edge(comp);
 		ext_div_times(&tmp, -ext_div_ns(comp));
 		rec_fields(b, XR_DIV, &tmp, fld_div);
 		for (i = 0; i < 2; i++)

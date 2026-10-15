@@ -10,7 +10,7 @@
     ["wait", 1200],
     ["click", "pageList", 60, 16],
     ["wait", 800],
-    ["run", "set-value divBox divMMC EnJOY!"],
+    ["run", "set-value divBox divMMC"],
     ["wait", 300],
     ["click", "divGear", 8, 8],
     ["wait", 800],

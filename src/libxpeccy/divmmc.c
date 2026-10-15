@@ -1,6 +1,7 @@
 // divMMC, after Mario Prato's CPLD source (divmmc.vhd v1.0, 2012-11-22) and his
-// 2013 schematic. The names below are the source's: mapcond and automap are its
-// two automapper flip-flops, conmem/mapram/bank its port #E3 register.
+// 2013 schematic, with the SPI port on a clock of its own as the later boards have
+// it. The names below are the source's: mapcond and automap are its two automapper
+// flip-flops, conmem/mapram/bank its port #E3 register.
 
 #include "divmmc.h"
 
@@ -8,17 +9,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DIV_NO_XFER	(-(1LL << 60))	// the start of a transfer long gone
-
-DivMMC* div_create(Memory* mem, void* host, long long (*edge)(void*), long long (*ns)(void*)) {
+DivMMC* div_create(Memory* mem, void* host, long long (*ns)(void*)) {
 	DivMMC* div = (DivMMC*)calloc(1, sizeof(DivMMC));
 	if (!div) return NULL;
 	div->mem = mem;
 	div->host = host;
-	div->edge = edge;
 	div->ns = ns;
 	div->pages = 16;
-	div->tWC = 10000;		// AT28C64B: 10 ms at most, the only figure given
+	// AT28C64B: the datasheet gives 10 ms at most and no typical figure. Owners
+	// flash the 8K by ESXMMC.TAP (a byte at a time) in seconds to tens of seconds,
+	// never a minute: 3 ms a byte, ~25 s
+	div->tWC = 3000;
 	memset(div->data, 0xff, DIV_EE_SIZE);	// an erased EEPROM
 	div->card[0] = sdc_create_spec();
 	div->card[1] = sdc_create_spec();
@@ -46,10 +47,9 @@ static void div_spi_reset(DivMMC* div) {
 	div->cs = 3;
 	div->card[0]->cs = 1;
 	div->card[1]->cs = 1;
-	div->spiS = DIV_NO_XFER;
+	div->spiEnd = 0;
 	div->spiRes = 0xff;
 	div->spiLat = 0xff;
-	div->spiNxt = 0xff;
 }
 
 void div_reset(DivMMC* div) {
@@ -248,16 +248,11 @@ int div_m1(DivMMC* div, int adr) {
 	return was != div->shown;
 }
 
-// SPI. The engine runs on the CPU clock (the edge connector's, so a wait state
-// that stops the clock stops it too). Timed from T1 of the I/O cycle, t, against
-// S, the start of the transfer in progress:
-//   OUT: lost when t-S <= 14, chained when 15..17 (S += 16), started at >= 18
-//   IN:  starts nothing when t-S <= 15, starts at >= 16 (S = max(S+18, t))
-// An IN reads the byte the transfer in progress got when t-S >= 16, otherwise the
-// one before; it sends what the shifter was left with: the last byte written
-// shifted out seven times with ones behind, so #7F after an even byte, else #FF.
-// (Derived edge by edge from the CPLD's IDLE/SAMPLE/TRANSMIT states; the two
-// edge races, an OUT at 15 and an IN at 16, are taken.)
+// SPI, on the board's own oscillator (as divTIESUS's divmmc_mcleod.v has it): an
+// OUT sends its byte, an IN sends #FF and reads the byte the transfer before it
+// got. Either is taken only when the port is idle: an OUT while a byte is still
+// going is lost, an IN then reads the same byte again and starts nothing. At
+// 3.5 MHz the closest two accesses come (OUT pairs, 12 T) are 3.4 us apart.
 
 static int div_card_xfer(DivMMC* div, int mosi) {
 	int miso = 0xff;	// no card driving it: pulled up
@@ -268,16 +263,12 @@ static int div_card_xfer(DivMMC* div, int mosi) {
 }
 
 static int div_spi(DivMMC* div, int out, int val) {
-	long long t = div->edge(div->host);
-	long long d = t - div->spiS;
-	if (d >= 16) div->spiLat = div->spiRes;
-	int ret = div->spiLat;
-	if (out ? (d < 15) : (d < 16)) return ret;
-	int send = out ? (val & 0xff) : div->spiNxt;
-	div->spiRes = div_card_xfer(div, send);
-	div->spiNxt = ((send & 1) << 7) | 0x7f;
-	div->spiS = (d >= 18) ? t : (div->spiS + (out ? 16 : 18));
-	return ret;
+	long long now = div->ns(div->host);
+	if (now < div->spiEnd) return div->spiLat;
+	if (!out) div->spiLat = div->spiRes;
+	div->spiRes = div_card_xfer(div, out ? (val & 0xff) : 0xff);
+	div->spiEnd = now + DIV_SPI_NS;
+	return div->spiLat;
 }
 
 int div_out(DivMMC* div, int port, int val) {
