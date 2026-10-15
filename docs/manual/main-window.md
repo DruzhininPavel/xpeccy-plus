@@ -19,7 +19,7 @@
 | Menu | What is in it |
 |---|---|
 | **File** | open and save files, recent files, quick save and load, **Options** |
-| **View** | window size, fullscreen, shaders and palette, toolbar and status bar, virtual keyboard, input overlay |
+| **View** | window size, border, fullscreen, shaders and palette, toolbar and status bar, virtual keyboard, input overlay |
 | **Favorites** | files you keep at hand |
 | **Machine** | which machine runs, reset, turbo, pause, fast mode, slow motion, fast forward, rewind |
 | **Input** | keyboard and mouse grab, keymaps, gamepads |
@@ -71,14 +71,18 @@ changes the volume too.
 
 1. the name of the running machine; a click or a right-click on it opens the list of
    machines;
-2. {icon}`tapeYellow` **tape** - the tape light and the block being played, `3/7`; shown
-   only while a tape is in. Yellow: playing, red: recording, gray: stopped;
-3. {icon}`diskGreen` **A: B: C: D:** - a light for each floppy drive the machine has.
-   Green: reading, red: writing, blue: a disk is in, gray: empty;
+2. {icon}`tapeGreen` **tape** - the tape light, the block being played (`3/7`), how far
+   the tape is through that block and what the block is, as the ROM says it while
+   loading (`Bytes: SCREEN$`);
+3. {icon}`diskGreen` **A: B: C: D:** - a light for each floppy drive the machine has;
 4. {icon}`joystick` **joystick** and {icon}`mouse` **mouse** - lit while the running
    program reads them;
 5. the CPU clock in MHz;
 6. frames per second, or **paused**.
+
+The tape and the drives light up the same way: dim - nothing is in, gray - a tape or a disk
+is in, green - reading, red - writing. While it reads or writes, a light blinks: the tape's
+all the time it moves, a drive's each time its head steps to another track.
 
 Hold the mouse over the tape or a drive to see which file is in it. A click opens the
 **Tape Player** or the **Disk Manager**; a right-click opens a short menu of the same
