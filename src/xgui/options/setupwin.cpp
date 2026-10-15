@@ -1697,8 +1697,8 @@ void SetupWin::layEditorOK() {
 	if (ok) layeditor->hide();
 }
 
-// A box taken out of the page, in a window of its own with Ok and Cancel, which
-// wear the icons the main dialog's do. Ok keeps what the box shows for the main
+// A box taken out of the page, in a window of its own with OK and Cancel, which
+// wear the icons the main dialog's do. OK keeps what the box shows for the main
 // dialog's Apply; Cancel (Esc, the close box) puts back what it showed when it
 // opened. The window only edits the page, so either way nothing reaches the
 // machine before Apply.

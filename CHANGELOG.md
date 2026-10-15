@@ -56,13 +56,15 @@ before that point is upstream's history and is not repeated here.
   Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
   which the +3 reads too, show as well.
 
-- **esxDOS comes with the emulator**: a divMMC starts with esxDOS 0.8.9 in its EEPROM, and
-  New esxDOS Folder in a card's menu makes a card ready to fill with programs. *(thanks to
-  Miguel Guerreiro / Papaya Dezign for the permission to bundle it)*
+- **divMMC**: the SD card interface for the ZX Spectrum 48K, 128K, +2, +2A and +3 and the
+  Pentagons, with a card from an image or a folder in each of its two slots. esxDOS 0.8.9
+  comes with the emulator and is in its EEPROM from the start, and New esxDOS Folder in a
+  card's menu makes a card ready to fill with programs. *(thanks to Miguel Guerreiro / Papaya
+  Dezign for the permission to bundle esxDOS)*
 
 ### Changed
 
-- **Ok and Cancel in the windows Options opens**: Cancel puts back what a window showed when
+- **OK and Cancel in the windows Options opens**: Cancel puts back what a window showed when
   it opened.
 
 - **Hard Reset reads a folder used as a card or a disk again**, so files copied into it are
