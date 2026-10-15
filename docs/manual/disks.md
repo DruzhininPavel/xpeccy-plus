@@ -4,7 +4,7 @@
 ```
 
 A machine can have floppy drives, hard disks, an SD card or a cartridge slot, depending on
-the hardware it copies, and a divMMC can be added to the Sinclair models. The **Media** menu
+the hardware it copies, and a divMMC can be added to the Sinclair models and the Pentagons. The **Media** menu
 lists only what the running machine has.
 
 ## Which machine has what
@@ -17,7 +17,7 @@ lists only what the running machine has.
 | ZX Spectrum 48K | - | - | cartridge, divMMC |
 | ZX Spectrum 128K, +2, +2A | - | - | divMMC |
 | ZX Spectrum +3 | +3 drives | - | divMMC |
-| Pentagon, Pentagon 1024 SL | Beta Disk | - | |
+| Pentagon, Pentagon 1024 SL | Beta Disk | - | divMMC |
 | Scorpion ZS 256 | Beta Disk | - | |
 | Scorpion ZS 256 Turbo+ | Beta Disk | SMUC | |
 | ATM Turbo 2+ | Beta Disk | ATM Turbo | |
@@ -234,7 +234,8 @@ card, use `--sdcard <file or folder>` on the [command line](command-line.md).
 ```{index} see: DivMMC EnJOY!; divMMC
 ```
 
-The divMMC is an SD card interface for the ZX Spectrum 48K, 128K, +2, +2A and +3. The one
+The divMMC is an SD card interface for the ZX Spectrum 48K, 128K, +2, +2A and +3, and the
+Pentagons take it on their ZX-BUS. The one
 emulated is the **divMMC EnJOY!** by ByteDelight, built on the original design by Mario
 Prato: 8 KB of EEPROM for the firmware, 128 KB or 512 KB of RAM, and two SD card slots. The
 firmware most people run on it is esxDOS, which loads `.tap`, `.sna`, `.z80` and `.trd` files
@@ -286,6 +287,9 @@ the firmware takes the short way and keeps what it found before.
   setting and its RAM. A firmware flashed by `ESXMMC.TAP` runs from RAM until then.
 - esxDOS runs in 48K BASIC. 128 BASIC and +3 BASIC stop working with the board on, as they
   do on the real one.
+- On a machine with a Beta Disk, the board answers the #3Dxx calls first: `RANDOMIZE USR
+  15616` starts the TR-DOS that esxDOS runs on the card's `.trd` images, not the machine's
+  own. **Machine > NMI** is the board's button then, not the Pentagon's own.
 - A snapshot saved as SZX keeps the board's state; other formats leave it out.
 
 ## Hard disks

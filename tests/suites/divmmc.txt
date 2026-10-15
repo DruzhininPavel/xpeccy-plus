@@ -12,3 +12,7 @@ esx_ls            zx48      boot  760   40      mac:storage.divmmc=enjoy eeprom:
 esx_nmi           zx48      boot  760   40      mac:storage.divmmc=enjoy eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089 keys:660:nmi
 esx_folder_banner zx48      boot  100   20      mac:storage.divmmc=enjoy eeprom:divmmc/ESXMMC089.BIN card1:divmmc/esxdos089
 esx_flash         zx48      auto  6000  20      divmmc/ESXMMC089.TAP mac:storage.divmmc=enjoy mac:storage.divmmc.eeprom=writable keys:400:_
+esx_pent          pent      boot  700   50      mac:storage.divmmc=enjoy eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089
+esx_pent1024      pent1024  boot  700   50      mac:storage.divmmc=enjoy eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089
+esx_pent_trdos    pent      boot  960   40      mac:storage.divmmc=enjoy eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089 keys:660:Sm,672:l,684:s,696:E,780:t,792:CS,804:l,816:1,828:5,840:6,852:1,864:6,876:E
+esx_128_trdos     zx128     boot  960   40      mac:storage.divmmc=enjoy mac:storage.disk=trdos eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089 keys:660:Sm,672:l,684:s,696:E,780:t,792:CS,804:l,816:1,828:5,840:6,852:1,864:6,876:E
