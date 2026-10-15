@@ -159,6 +159,8 @@ void asicMWr(Computer*, int, int);
 int zx_dev_wr(Computer*, int, int);
 int zx_dev_rd(Computer*, int, int*);
 void zx_irq(Computer*, int);
+// a divMMC can sit on this machine's edge connector (the Sinclair models)
+int hw_takes_divmmc(const HardWare*);
 void zx_snow(Computer*);
 void zx_contend_adr(Computer*, int, int);	// address already past vid_cont_hit, video at cpu->t
 int zx_bank_of(Computer*, int);

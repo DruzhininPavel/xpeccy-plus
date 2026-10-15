@@ -168,6 +168,9 @@ struct CPU {
 	// xirq(IRQ_CPU_ACK) and xirq(IRQ_CPU_SYNC) unless the machine says otherwise
 	cbcpu xend;			// the end of an instruction, where INT is sampled
 	cbcpu xsync;			// a write is about to go out
+	// an M1 cycle whose byte is thrown away - the fetch at PC a Z80 makes when it
+	// takes an NMI: the address only, for a device that watches the fetches
+	void (*xm1x)(void*, int);
 	void* xptr;			// pointer to external data (almost always Computer*)
 	// core: runtime callbacks (depends on type)
 	struct cpuCore* core;

@@ -14,6 +14,7 @@ extern "C" {
 #include "fdc.h"
 #include "hdd.h"
 #include "sdcard.h"
+#include "divmmc.h"
 #include "cartridge.h"
 
 #include "sound/ayym.h"
@@ -216,6 +217,10 @@ typedef struct Computer {
 	// every memory access, and llround() is an out-of-line CRT call with gcc
 	// at -O2. Derived by comp_update_timings(), never set by hand.
 	long long nsPerTickFixed;
+	// time as the machine lived it (comp_ns): ns at nsBaseTick, where the rate last
+	// changed; a turbo switch moves only what follows it
+	long long nsBase;
+	long long nsBaseTick;
 	// contention wait, dots -> ticks, derived by comp_update_timings() off the
 	// two periods. vid_wait_dots() tops out at 14, so 16 entries cover it.
 	// xstate copies it with the rest of the head: same periods, same table.
@@ -243,6 +248,7 @@ typedef struct Computer {
 	IDE* ide;
 	SDCard* sdc;
 	xCartridge* slot;		// cartridge slot (Interface II, ALF)
+	DivMMC* div;			// divMMC on the edge connector
 // sound
 	bitChan* beep;
 	TSound* ts;
@@ -398,6 +404,7 @@ void compSetBaseFrq(Computer*,double);
 void compSetTurbo(Computer*,double);
 void compSetHwTurbo(Computer*,double);
 void comp_update_timings(Computer*);
+long long comp_ns(Computer*);
 int compSetHardware(Computer*,const char*);
 void comp_set_layout(Computer*, vLayout*);
 void comp_set_snow(Computer*, int);

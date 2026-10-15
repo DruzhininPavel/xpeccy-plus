@@ -51,6 +51,7 @@ int xDumpModel::mrd(int adr) const {
 				case MEM_RAM: res = comp->mem->ramData[fadr & comp->mem->ramMask]; break;
 				case MEM_SLOT: res = memRd(comp->mem, adr % maxadr);
 					break;
+				case MEM_DIV: res = comp->div->data[fadr % (DIV_EE_SIZE + DIV_RAM_MAX)]; break;
 			}
 			res |= getBrk(comp, adr % maxadr) << 8;
 			break;
@@ -88,6 +89,13 @@ void xDumpModel::mwr(int adr, unsigned char bt) {
 					comp->mem->ramData[fadr & comp->mem->ramMask] = bt;
 					break;
 				case MEM_SLOT:
+					break;
+				case MEM_DIV:		// its SRAM, and its EEPROM as a ROM is
+					fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
+					if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr) {
+						comp->div->data[fadr] = bt;
+						if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
+					}
 					break;
 			}
 			break;

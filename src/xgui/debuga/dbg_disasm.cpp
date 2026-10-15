@@ -234,6 +234,7 @@ int dasmrd(int adr, void* ptr) {
 				case MEM_RAM: res = comp->mem->ramData[fadr & comp->mem->ramMask]; break;
 				case MEM_SLOT: res = memRd(comp->mem, adr);
 					break;
+				case MEM_DIV: res = comp->div->data[fadr % (DIV_EE_SIZE + DIV_RAM_MAX)]; break;
 			}
 			break;
 		case XVIEW_RAM:
@@ -502,6 +503,7 @@ QList<dasmData> getDisasm(Computer* comp, int& adr) {
 			case MEM_ROM: drow.aname = "ROM:"; break;
 			case MEM_SLOT: drow.aname = "SLT:"; break;
 			case MEM_EXT: drow.aname = "EXT:"; break;
+			case MEM_DIV: drow.aname = "DIV:"; break;
 			default: drow.aname = "???"; break;
 		}
 		drow.aname.append(QString("%1:%2").arg(gethexbyte((xadr.bank >> 6) & 0xff)).arg(gethexword(xadr.adr & 0x3fff)));

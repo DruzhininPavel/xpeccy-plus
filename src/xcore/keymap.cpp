@@ -477,6 +477,7 @@ static xShortcut short_tab[] = {
 	{SCG_MAIN, XCUT_RES_128, "key.reset.128", "Reset to 128K", {}},
 	{SCG_MAIN, XCUT_RES_DOS, "key.reset.dos", "Reset to DOS", {}},
 	{SCG_MAIN, XCUT_RES_SERVICE, "key.reset.service", "Reset to Service", {}},
+	{SCG_MAIN, XCUT_RES_HARD, "key.reset.hard", "Hard Reset", {}},
 	{SCG_MAIN, XCUT_TURBO, "key.turbo", "Switch Turbo", {}},
 	{SCG_MAIN, XCUT_SPEED_UP, "key.speed.up", "Speed Up", {}},
 	{SCG_MAIN, XCUT_SPEED_DOWN, "key.speed.down", "Speed Down", {}},

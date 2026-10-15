@@ -1,0 +1,58 @@
+== t01_conmem
+t01_conmem.bin: 121 bytes, done after 0 frames, pc=8078
+BF01: 45 45 5A A5 A5 0F 4F 0D FF FF 00 00 00 00 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t01_conmem_512
+t01_conmem.bin: 121 bytes, done after 0 frames, pc=8078
+BF01: 45 45 5A A5 00 00 4F 0D FF FF 00 00 00 00 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t02_traps
+t02_traps.bin: 274 bytes, done after 0 frames, pc=8111
+BF01: 11 11 4F 80 1F 4F 45 22 22 45 50 4F 00 00 00 00
+BF51: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 22
+BF61: 22 00 00 80 1F 00 00 00 00 00 00 00 00 00 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t03_mapram
+t03_mapram.bin: 167 bytes, done after 2 frames, pc=8058
+BF01: 45 77 11 11 4D 4D 77 88 44 4D 00 4F 00 00 00 00
+BF51: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 11
+BF61: 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+DIV  : conmem 0 mapram 1 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t04_eeprom
+t04_eeprom.bin: 182 bytes, done after 0 frames, pc=80A1
+BF01: DA 9A 42 01 5A 11 50 33 FF FF 00 00 00 00 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t05_reset
+t05_reset.bin: 51 bytes, done after 0 frames, pc=3D06
+DIV  : conmem 0 mapram 1 bank 05 mapcond 1 automap 1 shown 1 cs 0 #0000 52 #2000 35
+RESET: conmem 0 mapram 1 bank 05 mapcond 1 automap 1 shown 1 cs 3 #0000 52 #2000 35
+POWER: conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t06_nmi
+t06_nmi.bin: 31 bytes, done after 2 frames, pc=801E
+BF01: 55 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+BF61: 00 00 55 00 00 00 00 00 00 00 00 00 00 00 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t06_nmi_gated
+t06_nmi_gated.bin: 69 bytes, done after 49 frames, pc=8034
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t07_spi
+t07_spi.bin: 619 bytes, done after 14 frames, pc=808E
+BF01: 00 02 00 01 02 03 00 02 00 01 02 03 00 02 00 01
+BF11: 02 03 00 02 00 01 02 03 00 02 00 01 02 03 00 02
+BF21: 00 01 02 03 00 02 00 01 02 03 00 02 00 01 02 03
+BF31: 00 02 00 01 02 03 00 02 00 01 02 03 FF FF 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t07_spi_turbo
+t07_spi.bin: 619 bytes, done after 208 frames, pc=808E
+BF01: 00 02 00 01 02 03 00 02 00 01 02 03 00 02 00 01
+BF11: 02 03 00 02 00 01 02 03 00 02 00 01 02 03 00 02
+BF21: 00 01 02 03 00 02 00 01 02 03 00 02 00 01 02 03
+BF31: 00 02 00 01 02 03 00 02 00 01 02 03 FF FF 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t07_spi_28mhz
+t07_spi.bin: 619 bytes, done after 15 frames, pc=808E
+BF01: 02 00 00 02 04 06 02 00 00 02 04 06 02 00 00 02
+BF11: 04 06 02 00 00 02 04 06 02 00 00 02 04 06 02 00
+BF21: 00 02 04 06 01 00 00 00 01 01 01 00 00 00 01 01
+BF31: 02 00 00 00 01 01 01 00 00 00 01 01 FF FF 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D

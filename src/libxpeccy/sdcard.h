@@ -37,6 +37,12 @@ typedef struct {
 	unsigned lock:1;
 	unsigned busy:1;
 	unsigned idle:1;	// in idle state: every R1 carries the bit until ACMD41
+	// A card on a real SPI bus (sdc_xfer): every byte in is a byte out, a command it
+	// does not know is answered as illegal, and a card up to 2 GB is an SDSC one with
+	// byte addresses. Without it, the card the Z-controller ports have always had.
+	unsigned spec:1;
+	unsigned sdhc:1;	// block addresses, CCS set in the OCR (spec cards: by size)
+	unsigned spimode:1;	// spec cards: a CMD0 with /CS low has put it in SPI mode
 
 //	unsigned char mode;	// page 18 of SDCard specification 3.01
 	unsigned char state;	// current action
@@ -59,6 +65,13 @@ typedef struct {
 		int pos;
 		unsigned char data[515];	// data packet: token(1),data(512),crc(2)
 	} buf;
+	// spec cards: what goes out on MISO next, one byte per transfer
+	struct {
+		int pos;
+		int len;
+		unsigned char data[530];	// gap, R1, gap, token, a block or a register, crc
+	} out;
+	int busyLeft;		// transfers still answered 00 after a block written
 } SDCard;
 
 SDCard* sdcCreate();
@@ -67,6 +80,11 @@ void sdcReset(SDCard*);
 
 int sdcRead(SDCard*);
 void sdcWrite(SDCard*, int);
+// spec cards: one byte each way on the bus, MOSI in and MISO back; FF while the
+// card is not selected (/CS high, sdc->cs = 1) or not there
+int sdc_xfer(SDCard*, int);
+SDCard* sdc_create_spec(void);
+void sdc_power_on(SDCard*);	// spec cards: the supply comes up, back in SD mode and idle
 
 void sdcSetImage(SDCard*,const char*);
 void sdcSetFolder(SDCard*,const char*,vFat*);

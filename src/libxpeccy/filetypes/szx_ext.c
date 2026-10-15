@@ -302,6 +302,41 @@ static const szxField fld_sdc[] = {
 	FLD(SDCard, blkSize),
 	FLD(SDCard, addr),
 	FLD(SDCard, buf),
+	FLD(SDCard, out),		// a spec card's: what goes out next, and busy
+	FLD(SDCard, busyLeft),
+	FLDEND
+};
+
+// a divMMC: what DMMC has not (the automapper, the SPI engine, the EEPROM's cycle).
+// Its times are taken as offsets from the moment of the file (ext_div_times)
+typedef struct {
+	int conmem;
+	int mapram;
+	int bank;
+	int mapcond;
+	int automap;
+	int cs;
+	long long spiEnd;
+	int spiRes;
+	int spiLat;
+	int nmiLine;
+	int eeWrite;
+	DivEE ee;
+} extDiv;
+
+static const szxField fld_div[] = {
+	FLD(extDiv, conmem),
+	FLD(extDiv, mapram),
+	FLD(extDiv, bank),
+	FLD(extDiv, mapcond),
+	FLD(extDiv, automap),
+	FLD(extDiv, cs),
+	FLD(extDiv, spiEnd),
+	FLD(extDiv, spiRes),
+	FLD(extDiv, spiLat),
+	FLD(extDiv, nmiLine),
+	FLD(extDiv, eeWrite),
+	FLD(extDiv, ee),
 	FLDEND
 };
 
@@ -393,12 +428,64 @@ static const szxField fld_tape[] = {
 #define XR_ATA	BID('A','T','A','0')	// master, 1 slave
 #define XR_SMNV	BID('S','M','N','V')	// SMUC's nvram
 #define XR_SDC	BID('S','D','C',' ')
+#define XR_DIV	BID('D','I','V',' ')
+#define XR_DCD	BID('D','C','D','0')	// 1, a divMMC's cards
 #define XR_GS	BID('G','S','X',' ')
 #define XR_TAPE	BID('T','A','P','E')
 #define XR_GSCPU	BID('G','S','C','P')
 #define XR_GSRAM	BID('G','S','R','X')	// a 32K page past what the GS block holds
 
 static void ext_gs_save(szxBuf*, Computer*);
+
+// the record's fields, out of the board and back (DivMMC itself carries 520K of
+// memory: never a copy of it on the stack)
+static void ext_div_get(extDiv* r, const DivMMC* div) {
+	r->conmem = div->conmem;
+	r->mapram = div->mapram;
+	r->bank = div->bank;
+	r->mapcond = div->mapcond;
+	r->automap = div->automap;
+	r->cs = div->cs;
+	r->spiEnd = div->spiEnd;
+	r->spiRes = div->spiRes;
+	r->spiLat = div->spiLat;
+	r->nmiLine = div->nmiLine;
+	r->eeWrite = div->eeWrite;
+	r->ee = div->ee;
+}
+
+// the times moved by d: the file holds them as offsets from its own moment
+// (an EEPROM time of 0 stays 0: no cycle)
+static void ext_div_times(extDiv* r, long long d) {
+	if (r->ee.loadEnd) r->ee.loadEnd += d;
+	if (r->ee.busyEnd) r->ee.busyEnd += d;
+	r->spiEnd += d;
+}
+
+static void ext_div(Computer* comp, const unsigned char* p, size_t n) {
+	DivMMC* div = comp->div;
+	if (!div->model) return;
+	extDiv r;
+	ext_div_get(&r, div);
+	ext_div_times(&r, -comp_ns(comp));	// what a field the file lacks reads as
+	fld_get(&r, fld_div, p, n);
+	ext_div_times(&r, comp_ns(comp));
+	div->conmem = r.conmem;
+	div->mapram = r.mapram;
+	div->bank = r.bank;
+	div->mapcond = r.mapcond;
+	div->automap = r.automap;
+	div->cs = r.cs;
+	div->card[0]->cs = div->cs & 1;
+	div->card[1]->cs = (div->cs >> 1) & 1;
+	div->spiEnd = r.spiEnd;
+	div->spiRes = r.spiRes;
+	div->spiLat = r.spiLat;
+	div->nmiLine = r.nmiLine;
+	div->eeWrite = r.eeWrite;
+	div->ee = r.ee;
+	div_map(div);
+}
 static void ext_gs_ram(GSound*, const unsigned char*, size_t);
 
 static int ext_chip_index(TSound* ts, aymChip* chip) {
@@ -527,6 +614,14 @@ void szx_ext_save(szxBuf* b, Computer* comp) {
 	}
 	if (comp->sdc)
 		rec_fields(b, XR_SDC, comp->sdc, fld_sdc);
+	if (comp->div->model) {
+		extDiv r;
+		ext_div_get(&r, comp->div);
+		ext_div_times(&r, -comp_ns(comp));
+		rec_fields(b, XR_DIV, &r, fld_div);
+		for (i = 0; i < 2; i++)
+			rec_fields(b, XR_DCD + ((unsigned)i << 24), comp->div->card[i], fld_sdc);
+	}
 	if (comp->gs && comp->gs->enable)
 		ext_gs_save(b, comp);
 	if (comp->tape && comp->tape->blkCount) {
@@ -938,6 +1033,7 @@ int szx_ext_load(Computer* comp, const unsigned char* ext, size_t len) {
 			case XR_SDC:
 				if (comp->sdc) fld_get(comp->sdc, fld_sdc, p, n);
 				break;
+			case XR_DIV: ext_div(comp, p, n); break;
 			case XR_GS:
 				if (comp->gs && comp->gs->enable) ext_gs(comp->gs, p, n);
 				break;
@@ -956,6 +1052,20 @@ int szx_ext_load(Computer* comp, const unsigned char* ext, size_t len) {
 					ext_chip_load(comp, idx, p, n);
 				} else if ((idx = xr_slot(id, XR_FM, 4)) >= 0) {
 					ext_fm_load(comp, idx, p, n);
+				} else if ((idx = xr_slot(id, XR_DCD, 2)) >= 0) {
+					if (comp->div->model) {
+						SDCard* card = comp->div->card[idx];
+						SDCard keep = *card;	// what names its medium is not the file's
+						fld_get(card, fld_sdc, p, n);
+						card->image = keep.image;
+						card->file = keep.file;
+						card->vfat = keep.vfat;
+						card->capacity = keep.capacity;
+						card->maxlba = keep.maxlba;
+						card->lock = keep.lock;
+						card->sdhc = keep.sdhc;
+						card->spec = 1;
+					}
 				} else if ((idx = xr_slot(id, XR_ATA, 2)) >= 0) {
 					if (comp->ide && (comp->ide->type != IDE_NONE))
 						ext_ata(idx ? comp->ide->slave : comp->ide->master, p, n);

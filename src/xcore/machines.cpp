@@ -97,6 +97,10 @@ static xMacWord diskTab[] = {
 	{"none", DIF_NONE}, {"trdos", DIF_BDI}, {"plus3", DIF_P3DOS}, {NULL, 0}
 };
 
+static xMacWord divTab[] = {
+	{"none", DIV_NONE}, {"divmmc", DIV_MMC}, {NULL, 0}
+};
+
 static xMacWord ideTab[] = {
 	{"none", IDE_NONE}, {"nemo", IDE_NEMO}, {"nemo-a8", IDE_NEMOA8},
 	{"nemo-evo", IDE_NEMO_EVO}, {"smuc", IDE_SMUC}, {"atm", IDE_ATM},
@@ -216,6 +220,7 @@ static const struct {
 	{"psg.stereo", "sound"}, {"gs", "sound"},
 	{"saa", "sound"}, {"soundrive", "sound"}, {"beeper.mic", "sound"},
 	{"disk", "storage"}, {"ide", "storage"}, {"drives", "storage"},
+	{"divmmc", "storage"}, {"divmmc.ram", "storage"}, {"divmmc.eeprom", "storage"},
 	{"mouse", "input"}, {"mouse.wheel", "input"}, {"joy", "input"}, {"joy.buttons", "input"},
 	{"kbd.scantab", "input"},
 	{NULL, NULL}
@@ -346,6 +351,9 @@ static void mac_defaults(xMachine& mac) {
 	mac.disk = DIF_NONE;
 	mac.ide = IDE_NONE;
 	mac.drives = 2;		// more is rare enough to be asked for
+	mac.divmmc = DIV_NONE;
+	mac.divmmcRam = 128;
+	mac.divmmcWr = 0;
 	mac.mouse = 0;
 	mac.mouseWheel = 0;
 	mac.joy = MAC_JOY_KEMPSTON;
@@ -419,6 +427,9 @@ static void mac_apply(xMachine& mac, const QList<xMacLine>& lines) {
 			if (nam == "disk") mac.disk = mac_word(diskTab, val, DIF_NONE, id);
 			else if (nam == "ide") mac.ide = mac_word(ideTab, val, IDE_NONE, id);
 			else if (nam == "drives") mac.drives = toLimits(arg.i, 1, 4);
+			else if (nam == "divmmc") mac.divmmc = mac_word(divTab, val, DIV_NONE, id);
+			else if (nam == "divmmc.ram") mac.divmmcRam = (arg.i > 128) ? 512 : 128;
+			else if (nam == "divmmc.eeprom") mac.divmmcWr = (val == "writable") ? 1 : 0;
 		} else if (ln.sect == "input") {
 			if (nam == "mouse") mac.mouse = arg.b;
 			else if (nam == "mouse.wheel") mac.mouseWheel = arg.b;
@@ -622,6 +633,10 @@ static std::string mac_nv_path(const char* ext) {
 	return conf.path.nvDir + SLASH + conf.macId + ext;
 }
 
+static std::string div_nv_path() {
+	return conf.path.nvDir + SLASH + "divmmc.eeprom";
+}
+
 static void mac_nv_read(const std::string& path, unsigned char* dst, int size, const char* seed) {
 	FILE* file = fopen(path.c_str(), "rb");
 	if (!file && seed) {			// first run of this machine: give it its own
@@ -655,6 +670,12 @@ static void xm_load_nvram() {
 		if (i == 0x100) memcpy(nv + 0x80, nv, 0x80);
 	}
 	mac_nv_read(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE, NULL);
+	// a divMMC's EEPROM keeps what was written to it: erased until something was.
+	// One board goes from machine to machine, so its file is not any one machine's.
+	memset(conf.zx->div->data, 0xff, DIV_EE_SIZE);
+	mac_nv_read(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE, NULL);
+	conf.zx->div->eeDirty = 0;
+	div_map(conf.zx->div);
 }
 
 void xm_save_nvram() {
@@ -662,6 +683,10 @@ void xm_save_nvram() {
 	mac_nv_write(mac_nv_path(".cmos"), conf.zx->cmos.data, 256);
 	if (conf.zx->ide->type == IDE_SMUC)
 		mac_nv_write(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE);
+	if (conf.zx->div->eeDirty) {		// loaded in Options with the board off, too
+		mac_nv_write(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE);
+		conf.zx->div->eeDirty = 0;
+	}
 }
 
 // romset
@@ -982,6 +1007,19 @@ static void mac_cold_ram(Computer* comp, const std::string& pat, int noise) {
 	mem_cold_fill(comp->mem, (const unsigned char*)bytes.constData(), bytes.size(), noise);
 }
 
+// Off and on again. What a reset leaves, this clears: the RAM comes up as the
+// machine's does, a divMMC's register, automapper and cards as theirs do. What
+// keeps without power - the CMOS, an EEPROM, the media - keeps.
+void xm_power_cycle() {
+	const xMachine* mac = xm_find(conf.macId);
+	Computer* comp = conf.zx;
+	if (!mac || !comp) return;
+	mac_cold_ram(comp, mac->ramCold, mac->ramNoise);
+	div_power_on(comp->div);
+	x_user_reset(comp, RES_DEFAULT);
+	comp_power_phase(comp);
+}
+
 static void mac_from_def(const xMachine* mac) {
 	Computer* comp = conf.zx;
 	xm_set_hardware(mac->hw);
@@ -1017,6 +1055,8 @@ static void mac_from_def(const xMachine* mac) {
 	difSetHW(comp->dif, mac->disk);
 	difSetDrives(comp->dif, mac->drives);
 	ide_set_type(comp->ide, mac->ide);
+	div_set_model(comp->div, hw_takes_divmmc(comp->hw) ? mac->divmmc : DIV_NONE, mac->divmmcRam >> 3);
+	comp->div->eeWrite = mac->divmmcWr;
 	comp->mouse->enable = mac->mouse;
 	comp->mouse->hasWheel = mac->mouseWheel;
 	comp->joy->type = (mac->joy == MAC_JOY_NONE) ? XJ_NONE : XJ_KEMPSTON;
@@ -1060,9 +1100,12 @@ bool xm_set(std::string id) {
 		xm_save_nvram();
 		ideCloseFiles(conf.zx->ide);
 		sdcCloseFile(conf.zx->sdc);
+		sdcCloseFile(conf.zx->div->card[0]);
+		sdcCloseFile(conf.zx->div->card[1]);
 	}
 	conf.macId = id;
 	mac_from_def(mac);
+	div_power_on(conf.zx->div);
 	xm_set_roms(mac->roms, true);
 	if (!xm_set_layout(conf.layName)) xm_set_layout(LAY_DEFAULT);
 	loadPalette();
@@ -1080,6 +1123,8 @@ bool xm_set(std::string id) {
 	// folder served as a disk is re-read here, which is the other half of it.
 	ide_remount(conf.zx->ide);
 	sdc_remount(conf.zx->sdc);
+	sdc_remount(conf.zx->div->card[0]);
+	sdc_remount(conf.zx->div->card[1]);
 	if (another) {		// says so in the window, whoever asked for it
 		static std::string msg;
 		msg = " " + mac->name + " ";
@@ -1168,6 +1213,12 @@ static void mac_put_all(QList<xMacLine>& out, const xMachine* mac) {
 	while ((drives < 4) && comp->dif->flp[drives]->fitted) drives++;
 	mac_put(out, "drives", drives, mac->drives);
 	mac_put(out, "ide", mac_word_name(ideTab, comp->ide->type), mac_word_name(ideTab, mac->ide));
+	if (hw_takes_divmmc(comp->hw)) {	// elsewhere the board is off whatever the file says
+		mac_put(out, "divmmc", mac_word_name(divTab, comp->div->model), mac_word_name(divTab, mac->divmmc));
+		mac_put(out, "divmmc.ram", comp->div->pages << 3, mac->divmmcRam);
+		mac_put(out, "divmmc.eeprom", std::string(comp->div->eeWrite ? "writable" : "protected"),
+			std::string(mac->divmmcWr ? "writable" : "protected"));
+	}
 	mac_put_yn(out, "mouse", comp->mouse->enable, mac->mouse);
 	mac_put_yn(out, "mouse.wheel", comp->mouse->hasWheel, mac->mouseWheel);
 	int joy = (comp->joy->type != XJ_KEMPSTON) ? MAC_JOY_NONE : comp->joy->extbuttons ? MAC_JOY_KEMPSTON8 : MAC_JOY_KEMPSTON;
@@ -1389,6 +1440,10 @@ static void mac_set_defer_key(const std::string& nam, const std::string& val) {
 	else if (nam == "hdd.slave") ide_mount(comp->ide, IDE_SLAVE, QString::fromLocal8Bit(arg.s));
 	else if (nam == "sdcard") sdc_mount(comp->sdc, QString::fromLocal8Bit(arg.s));
 	else if (nam == "sdcard.lock") sdcSetLock(comp->sdc, arg.b);
+	else if (nam == "divmmc.card1") sdc_mount(comp->div->card[0], QString::fromLocal8Bit(arg.s));
+	else if (nam == "divmmc.card1.lock") sdcSetLock(comp->div->card[0], arg.b);
+	else if (nam == "divmmc.card2") sdc_mount(comp->div->card[1], QString::fromLocal8Bit(arg.s));
+	else if (nam == "divmmc.card2.lock") sdcSetLock(comp->div->card[1], arg.b);
 	else if (nam == "cartrige") {
 		if (conf.storePaths) sltSetPath(comp->slot, arg.s);
 	}
@@ -1452,6 +1507,11 @@ void xm_save_media(FILE* file) {
 	fprintf(file, "hdd.slave = %s\n", comp->ide->slave->image ? comp->ide->slave->image : "");
 	fprintf(file, "sdcard = %s\n", comp->sdc->image ? comp->sdc->image : "");
 	fprintf(file, "sdcard.lock = %s\n", YESNO(comp->sdc->lock));
+	for (int i = 0; i < 2; i++) {
+		SDCard* card = comp->div->card[i];
+		fprintf(file, "divmmc.card%d = %s\n", i + 1, card->image ? card->image : "");
+		fprintf(file, "divmmc.card%d.lock = %s\n", i + 1, YESNO(card->lock));
+	}
 	fprintf(file, "cartrige = %s\n", comp->slot->path ? comp->slot->path : "");
 }
 

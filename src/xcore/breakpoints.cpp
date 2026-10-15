@@ -451,6 +451,7 @@ static QString brk_log_cell(Computer* comp, int cadr) {
 		case MEM_RAM: nm = "RAM"; break;
 		case MEM_ROM: nm = "ROM"; break;
 		case MEM_SLOT: nm = "SLT"; break;
+		case MEM_DIV: nm = "DIV"; break;
 		default: nm = "EXT"; break;
 	}
 	return brk_log_page(nm, xa.abs);

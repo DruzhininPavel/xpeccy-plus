@@ -119,6 +119,7 @@ QVariant xRDumpModel::data(const QModelIndex& idx, int role) const {
 					case MEM_ROM: res = gethexbyte(mem->romData[fadr & mem->romMask]); break;
 					case MEM_RAM: res = gethexbyte(mem->ramData[fadr & mem->ramMask]); break;
 					case MEM_SLOT: res = gethexbyte(memRd(mem, adr)); break;
+					case MEM_DIV: res = gethexbyte(conf.zx->div->data[fadr % (DIV_EE_SIZE + DIV_RAM_MAX)]); break;
 					default: res = "--";
 						break;
 				}

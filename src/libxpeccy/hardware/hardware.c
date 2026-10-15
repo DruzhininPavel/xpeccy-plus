@@ -175,3 +175,16 @@ void hwOut(xPort* ptab, Computer* comp, int port, int val, int mult) {
 	}
 }
 
+// The machines a divMMC is made for: /ROMCS on the edge connector, and the
+// +2A/+3's second ROM enable through the board's jumper. The Pentagons take it
+// on ZX-BUS, esxDOS names them. Their own Beta Disk traps #3Dxx too; the board's
+// /ROMCS wins there, as it does over a Beta 128 on a 128K (seen by the user).
+int hw_takes_divmmc(const HardWare* hw) {
+	if (!hw) return 0;
+	switch (hw->id) {
+		case HW_ZX48: case HW_ZX128: case HW_PLUS2A: case HW_PLUS3:
+		case HW_PENT: case HW_P1024:
+			return 1;
+	}
+	return 0;
+}

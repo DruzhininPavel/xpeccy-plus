@@ -71,9 +71,29 @@ int vid_mrd_cb(int adr, void* ptr) {
 
 __attribute__((noinline)) static int memrd_watched(Computer*, int, int);
 
+// A divMMC's automapper sees the fetch before its byte is read (div_m1). A
+// delayed switch it arms acts on the next fetch, wherever that is: no fetch
+// table until then (comp_m1_tab).
+static void comp_div_fetch(Computer* comp, int adr) {
+	div_m1(comp->div, adr);
+	if (div_pending(comp->div)) comp->cpu->m1p = NULL;
+}
+
+static void comp_m1x(void* ptr, int adr) {
+	Computer* comp = (Computer*)ptr;
+	if (comp->div->model) comp_div_fetch(comp, adr);
+}
+
+// the board's time: its oscillators run whatever the CPU does
+static long long comp_div_ns(void* ptr) {
+	return comp_ns((Computer*)ptr);
+}
+
 int memrd(int adr, int m1, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	adr &= comp->cpu->busmask;
+	if (m1 && comp->div->model)
+		comp_div_fetch(comp, adr);
 	// nothing watches the read and nothing spoils it: stdMRd() without the
 	// calls, unless the fetch pages TR-DOS
 	if (!comp_mem_watched(comp) && !comp->snowBad
@@ -593,6 +613,8 @@ Computer* compCreate() {
 	comp->ide->smuc.cmos = &comp->cmos;
 	comp->sdc = sdcCreate();
 	comp->slot = sltCreate();
+	comp->div = div_create(comp->mem, comp, comp_div_ns);
+	comp->cpu->xm1x = comp_m1x;
 // sound
 	comp->ts = tsCreate(TS_NONE,SND_AY,SND_NONE);
 	comp->gs = gsCreate();
@@ -631,6 +653,7 @@ void compDestroy(Computer* comp) {
 	difDestroy(comp->dif);
 	ideDestroy(comp->ide);
 	sdcDestroy(comp->sdc);
+	div_destroy(comp->div);
 	tsDestroy(comp->ts);
 	gsDestroy(comp->gs);
 	sdrvDestroy(comp->sdrv);
@@ -681,6 +704,7 @@ void compReset(Computer* comp,int res) {
 	ideReset(comp->ide);
 	saaReset(comp->saa);
 	sdcReset(comp->sdc);
+	div_reset(comp->div);		// what it holds and shows stays: /RESET reaches only its SPI side
 	comp->hwMul = comp->turboStep;		// a port turbo sets its own again, a switch does not
 	comp_update_timings(comp);
 	if (comp->hw->reset)
@@ -805,6 +829,7 @@ void comp_snap_reset(Computer* comp, int res) {
 	int play = comp->rzx.play;
 	comp->rzx.play = 0;
 	compReset(comp, res);
+	div_snap_clear(comp->div);
 	comp->rzx.play = play;
 	comp_snap_map(comp);
 	comp_heat_reset(comp);
@@ -812,7 +837,18 @@ void comp_snap_reset(Computer* comp, int res) {
 
 // cpu freq
 
+// ns since the machine was made, each stretch at the clock it ran at
+long long comp_ns(Computer* comp) {
+	long long d = comp->tickTotal + (comp->cpu ? comp->cpu->t : 0) - comp->nsBaseTick;
+	// no clock set yet (cpuFrq 0 makes nsPerTick infinite): no time has passed
+	if (!d || !isfinite(comp->nsPerTick)) return comp->nsBase;
+	return comp->nsBase + (long long)((double)d * comp->nsPerTick);
+}
+
 void comp_update_timings(Computer* comp) {
+	// the time so far at the old rate, before the new one is set
+	comp->nsBase = comp_ns(comp);
+	comp->nsBaseTick = comp->tickTotal + (comp->cpu ? comp->cpu->t : 0);
 	comp->nsPerTick = 1e3 / comp->cpuFrq;
 	if (comp->hw->init)
 		comp->hw->init(comp);
@@ -1069,6 +1105,7 @@ static const hwQuiet* comp_quiet_ok(Computer* comp) {
 // An M1 at adr does nothing but fetch, on a machine reading through stdMRd/asicMRd
 // (hwq_zx's fetch): it pages no TR-DOS and the ULA does not contend it
 int zx_fetch_quiet(Computer* comp, int adr) {
+	if (div_m1_acts(comp->div, adr)) return 0;
 	MemPage* pg = mem_get_page(comp->mem, adr);
 	if ((comp->dif->type == DIF_BDI) && bdi_fetch_pages(comp, pg, adr)) return 0;
 	if (!comp->cpu->flgCONT) return 1;
@@ -1121,8 +1158,9 @@ int comp_halt_skip(Computer* comp, int* ns) {
 static inline unsigned char* const* comp_m1_tab(Computer* comp) {
 	Memory* mem = comp->mem;
 	int bdi = (comp->dif->type == DIF_BDI);
+	if (div_pending(comp->div)) return NULL;
 	if (comp->hw->mrd == asicMRd)
-		return bdi ? NULL : mem->rdpa;
+		return bdi ? NULL : mem->m1pa;
 	return (comp->flgDOS && bdi) ? mem->m1dos : mem->m1p;
 }
 

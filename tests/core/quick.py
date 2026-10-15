@@ -6,6 +6,7 @@ text cut into `== <case>` sections, and a case passes when its section is the sa
   z80       tools/z80test: Fuse's per-instruction tests, verdict by its compare.py
   tsconf    tsconf-bench over the Z80 programs in core/tsconf/bin (cases.txt)
   baseconf  baseconf-bench over core/baseconf/bin (cases.txt)
+  divmmc    divmmc-bench over core/divmmc/bin (cases.txt): a 48K with a divMMC
   tape      tape-bench over the images core/tape/mktape.py writes
 
 The programs are committed assembled; core/mkbins.py rebuilds them with sjasmplus.
@@ -25,7 +26,7 @@ from pathlib import Path
 CORE = Path(__file__).resolve().parent
 ROOT = CORE.parent.parent
 BUILD = ROOT / "build" / "out" / "tests"
-BENCHES = ("z80", "tsconf", "baseconf", "tape")
+BENCHES = ("z80", "tsconf", "baseconf", "divmmc", "tape")
 EXE = ".exe" if os.name == "nt" else ""
 # the qt6-x64 toolchain of packaging/make-dist.ps1, used when nothing else is given
 WIN_MINGW = Path(r"C:\Qt\Tools\mingw1120_64")

@@ -93,8 +93,11 @@ static inline void alf_devs_sync_in(Computer* comp, int ns) {
 
 static inline void zx_sync_in(Computer* comp, int ns) {
 	zx_devs_sync_in(comp, ns);
-	// nmi
-	if ((comp->cpu->regPC > 0x3fff) && comp->flgNMIRQ) {
+	// nmi: a divMMC's button, or the Beta disk's "magic" one
+	if (comp->div->model) {
+		if (div_nmi(comp->div, comp->flgNMIRQ))
+			comp->cpu->intrq |= Z80_NMI;
+	} else if ((comp->cpu->regPC > 0x3fff) && comp->flgNMIRQ) {
 		comp->cpu->intrq |= Z80_NMI;	// request nmi
 		comp->flgDOS = 1;			// set dos page
 		comp->flgROM = 1;

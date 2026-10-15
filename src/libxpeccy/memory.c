@@ -167,11 +167,12 @@ static void mem_derive_page(Memory* mem, int i) {
 	mem->bank[i] = (short)bank;
 	mem->rdp[i] = p;
 	mem->wrp[i] = (pg->wr == memStdWr) ? (unsigned char*)pg->data : NULL;
-	mem->m1p[i] = mem_m1_dos_in(pg, i) ? NULL : p;
+	mem->m1p[i] = (mem_m1_dos_in(pg, i) || mem->m1trap[i]) ? NULL : p;
 	mem->m1dos[i] = mem_m1_dos_out(pg) ? NULL : mem->m1p[i];
 	int asic = ram && mem_bank_asic(bank);
 	mem->rdpa[i] = asic ? NULL : p;
 	mem->wrpa[i] = asic ? NULL : mem->wrp[i];
+	mem->m1pa[i] = mem->m1trap[i] ? NULL : mem->rdpa[i];
 	mem->cont[i] = ram && ((pg->num << mem->pgshift) & mem->contBit);
 	mem->slow[i] = ram && mem_bank_slow(bank);
 }
@@ -216,15 +217,52 @@ void memSetBank(Memory* mem, int page, int type, int bank, int siz, extmrd rd, e
 		}
 		// a machine pages all of its map in from every port write: what
 		// stays where it was keeps what was worked out of it
-		MemPage* cur = &mem->map[page];
-		if ((cur->type != pg.type) || (cur->num != pg.num) || (cur->data != pg.data) || (cur->rd != pg.rd) || (cur->wr != pg.wr)) {
-			*cur = pg;
-			mem_derive_page(mem, page);
+		if (mem->ovl[page]) {
+			mem->under[page] = pg;		// the cpu still sees the overlay
+		} else {
+			MemPage* cur = &mem->map[page];
+			if ((cur->type != pg.type) || (cur->num != pg.num) || (cur->data != pg.data) || (cur->rd != pg.rd) || (cur->wr != pg.wr)) {
+				*cur = pg;
+				mem_derive_page(mem, page);
+			}
 		}
 		page++;
 		pg.num++;
 		cnt--;
 	}
+}
+
+void mem_ovl_set(Memory* mem, int page, int type, int num, unsigned char* data, extmrd rd, extmwr wr) {
+	page &= 0xff;
+	MemPage pg;
+	pg.type = type;
+	pg.num = num;
+	pg.data = data;
+	pg.rd = rd ? rd : memStdRd;
+	pg.wr = wr;
+	if (!mem->ovl[page]) {
+		mem->under[page] = mem->map[page];
+		mem->ovl[page] = 1;
+	}
+	MemPage* cur = &mem->map[page];
+	if ((cur->type != pg.type) || (cur->num != pg.num) || (cur->data != pg.data) || (cur->rd != pg.rd) || (cur->wr != pg.wr)) {
+		*cur = pg;
+		mem_derive_page(mem, page);
+	}
+}
+
+void mem_ovl_clear(Memory* mem, int page) {
+	page &= 0xff;
+	if (!mem->ovl[page]) return;
+	mem->ovl[page] = 0;
+	mem->map[page] = mem->under[page];
+	mem_derive_page(mem, page);
+}
+
+void mem_set_m1trap(Memory* mem, int page, int on) {
+	page &= 0xff;
+	mem->m1trap[page] = on ? 1 : 0;
+	mem_derive_page(mem, page);
 }
 
 void mem_set_cont(Memory* mem, int bit) {

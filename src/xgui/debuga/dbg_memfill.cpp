@@ -41,6 +41,11 @@ void xMemFiller::mwr(int adr, int val) {
 			break;
 		case MEM_SLOT:
 			break;
+		case MEM_DIV:
+			fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
+			if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr)
+				conf.zx->div->data[fadr] = val & 0xff;
+			break;
 	}
 }
 

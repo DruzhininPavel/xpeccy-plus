@@ -26,6 +26,9 @@
 #include "xgui/inputosd.h"
 #include "ethread.h"
 
+// the Reset menu's power cycle, beside the RES_* starts
+#define RES_POWER	-1
+
 // The two keys that let the mouse and the keyboard go, pressed together and let
 // go with nothing between them: Ctrl and the second one. On a Mac Qt names Cmd
 // Control and Ctrl Meta.
@@ -132,6 +135,7 @@ typedef struct {
 		void askStartMachine();
 		void resetMachine(int);
 		void resetTo(int);
+		void hardReset();
 		void fillDrivesMenu();
 		void driveOp(std::function<void()>);
 		void diskOp(int, int);
@@ -141,7 +145,8 @@ typedef struct {
 		void tapeEject();
 		void hddOpen(int, bool);
 		void hddProps(int);
-		void sdcOpen(bool);
+		void sdcOpen(int, bool);
+		void fillCardMenu(QMenu*, int);
 		void setTurbo(int);
 		void addFavorite(const QString& path);
 		bool recStart(const QString& file = QString());

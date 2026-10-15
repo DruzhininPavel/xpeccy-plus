@@ -355,6 +355,7 @@ bool xm_migrate(const std::string&, const std::string&);
 std::string xm_id_for_name(const std::string&);
 void xm_finish_load();
 void xm_save_nvram();
+void xm_power_cycle();		// off and on again: the caller holds emu_lock
 void xm_save_media(FILE*);
 std::string getDiskString(Floppy*);
 
@@ -425,6 +426,7 @@ enum {
 	XCUT_RES_48,
 	XCUT_RES_128,
 	XCUT_RES_SERVICE,
+	XCUT_RES_HARD,
 	XCUT_KEYBOARD,
 	XCUT_FAST,
 	XCUT_NOFLICK,
@@ -670,6 +672,9 @@ typedef struct {
 	int disk;			// DIF_*
 	int ide;			// IDE_*
 	int drives;			// floppy drives on the cable, 1..4 from A
+	int divmmc;			// DIV_*: a divMMC on the edge connector
+	int divmmcRam;			// its SRAM, KB: 128 or 512
+	unsigned divmmcWr:1;		// its EEPROM jumper open: the EEPROM takes writes
 	unsigned mouse:1;
 	unsigned mouseWheel:1;
 	int joy;			// JOY_*

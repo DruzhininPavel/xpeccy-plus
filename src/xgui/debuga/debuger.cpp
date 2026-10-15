@@ -818,6 +818,7 @@ DebugWin::DebugWin(QWidget* par):QMainWindow(par) {
 		mmapForced[i] = -1;
 		mmapType[i]->addItem("ROM", MEM_ROM);
 		mmapType[i]->addItem("RAM", MEM_RAM);
+		if (i == 0) mmapType[i]->addItem("DIV", MEM_DIV);	// a divMMC's, shown, not forced
 		// this column is narrow and the stack panel under it lives with whatever
 		// width is set here - fitMMapBoxes() pins it to the text and the arrow
 		// no XHS_BGR: this field is lit by the forced mark, not by the value moving
@@ -2100,6 +2101,9 @@ void DebugWin::fillMem() {
 	for (int i = 0; i < 4; i++) {
 		pg = comp->mem->map[i << 6];
 		page = pg.num >> 6;
+		// a divMMC's window: the 8K bank of its SRAM at #2000
+		if (pg.type == MEM_DIV)
+			page = (((comp->mem->map[0x20].num << 8) - DIV_EE_SIZE) >> 13) & 0xff;
 		// the machine pages whenever it likes and says nothing: a bank stays
 		// marked as forced only while the value put there is still in the map
 		if (mmapForced[i] != ((pg.type << 16) | page)) mmapForced[i] = -1;
@@ -2134,6 +2138,10 @@ void DebugWin::mmapEdit(int bank) {
 	Computer* comp = conf.zx;
 	int type = getRFIData(mmapType[bank]);
 	int page = mmapPage[bank]->getValue();
+	if ((type == MEM_DIV) || (comp->mem->map[bank << 6].type == MEM_DIV)) {
+		fillMem();		// the board's own paging: not something to force
+		return;
+	}
 	memSetBank(comp->mem, bank << 6, type, page, MEM_16K, NULL, NULL, NULL);
 	rzx_rec_touch();
 	mmapForced[bank] = (type << 16) | page;
@@ -2193,6 +2201,7 @@ int rdbyte(int adr, void* ptr) {
 		// through the map: the page the machine has in the window is
 		// the one the bank's own reader knows how to find
 		case MEM_SLOT: res = memRd(comp->mem, adr & 0xffff); break;
+		case MEM_DIV: res = comp->div->data[fadr % (DIV_EE_SIZE + DIV_RAM_MAX)]; break;
 	}
 	return res;
 }
