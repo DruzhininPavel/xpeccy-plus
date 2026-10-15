@@ -11,12 +11,12 @@ long long xhost_time_fixed = 0;
 Memory* memCreate() {
 	Memory* mem = (Memory*)malloc(sizeof(Memory));
 	memset(mem, 0x00, sizeof(Memory));
+	mem_set_bus(mem, 16);		// first: memSetBank works out the pages by pgshift
 	memSetSize(mem, MEM_128K, MEM_16K);
 	memSetBank(mem, 0x00, MEM_ROM, 0, MEM_16K, NULL, NULL, NULL);
 	memSetBank(mem, 0x40, MEM_RAM, 5, MEM_16K, NULL, NULL, NULL);
 	memSetBank(mem, 0x80, MEM_RAM, 2, MEM_16K, NULL, NULL, NULL);
 	memSetBank(mem, 0xc0, MEM_RAM, 0, MEM_16K, NULL, NULL, NULL);
-	mem_set_bus(mem, 16);
 	return mem;
 }
 

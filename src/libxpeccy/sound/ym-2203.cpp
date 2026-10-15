@@ -74,6 +74,7 @@ public:
 		m_fmcnt = 0;
 		m_busy_end = 0;
 		m_timer_on[0] = m_timer_on[1] = 0;
+		m_timer_at[0] = m_timer_at[1] = 0;	// saved with the state even while off
 		m_recheck = 0;
 		m_adr = 0;
 		m_key[0] = m_key[1] = m_key[2] = 0;

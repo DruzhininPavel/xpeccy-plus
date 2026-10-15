@@ -124,8 +124,10 @@ void ataReadSector(ATADev* dev) {
 			vfat_read(dev->vfat, dev->lba, dev->buf.data);
 		} else if (dev->file) {
 			nps = (long long)dev->lba * dev->pass.bps + dev->offset;
-			x_fseek(dev->file, nps, SEEK_SET);			// if filesize < nps, there will be 0xFF in buf
-			fread((char*)dev->buf.data,dev->pass.bps,1,dev->file);
+			x_fseek(dev->file, nps, SEEK_SET);
+			// past the end of the image the sector reads as 0xFF
+			size_t got = fread((char*)dev->buf.data, 1, dev->pass.bps, dev->file);
+			if (got < (size_t)dev->pass.bps) memset((char*)dev->buf.data + got, 0xff, dev->pass.bps - got);
 		} else {
 			ataClearBuf(dev);
 		}

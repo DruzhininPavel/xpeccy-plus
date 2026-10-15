@@ -626,14 +626,16 @@ Computer* compCreate() {
 	comp->tsconf.pwr_up = 1;
 // rzx
 	comp->rzx.file = NULL;
-	compSetHardware(comp, "Dummy");
-	gsReset(comp->gs);
-	comp->cmos.data[17] = 0xaa;	// 0a?
+	// a clock before the first hardware: setting it works the timings out
+	comp->cpuFrq = 3.5;
 	comp->frqMul = 1;
 	comp->hwMul = 1;
 	comp->turboStep = 1;
 	comp->turboTab[0] = 1;
 	comp->turboCount = 1;
+	compSetHardware(comp, "Dummy");
+	gsReset(comp->gs);
+	comp->cmos.data[17] = 0xaa;	// 0a?
 	compSetBaseFrq(comp, 3.5);
 //	compReset(comp, RES_DEFAULT);		// Can't reset here, cuz comp->resbank not defined yet
 	return comp;

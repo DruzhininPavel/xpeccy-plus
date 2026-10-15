@@ -371,7 +371,7 @@ void vid_fnt_load(Video* vid, const char* path) {
 		vid->font.size = ftell(file);
 		fseek(file, 0, SEEK_SET);
 		vid->font.data = realloc(vid->font.data, vid->font.size);
-		fread(vid->font.data, vid->font.size, 1, file);
+		vid->font.size = (int)fread(vid->font.data, 1, vid->font.size, file);
 		fclose(file);
 	}
 }
@@ -1023,7 +1023,7 @@ xColor vid_get_col(Video* vid, int i) {
 }
 
 void vid_set_col(Video* vid, int i, xColor xcol) {
-	vid->pal[i & 0xff] = xcol.r | (xcol.g << 8) | (xcol.b << 16) | (0xff << 24);
+	vid->pal[i & 0xff] = xcol.r | (xcol.g << 8) | (xcol.b << 16) | (0xffu << 24);
 	vid->gpal[i & 0xff] = uint_to_grey(vid->pal[i & 0xff]);
 }
 
