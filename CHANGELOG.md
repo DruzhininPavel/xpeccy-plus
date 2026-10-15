@@ -67,7 +67,14 @@ before that point is upstream's history and is not repeated here.
   card's menu makes a card ready to fill with programs. *(thanks to Miguel Guerreiro / Papaya
   Dezign for the permission to bundle esxDOS)*
 
+- **View > Border** sets the border size at once, with the machine running or paused.
+  *(thanks to Volutar)*
+
 ### Changed
+
+- **The tape and drive lights** in the status bar are one set: dim with nothing in, gray
+  loaded, green reading, red writing, and they blink while working. The tape's light stays
+  with no tape in, and beside it are the block's progress and its name. *(thanks to Volutar)*
 
 - **OK and Cancel in the windows Options opens**: Cancel puts back what a window showed when
   it opened.
@@ -86,9 +93,13 @@ before that point is upstream's history and is not repeated here.
 
 - **Clearer icons**: a rubber 48K for Model, rubber keys for Virtual Keyboard and Keymap, a
   CRT for Shaders and a new one for Size. The machine list is Machine > Model on the menu
-  bar. *(thanks to Volutar)*
+  bar. An icon drawn for 16 px is the one shown at that size everywhere, not the big one
+  scaled down. *(thanks to Volutar)*
 
 ### Fixed
+
+- **FLASH no longer strobes under fast loading** and in Fast mode: the picture blinks at its
+  usual rate. *(reported by Volutar)*
 
 - **Fast loading** no longer gives "R Tape loading error" on tapes whose headers are a byte
   longer than usual (The Eye of Vartan), and no longer starts the tape by itself while a game
