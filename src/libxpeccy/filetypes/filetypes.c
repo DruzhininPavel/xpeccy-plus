@@ -124,9 +124,9 @@ int fgett(FILE* file) {
 }
 
 int fgeti(FILE* file) {
-	int res = fgetw(file);
-	res |= (fgetw(file) << 16);
-	return res;
+	unsigned int res = fgetw(file);
+	res |= ((unsigned int)fgetw(file) << 16);	// unsigned: a top bit set is no overflow
+	return (int)res;
 }
 
 void fputw(unsigned short val, FILE* file) {
@@ -203,16 +203,24 @@ void diskFormTRDTrack(Floppy* flp, int tr, unsigned char* bpos) {
 // <sdata> is list of <scount> sectors
 // TODO: calculate GAP3 len !!!
 void diskFormTrack(Floppy* flp, int tr, Sector* sdata, int scount) {
-	unsigned char *ppos = flp->data[tr].byte;
 	int i,ln;
 	int sc;
-	if (tr > 255) return;
-	int dsz = 0;
+	// a track with no sectors (images keep unformatted ones so) is left as the
+	// loader cleared it
+	if ((tr < 0) || (tr > 255) || (scount <= 0)) return;
+	unsigned char *ppos = flp->data[tr].byte;
+	long long sum = 0;		// up to a gigabyte a sector by the size code: no int
 	for (i = 0; i < scount; i++) {
-		dsz += (128 << sdata[i].sz);
+		// A size code past 23 overflowed the shift, which on x86 came out as 0
+		// (221 -> 128 << 29 -> 0). Protected disks carry such codes in an id
+		// field, and Kobrahsoft's SP4/SP5/DB1 boot only with the layout that
+		// gave: so they count as nothing here, on purpose, not 128 << (sz & 3).
+		// Not checked against a real drive.
+		sum += (sdata[i].sz < 24) ? (128LL << sdata[i].sz) : 0;
 	}
-	dsz = (flp->trklen - dsz) / scount - 72;
-	if (dsz < 10) return;
+	long long gap = (flp->trklen - sum) / scount - 72;
+	if (gap < 10) return;
+	int dsz = (int)gap;
 	memset(ppos, 0x4e, flp->trklen);
 	memset(ppos, 0x00, 12); ppos += 12;		// 12	space
 	*(ppos++) = 0xc2;				// 	track mark

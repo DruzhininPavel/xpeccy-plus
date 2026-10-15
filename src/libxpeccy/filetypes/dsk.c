@@ -54,8 +54,9 @@ int loadDSK(Computer* comp, const char *name, int drv) {
 	SectorInfBlock* sib;
 	Sector secs[256];
 	char sigBuf[256];
-	fread(sigBuf, 256, 1, file);					// disk info block
-	if (!strncmp(sigBuf, edsksgn, strlen(edsksgn))) {		// extend dsk format
+	if (fread(sigBuf, 256, 1, file) != 1) {				// disk info block
+		ext = -1;
+	} else if (!strncmp(sigBuf, edsksgn, strlen(edsksgn))) {		// extend dsk format
 		ext = 1;
 	} else if (!strncmp(sigBuf, dsksgn, strlen(dsksgn))) {		// common dsk format
 		ext = 0;
@@ -69,15 +70,23 @@ int loadDSK(Computer* comp, const char *name, int drv) {
 		tlen = (sigBuf[0x32] & 0xff) | ((sigBuf[0x33] & 0xff) << 8);
 		tr = 0;
 		pos = 0x100;								// 1st track allways @ 0x100
-		for (i = 0; (i < trkcnt * sidcnt) && (err == ERR_OK); i++) {
-			rtlen = ext ? sigBuf[0x34 + i] << 8 : tlen;
+		int tracks = trkcnt * sidcnt;
+		if (ext && (tracks > 0x100 - 0x34)) tracks = 0x100 - 0x34;	// all the size table holds
+		unsigned char sizes[0x100 - 0x34];
+		memcpy(sizes, sigBuf + 0x34, sizeof(sizes));		// sigBuf is read over below
+		int cut = 0;
+		for (i = 0; (i < tracks) && (err == ERR_OK) && !cut; i++) {
+			rtlen = ext ? sizes[i] << 8 : tlen;
 			if (rtlen > 0) {
 				fseek(file, pos, SEEK_SET);					// move to track info block
-				fread(sigBuf, 12, 1, file);
+				if (fread(sigBuf, 12, 1, file) != 1) break;		// the file ends: keep what is loaded
 				if (strncmp(sigBuf,"Track-Info\r\n",12) == 0) {			// track-info
-					fread((char*)&tib, sizeof(TrackInfBlock), 1, file);
+					if (fread((char*)&tib, sizeof(TrackInfBlock), 1, file) != 1) break;
 					sib = (SectorInfBlock*)&tib.sectorInfo;
-					for (sc = 0; sc < tib.secCount; sc++) {
+					int nsec = tib.secCount;
+					int nmax = sizeof(tib.sectorInfo) / sizeof(SectorInfBlock);
+					if (nsec > nmax) nsec = nmax;		// all the sector info there is
+					for (sc = 0; (sc < nsec) && !cut; sc++) {
 						if (!ext) {
 							if (sib[sc].size > 5)
 								slen = 0x1800;
@@ -92,9 +101,12 @@ int loadDSK(Computer* comp, const char *name, int drv) {
 						secs[sc].sz = sib[sc].size;
 						secs[sc].type = 0xfb;
 						// printf("Sector %i:%i:%i(%i)\n",sib[sc].track,sib[sc].side,sib[sc].sector,sib[sc].bytesSize);
-						fread((char*)secs[sc].data, slen, 1, file);
+						// a sector longer than the buffer: what fits, the rest skipped
+						int rlen = (slen > (int)sizeof(secs[sc].data)) ? (int)sizeof(secs[sc].data) : slen;
+						if ((rlen > 0) && (fread((char*)secs[sc].data, rlen, 1, file) != 1)) cut = 1;
+						if (slen > rlen) fseek(file, slen - rlen, SEEK_CUR);
 					}
-					diskFormTrack(flp,tr,secs,tib.secCount);
+					diskFormTrack(flp,tr,secs,sc);		// the file ended: up to the sector it ended in
 					tr++;
 					if (sidcnt == 1) tr++;
 					pos += rtlen;

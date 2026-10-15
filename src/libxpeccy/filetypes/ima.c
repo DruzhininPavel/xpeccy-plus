@@ -10,7 +10,9 @@ int load_ima(Computer* comp, const char* path, int drv) {
 	FILE* file = fopen(path, "rb");
 	if (file) {
 		for (trk = 0; trk < 160; trk++) {
-			fread(buf, 512*18, 1, file);
+			// an image shorter than 1.44M: the tracks it has not are zeros
+			size_t got = fread(buf, 1, sizeof(buf), file);
+			if (got < sizeof(buf)) memset(buf + got, 0, sizeof(buf) - got);
 			flp_format_trk(flp, trk, 18, 512, buf);
 		}
 		fclose(file);

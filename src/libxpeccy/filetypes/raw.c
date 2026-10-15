@@ -39,14 +39,10 @@ int loadRaw(Computer* comp, const char* name, int drv) {
 			char fext[1024];
 			memset(fnam,' ',1024);
 			memset(fext,' ',1024);
-			char* ptr = strrchr(name, '/');		// slash here
-			if (ptr) {
-				strcpy(fpath, ptr + 1);
-			} else {
-				strcpy(fpath, name);
-			}
-			ptr = strrchr(fpath, '\\');		// slash there
-			if (ptr) strcpy(fpath, ptr + 1);
+			const char* nptr = strrchr(name, '/');		// slash here
+			snprintf(fpath, sizeof(fpath), "%s", nptr ? nptr + 1 : name);
+			char* ptr = strrchr(fpath, '\\');		// slash there
+			if (ptr) memmove(fpath, ptr + 1, strlen(ptr + 1) + 1);
 			xlog(XLG_FILE, XLL_DEBUG, "%s",fpath);
 			ptr = strrchr(fpath, '.');
 			if (ptr) {
@@ -56,6 +52,7 @@ int loadRaw(Computer* comp, const char* name, int drv) {
 				memcpy(fnam, fpath, strlen(fpath));
 				fext[0] = 0x00;
 			}
+			fnam[8] = 0x00;			// the name is 8 characters, space-padded
 			TRFile nfle;
 			int num = 0;
 			int flen;
@@ -70,8 +67,9 @@ int loadRaw(Computer* comp, const char* name, int drv) {
 					nfle.ext = hexnum[num & 0x0f];
 				}
 				num++;
-				fread((char*)buf, flen, 1, file);
-				if (diskCreateFile(flp, nfle, buf, flen) != ERR_OK) {
+				if (fread((char*)buf, flen, 1, file) != 1) {
+					err = ERR_CANT_OPEN;
+				} else if (diskCreateFile(flp, nfle, buf, flen) != ERR_OK) {
 					err = ERR_HOB_CANT;
 				}
 			}
@@ -99,12 +97,12 @@ int saveRawFile(Floppy* flp, int num, const char* dir) {
 	strcat(path, ".");
 	strncat(path, (char*)&dsc.ext, 1);
 	FILE* file = fopen(path, "wb");
+	free(path);
 	if (!file) return ERR_CANT_OPEN;
 	int len = trd_file_len(&dsc, buf, NULL);
 	if (len < 0) len = dsc.slen << 8;		// joined: all of its sectors
 	fwrite((char*)buf, len, 1, file);
 	fclose(file);
-	free(path);
 
 	return ERR_OK;
 }
