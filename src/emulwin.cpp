@@ -236,7 +236,7 @@ MainWin::MainWin(QMainWindow* frm) {
 	leds[led_joy].load(":/images/joystick.png");
 	leds[led_mouse].load(":/images/mouse.png");
 	leds[led_tap_red].load(":/images/tapeRed.png");
-	leds[led_tap_yellow].load(":/images/tapeYellow.png");
+	leds[led_tap_green].load(":/images/tapeGreen.png");
 	leds[led_disk_green].load(":/images/diskGreen.png");
 	leds[led_disk_red].load(":/images/diskRed.png");
 	leds[led_wav].load(":/images/wav.png");
@@ -572,6 +572,7 @@ void MainWin::timerEvent(QTimerEvent* ev) {
 			comp->vid->upd = 0;
 			updateWindow();
 		}
+		lightLook();
 		updateStatus();
 		syncActions();
 	} else if (ev->timerId() == cmsid) {	// 1-sec: cmos interrupt
@@ -1367,25 +1368,23 @@ void MainWin::drawIcons(QPainter& pnt) {
 		if (conf.led.mouse && osd) pnt.drawImage(3, 50, leds[led_mouse]);
 		comp->mouse->used = 0;
 	}
-// tape
-	if (comp->tape->on && conf.led.tape && osd) {
-		pnt.drawImage(3, 70, comp->tape->rec ? leds[led_tap_red] : leds[led_tap_yellow]);
+// tape and disc: as the last look at the lights found them (lightLook), blinking the same way
+	if (conf.led.tape && osd) {
+		if (tapeLight == SB_TAPE_RD) pnt.drawImage(3, 70, leds[led_tap_green]);
+		if (tapeLight == SB_TAPE_WR) pnt.drawImage(3, 70, leds[led_tap_red]);
 	}
-// disc
-	// a write reads the sector headers on the way, so it wins over a read, or
-	// the led flickers green all through it
 	if (conf.led.disk && osd) {
-		Floppy* flp = comp->dif->fdc->flp;
-		if (flp->wr) {
-			pnt.drawImage(3, 90, leds[led_disk_red]);
-		} else if (flp->rd) {
-			pnt.drawImage(3, 90, leds[led_disk_green]);
+		for (int i = 0; i < 4; i++) {
+			if (comp->dif->flp[i] != comp->dif->fdc->flp) continue;		// the drive the controller has
+			if (diskLight[i] == SB_DISK_RD) pnt.drawImage(3, 90, leds[led_disk_green]);
+			if (diskLight[i] == SB_DISK_WR) pnt.drawImage(3, 90, leds[led_disk_red]);
 		}
 	}
-	// kept for the status bar, which looks a few times a second
+	// kept for the next look at the lights
 	for (int i = 0; i < 4; i++) {
 		Floppy* flp = comp->dif->flp[i];
-		flpSeen[i] |= (flp->rd ? 1 : 0) | (flp->wr ? 2 : 0);
+		flpSeen[i] |= (flp->rd ? 1 : 0) | (flp->wr ? 2 : 0) | ((flp->trk != flpTrk[i]) ? 4 : 0);
+		flpTrk[i] = flp->trk;
 		flp->rd = 0;
 		flp->wr = 0;
 	}

@@ -228,6 +228,7 @@ void tap_detect_skipped(Tape*, int tick, int regB);
 void tapArmPlay(Tape*);
 
 TapeBlockInfo tapGetBlockInfo(Tape*,int);
+int tapGetBlockHeader(TapeBlock*, TapeBlockInfo*);	// a standard header's fields, without sizing a whole block
 int tapGetBlocksInfo(Tape*,TapeBlockInfo*);
 int tapGetBlockData(Tape*,int,unsigned char*,int);
 unsigned char tapGetBlockByte(TapeBlock*,int);

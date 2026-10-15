@@ -3711,7 +3711,7 @@ Right click: back to the style color</string>
                   </property>
                   <property name="icon">
                    <iconset resource="../xpeccy.qrc">
-                    <normaloff>:/images/tapeYellow.png</normaloff>:/images/tapeYellow.png</iconset>
+                    <normaloff>:/images/tapeGreen.png</normaloff>:/images/tapeGreen.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
