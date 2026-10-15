@@ -23,10 +23,20 @@ A new language: `python tools/manual.py update --add xx` (the ISO 639-1 code, th
 the system reports - Ukrainian is `uk`), and its name and title in `LANG_NAMES` and
 `TITLES` of `conf.py`. Help > Manual and the Pages front page pick it by that code.
 
+**Commits.** A change to the program that the reader sees changes its English chapter and
+pictures in the same branch, but in a commit of its own, `manual: ...`, never in a commit
+with code: whoever reads the history of the code reads it without the manual
+(`git log -- src ui`, or the history of `src` on GitHub).
+
 **Before a release.** The English is kept up to date with each change; the translations
-catch up once: `update`, then translate what `status` counts as out of date or not
-translated in every language, keeping each entry's markup (`**`, `` ` ``, links,
-`{icon}`) as the English has it, then `html` and `check`.
+catch up once, before the release, not with each change: `update`, then translate what
+`status` counts as out of date or not translated in every language, keeping each entry's
+markup (`**`, `` ` ``, links, `{icon}`) as the English has it, then `html` and `check`.
+
+**GitHub Pages.** `.github/workflows/manual.yml` puts the newest release's manual at the
+top of the site and main's in `dev/`, built with `html --dev`, which says over every page
+that it is for the nightly build. It runs on a release tag and on a push to main that
+changes the manual. Until a release has a manual, the top sends the reader to `dev/`.
 
 **Pictures.** `images/` holds the pictures the pages show, one set for every language: the
 numbers on them are explained in the text. Each is made by `python tools/manual.py shots`

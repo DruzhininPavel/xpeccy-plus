@@ -2,7 +2,8 @@
 """Build the user manual (docs/manual) and keep its translations.
 
     python tools/manual.py update [--add LANG]  English text -> .po of every language
-    python tools/manual.py html                 build/manual/<lang>/ for every language
+    python tools/manual.py html [--dev]         build/manual/<lang>/ for every language;
+                                                --dev: a note on every page that it is main's
     python tools/manual.py pdf                  build/manual-pdf/manual-<lang>.pdf
     python tools/manual.py check                offline search finds docs/manual/checks.txt
     python tools/manual.py status               how much of each language is translated
@@ -163,6 +164,8 @@ def carry_icons(lang, old):
 
 
 def cmd_html(opts):
+    if opts.dev:
+        os.environ["XPECCY_MANUAL_DEV"] = "1"     # conf.py's note, read by each sphinx run
     # what is here goes into the package as it is, so nothing left from an older build;
     # the folder itself stays, as a window open on it would refuse its removal
     if OUT.exists():
@@ -252,7 +255,9 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("update")
     p.add_argument("--add", metavar="LANG", help="start a new language")
-    for name in ("html", "pdf", "check", "status"):
+    p = sub.add_parser("html")
+    p.add_argument("--dev", action="store_true", help="the manual of main, not of a release")
+    for name in ("pdf", "check", "status"):
         sub.add_parser(name)
     p = sub.add_parser("shots")
     p.add_argument("names", nargs="*")
