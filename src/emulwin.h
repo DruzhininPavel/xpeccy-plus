@@ -68,8 +68,6 @@ enum {
 	led_kbd = 0,
 	led_joy,
 	led_mouse,
-	led_tap_red,
-	led_tap_green,
 	led_disk_green,
 	led_disk_red,
 	led_wav,
@@ -78,7 +76,8 @@ enum {
 
 // The lights of the tape, the drives and the inputs, in the status bar and over the picture.
 // Each READ right after its IDLE.
-enum {SB_TAPE_EMPTY = 0, SB_TAPE_IN, SB_TAPE_RD, SB_TAPE_WR, SB_DISK_EMPTY, SB_DISK_IN, SB_DISK_RD, SB_DISK_WR,
+enum {SB_TAPE_EMPTY = 0, SB_TAPE_IN, SB_TAPE_RD, SB_TAPE_WR, SB_TAPE_RD_HI, SB_TAPE_WR_HI,
+	SB_DISK_EMPTY, SB_DISK_IN, SB_DISK_RD, SB_DISK_WR,
 	SB_JOY_IDLE, SB_JOY_READ, SB_MOUSE_IDLE, SB_MOUSE_READ, SB_COUNT};
 
 // what the machine's speed is doing, shown in the top right corner
@@ -370,7 +369,6 @@ typedef struct {
 		QLabel* sbClock;
 		QLabel* sbTape;
 		QProgressBar* sbTapeBar;	// where the tape stands in this block
-		QLabel* sbTapeName;
 		QLabel* sbDisk[4];	// "A:" and so on
 		QLabel* sbDiskIcon[4];
 		QWidget* sbDiskBox[4] = {nullptr, nullptr, nullptr, nullptr};

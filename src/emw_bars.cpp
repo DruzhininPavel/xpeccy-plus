@@ -52,6 +52,15 @@ static QPixmap sb_bright(const QString& path, double gain) {
 	});
 }
 
+// the same picture, lit: its bright face goes toward white by k, the dark outline stays
+static QPixmap sb_lit(const QString& path, double k) {
+	return sb_map(path, [k](QRgb p) {
+		if (qMax(qRed(p), qMax(qGreen(p), qBlue(p))) < 200) return p;
+		return qRgba(int(qRed(p) + (255 - qRed(p)) * k), int(qGreen(p) + (255 - qGreen(p)) * k),
+			int(qBlue(p) + (255 - qBlue(p)) * k), qAlpha(p));
+	});
+}
+
 #define TB_SEPARATOR "|"
 #define TB_SPACE "~"		// takes what room is left, so what follows sits at the right edge
 
@@ -456,6 +465,8 @@ void MainWin::initBars() {
 	sbPix[SB_TAPE_IN] = sb_tint(":/images/tapeGreen.png", QColor(200, 200, 200), 1.0);
 	sbPix[SB_TAPE_RD] = QPixmap(":/images/tapeGreen.png");
 	sbPix[SB_TAPE_WR] = QPixmap(":/images/tapeRed.png");
+	sbPix[SB_TAPE_RD_HI] = sb_lit(":/images/tapeGreen.png", 0.5);	// the other half of a blink
+	sbPix[SB_TAPE_WR_HI] = sb_lit(":/images/tapeRed.png", 0.5);
 	sbPix[SB_DISK_EMPTY] = sb_tint(":/images/diskGreen.png", QColor(170, 170, 170), 0.45);
 	sbPix[SB_DISK_IN] = sb_tint(":/images/diskGreen.png", QColor(200, 200, 200), 1.0);
 	sbPix[SB_DISK_RD] = QPixmap(":/images/diskGreen.png");
@@ -479,16 +490,11 @@ void MainWin::initBars() {
 	sbTape = new QLabel;
 	sbTapeIcon = new QLabel;
 	sbTapeBox = pair(sbTapeIcon, sbTape);		// the light first: the count is what follows it
-	// then where the tape stands in the block it plays, and what that block is
+	// then where the tape stands in the block it plays
 	sbTapeBar = new QProgressBar;
 	sbTapeBar->setTextVisible(false);
 	sbTapeBar->setFixedSize(36, 8);
-	sbTapeName = new QLabel;
-	// one width for every name, or the light would move each time a block begins
-	sbTapeName->ensurePolished();
-	sbTapeName->setFixedWidth(sbTapeName->fontMetrics().horizontalAdvance("Program: MMMMMMMMMM"));
 	sbTapeBox->layout()->addWidget(sbTapeBar);
-	sbTapeBox->layout()->addWidget(sbTapeName);
 	for (int i = 0; i < 4; i++) {
 		sbDisk[i] = new QLabel(QString("%0:").arg(QChar('A' + i)));
 		sbDiskIcon[i] = new QLabel;
@@ -736,15 +742,16 @@ void MainWin::tapeMenu(const QPoint& pos) {
 }
 
 // Five times a second, for the status bar and the lights over the picture alike. Something
-// going on blinks: a moving tape every other look; a drive reading or writing is lit, and out
-// for one look after its head stepped - never two looks running, so a seek does not put it out.
+// going on blinks: a moving tape between its color and a brighter one every other look, never
+// gray while it works; a drive reading or writing is lit, and out for one look after its head
+// stepped - never two looks running, so a seek does not put it out.
 void MainWin::lightLook() {
 	Computer* comp = conf.zx;
 	Tape* tape = comp->tape;
 	lightPhase ^= 1;
 	// the tape counts as playing when it moves, not when it waits to be started or the machine stands
 	if (tape->on && !conf.emu.pause) {
-		tapeLight = !lightPhase ? SB_TAPE_IN : tape->rec ? SB_TAPE_WR : SB_TAPE_RD;
+		tapeLight = tape->rec ? (lightPhase ? SB_TAPE_WR_HI : SB_TAPE_WR) : (lightPhase ? SB_TAPE_RD_HI : SB_TAPE_RD);
 	} else {
 		tapeLight = (tape->blkCount > 0) ? SB_TAPE_IN : SB_TAPE_EMPTY;
 	}
@@ -766,21 +773,6 @@ void MainWin::lightLook() {
 	}
 }
 
-// What the block playing is, the way the ROM says it as it loads: "Bytes: SCREEN$". The
-// data a header announces goes by the header's name; anything else by what the image calls
-// it, or by its kind. Only a header is decoded: sizing a data block reads all of it.
-static QString tape_block_label(Tape* tape, int blk) {
-	static const char* kind[] = {"Program", "Number array", "Character array", "Bytes"};
-	TapeBlock* cur = &tape->blkData[blk];
-	TapeBlock* head = cur->isHeader ? cur : ((blk > 0) && tape->blkData[blk - 1].isHeader) ? &tape->blkData[blk - 1] : nullptr;
-	TapeBlockInfo inf;
-	if (head && tapGetBlockHeader(head, &inf) && (inf.htype >= TAPE_HT_PROG) && (inf.htype <= TAPE_HT_CODE))
-		return QString("%0: %1").arg(kind[inf.htype]).arg(zx_text(inf.name, TAPE_NAME_LEN));
-	if (cur->text[0])
-		return QString::fromLocal8Bit(cur->text);
-	return cur->hasBytes ? QString("data") : QString("custom");
-}
-
 // a few times a second: QLabel leaves the text alone when it has not changed
 void MainWin::updateStatus() {
 	if (!statusBar->isVisible()) return;
@@ -800,17 +792,13 @@ void MainWin::updateStatus() {
 	bool inBlock = got && !tape->rec && (tape->block < tape->blkCount);
 	sbTape->setVisible(got);
 	sbTapeBar->setVisible(got);
-	sbTapeName->setVisible(got);
 	if (got)
 		sbTape->setText(QString("%0/%1").arg(qMin(tape->block + 1, tape->blkCount)).arg(tape->blkCount));
 	if (inBlock) {
 		sbTapeBar->setMaximum(qMax(1, tape->blkData[tape->block].sigCount));
 		sbTapeBar->setValue(tape->pos);
-		QString name = tape_block_label(tape, tape->block);
-		sbTapeName->setText(sbTapeName->fontMetrics().elidedText(name, Qt::ElideRight, sbTapeName->width()));
 	} else {
 		sbTapeBar->setValue(0);		// past the last block, or recording
-		sbTapeName->clear();
 	}
 	QString tip = got ? QString::fromLocal8Bit(tape->path ? tape->path : "") : QString("empty");
 	if (sbTapeBox->toolTip() != tip) sbTapeBox->setToolTip(tip);	// a change is an event
