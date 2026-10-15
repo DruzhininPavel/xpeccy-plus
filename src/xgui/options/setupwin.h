@@ -49,7 +49,9 @@ class SetupWin : public QDialog {
 		QToolButton* sheetButton(QWidget*, const char*);
 		void buildStart();
 		void fillDevSummary();
-		void divEeprom(bool erase);
+		void fillDivFirmware();
+		void divFirmwareFile();
+		bool applyDivFirmware();
 		void showDevRows();
 		void showDriveRows();
 		void tidySoundPage();
@@ -116,7 +118,7 @@ class SetupWin : public QDialog {
 		QComboBox* divBox;		// a divMMC: the board, its RAM, its jumper
 		QComboBox* divRamBox;
 		QCheckBox* divWrBox;
-		QLabel* divEeSum;
+		QComboBox* divFwBox;		// what its EEPROM holds, and what Apply writes there
 		QList<QWidget*> divRow;
 		QList<QWidget*> slotRow;
 		QList<QWidget*> kbdRow;

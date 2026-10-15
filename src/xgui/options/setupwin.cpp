@@ -31,7 +31,15 @@
 #include <QScreen>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QRegularExpression>
+#include <QPointer>
+#include <QSharedPointer>
+#include <QShowEvent>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
+#include <QAbstractSlider>
 #include <QDebug>
+#include <functional>
 #include <stdlib.h>
 
 #include <SDL.h>
@@ -1051,6 +1059,7 @@ void SetupWin::start() {
 	divBox->setCurrentIndex(comp->div->model ? 1 : 0);
 	divRamBox->setCurrentIndex((comp->div->pages > 16) ? 1 : 0);
 	divWrBox->setChecked(comp->div->eeWrite);
+	fillDivFirmware();
 
 	sdrvBox->setCurrentIndex(sdrvBox->findData(comp->sdrv->type));
 
@@ -1318,6 +1327,9 @@ void SetupWin::applyMachine() {
 		div_set_model(comp->div, divModel, divPages);
 	comp->div->eeWrite = divWrBox->isChecked() ? 1 : 0;
 	div_map(comp->div);
+	// a chip written outside the machine goes back in with the power off too
+	if (applyDivFirmware() && divModel) divPower = true;
+	fillDivFirmware();
 	sdc_remount(comp->div->card[0]);
 	sdc_remount(comp->div->card[1]);
 // debuga
@@ -1873,21 +1885,13 @@ void SetupWin::buildDevices() {
 	divWrBox->setObjectName("divWrBox");
 	dv.check(divWrBox, tr("EEPROM writable"), tr("For flashing; the firmware does not start"));
 	dv.line();
-	divEeSum = new QLabel;
-	QWidget* ee = new QWidget;
-	QHBoxLayout* eeLay = new QHBoxLayout(ee);
-	eeLay->setContentsMargins(0, 0, 0, 0);
-	eeLay->addWidget(divEeSum, 1);
-	const char* eeIcon[2] = {":/images/fileopen.png", ":/images/cancel.png"};
-	QString eeTip[2] = {tr("Load an image into the EEPROM"), tr("Erase the EEPROM")};
-	for (int i = 0; i < 2; i++) {
-		QToolButton* tb = new QToolButton;
-		tb->setIcon(QIcon(eeIcon[i]));
-		tb->setToolTip(eeTip[i]);
-		connect(tb, &QToolButton::released, this, [this, i]() {divEeprom(i != 0);});
-		eeLay->addWidget(tb);
-	}
-	dv.field(tr("EEPROM"), ee);
+	divFwBox = new QComboBox;
+	divFwBox->setObjectName("divFwBox");
+	QToolButton* fwBtn = new QToolButton;
+	fwBtn->setIcon(QIcon(":/images/fileopen.png"));
+	fwBtn->setToolTip(tr("Pick a firmware file"));
+	connect(fwBtn, &QToolButton::released, this, &SetupWin::divFirmwareFile);
+	dv.field(tr("Firmware"), fieldPair(divFwBox, fwBtn, false), tr("What the EEPROM holds. Apply writes it"));
 	btn = devRow(grid, tr("divMMC"), divBox, dv.body, "Machine: divMMC");
 	btn->setObjectName("divGear");
 	divRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << divBox << btn;
@@ -2031,31 +2035,91 @@ void SetupWin::fillDevSummary() {
 	QString slot = comp->slot->path ? QString::fromLocal8Bit(comp->slot->path) : QString();
 	sdSum->setText(sd.isEmpty() ? tr("(no card)") : QFileInfo(sd).fileName());
 	slotSum->setText(slot.isEmpty() ? tr("(empty)") : QFileInfo(slot).fileName());
-	divEeSum->setText(div_eeprom_erased(comp->div) ? tr("erased") : tr("written"));
 }
 
-// what the EEPROM holds: the chip on the board, so a change is made at once and
-// kept with the machine (nvram), not left for Apply. A chip written or erased
-// outside the machine goes back in with the power off: a fitted board's machine
-// comes up from its power-on.
-void SetupWin::divEeprom(bool erase) {
-	DivMMC* div = conf.zx->div;
-	QString path;
-	if (!erase) {
-		path = QFileDialog::getOpenFileName(this, tr("EEPROM image"), "", tr("Images (*.bin *.rom);;All files (*)"), NULL, QFileDialog::DontUseNativeDialog);
-		if (path.isEmpty()) return;
-	} else if (!div_eeprom_erased(div) && !areSure("Erase the EEPROM?")) {
+// THE divMMC's FIRMWARE
+//
+// The combo shows what the EEPROM holds, told by its bytes: the bundled esxDOS,
+// erased, or something else - flashed in the machine or loaded from a file. A
+// choice is written by Apply, so opening and closing Options never touches the chip.
+
+#define	DIVFW_ESX	"@esx"
+#define	DIVFW_ERASED	"@erased"
+#define	DIVFW_CHIP	"@chip"		// keep what the chip has
+
+// what the EEPROM would hold after a choice; empty if it can't be read
+static QByteArray div_fw_bytes(const QString& choice) {
+	QString path = choice;
+	if (choice == DIVFW_ERASED) return QByteArray(DIV_EE_SIZE, (char)0xff);
+	if (choice == DIVFW_ESX) path = QString::fromLocal8Bit((conf.path.esxDir + SLASH + DIV_ESX_ROM).c_str());
+	QFile file(path);
+	if (!file.open(QFile::ReadOnly)) return QByteArray();
+	QByteArray res = file.read(DIV_EE_SIZE);
+	if (res.isEmpty()) return res;
+	res.append(QByteArray(DIV_EE_SIZE - res.size(), (char)0xff));	// a shorter file leaves the rest erased
+	return res;
+}
+
+static QByteArray div_chip_bytes() {
+	return QByteArray((const char*)conf.zx->div->data, DIV_EE_SIZE);
+}
+
+// the esxDOS banner in an image ("v0.8.8-DivMMC"), to tell one custom firmware from another
+static QString div_fw_banner(const QByteArray& img) {
+	QRegularExpressionMatch m = QRegularExpression("v\\d+\\.\\d+\\.\\d+-Div\\w+").match(QString::fromLatin1(img));
+	return m.hasMatch() ? m.captured(0) : QString();
+}
+
+void SetupWin::fillDivFirmware() {
+	QByteArray chip = div_chip_bytes();
+	divFwBox->clear();
+	divFwBox->addItem(DIV_ESX_NAME, DIVFW_ESX);
+	divFwBox->addItem(tr("(erased)"), DIVFW_ERASED);
+	if (chip == div_fw_bytes(DIVFW_ESX)) {
+		divFwBox->setCurrentIndex(0);
+	} else if (chip == div_fw_bytes(DIVFW_ERASED)) {
+		divFwBox->setCurrentIndex(1);
+	} else {
+		QString ban = div_fw_banner(chip);
+		divFwBox->addItem(ban.isEmpty() ? tr("Custom") : tr("Custom: %0").arg(ban), DIVFW_CHIP);
+		divFwBox->setItemData(2, tr("What the EEPROM holds now"), Qt::ToolTipRole);
+		divFwBox->setCurrentIndex(2);
+	}
+}
+
+void SetupWin::divFirmwareFile() {
+	QString path = QFileDialog::getOpenFileName(this, tr("Firmware"), "", tr("Images (*.bin *.rom);;All files (*)"), NULL, QFileDialog::DontUseNativeDialog);
+	if (path.isEmpty()) return;
+	if (div_fw_bytes(path).isEmpty()) {
+		shitHappens("Can't read that file");
 		return;
 	}
+	int idx = divFwBox->findData(path);
+	if (idx < 0) {
+		divFwBox->addItem(tr("Custom: %0").arg(QFileInfo(path).fileName()), path);
+		idx = divFwBox->count() - 1;
+		divFwBox->setItemData(idx, path, Qt::ToolTipRole);
+	}
+	divFwBox->setCurrentIndex(idx);
+}
+
+// The choice into the chip, if it changes what the chip holds. A firmware that is
+// only in the chip is not replaced without asking. Returns true if it wrote.
+bool SetupWin::applyDivFirmware() {
+	QString choice = divFwBox->currentData().toString();
+	if (choice == DIVFW_CHIP) return false;
+	QByteArray img = div_fw_bytes(choice);
+	QByteArray chip = div_chip_bytes();
+	if (img.isEmpty() || (img == chip)) return false;
+	bool known = (chip == div_fw_bytes(DIVFW_ESX)) || (chip == div_fw_bytes(DIVFW_ERASED));
+	if (!known && !areSure("The firmware in the EEPROM will be lost. Replace it?")) return false;
+	DivMMC* div = conf.zx->div;
 	emu_lock();
-	bool ok = true;
-	if (!erase) ok = div_load_eeprom(div, path.toLocal8Bit().constData());
-	else div_erase_eeprom(div);
-	if (ok && div->model)
-		xm_power_cycle();
+	memcpy(div->data, img.constData(), DIV_EE_SIZE);
+	div->eeDirty = 1;
+	div_map(div);
 	emu_unlock();
-	if (!ok) shitHappens("Can't do it with that file");
-	fillDevSummary();
+	return true;
 }
 
 // the rows of the drives that are fitted; a +3 has two at most

@@ -356,6 +356,10 @@ std::string xm_id_for_name(const std::string&);
 void xm_finish_load();
 void xm_save_nvram();
 void xm_power_cycle();		// off and on again: the caller holds emu_lock
+// the bundled esxDOS (conf.path.esxDir): the divMMC's EEPROM image, and the
+// folders a card needs
+#define	DIV_ESX_ROM	"ESXMMC.BIN"
+#define	DIV_ESX_NAME	"esxDOS 0.8.9"
 void xm_save_media(FILE*);
 std::string getDiskString(Floppy*);
 
@@ -942,6 +946,7 @@ struct xConfig {
 		std::string palDir;
 		std::string font;
 		std::string boot;
+		std::string esxDir;	// esxdos/: the bundled esxDOS, its firmware and card files
 	} path;
 	struct {
 		unsigned labels:1;

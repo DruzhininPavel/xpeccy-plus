@@ -670,10 +670,13 @@ static void xm_load_nvram() {
 		if (i == 0x100) memcpy(nv + 0x80, nv, 0x80);
 	}
 	mac_nv_read(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE, NULL);
-	// a divMMC's EEPROM keeps what was written to it: erased until something was.
-	// One board goes from machine to machine, so its file is not any one machine's.
+	// a divMMC's EEPROM keeps what was written to it. One board goes from machine to
+	// machine, so its file is not any one machine's. It comes with the bundled
+	// esxDOS in it, copied once: a later bundle must not change the firmware under
+	// a card whose system files are this one's.
 	memset(conf.zx->div->data, 0xff, DIV_EE_SIZE);
-	mac_nv_read(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE, NULL);
+	std::string esx = conf.path.esxDir + SLASH + DIV_ESX_ROM;
+	mac_nv_read(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE, esx.c_str());
 	conf.zx->div->eeDirty = 0;
 	div_map(conf.zx->div);
 }
