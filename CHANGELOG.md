@@ -74,7 +74,7 @@ before that point is upstream's history and is not repeated here.
 
 - **The tape and drive lights** in the status bar are one set: dim with nothing in, gray
   loaded, green reading, red writing, and they blink while working. The tape's light stays
-  with no tape in, and beside it are the block's progress and its name. *(thanks to Volutar)*
+  with no tape in, and beside it is the block's progress. *(thanks to Volutar)*
 
 - **OK and Cancel in the windows Options opens**: Cancel puts back what a window showed when
   it opened.
