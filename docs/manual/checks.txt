@@ -11,6 +11,8 @@ en rewind
 en FFmpeg
 en Hobeta
 en shader
+en cheats
+en pok
 ru панель
 ru снапшот
 ru полноэкранный

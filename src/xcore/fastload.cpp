@@ -42,6 +42,7 @@
 #include "fastload.h"
 #include "autostart.h"
 #include "rewind.h"
+#include "cheats.h"
 #include "rzxseek.h"
 #include "../libxpeccy/cpu/Z80/z80.h"
 #include "../libxpeccy/hardware/hardware.h"
@@ -526,6 +527,7 @@ static void fl_back_put(Computer* comp) {
 	int frames = comp->frmCount - fl_back.frame;
 	if (!xstate_load(fl_back.st, comp)) return;
 	xlog(XLG_TAPE, XLL_INFO, "fast loading goes back %i frames, to where the loader left", frames);
+	cheats_rollback(comp);
 	if (tap->on)
 		tap_copy_pos(tap, old);
 	tap->portReads = 0;

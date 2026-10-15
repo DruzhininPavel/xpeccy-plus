@@ -406,9 +406,10 @@ void MainWin::initBars() {
 	add("key.mouse.grab", "Input", mouseAct, TB_PLAIN);
 	add("menu.keymap", "Input", keyMenu->menuAction(), TB_LIST);
 	add("key.padwin", "Input", cut("Gamepads", XCUT_PADWIN, "gamepad"), TB_SPLIT, padMenu);
-	add("menu.debug", "Debug", dbgMenu->menuAction(), TB_SPLIT);
-	add("key.scrwin", "Debug", cut("Screen", XCUT_SCRWIN, "rulers"), TB_PLAIN);
-	add("key.sndwin", "Debug", cut("Sound Chips", XCUT_SNDWIN, "note"), TB_PLAIN);
+	add("key.cheats", "Tools", cut("Cheats...", XCUT_CHEATS, "cheats"), TB_PLAIN);
+	add("menu.debug", "Tools", dbgMenu->menuAction(), TB_SPLIT);
+	add("key.scrwin", "Tools", cut("Screen", XCUT_SCRWIN, "rulers"), TB_PLAIN);
+	add("key.sndwin", "Tools", cut("Sound Chips", XCUT_SNDWIN, "note"), TB_PLAIN);
 	muteAct = cut("Mute", XCUT_MUTE, "speaker");
 	muteAct->setCheckable(true);
 	{

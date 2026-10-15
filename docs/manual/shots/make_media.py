@@ -109,6 +109,11 @@ CPU:4000-57FF::W:CNT:
 IO:00FE:0001:W:CNT:
 """
 
+# The Cheats picture: Exolon's two counters (EXOLON_LAB), each a trainer that asks
+# for its value, as a cheat file has them
+EXOLON_POK = ("NAmmo\r\nZ  8 36442 256   0\r\n"
+    "NGrenades\r\nZ  8 36454 256   0\r\nY")
+
 TIMING_XBRK = """; Xpeccy+ Debugger breakpoints list
 CPU:START::FL[:CNT::HL, BC
 CPU:DONE::F]:CNT:DT > 11400
@@ -129,6 +134,7 @@ def main(out):
     (out / "timing.xbrk").write_text(TIMING_XBRK, encoding="ascii")
     (out / "exolon.lab").write_text(EXOLON_LAB, encoding="ascii")
     (out / "exolon.xbrk").write_text(EXOLON_XBRK, encoding="ascii")
+    (out / "exolon.pok").write_bytes(EXOLON_POK.encode("ascii"))
 
 
 if __name__ == "__main__":

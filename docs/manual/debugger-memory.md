@@ -318,7 +318,7 @@ of your own.
 ## Example: find where the score is kept
 
 1. Play the game until the score shows a number you can recognize, such as 150.
-2. Open the Debugger: **Debug > Debugger**.
+2. Open the Debugger: **Tools > Debugger**.
 3. Open the **Memory Finder** (**Tools > Search**). Many games keep the score as digits:
    type the digits in **Text** as the game shows them, leading zeros included, such as
    `000150`. Click {icon}`search` **Find**.
@@ -333,7 +333,7 @@ low byte first. To find the code that adds the points, put a **Write break** on 
 
 ## Example: save the screen memory to a file
 
-1. Open the Debugger: **Debug > Debugger**.
+1. Open the Debugger: **Tools > Debugger**.
 2. In the {icon}`floppy` floppy disk menu of the **Disasm** toolbar, choose **Save dump**.
 3. Type `4000` in **Start** and `1B00` in **Length**. **End** shows `5AFF`.
 4. Click {icon}`save_all` **Save as...** and choose **...as bin**. Name the file, such as

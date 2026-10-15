@@ -454,6 +454,7 @@ static xShortcut short_tab[] = {
 	{SCG_MAIN | SCG_DEBUGA, XCUT_KEYBOARD, "key.keywin", "Virtual Keyboard", {}},
 	{SCG_MAIN, XCUT_TAPWIN, "key.tapewin", "Tape Player", {}},
 	{SCG_MAIN, XCUT_PADWIN, "key.padwin", "Gamepads", {}},
+	{SCG_MAIN, XCUT_CHEATS, "key.cheats", "Cheats", {}},
 	{SCG_MAIN, XCUT_RZXWIN, "key.rzxwin", "RZX Player", {}},
 	{SCG_MAIN | SCG_DEBUGA, XCUT_SCRWIN, "key.scrwin", "Screen", {}},
 	{SCG_MAIN | SCG_DEBUGA, XCUT_SNDWIN, "key.sndwin", "Sound Chips", {}},

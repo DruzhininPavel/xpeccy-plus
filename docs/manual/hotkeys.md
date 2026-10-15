@@ -51,7 +51,7 @@ the system, Alt+M is still Alt+M.
 The table on the **Hotkeys** page has three columns: **Action**, **Key** and **Alternate**.
 Each action can have two keys, and either one works. The actions are grouped as in the menus:
 **File**, **Machine**, **Time**, **Tape**, **Capture**, **RZX**, **View**, **Input**,
-**Debug**, and then the keys of the **Debugger**: **Debugger**, **Disassembler** and
+**Tools**, and then the keys of the **Debugger**: **Debugger**, **Disassembler** and
 **Memory dump**.
 
 To change a key:
@@ -244,10 +244,11 @@ on the numeric keypad: Alt+Num++ is Alt with the keypad plus.
 | Grab Mouse | Alt+M | Alt+M |
 | Gamepads | - | - |
 
-### Debug
+### Tools
 
 | Action | Modern | Classic |
 |---|---|---|
+| Cheats | - | - |
 | Debugger | F10, Ctrl+Pause | Esc |
 | Screen | - | Alt+S |
 | Sound Chips | - | Alt+A |

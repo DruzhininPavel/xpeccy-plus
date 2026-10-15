@@ -395,7 +395,7 @@ no key is set for it by default.
 
 On a 48K, at the BASIC prompt:
 
-1. Open the Debugger: **Debug > Debugger**.
+1. Open the Debugger: **Tools > Debugger**.
 2. Press G, type `8000` and press Enter. The listing starts at 8000.
 3. Double-click the command of the 8000 row, type `call #8010` and press Enter. The
    cursor moves to the next row: press Enter, type `ret` and press Enter again.

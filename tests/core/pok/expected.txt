@@ -1,0 +1,41 @@
+== read/empty.pok
+result 1, 0 trainers
+== read/free.pok
+result 0, 2 trainers
+'Lives': 8:42150=0/53
+'Time' ask: 8:30000=0/0 2:32768=256/0
+== read/readme.pok
+result 1, 0 trainers
+== read/spoiled.pok
+result 0, 9 trainers
+'Good': 8:50000=0/0
+'Bad line' bad=line@5: 8:50001=0/0
+'Range' bad=range@8:
+'Value' bad=range@10:
+'Key' bad=key@13: 8:50003=0/0 8:50004=0/0
+'No end' bad=open@16: 8:50005=0/0
+'No pokes' bad=empty@17:
+'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx': 8:50006=1/0 8:50006=2/0 8:50007=3/0
+'Open at the end' bad=open@23: 8:50008=0/0
+== read/wos.pok
+result 0, 4 trainers
+'Infinite lives': 8:55877=127/218
+'Infinite energy': 8:40000=0/201 8:40001=0/0
+'Start level' ask: 8:35000=256/1
+'128K page 0': 0:58813=0/62 0:58814=201/0
+== apply16
+page 2: 3 #8000: 4 page 5: 1
+== apply48
+fits: check=0 apply=0 byte=127 where=0 undo byte=218
+other release: check=2 forced and undone byte=17
+already poked: check=0 undo byte=218
+no org: check=1 256 as 99: #8000=99 where=0
+pages 5/2/0: check=1 #4000=1 #8000=2 58813=3
+page 7: check=3 apply=3 40000=0
+rom: check=4 apply=4
+twice: 50006=2 where=0 undo 50006=77
+rolled back: where=1 again where=0 changed where=2
+by hand: rom=4 200 201 202 203 undo 10 11 12 13
+== apply128
+page 7 in: check=1 apply=0 page0=201 page7=0 cpu 58813=0 cpu #4000=7
+page 0 in: cpu 58813=201 where=0 undo page0=0

@@ -20,6 +20,7 @@
 #include "xgui/xgui.h"
 #include "xgui/diskwin.h"
 #include "xgui/padwin.h"
+#include "xgui/cheatwin.h"
 #include "libxpeccy/spectrum.h"
 #include "watcher.h"
 #include "vkeyboard.h"
@@ -129,6 +130,7 @@ typedef struct {
 		void fillUserMenu();
 		void openMedia(const QString& path, int id, int drv, int run, bool pinned = false);
 		void padGame(const QString&);		// an image opened: player 1 takes its .pad, or its own table back
+		bool openCheats(const QString&);	// a .pok, into the Cheats window
 		void fsOverlay(QWidget*);
 		void setMachine(const std::string&);
 		void chooseMachine(const std::string&);		// the user's pick, see xm_choose
@@ -186,6 +188,7 @@ typedef struct {
 		void doOptions();
 		void padWinShow();
 		void padWinModal();
+		void cheatWinShow();
 		void doDebug();
 		void updateWindow();
 		void pause(bool, int);
@@ -321,12 +324,14 @@ typedef struct {
 		QMenu* hddMenu;
 		xDiskWin* diskWin;
 		xPadWin* padWin;
+		xCheatWin* cheatWin;
 		QMenu* turboMenu;
 		QMenu* shdMenu;
 		QMenu* keyMenu;
 		QMenu* padMenu;		// the window, then each player's joystick
 		QMenu* palMenu;
-		QMenu* dbgMenu;
+		QMenu* dbgMenu;		// the toolbar's Debugger button: a click opens it, its list the panels
+		QMenu* toolsMenu;	// the right-click menu's Tools, the menu bar's list
 		QAction* pckAct;
 
 		void initUserMenu();

@@ -25,7 +25,7 @@
 | **Input** | keyboard and mouse grab, keymaps, gamepads |
 | **Media** | tape player, disk manager, floppy drives, cartridge, SD card, hard disks |
 | **Capture** | screenshots, video and sound recording, RZX |
-| **Debug** | **Debugger** and its windows |
+| **Tools** | **Cheats**, the **Debugger** and its windows |
 | **Help** | this manual, the project page, what is new, reporting a problem |
 
 A command that has a key shows it in the menu. The keys are set on the **Hotkeys** page of
@@ -39,7 +39,7 @@ A command that has a key shows it in the menu. The keys are set on the **Hotkeys
 By default the toolbar has {icon}`fileopen` **Open**, {icon}`save_all` **Save**,
 {icon}`shutdown` **Reset**, {icon}`model-zx48` **Model**, {icon}`tape` **Tape Player**,
 {icon}`fdd_disk` **Disk Manager**, {icon}`fullscreen_icon_16` **Fullscreen**,
-{icon}`vkeys` **Virtual Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debug**,
+{icon}`vkeys` **Virtual Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debugger**,
 {icon}`other` **Options** and {icon}`speaker` **Mute**, and at the right end
 {icon}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**,
 {icon}`time-pause` **Pause**, {icon}`time-ffwd` **Fast Forward** and
@@ -96,9 +96,9 @@ commands - play, rewind, open, eject.
 
 A right-click on the picture opens a menu with the commands needed while playing: open a
 file, favorites, machine, turbo, reset, keymap, shaders, palette, the media windows, grab
-keyboard, virtual keyboard, gamepads, **Debugger** and **Options**. Some of its items act
-on a click as well as opening their submenu: **Reset** resets the machine, **Debugger**
-opens the debugger.
+keyboard, virtual keyboard, gamepads, **Tools** (**Cheats** and the **Debugger**) and
+**Options**. Some of its items act on a click as well as opening their submenu: **Reset**
+resets the machine, **Disk Manager** and **Gamepads** open their windows.
 
 - Drop a file onto the picture to open it (see [Run a program](getting-started.md#run-a-program)).
 - A click with the middle button grabs the mouse for a program that uses one; another

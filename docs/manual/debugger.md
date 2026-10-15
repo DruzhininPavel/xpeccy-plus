@@ -44,7 +44,7 @@ and its own font, set on the **Debugger** page of **Options**.
 
 Open the Debugger in any of these ways:
 
-- **Debug > Debugger**, or the {icon}`bug` **Debug** button on the toolbar;
+- **Tools > Debugger**, or the {icon}`bug` **Debugger** button on the toolbar;
 - **Debugger** in the menu that a right-click on the picture opens;
 - the **Debugger** hotkey: F10 (Modern), Esc (Classic);
 - `-d` on the command line opens it as soon as the program starts (see
@@ -96,8 +96,8 @@ or TSConf, the Pentagon 1024, the Profi v5, and any machine with a SMUC. **FDC**
 are there only on a machine with a disk interface. **ZX Evo** is there only on a ZX
 Evolution, with TSConf or BaseConf, and **Palette** on every other machine.
 
-**Screen** and **Sound Chip** can also be windows of their own: **Debug > Screen** and
-**Debug > Sound Chips** open them, and they work while the machine runs. **ZX Evo** can be
+**Screen** and **Sound Chip** can also be windows of their own: **Tools > Screen** and
+**Tools > Sound Chips** open them, and they work while the machine runs. **ZX Evo** can be
 one too, from the {icon}`display` button at the top right of the panel. See
 [Device panels](debugger-devices.md).
 

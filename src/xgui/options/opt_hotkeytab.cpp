@@ -41,9 +41,9 @@ static QString latinKeys(const QString& txt) {
 // The sections are mostly the menus', so a key is found where its command is, in
 // the menu's order; the RZX player sits with the RZX recording. The debugger's own
 // keys go by the part of it they work in.
-enum {HK_FILE = 0, HK_MACHINE, HK_TIME, HK_TAPE, HK_CAPTURE, HK_RZX, HK_VIEW, HK_INPUT, HK_DEBUG,
+enum {HK_FILE = 0, HK_MACHINE, HK_TIME, HK_TAPE, HK_CAPTURE, HK_RZX, HK_VIEW, HK_INPUT, HK_TOOLS,
 	HK_DEBUGGER, HK_DISASM, HK_DUMP, HK_OTHER, HK_COUNT};
-static const char* hk_names[HK_COUNT] = {"File", "Machine", "Time", "Tape", "Capture", "RZX", "View", "Input", "Debug",
+static const char* hk_names[HK_COUNT] = {"File", "Machine", "Time", "Tape", "Capture", "RZX", "View", "Input", "Tools",
 	"Debugger", "Disassembler", "Memory dump", "Other"};
 
 static const struct {int sec; int id;} hk_place[] = {
@@ -63,7 +63,7 @@ static const struct {int sec; int id;} hk_place[] = {
 	{HK_VIEW, XCUT_SIZEX5}, {HK_VIEW, XCUT_SIZEX6}, {HK_VIEW, XCUT_FULLSCR}, {HK_VIEW, XCUT_RATIO},
 	{HK_VIEW, XCUT_NOFLICK}, {HK_VIEW, XCUT_RELOAD_SHD}, {HK_VIEW, XCUT_KEYBOARD},
 	{HK_INPUT, XCUT_GRABKBD}, {HK_INPUT, XCUT_MOUSE}, {HK_INPUT, XCUT_PADWIN},
-	{HK_DEBUG, XCUT_DEBUG}, {HK_DEBUG, XCUT_SCRWIN}, {HK_DEBUG, XCUT_SNDWIN},
+	{HK_TOOLS, XCUT_CHEATS}, {HK_TOOLS, XCUT_DEBUG}, {HK_TOOLS, XCUT_SCRWIN}, {HK_TOOLS, XCUT_SNDWIN},
 };
 
 // a key nobody placed yet goes under Other: seen, not lost under View

@@ -590,7 +590,7 @@ on the first breakpoint with the action **Debugger** (see
 ![The Watcher](images/dbg-watcher.png)
 
 The **Watcher** window shows the registers and some places in memory, and follows them
-while the machine runs. Open it with **Debug > Watcher** in the main window, or
+while the machine runs. Open it with **Tools > Watcher** in the main window, or
 **Watcher** under the {icon}`other` **Tools** button over the listing.
 
 1. **CPU** - the registers.

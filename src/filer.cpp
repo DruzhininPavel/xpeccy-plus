@@ -3,6 +3,7 @@
 #include "xcore/xcore.h"
 #include "xcore/autostart.h"
 #include "xcore/filemachine.h"
+#include "xcore/cheats.h"
 #include "xcore/sound.h"
 #include "libxpeccy/cpu/Z80/z80.h"
 #include "libxpeccy/filetypes/szx.h"
@@ -127,6 +128,7 @@ static xFileTypeInfo ft_tab[] = {
 	{FL_IMA, 1, ".ima", "*.ima", load_ima, NULL, "1.44 FDD image"},
 	{FL_PCIMG, 1, ".img", "*.img", load_ima, NULL, "1.44 FDD image"},
 	{FL_RZX, 0, ".rzx", "*.rzx", loadRZX, NULL, "RZX playback"},
+	{FL_POK, 0, ".pok", "*.pok", NULL, NULL, "Cheats"},
 	{FL_RAW, 0, NULL, "*", loadRaw, NULL, "RAW file to TR-DOS disk"},			// * for all files; *.* for all files that have extension
 	{0, 0, NULL, NULL, NULL, NULL, NULL}
 };
@@ -149,6 +151,7 @@ static xFileGroupInfo fg_tab[] = {
 	{FG_RAW, "", 0, "RAW file to disk", &ft_raw, {FL_RAW, 0}},
 	{FG_IF2_ROM, "", -1, "Cartridge image", &ft_sltraw, {FL_SLT_ROM, FL_SLT_BIN, 0}},
 	{FG_RZX, "", -1, "RZX playback", NULL, {FL_RZX, 0}},
+	{FG_POK, "", -1, "Cheats", NULL, {FL_POK, 0}},
 	{0, "", -1, NULL, NULL, {0}}
 };
 
@@ -160,7 +163,7 @@ static bool ft_export(xFileTypeInfo* inf) {
 }
 
 static xFileHWInfo fh_tab[] = {
-	{FH_SPECTRUM, {FG_SNAPSHOT, FG_TAPE, FG_DISK_A, FG_DISK_B, FG_DISK_C, FG_DISK_D, FG_RAW, FG_RZX, FG_IF2_ROM, 0}},
+	{FH_SPECTRUM, {FG_SNAPSHOT, FG_TAPE, FG_DISK_A, FG_DISK_B, FG_DISK_C, FG_DISK_D, FG_RAW, FG_RZX, FG_IF2_ROM, FG_POK, 0}},
 	{FH_ALF, {FG_IF2_ROM, FG_SNAPSHOT, 0}},
 	{FH_SLOTS, {FG_IF2_ROM, 0}},
 	{FH_DRIVE_A, {FG_DISK_A, FG_RAW, 0}},
@@ -722,6 +725,7 @@ int load_file(Computer* comp, const char* name, int id, int drv) {
 	QString path = QFileInfo(QString::fromLocal8Bit(name)).canonicalFilePath();
 	if (path.isEmpty()) return ERR_CANT_OPEN;
 	xFileTypeInfo* inf = file_type_of(comp, id, path);
+	if (inf && (inf->id == FL_POK)) inf = NULL;	// not a medium: see file_is_pok
 	int err = inf ? ERR_OK : ERR_FILE_TYPE;
 	if (drv < 0) drv = 0;
 	if (inf && inf->ch && !comp->dif->flp[drv & 3]->fitted) {
@@ -772,6 +776,10 @@ int load_file(Computer* comp, const char* name, int id, int drv) {
 	}
 	file_errors(err);
 	return err;
+}
+
+bool file_is_pok(const QString& path) {
+	return path.endsWith(".pok", Qt::CaseInsensitive);
 }
 
 static xMediaOpen media_last = {QString(), FG_ALL, 0, 0, false};
@@ -978,6 +986,7 @@ int quick_load(Computer* comp) {
 		if (QFileInfo::exists(path))
 			res = (load_file(comp, path.toLocal8Bit().data(), FG_ALL, 0) == ERR_OK);
 	}
+	if (res) cheats_forget();
 	emu_unlock();
 	return res;
 }
@@ -995,6 +1004,7 @@ int quick_undo(Computer* comp) {
 	} else if (was) {
 		xstate_destroy(was);
 	}
+	if (res) cheats_forget();
 	emu_unlock();
 	return res;
 }

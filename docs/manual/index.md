@@ -26,6 +26,7 @@ picture
 sound
 time
 capture
+cheats
 options
 hotkeys
 command-line

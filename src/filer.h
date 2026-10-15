@@ -27,7 +27,8 @@ enum {
 	FL_SLT_ROM,
 	FL_IMA,
 	FL_PCIMG,
-	FL_SZX
+	FL_SZX,
+	FL_POK
 };
 
 enum {
@@ -42,7 +43,8 @@ enum {
 	FG_RZX,
 	FG_HOBETA,
 	FG_RAW,
-	FG_IF2_ROM
+	FG_IF2_ROM,
+	FG_POK
 };
 
 enum {
@@ -58,6 +60,7 @@ enum {
 void initFileDialog(QWidget*);
 void fitFileDialog(QWidget*);
 void file_errors(int);
+bool file_is_pok(const QString&);	// cheats: the Cheats window opens them, load_file does not
 // the save dialog alone, for a file type the tables do not carry
 // suggest: a path to start from, folder and name; empty for the last folder
 QString file_ask_save(const char* title, const char* filter, const char* ext, const QString& suggest = QString(), const QString& own = QString());

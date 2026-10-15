@@ -1,0 +1,23 @@
+Z 8 1000 1 1
+NGood
+Z 8 50000 0 0
+NBad line
+M 8 x 1 1
+Z 8 50001 0 0
+NRange
+Z 9 70000 0 0
+NValue
+Z 8 50002 300 0
+NKey
+M 8 50003 0 0
+Q junk
+Z 8 50004 0 0
+NNo end
+M 8 50005 0 0
+NNo pokes
+Nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+M 8 50006 1 0
+M 8 50006 2 0
+Z 8 50007 3 0
+NOpen at the end
+M 8 50008 0 0

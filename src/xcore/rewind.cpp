@@ -10,6 +10,7 @@
 #include "xcore.h"
 #include "fastload.h"
 #include "rzxseek.h"
+#include "cheats.h"
 #include "autostart.h"
 #include "sound.h"
 #include "../libxpeccy/xstate.h"
@@ -288,8 +289,10 @@ static void rw_let_go(Computer* comp, long long* phase) {
 	rwEntry* e = rw_at(rw_back);
 	if (e) rw_snd_w = e->snd;
 	rw_acc = {};
-	if (rewind_restore(comp, rw_back, phase))
+	if (rewind_restore(comp, rw_back, phase)) {
 		xlog(XLG_CORE, XLL_INFO, "rewind: played on from frame %i, key let go at %i", rw_clock, from);
+		cheats_rollback(comp);
+	}
 	rw_play_stop();
 }
 

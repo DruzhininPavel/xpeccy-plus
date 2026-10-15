@@ -25,6 +25,7 @@ how the machine a file runs on is chosen. Tapes and disks have chapters of their
 | Any file | **RAW file to disk** | yes, onto disk A | no |
 | Cartridge | `.rom`, `.bin` | yes | no |
 | Recording | `.rzx` | yes | from the **Capture** menu |
+| Cheats | `.pok` | yes, into the [Cheats](cheats.md) window | no |
 
 A Hobeta file opens as a TR-DOS file on a disk: in drive A, or in the drive picked from the
 file types of the open dialog. A drive with no disk gets a new, formatted one first.

@@ -1,0 +1,41 @@
+{
+  "files": {
+    "EXOLON.TAP": {
+      "url": "https://spectrumcomputing.co.uk/pub/sinclair/games/e/Exolon.tap.zip",
+      "sha256": "e07e09ba7b401e9b5b296930496cdc2020d761157a4284b250bf2ba117ca2214"
+    }
+  },
+  "prepare": [
+    "-m",
+    "zx48",
+    "{media}/EXOLON.TAP",
+    "--bench",
+    "2400",
+    "--bench-keys",
+    "1600:_/10,2000:1/30",
+    "--bench-save",
+    "{media}/exolon.sna"
+  ],
+  "args": [
+    "{media}/exolon.sna",
+    "{media}/exolon.pok"
+  ],
+  "steps": [
+    ["wait", 3000],
+    ["run", "activate-window Cheats"],
+    ["wait", 500],
+    ["click-nowait", "cheatList", 31, 39],
+    ["wait", 800],
+    ["run", "type QLineEdit 99\\n"],
+    ["wait", 500],
+    ["run", "type cheatAdrDec 36454"],
+    ["run", "type cheatValDec 9"],
+    ["run", "activate-window Cheats"],
+    ["wait", 500]
+  ],
+  "frames": [
+    {"n": 1, "rect": [4, 6, 432, 32]},
+    {"n": 2, "widget": "cheatList"},
+    {"n": 3, "widget": "cheatHand"}
+  ]
+}

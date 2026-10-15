@@ -56,6 +56,11 @@ before that point is upstream's history and is not repeated here.
   Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
   which the +3 reads too, show as well.
 
+- **Cheats**: Tools > Cheats ticks a `.pok` file's trainers on and off while the game runs,
+  and unticking one puts the bytes back. A file in `POKES` or beside the image is found by
+  itself, and a trainer made for another release of the game asks first. Custom POKEs take
+  an address and a value in decimal or hex. The Debug menu is now Tools.
+
 ### Changed
 
 - **Faster emulation**: Fast Mode runs three to six times as fast on every machine, and on
