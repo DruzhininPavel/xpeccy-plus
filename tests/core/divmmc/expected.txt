@@ -42,6 +42,13 @@ BF11: 02 03 00 02 00 01 02 03 00 02 00 01 02 03 00 02
 BF21: 00 01 02 03 00 02 00 01 02 03 00 02 00 01 02 03
 BF31: 00 02 00 01 02 03 00 02 00 01 02 03 FF FF 00 00
 DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
+== t07_spi_turbo
+t07_spi.bin: 619 bytes, done after 208 frames, pc=808E
+BF01: 00 02 00 01 02 03 00 02 00 01 02 03 00 02 00 01
+BF11: 02 03 00 02 00 01 02 03 00 02 00 01 02 03 00 02
+BF21: 00 01 02 03 00 02 00 01 02 03 00 02 00 01 02 03
+BF31: 00 02 00 01 02 03 00 02 00 01 02 03 FF FF 00 00
+DIV  : conmem 0 mapram 0 bank 00 mapcond 0 automap 0 shown 0 cs 3 #0000 F3 #2000 0D
 == t07_spi_28mhz
 t07_spi.bin: 619 bytes, done after 15 frames, pc=808E
 BF01: 02 00 00 02 04 06 02 00 00 02 04 06 02 00 00 02

@@ -30,6 +30,22 @@ enum {
 // to take the request
 #define DIV_SPI_NS	720
 
+// the EEPROM's own state (AT28C64B)
+typedef struct {
+	long long loadEnd;	// the page load window closes (us * 1000, ns)
+	long long busyEnd;	// the internal write ends (ns)
+	int busy;		// a page is loaded or being written
+	int lastAdr;
+	int lastVal;
+	int toggle;		// I/O6 while busy
+	int sdp;		// software data protection on
+	int seq;		// how far a command sequence has got
+	int arm;		// SDP: the 3-byte prefix seen, this load may write
+	int n;			// bytes latched
+	unsigned short adr[64];
+	unsigned char val[64];
+} DivEE;
+
 typedef struct {
 	int model;		// DIV_NONE: not fitted
 	int pages;		// 8K SRAM pages fitted: 16 or 64
@@ -56,20 +72,7 @@ typedef struct {
 	int nmiLine;
 
 	// the EEPROM's own state (AT28C64B)
-	struct {
-		long long loadEnd;	// the page load window closes (us * 1000, ns)
-		long long busyEnd;	// the internal write ends (ns)
-		int busy;		// a page is loaded or being written
-		int lastAdr;
-		int lastVal;
-		int toggle;		// I/O6 while busy
-		int sdp;		// software data protection on
-		int seq;		// how far a command sequence has got
-		int arm;		// SDP: the 3-byte prefix seen, this load may write
-		int n;			// bytes latched
-		unsigned short adr[64];
-		unsigned char val[64];
-	} ee;
+	DivEE ee;
 	int eeDirty;		// written since the image was saved
 
 	unsigned char data[DIV_EE_SIZE + DIV_RAM_MAX];	// the EEPROM, then the SRAM

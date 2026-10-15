@@ -86,8 +86,7 @@ static void comp_m1x(void* ptr, int adr) {
 
 // the board's time: its oscillators run whatever the CPU does
 static long long comp_div_ns(void* ptr) {
-	Computer* comp = (Computer*)ptr;
-	return (long long)((double)(comp->tickTotal + comp->cpu->t) * comp->nsPerTick);
+	return comp_ns((Computer*)ptr);
 }
 
 int memrd(int adr, int m1, void* ptr) {
@@ -838,7 +837,18 @@ void comp_snap_reset(Computer* comp, int res) {
 
 // cpu freq
 
+// ns since the machine was made, each stretch at the clock it ran at
+long long comp_ns(Computer* comp) {
+	long long d = comp->tickTotal + (comp->cpu ? comp->cpu->t : 0) - comp->nsBaseTick;
+	// no clock set yet (cpuFrq 0 makes nsPerTick infinite): no time has passed
+	if (!d || !isfinite(comp->nsPerTick)) return comp->nsBase;
+	return comp->nsBase + (long long)((double)d * comp->nsPerTick);
+}
+
 void comp_update_timings(Computer* comp) {
+	// the time so far at the old rate, before the new one is set
+	comp->nsBase = comp_ns(comp);
+	comp->nsBaseTick = comp->tickTotal + (comp->cpu ? comp->cpu->t : 0);
 	comp->nsPerTick = 1e3 / comp->cpuFrq;
 	if (comp->hw->init)
 		comp->hw->init(comp);

@@ -13,7 +13,8 @@
 // SDCARD1=img put cards in the slots (a name ending in .img is made blank, 1 MB);
 // NMIAT=n holds the NMI button through frame n; RESETAFTER=1 the state a reset
 // leaves, POWERAFTER=1 the state a power cycle leaves; EEOUT=file writes the
-// EEPROM after the run; TICKS=1 the T the program took; MHZ=n the CPU clock (3.5).
+// EEPROM after the run; TICKS=1 the T the program took; MHZ=n the CPU clock (3.5);
+// TURBOAT=f:x turns turbo x on at frame f, as a port or the hotkey does.
 
 #include "../bench.h"
 
@@ -171,6 +172,9 @@ int main(int argc, char** argv) {
 	}
 
 	int nmiat = getenv("NMIAT") ? atoi(getenv("NMIAT")) : -1;
+	int turboat = -1;
+	double turboMul = 1.0;
+	if (getenv("TURBOAT")) sscanf(getenv("TURBOAT"), "%d:%lf", &turboat, &turboMul);
 	int fstart = comp->vid->fcnt;
 	long long tick0 = comp->tickTotal;
 	while ((boot || (mbox_rd(comp, MBOX) != 0xaa)) && (comp->vid->fcnt - fstart < frames)) {
@@ -180,6 +184,10 @@ int main(int argc, char** argv) {
 			memset(dst + 0x3f00, 0, 0x100);
 			cpu_start(comp);
 			tick0 = comp->tickTotal;
+		}
+		if ((turboat >= 0) && (comp->vid->fcnt - fstart >= turboat)) {
+			compSetTurbo(comp, turboMul);
+			turboat = -1;
 		}
 		comp->flgNMIRQ = ((comp->vid->fcnt - fstart) == nmiat) ? 1 : 0;
 		compExec(comp);

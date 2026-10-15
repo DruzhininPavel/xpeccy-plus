@@ -308,20 +308,35 @@ static const szxField fld_sdc[] = {
 };
 
 // a divMMC: what DMMC has not (the automapper, the SPI engine, the EEPROM's cycle).
-// Its times are taken as offsets from the moment of the file (ext_div_save)
+// Its times are taken as offsets from the moment of the file (ext_div_times)
+typedef struct {
+	int conmem;
+	int mapram;
+	int bank;
+	int mapcond;
+	int automap;
+	int cs;
+	long long spiEnd;
+	int spiRes;
+	int spiLat;
+	int nmiLine;
+	int eeWrite;
+	DivEE ee;
+} extDiv;
+
 static const szxField fld_div[] = {
-	FLD(DivMMC, conmem),
-	FLD(DivMMC, mapram),
-	FLD(DivMMC, bank),
-	FLD(DivMMC, mapcond),
-	FLD(DivMMC, automap),
-	FLD(DivMMC, cs),
-	FLD(DivMMC, spiEnd),
-	FLD(DivMMC, spiRes),
-	FLD(DivMMC, spiLat),
-	FLD(DivMMC, nmiLine),
-	FLD(DivMMC, eeWrite),
-	FLD(DivMMC, ee),
+	FLD(extDiv, conmem),
+	FLD(extDiv, mapram),
+	FLD(extDiv, bank),
+	FLD(extDiv, mapcond),
+	FLD(extDiv, automap),
+	FLD(extDiv, cs),
+	FLD(extDiv, spiEnd),
+	FLD(extDiv, spiRes),
+	FLD(extDiv, spiLat),
+	FLD(extDiv, nmiLine),
+	FLD(extDiv, eeWrite),
+	FLD(extDiv, ee),
 	FLDEND
 };
 
@@ -422,38 +437,53 @@ static const szxField fld_tape[] = {
 
 static void ext_gs_save(szxBuf*, Computer*);
 
-// a divMMC's clocks, as the machine has them now
-static long long ext_div_ns(Computer* comp) {
-	return (long long)((double)(comp->tickTotal + comp->cpu->t) * comp->nsPerTick);
+// the record's fields, out of the board and back (DivMMC itself carries 520K of
+// memory: never a copy of it on the stack)
+static void ext_div_get(extDiv* r, const DivMMC* div) {
+	r->conmem = div->conmem;
+	r->mapram = div->mapram;
+	r->bank = div->bank;
+	r->mapcond = div->mapcond;
+	r->automap = div->automap;
+	r->cs = div->cs;
+	r->spiEnd = div->spiEnd;
+	r->spiRes = div->spiRes;
+	r->spiLat = div->spiLat;
+	r->nmiLine = div->nmiLine;
+	r->eeWrite = div->eeWrite;
+	r->ee = div->ee;
 }
 
-// the EEPROM's timers moved by d (0 stays 0: no cycle)
-static void ext_div_times(DivMMC* div, long long d) {
-	if (div->ee.loadEnd) div->ee.loadEnd += d;
-	if (div->ee.busyEnd) div->ee.busyEnd += d;
-	div->spiEnd += d;
+// the times moved by d: the file holds them as offsets from its own moment
+// (an EEPROM time of 0 stays 0: no cycle)
+static void ext_div_times(extDiv* r, long long d) {
+	if (r->ee.loadEnd) r->ee.loadEnd += d;
+	if (r->ee.busyEnd) r->ee.busyEnd += d;
+	r->spiEnd += d;
 }
 
 static void ext_div(Computer* comp, const unsigned char* p, size_t n) {
 	DivMMC* div = comp->div;
 	if (!div->model) return;
-	DivMMC tmp = *div;
-	fld_get(&tmp, fld_div, p, n);
-	ext_div_times(&tmp, ext_div_ns(comp));
-	div->conmem = tmp.conmem;
-	div->mapram = tmp.mapram;
-	div->bank = tmp.bank;
-	div->mapcond = tmp.mapcond;
-	div->automap = tmp.automap;
-	div->cs = tmp.cs;
+	extDiv r;
+	ext_div_get(&r, div);
+	ext_div_times(&r, -comp_ns(comp));	// what a field the file lacks reads as
+	fld_get(&r, fld_div, p, n);
+	ext_div_times(&r, comp_ns(comp));
+	div->conmem = r.conmem;
+	div->mapram = r.mapram;
+	div->bank = r.bank;
+	div->mapcond = r.mapcond;
+	div->automap = r.automap;
+	div->cs = r.cs;
 	div->card[0]->cs = div->cs & 1;
 	div->card[1]->cs = (div->cs >> 1) & 1;
-	div->spiEnd = tmp.spiEnd;
-	div->spiRes = tmp.spiRes;
-	div->spiLat = tmp.spiLat;
-	div->nmiLine = tmp.nmiLine;
-	div->eeWrite = tmp.eeWrite;
-	div->ee = tmp.ee;
+	div->spiEnd = r.spiEnd;
+	div->spiRes = r.spiRes;
+	div->spiLat = r.spiLat;
+	div->nmiLine = r.nmiLine;
+	div->eeWrite = r.eeWrite;
+	div->ee = r.ee;
 	div_map(div);
 }
 static void ext_gs_ram(GSound*, const unsigned char*, size_t);
@@ -585,9 +615,10 @@ void szx_ext_save(szxBuf* b, Computer* comp) {
 	if (comp->sdc)
 		rec_fields(b, XR_SDC, comp->sdc, fld_sdc);
 	if (comp->div->model) {
-		DivMMC tmp = *comp->div;
-		ext_div_times(&tmp, -ext_div_ns(comp));
-		rec_fields(b, XR_DIV, &tmp, fld_div);
+		extDiv r;
+		ext_div_get(&r, comp->div);
+		ext_div_times(&r, -comp_ns(comp));
+		rec_fields(b, XR_DIV, &r, fld_div);
 		for (i = 0; i < 2; i++)
 			rec_fields(b, XR_DCD + ((unsigned)i << 24), comp->div->card[i], fld_sdc);
 	}
