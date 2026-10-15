@@ -38,7 +38,7 @@ A command that has a key shows it in the menu. The keys are set on the **Hotkeys
 
 By default the toolbar has {icon}`fileopen` **Open**, {icon}`save_all` **Save**,
 {icon}`shutdown` **Reset**, {icon}`model-zx48` **Model**, {icon}`tape` **Tape Player**,
-{icon}`fdd_disk` **Disk Manager**, {icon}`fullscreen_icon_16` **Fullscreen**,
+{icon}`fdd_disk` **Disk Manager**, {icon}`fullscreen-16` **Fullscreen**,
 {icon}`vkeys` **Virtual Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debugger**,
 {icon}`other` **Options** and {icon}`speaker` **Mute**, and at the right end
 {icon}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**,
