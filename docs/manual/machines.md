@@ -188,7 +188,8 @@ normal speed. The **Speed Up** and **Speed Down** hotkeys move it too. See also
 Below them are the machine's devices, in four groups. Each row has a choice and a
 {icon}`settings` gear button; the gear opens the rest of that device's settings, in a window
 named after it, such as **Machine: Disk**. A gray gear means the device has nothing more to
-set.
+set. **OK** closes such a window and keeps what you set in it for **Apply**; **Cancel** (or
+Esc) puts back what it showed when it opened.
 
 | Group | Row | What it sets |
 |---|---|---|
@@ -196,7 +197,7 @@ set.
 | | **Disk** | **None**, **Beta Disk (WD1793)** or **+3 (uPD765)**; drives and the TR-DOS ROM in its window (see [Disks and drives](disks.md)) |
 | | **Hard disk** | the IDE interface; **Master** and **Slave** in its window |
 | | **SD card** | ZX Evolution only: the card in use |
-| | **divMMC** | 48K, 128K, +2, +2A, +3 and the Pentagons: **None** or **divMMC**; RAM, EEPROM jumper and the EEPROM image in its window (see [divMMC](disks.md#divmmc)) |
+| | **divMMC** | 48K, 128K, +2, +2A, +3 and the Pentagons: **None** or **divMMC**; RAM, EEPROM jumper and the firmware in its window (see [divMMC](disks.md#divmmc)) |
 | | **Cartridge** | 48K and ALF only: the cartridge in use |
 | **Input** | **Joystick** | **None**, **Kempston 5-bit**, **Kempston 8-bit** |
 | | **Mouse** | **None** or **Kempston mouse**; sensitivity and wheel in its window |

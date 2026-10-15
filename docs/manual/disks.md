@@ -238,9 +238,10 @@ The divMMC is an SD card interface for the ZX Spectrum 48K, 128K, +2, +2A and +3
 Pentagons take it on their ZX-BUS. The one emulated follows Mario Prato's original design,
 which the boards sold since, such as the DivMMC EnJOY!, are built on: 8K of EEPROM for the
 firmware, 128K or 512K of RAM, and two SD card slots. Its SD card port has a clock of its
-own, so the card works at any usual CPU speed. The firmware most people run on it is
-esxDOS, which loads `.tap`, `.sna`, `.z80` and `.trd` files from the card and adds dot
-commands to BASIC.
+own, so the card works at any usual CPU speed. Its firmware is esxDOS, which loads `.tap`,
+`.sna`, `.z80` and `.trd` files from the card and adds dot commands to BASIC. esxDOS 0.8.9
+comes with the emulator and is in the board's EEPROM from the start, by permission of its
+authors, Papaya Dezign.
 
 ### Setting it up
 
@@ -250,30 +251,39 @@ commands to BASIC.
    - **EEPROM writable** - the board's EEPROM jumper. Leave it off. When it is on, the
      Spectrum can write new firmware into the EEPROM, and the firmware does not start at a
      reset.
-   - **EEPROM** - **erased** or **written**, and two buttons: {icon}`fileopen` load an
-     image into the EEPROM, {icon}`cancel` erase it.
-2. Get the firmware. esxDOS is not shipped with the emulator: download it from
-   [esxdos.org](http://www.esxdos.org). Load `ESXMMC.BIN` from its archive with the
-   {icon}`fileopen` button, or flash it the way the real board is flashed: turn **EEPROM
-   writable** on, load `ESXMMC.TAP` and follow it, turn the option off, then use
-   **Machine > Reset > Hard Reset**. With the EEPROM erased and the option off, the
-   machine stops at its first interrupt, as it does with a real board that has no firmware.
-3. Prepare a card: an image with an MBR and one FAT16 or FAT32 partition, holding the `SYS`,
-   `BIN` and `TMP` folders from the esxDOS archive. A folder with these three works too.
-4. Put the card in: **Media > SD Card** has a menu for each slot, **Card 1** and **Card 2**,
-   with the name of the card in it. Each has **Open Image...**, **Open Folder...**,
-   **Eject** and **Write Protect**, as the ZX Evolution's card has.
+   - **Firmware** - what the EEPROM holds: **esxDOS 0.8.9**, **(erased)**, or **Custom**
+     for anything else, with the esxDOS version in it when it has one. The
+     {icon}`fileopen` button picks a firmware file. **Apply** writes the choice into the
+     EEPROM; before it replaces a **Custom** firmware, which may exist only in the EEPROM,
+     it asks.
+2. Make a card: **Media > SD Card** has a menu for each slot, **Card 1** and **Card 2**,
+   with the name of the card in it. **New esxDOS Folder...** asks for a folder - an empty
+   one, or a new one made in the same window - copies the esxDOS `SYS` and `BIN` folders
+   into it, adds `TMP`, puts it in the slot and powers the machine off and on. esxDOS starts
+   from the card; put your programs into the folder.
+3. Or use a card of your own. Each slot's menu also has **Open Image...**, **Open
+   Folder...**, **Eject** and **Write Protect**, as the ZX Evolution's card has. esxDOS
+   needs an image with an MBR and one FAT16 or FAT32 partition, or a folder, holding the
+   `SYS`, `BIN` and `TMP` folders of the same esxDOS version as the EEPROM.
+
+Another esxDOS version, or a firmware of your own, goes in with the {icon}`fileopen` button,
+or the way the real board is flashed: turn **EEPROM writable** on, load the flasher, such as
+`ESXMMC.TAP`, and follow it, turn the option off, then use **Machine > Reset > Hard Reset**.
+The **Firmware** row then shows what was flashed. With the EEPROM erased and the option
+off, the machine stops at its first interrupt, as it does with a real board that has no
+firmware.
 
 ![Machine: divMMC](images/options-divmmc.png)
 
 A real board is fitted and removed with the power off, and so is this one: **Apply**
-after a change in the **divMMC** row or in **RAM** powers the machine off and on. So does
-loading or erasing the EEPROM while the board is on. There is one board, as if the same one
+after a change in the **divMMC** row, in **RAM** or in **Firmware** powers the machine off
+and on. There is one board, as if the same one
 went from machine to machine: the RAM size and the EEPROM jumper are set for each machine,
 but the EEPROM is the same on all of them, and is kept for the next start of the emulator.
 
 esxDOS looks for the card and loads its system files only when the machine is switched
-on. A card put in later, or changed, is seen after **Machine > Reset > Hard Reset**;
+on. A card put in later, or changed, is seen after **Machine > Reset > Hard Reset**, which
+also reads a folder used as a card again, with the files copied into it since;
 started with no card, esxDOS ignores the NMI button until then. A plain reset is not enough:
 then the firmware skips the search and keeps what it found before.
 
@@ -335,8 +345,9 @@ programs into the folder and open it.
 
 - It is **read only**. The machine can read every file but cannot write: nothing it does
   changes your files.
-- The folder is read when it is opened, and again when you switch machines or click
-  **Apply** in **Options**. Files added later show up only then.
+- The folder is read when it is opened, and again at **Machine > Reset > Hard Reset**,
+  when you switch machines or click **Apply** in **Options**. Files added later show up
+  only then.
 - The disk is made just big enough for the folder: from 512 MB up to 32 GB. A larger folder
   is not opened, and the message **folder too big for a disk** says so.
 - These are left out: files of 4 GB and over, folders more than 16 levels deep, entries
