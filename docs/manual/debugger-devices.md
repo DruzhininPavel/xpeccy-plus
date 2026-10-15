@@ -622,7 +622,7 @@ The button at the top right of the panel, {icon}`display` **Show in its own wind
 the panel into a window of its own, **ZX Evolution**. In the window the button is pressed
 in; click it again, or close the window, to put the panel back in the Debugger. While the
 panel is out, its tab in the Debugger says so, with a **Bring it back** button. Unlike the
-**Screen** and **Sound Chips** windows, this one has no command in the **Debug** menu.
+**Screen** and **Sound Chips** windows, this one has no command in the **Tools** menu.
 
 The window works without the Debugger: it follows the machine while the machine runs, once
 a frame (in fast mode, once in ten frames), and its layer switches work as in the panel.
@@ -639,7 +639,7 @@ machine**.
 
 ![The Sound Chips window](images/dbg-sound-window.png)
 
-**Debug > Screen** and **Debug > Sound Chips** move the **Screen** and **Sound Chip**
+**Tools > Screen** and **Tools > Sound Chips** move the **Screen** and **Sound Chip**
 panels out of the Debugger into windows of their own. The same command again puts the
 panel back. In the Classic preset the keys are Alt+S and Alt+A; the Modern preset has no
 keys for them.
@@ -662,7 +662,7 @@ A 128K has two screens, in RAM pages 5 and 7. Many programs draw on the screen t
 shown and then flip, so that the picture never shows half drawn.
 
 1. Choose a 128K machine and load the program.
-2. Choose **Debug > Screen**. The **Screen** window opens.
+2. Choose **Tools > Screen**. The **Screen** window opens.
 3. Click **Both**. The window shows **Main (5)** and **Shadow (7)** together.
 4. Let the program run. The name of the screen the machine shows is in the **Header**
    color; when the program flips, the other name takes that color.
@@ -687,7 +687,7 @@ when the program draws there (see [Breakpoints and watching](debugger-breakpoint
 ### Watch the AY registers while music plays
 
 1. Choose **ZX Spectrum 128K** and pick **128 BASIC** in its menu.
-2. Choose **Debug > Sound Chips**. The **Sound Chips** window opens on **PSG1**.
+2. Choose **Tools > Sound Chips**. The **Sound Chips** window opens on **PSG1**.
 3. Type `PLAY "cdefgab"` and press Enter.
 4. Watch channel A: its **Period** changes with each note, its **Mixer** starts with `T`
    for the tone, and its **Lev** bar rises and falls. The wave box shows the square wave
