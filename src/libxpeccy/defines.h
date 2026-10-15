@@ -46,17 +46,6 @@ static inline long long x_ftell(FILE* file) {
 #define FIXED_TO_NS(v) ((long long)(v) >> NS_FIXED_BITS)		// 16.16 -> whole ns
 #define NSD_TO_FIXED(ns) ((long long)llround((ns) * (double)NS_FIXED_ONE))	// ns as a double -> 16.16
 
-#ifdef __WIN32
-	#define EXPORTDLL __declspec(dllimport)
-	#include <windows.h>
-	#define dlopen(d1,d2) LoadLibrary(d1)
-	#define dlclose FreeLibrary
-	#define dlsym GetProcAddress
-#else
-	#include <dlfcn.h>
-	#define EXPORTDLL
-#endif
-
 // compilation flags
 #define USE_HOST_KEYBOARD	1
 

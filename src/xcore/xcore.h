@@ -940,7 +940,6 @@ struct xConfig {
 		std::string prfDir;	// old profiles, only read once by the migration
 		std::string nvDir;	// nvram/, what the machines keep
 		std::string palDir;
-		std::string plgDir;	// so/dll/dynlib (experimental, works only for CPU)
 		std::string font;
 		std::string boot;
 	} path;

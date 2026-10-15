@@ -971,13 +971,8 @@ static void mac_set_psg(Computer* comp, int count, int type, double frq, int ste
 }
 
 static void mac_set_cpu(Computer* comp, const std::string& val) {
-	std::pair<std::string,std::string> spl = splitline(val, '@');	// NAME@LIBRARY
-	if (spl.second.empty()) {
-		cpu_set_type(comp->cpu, spl.first.c_str(), NULL, NULL);
-	} else {
-		std::string dir = conf.path.plgDir + SLASH + "cpu";
-		cpu_set_type(comp->cpu, spl.first.c_str(), dir.c_str(), spl.second.c_str());
-	}
+	// NAME@LIBRARY from a file written while cores could come from a library: the name alone
+	cpu_set_type(comp->cpu, splitline(val, '@').first.c_str());
 }
 
 // What the memory holds when the machine is switched on. Real ram comes up with
@@ -1175,7 +1170,6 @@ static void mac_put_all(QList<xMacLine>& out, const xMachine* mac) {
 	if (!mac || !conf.zx) return;
 	Computer* comp = conf.zx;
 	std::string cpu = comp->cpu->core->name;
-	if (comp->cpu->lib) cpu += std::string("@") + comp->cpu->libname;
 	mac_put(out, "hw", comp->hw->name, mac->hw);
 	mac_put(out, "cpu", cpu, mac->cpu);
 	mac_put(out, "cpu.frq", int(comp->cpuFrq * 1e6), mac->cpufrq);
