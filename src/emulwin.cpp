@@ -2115,6 +2115,22 @@ void MainWin::initMenuBar() {
 		grp->addAction(act);
 		sizeActs.append(act);
 	}
+	// the border sizes Options has, taken at once as its Apply takes them
+	brdMenu = new xMenu("Border", this);
+	viewMenu->addMenu(brdMenu);
+	QActionGroup* bgrp = new QActionGroup(brdMenu);
+	for (int i = VID_BRD_NONE; i <= VID_BRD_OVERSCAN; i++) {
+		act = brdMenu->addAction(QString());
+		act->setCheckable(true);
+		act->setData(i);
+		bgrp->addAction(act);
+		connect(act, &QAction::triggered, this, [this, i]() {
+			vid_set_border_mode(i);
+			optResize();
+			saveConfig();
+		});
+	}
+	connect(viewMenu, &QMenu::aboutToShow, this, &MainWin::fillBorderMenu);	// the submenu itself may be off
 	fullAct = cutAction(viewMenu, "Fullscreen", XCUT_FULLSCR, "fullscreen");
 	fullAct->setCheckable(true);
 	ratioAct = cutAction(viewMenu, "Keep Aspect Ratio in Fullscreen", XCUT_RATIO, "display");
@@ -2632,6 +2648,28 @@ void MainWin::fillUserMenu() {
 void MainWin::doOptions() {
 	pause(true, PR_OPTS);
 	emit s_options();
+}
+
+// Each size as the Options label gives it on this machine: overscan's is the machine's own.
+// A machine whose screen modes need more border shows that much whatever is picked, so the
+// sizes under it are off, with no size of their own to give, and the whole submenu is off
+// where the machine always shows its whole frame.
+void MainWin::fillBorderMenu() {
+	Video* vid = conf.zx->vid;
+	int shown = qMax(conf.vid.border, vid->brdmin);
+	brdMenu->setEnabled(vid->brdmin < VID_BRD_OVERSCAN);
+	foreach(QAction* act, brdMenu->actions()) {
+		int mode = act->data().toInt();
+		QString name = QString(brd_mode_name(mode));
+		name[0] = name[0].toUpper();
+		act->setEnabled(mode >= vid->brdmin);
+		if (act->isEnabled()) {
+			vCoord sze = vid_crop_size(vid, mode);
+			name += QString(" (%0×%1)").arg(sze.x).arg(sze.y);
+		}
+		act->setText(name);
+		act->setChecked(mode == shown);
+	}
 }
 
 // Apply in the options dialog, with the dialog still open. The border size may

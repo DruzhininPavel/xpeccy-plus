@@ -358,6 +358,8 @@ typedef struct {
 		QAction* cutAct(const QString& name, int id, const QString& icon = QString());
 		QAction* cutAction(QMenu*, const QString& name, int id, const QString& icon = QString());
 		QMenu* sizeMenu;
+		QMenu* brdMenu;
+		void fillBorderMenu();
 		QMenu* recentMenu;
 		void fillRecent();
 		// the toolbar and the status bar (emw_bars.cpp)
