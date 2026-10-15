@@ -172,8 +172,8 @@ void xlog_put(int grp, int lev, const char* fmt, ...) {
 	// The columns first, then the message straight after them: one buffer and
 	// one copy. Integer milliseconds, not %f - the float conversion alone was
 	// costing more than the rest of the line put together.
-	len = snprintf(line, sizeof(line), "%02d:%02d:%02d.%03d +%05lld.%03lld %s %s %-5s %-5s ",
-		h, m, s, ms, el / 1000, el % 1000, ftxt, ttxt,
+	len = snprintf(line, sizeof(line), "%02d:%02d:%02d.%03d +%05d.%03d %s %s %-5s %-5s ",
+		h, m, s, ms, (int)(el / 1000), (int)(el % 1000), ftxt, ttxt,
 		lev_name[lev], grp_name[grp]);
 	if (len < 0) return;
 	if ((size_t)len > sizeof(line) - 2) len = (int)sizeof(line) - 2;

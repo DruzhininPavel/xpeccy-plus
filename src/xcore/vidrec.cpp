@@ -561,8 +561,8 @@ static vaEnd vaCli[2] = {{-1, -1, 0}, {-1, -1, 0}};
 static vaEnd vaEff[2];
 
 static void va_resolve() {
-	vaEff[VA_START] = {conf.rec.autoStart, conf.rec.autoStartOp, conf.rec.autoStartAdr};
-	vaEff[VA_STOP] = {conf.rec.autoStop, conf.rec.autoStopOp, conf.rec.autoStopAdr};
+	vaEff[VA_START] = {(int)conf.rec.autoStart, conf.rec.autoStartOp, conf.rec.autoStartAdr};
+	vaEff[VA_STOP] = {(int)conf.rec.autoStop, conf.rec.autoStopOp, conf.rec.autoStopAdr};
 	for (int i = 0; i < 2; i++) {
 		if (vaCli[i].on >= 0) vaEff[i].on = vaCli[i].on;
 		if (vaCli[i].op >= 0) {
@@ -1069,7 +1069,7 @@ void vrWriter::run() {
 			QFile::remove(cmd.tmpVideo);
 			QFile::remove(cmd.tmpAudio);
 			vr_say(QString(" video saved: %0 ").arg(QFileInfo(cmd.out).fileName()));
-			xlog(XLG_VIDEO, XLL_INFO, "%lli frames written to %s", frames, cmd.out.toLocal8Bit().data());
+			xlog(XLG_VIDEO, XLL_INFO, "%s frames written to %s", QByteArray::number(frames).data(), cmd.out.toLocal8Bit().data());
 		} else {
 			// the two halves are kept: the picture alone is worth something
 			vr_say(" video: putting the sound in failed, see the log ");

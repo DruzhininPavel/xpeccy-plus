@@ -524,7 +524,7 @@ void sdlPlayAudio(void*, Uint8* stream, int len) {
 			len--;
 		}
 	}
-	if (conf.snd.mute) memset(out, 0, want);	// signed 16 bit: silence is zero
+	if (conf.snd.mute && (want > 0)) memset(out, 0, (size_t)want);	// signed 16 bit: silence is zero
 	// how little the ring was left with. while idle it is not drained at all,
 	// so leave the mark alone.
 	if (!idle) {
