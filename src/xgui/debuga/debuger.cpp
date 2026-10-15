@@ -2654,6 +2654,12 @@ void DebugWin::saveDumpHobeta() {
 	dsc.ext = 'C';
 	int start = dui.leStart->getValue();
 	int len = data.size();
+	if (len > 0xff00) {		// 255 sectors: all a TR-DOS file can say it holds
+		shitHappens("Too long for a Hobeta file (255 sectors at most)");
+		return;
+	}
+	// the file holds whole sectors: the last one padded with zeros
+	data.append(QByteArray(((len + 0xff) & ~0xff) - len, '\0'));
 	dsc.hst = (start >> 8) & 0xff;
 	dsc.lst = start & 0xff;
 	dsc.hlen = (len >> 8) & 0xff;
@@ -2743,10 +2749,11 @@ int loadDUMP(Computer* comp, const char* name, int adr) {
 	int bt;
 	while (adr < 0x10000) {
 		bt = fgetc(file);
-		if (feof(file)) break;
+		if (bt == EOF) break;
 		dbg_mem_wr(comp, adr & 0xffff, bt & 0xff);
 		adr++;
 	}
+	fclose(file);
 	return ERR_OK;
 }
 
