@@ -26,6 +26,7 @@
 #include "xapp.h"
 #include "titlebar.h"
 #include "emulwin.h"
+#include "xcore/cheats.h"
 #include "xgui/debuga/debuger.h"
 #include "xgui/scrwin.h"
 #include "xgui/sndwin.h"
@@ -210,13 +211,20 @@ static void open_pending(xApp& app, MainWin& mwin) {
 // A file on the command line: the machine it wants first, unless the command
 // line names the machine itself.
 static void open_cli_file(MainWin& mwin, const char* path, int drv, int run, bool pinned) {
+	if (file_is_pok(QString::fromLocal8Bit(path))) {
+		mwin.openCheats(QString::fromLocal8Bit(path));
+		return;
+	}
 	std::string mac;
 	if (!pinned && !media_machine(conf.zx, QString::fromLocal8Bit(path), FG_ALL, drv, run, &mac))
 		return;
 	if (!mac.empty())
 		mwin.setMachine(mac);
 	if (load_file(conf.zx, path, FG_ALL, drv) != ERR_OK) return;
-	if (drv < 1) mwin.padGame(QString::fromLocal8Bit(path));
+	if (drv < 1) {
+		mwin.padGame(QString::fromLocal8Bit(path));
+		cheats_pick(QString::fromLocal8Bit(path));
+	}
 	media_opened(QString::fromLocal8Bit(path), FG_ALL, drv, run, pinned);
 }
 

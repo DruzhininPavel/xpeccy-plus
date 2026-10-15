@@ -50,6 +50,7 @@
 #include "xcore/rzxseek.h"
 #include "xcore/rzxrecord.h"
 #include "emulwin.h"
+#include "xcore/cheats.h"
 #include "filer.h"
 #include "watcher.h"
 #include "xgui/favorites.h"
@@ -1600,6 +1601,12 @@ void MainWin::openMedia(const QString& path, int id, int drv, int run, bool pinn
 	Computer* comp = conf.zx;
 	pause(true, PR_FILE);
 	QString fpath = path.isEmpty() ? file_ask_open(comp, &id, &drv) : path;
+	// cheats only fill their window: nothing is reset, replaced or started
+	if (file_is_pok(fpath)) {
+		if (openCheats(fpath)) recent_add(fpath);
+		pause(false, PR_FILE);
+		return;
+	}
 	// Shift held as the dialog is left asks, as it does on a drop
 	if (path.isEmpty() && !fpath.isEmpty() && (QGuiApplication::queryKeyboardModifiers() & Qt::ShiftModifier)) {
 		run = askRun();
@@ -1621,7 +1628,10 @@ void MainWin::openMedia(const QString& path, int id, int drv, int run, bool pinn
 		emu_unlock();
 		if (err == ERR_OK) {
 			recent_add(fpath);		// the list is saved with the rest on exit
-			if (drv < 1) padGame(fpath);	// a disk in drive B is not the game
+			if (drv < 1) {			// a disk in drive B is not the game
+				padGame(fpath);
+				cheats_pick(fpath);
+			}
 			media_opened(fpath, id, drv, run, pinned);
 		}
 		media_autorun(comp, run);
@@ -1811,6 +1821,7 @@ void MainWin::updateSatellites() {
 	}
 // update watcher
 	emit s_watch_upd(comp);
+	cheatWin->upd();
 }
 
 // USER MENU
@@ -1949,11 +1960,16 @@ void MainWin::initUserMenu() {
 	padMenu = userMenu->addMenu(QIcon(":/images/gamepad.png"), "Gamepads");
 	// on its own opening only: the presets are files, read for the check marks
 	connect(padMenu, &QMenu::aboutToShow, this, &MainWin::fillPadMenu);
-	// the debugger and its detached panels
-	dbgMenu = userMenu->addMenu(QIcon(":/images/bug.png"), "Debugger");
+	// Cheats, the debugger and its detached panels: filled with the menu bar's Tools
+	toolsMenu = userMenu->addMenu(QIcon(":/images/bug.png"), "Tools");
+	dbgMenu = new QMenu("Debugger", this);
+	dbgMenu->setIcon(QIcon(":/images/bug.png"));
 	watchAct = dbgMenu->addAction(QIcon(":/images/objective.png"),"Watcher", this, SIGNAL(s_watch_show()));
 	dbgMenu->addAction(QIcon(":/images/rulers.png"),"Screen", this, SIGNAL(s_scr_show()));
 	dbgMenu->addAction(QIcon(":/images/note.png"),"Sound Chips", this, SIGNAL(s_snd_show()));
+	connect(dbgMenu->menuAction(), &QAction::triggered, this, &MainWin::doDebug);
+	cheatWin = new xCheatWin(this);
+	addSatellite(cheatWin);
 	cutAction(userMenu, "Options...", XCUT_OPTIONS, "other");
 
 	connect(profileMenu,SIGNAL(triggered(QAction*)),this,SLOT(profileSelected(QAction*)));
@@ -1967,7 +1983,6 @@ void MainWin::initUserMenu() {
 		menu->addRoot(sub);
 		connect(sub->menuAction(), &QAction::triggered, this, slot);
 	};
-	setRoot(dbgMenu, &MainWin::doDebug);
 	setRoot(bookmarkMenu, &MainWin::favManage);
 	setRoot(dskMenu, [this](){diskWin->showWindow();});
 	setRoot(padMenu, &MainWin::padWinShow);
@@ -2387,7 +2402,7 @@ void MainWin::favManage() {
 	setFocus();
 }
 
-// Machine, Media and Debug on the menu bar: what the buttons do, for a window
+// Machine, Media and Tools on the menu bar: what the buttons do, for a window
 // with no toolbar, put between Favorites and Help
 void MainWin::initMachineMenus() {
 	QMenu* mac = new xMenu("Machine", this);
@@ -2461,20 +2476,24 @@ void MainWin::initMachineMenus() {
 		cutById.value(XCUT_RZXFINAL)->setEnabled(on);
 	});
 
-	// one list, not the right-click menu's submenu
-	QMenu* dbg = new xMenu("Debug", this);
-	dbg->addAction(cutAct("Debugger", XCUT_DEBUG, "bug"));
-	dbg->addSeparator();
-	dbg->addAction(watchAct);
-	dbg->addAction(cutById.value(XCUT_SCRWIN));
-	dbg->addAction(cutById.value(XCUT_SNDWIN));
+	// the right-click menu's Tools is the same list
+	QMenu* tools = new xMenu("Tools", this);
+	foreach(QMenu* m, QList<QMenu*>() << tools << toolsMenu) {
+		m->addAction(cutAct("Cheats...", XCUT_CHEATS, "cheats"));
+		m->addSeparator();
+		m->addAction(cutAct("Debugger", XCUT_DEBUG, "bug"));
+		m->addSeparator();
+		m->addAction(watchAct);
+		m->addAction(cutById.value(XCUT_SCRWIN));
+		m->addAction(cutById.value(XCUT_SNDWIN));
+	}
 
 	// their submenus are filled where the right-click menu fills them, before the
 	// switches are read: what a drive offers is known only once its list is made
 	connect(mac, &QMenu::aboutToShow, this, &MainWin::fillUserMenu);
 	connect(inp, &QMenu::aboutToShow, this, &MainWin::fillUserMenu);
 	connect(media, &QMenu::aboutToShow, this, &MainWin::fillUserMenu);
-	foreach(QMenu* m, QList<QMenu*>() << mac << inp << media << cap << dbg) {
+	foreach(QMenu* m, QList<QMenu*>() << mac << inp << media << cap << tools) {
 		frame->menuBar()->insertMenu(helpMenu->menuAction(), m);
 		if (fsBar) fsBar->insertMenu(helpMenu->menuAction(), m);
 		connect(m, &QMenu::aboutToHide, this, &MainWin::menuHide);
@@ -2921,6 +2940,16 @@ void MainWin::padWinShow() {
 
 void MainWin::padWinModal() {
 	padWin->execOver();
+}
+
+void MainWin::cheatWinShow() {
+	cheatWin->showWindow();
+}
+
+bool MainWin::openCheats(const QString& path) {
+	if (!cheatWin->openFile(path)) return false;
+	cheatWin->showWindow();
+	return true;
 }
 
 void MainWin::watchMedia() {

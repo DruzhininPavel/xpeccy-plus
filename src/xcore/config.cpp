@@ -392,6 +392,7 @@ void saveConfig() {
 	fprintf(cfile, "evo.detached = %s\n", YESNO(conf.dbg.evodetach));
 	fprintf(cfile, "evo.fieldnames = %s\n", YESNO(conf.dbg.evonames));
 	fprintf(cfile, "evo.window = %i:%i:%i:%i\n",conf.dbg.evopos.x(),conf.dbg.evopos.y(),conf.dbg.evosiz.width(),conf.dbg.evosiz.height());
+	fprintf(cfile, "cheats.window = %i:%i:%i:%i\n",conf.dbg.cheatpos.x(),conf.dbg.cheatpos.y(),conf.dbg.cheatsiz.width(),conf.dbg.cheatsiz.height());
 	fprintf(cfile, "regs.layout = %i\n", conf.dbg.reglayout);
 	fprintf(cfile, "regs.split = %s\n", YESNO(conf.dbg.regsplit));
 	fprintf(cfile, "labels.image = %s\n", YESNO(conf.dbg.imglabels));
@@ -828,6 +829,8 @@ void loadConfig() {
 	conf.dbg.snddetach = 0;
 	conf.dbg.sndpos = QPoint(-1, -1);
 	conf.dbg.sndsiz = QSize(560, 380);
+	conf.dbg.cheatpos = QPoint(-1, -1);
+	conf.dbg.cheatsiz = QSize(440, 380);
 	conf.dbg.evotab = 0;
 	conf.dbg.evodetach = 0;
 	conf.dbg.evonames = 0;
@@ -961,6 +964,15 @@ void loadConfig() {
 							conf.dbg.sndpos.setY(atoi(vect[1].c_str()));
 							fprt = atoi(vect[2].c_str()); if (fprt > 0) conf.dbg.sndsiz.setWidth(fprt);
 							fprt = atoi(vect[3].c_str()); if (fprt > 0) conf.dbg.sndsiz.setHeight(fprt);
+						}
+					}
+					if (pnam == "cheats.window") {
+						vect = splitstr(pval,":");
+						if (vect.size() > 3) {
+							conf.dbg.cheatpos.setX(atoi(vect[0].c_str()));
+							conf.dbg.cheatpos.setY(atoi(vect[1].c_str()));
+							fprt = atoi(vect[2].c_str()); if (fprt > 0) conf.dbg.cheatsiz.setWidth(fprt);
+							fprt = atoi(vect[3].c_str()); if (fprt > 0) conf.dbg.cheatsiz.setHeight(fprt);
 						}
 					}
 					if ((pnam == "evo.tab") && (arg.i >= 0)) conf.dbg.evotab = arg.i;

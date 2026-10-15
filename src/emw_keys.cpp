@@ -398,6 +398,9 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 			case XCUT_PADWIN:
 				padWinShow();
 				break;
+			case XCUT_CHEATS:
+				cheatWinShow();
+				break;
 			case XCUT_RESET:
 				resetMachine(RES_DEFAULT);
 				break;

@@ -444,6 +444,7 @@ enum {
 	XCUT_SCRWIN,
 	XCUT_SNDWIN,
 	XCUT_PADWIN,
+	XCUT_CHEATS,
 	XCUT_MUTE,
 	XCUT_FASTSAVE,
 	XCUT_NMI,
@@ -989,6 +990,8 @@ struct xConfig {
 		QSize sndsiz;
 		QPoint evopos;		// ZX Evolution window, the same way
 		QSize evosiz;
+		QPoint cheatpos;	// Cheats window, the same way
+		QSize cheatsiz;
 	} dbg;
 };
 
