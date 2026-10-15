@@ -1005,13 +1005,26 @@ static void mac_cold_ram(Computer* comp, const std::string& pat, int noise) {
 	mem_cold_fill(comp->mem, (const unsigned char*)bytes.constData(), bytes.size(), noise);
 }
 
+// A folder served as a card or a disk is read again: with the power off is when a
+// card comes out, gets files copied onto it and goes back in.
+static void mac_reread_folders(Computer* comp) {
+	SDCard* cards[3] = {comp->sdc, comp->div->card[0], comp->div->card[1]};
+	for (int i = 0; i < 3; i++) {
+		if (cards[i]->vfat) sdc_remount(cards[i]);
+	}
+	if (comp->ide->master->vfat) ide_mount(comp->ide, IDE_MASTER, QString::fromLocal8Bit(comp->ide->master->image));
+	if (comp->ide->slave->vfat) ide_mount(comp->ide, IDE_SLAVE, QString::fromLocal8Bit(comp->ide->slave->image));
+}
+
 // Off and on again. What a reset leaves, this clears: the RAM comes up as the
 // machine's does, a divMMC's register, automapper and cards as theirs do. What
-// keeps without power - the CMOS, an EEPROM, the media - keeps.
+// keeps without power - the CMOS, an EEPROM, the media - keeps; a folder is read
+// again.
 void xm_power_cycle() {
 	const xMachine* mac = xm_find(conf.macId);
 	Computer* comp = conf.zx;
 	if (!mac || !comp) return;
+	mac_reread_folders(comp);
 	mac_cold_ram(comp, mac->ramCold, mac->ramNoise);
 	div_power_on(comp->div);
 	x_user_reset(comp, RES_DEFAULT);
