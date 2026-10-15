@@ -27,11 +27,14 @@ int loadSNA_f(Computer* comp, FILE* file, size_t fileSize) {
 	char pageBuf[0x4000];
 	char tmpgBuf[0x4000];
 	int is48 = (sna_hardware_of(fileSize) == SNAP_HW_48K);
+	// header and three pages; a 128K one has the pc, two ports and five pages
+	// more - six when the paged-in bank is 2 or 5, which is read below
+	if (fileSize < (is48 ? 49179 : 131103)) return ERR_SNAP_SHORT;
 
 	comp_snap_reset(comp, is48 ? RES_48 : RES_128);
 
 	snaHead hd;
-	fread((char*)&hd, sizeof(snaHead), 1, file);
+	if (fread((char*)&hd, sizeof(snaHead), 1, file) != 1) return ERR_SNAP_SHORT;
 	comp->cpu->regHLa = (hd._h << 8) | hd._l;
 	comp->cpu->regDEa = (hd._d << 8) | hd._e;
 	comp->cpu->regBCa = (hd._b << 8) | hd._c;
@@ -56,11 +59,11 @@ int loadSNA_f(Computer* comp, FILE* file, size_t fileSize) {
 	comp->vid->brdcol = hd.border & 7;
 	comp->vid->nextbrd = hd.border & 7;
 
-	fread(pageBuf, 0x4000, 1, file);
+	if (fread(pageBuf, 0x4000, 1, file) != 1) return ERR_SNAP_SHORT;
 	memPutData(comp->mem,MEM_RAM,5,MEM_16K,pageBuf);
-	fread(pageBuf, 0x4000, 1, file);
+	if (fread(pageBuf, 0x4000, 1, file) != 1) return ERR_SNAP_SHORT;
 	memPutData(comp->mem,MEM_RAM,2,MEM_16K,pageBuf);
-	fread(tmpgBuf, 0x4000, 1, file);
+	if (fread(tmpgBuf, 0x4000, 1, file) != 1) return ERR_SNAP_SHORT;
 
 	if (is48) {
 		comp->p7FFD = 0x10;
@@ -92,7 +95,7 @@ int loadSNA_f(Computer* comp, FILE* file, size_t fileSize) {
 		for (tmp2 = 0; tmp2 < 8; tmp2++) {
 			if ((tmp2 == 2) || (tmp2 == 5)) tmp2++;
 			if ((tmp & 7) != tmp2) {
-				fread(pageBuf, 0x4000, 1, file);
+				if (fread(pageBuf, 0x4000, 1, file) != 1) return ERR_SNAP_SHORT;
 				memPutData(comp->mem, MEM_RAM, tmp2, MEM_16K, pageBuf);
 			}
 		}

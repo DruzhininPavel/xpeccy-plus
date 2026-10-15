@@ -71,7 +71,8 @@ enum {
 	ERR_SZX_DATA,		// no cpu or no memory in it
 
 	ERR_CANT_SAVE,		// the format has no writer
-	ERR_FILE_TYPE		// the extension is none the machine knows
+	ERR_FILE_TYPE,		// the extension is none the machine knows
+	ERR_SNAP_SHORT		// a snapshot shorter than its own header says it is
 };
 
 // spg

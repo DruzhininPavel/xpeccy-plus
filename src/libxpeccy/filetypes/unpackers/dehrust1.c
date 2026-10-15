@@ -6,15 +6,17 @@
 
 /* depacker */
 
-WORD dehrust( BYTE* source, BYTE* dest ) {
+WORD dehrust( BYTE* source, int slen, BYTE* dst, int dlen ) {
 
 	BYTE *from = source;
 	bbStream strm;
 	bbStream* bs = &strm;
-	bsInit(bs, from, PAK_HRS);
-	BYTE* to = dest;
+	bsInit(bs, from, slen, PAK_HRS);
+	BYTE* to = dst;
+	BYTE* end = dst + dlen;
+	short offset = 0;
 
-	*(to++) = bsGetByte(bs);
+	UNP_PUT(bsGetByte(bs));
 
 	BYTE noBits = 2;
 	BYTE mask[] = { 0, 0, 0xfc, 0xf8, 0xf0, 0xe0, 0xc0, 0x80, 0 };
@@ -22,8 +24,7 @@ WORD dehrust( BYTE* source, BYTE* dest ) {
 	while( !bs->eof )
 	{
 		while( bsGetBit(bs) ) {
-			*to = bsGetByte(bs);
-			to++;
+			UNP_PUT(bsGetByte(bs));
 		}
 
 		WORD len = 0;
@@ -33,11 +34,11 @@ WORD dehrust( BYTE* source, BYTE* dest ) {
 			len += bb;
 		} while((bb == 0x03) && (len != 0x0f));
 
-		short offset = 0;
+		offset = 0;
 
 		if( len == 0 ) {
 			offset = 0xfff8 + bsGetBits(bs, 3);
-			*to = to[offset]; to++;
+			UNP_REF();
 			continue;
 		}
 
@@ -50,13 +51,13 @@ WORD dehrust( BYTE* source, BYTE* dest ) {
 					b <<= 1; ++b; // rlca
 					b ^= 2;       // xor c
 
-					if( b == 0xff ) { ++noBits; continue; }
+					if( b == 0xff ) { if (noBits < 8) ++noBits; continue; }
 
 					offset = 0xff00 + b - 0x0f;
 
-					*to = to[offset]; to++;
-					*to = bsGetByte(bs); to++;
-					*to = to[offset]; to++;
+					UNP_REF();
+					UNP_PUT(bsGetByte(bs));
+					UNP_REF();
 					continue;
 				}
 				offset = 0xff00 + b;
@@ -69,7 +70,7 @@ WORD dehrust( BYTE* source, BYTE* dest ) {
 			if( code == 3 ) offset = 0xffe0 + bsGetBits(bs, 5);
 
 			for( BYTE i = 0; i < 2; ++i ) {
-				*to = to[offset]; to++;
+				UNP_REF();
 			}
 			continue;
 		}
@@ -77,15 +78,15 @@ WORD dehrust( BYTE* source, BYTE* dest ) {
 		if( len == 3 ) {
 			if (bsGetBit(bs)) {
 				offset = 0xfff0 + bsGetBits(bs, 4);
-				*to = to[offset]; to++;
-				*to = bsGetByte(bs); to++;
-				*to = to[offset]; to++;
+				UNP_REF();
+				UNP_PUT(bsGetByte(bs));
+				UNP_REF();
 				continue;
 			}
 
 			if( bsGetBit(bs) ) {
 				BYTE noBytes = 6 + bsGetBits(bs, 4);
-				for( BYTE i = 0; i < 2*noBytes; ++i ) *(to++) = bsGetByte(bs);
+				for( BYTE i = 0; i < 2*noBytes; ++i ) UNP_PUT(bsGetByte(bs));
 				continue;
 			}
 
@@ -109,9 +110,9 @@ WORD dehrust( BYTE* source, BYTE* dest ) {
 
 				offset = 0xff00 + b - 0x0f;
 
-				*to = to[offset]; to++;
-				*to = bsGetByte(bs); to++;
-				*to = to[offset]; to++;
+				UNP_REF();
+				UNP_PUT(bsGetByte(bs));
+				UNP_REF();
 				continue;
 			}
 			offset = 0xff00 + b;
@@ -125,9 +126,9 @@ WORD dehrust( BYTE* source, BYTE* dest ) {
 		}
 
 		for( WORD i = 0; i < len; ++i ) {
-			*to = to[offset]; to++;
+			UNP_REF();
 		}
 	}
 
-	return to-dest;
+	return to-dst;
 }

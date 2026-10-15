@@ -48,11 +48,15 @@ int loadSPG(Computer* comp, const char* name, int drv) {
 		fclose(file);
 		return ERR_SPG_VERSION;
 	}
-	fread((char*)blkInfo, 768, 1, file);
+	if (fread((char*)blkInfo, 768, 1, file) != 1) {
+		fclose(file);
+		return ERR_SPG_SIGN;
+	}
 
 	// printf("spg ver %i.%i\n",(hd.fmt & 0xf0) >> 4, hd.fmt & 0x0f);
 
 	int blkCount = hd.bcl | (hd.bch << 8);
+	if (blkCount > 256) blkCount = 256;		// all the block table holds
 	int idx = 0;
 	int sze;
 	unsigned char pg;
@@ -62,18 +66,20 @@ int loadSPG(Computer* comp, const char* name, int drv) {
 		sze = ((blkInfo[idx+1] & 0x1f) + 1) << 9;	// block size (00:512 .. 1f:16K
 		pg = blkInfo[idx+2];
 
-		fread((char*)inbuf, sze, 1, file);
+		// a file cut short: the rest of the block is zeros
+		size_t got = fread((char*)inbuf, 1, sze, file);
+		if (got < (size_t)sze) memset(inbuf + got, 0, sze - got);
 		int dst = (pg << 14) + addr;
 		unsigned char* src = inbuf;
 		switch (blkInfo[idx + 1] & 0xc0) {
 			case 0x00:
 				break;
 			case 0x40:
-				sze = demegalz(inbuf, outbuf);		// it works?
+				sze = demegalz(inbuf, sze, outbuf, sizeof(outbuf));		// it works?
 				src = outbuf;
 				break;
 			case 0x80:
-				sze = dehrust(inbuf, outbuf);		// no 'last 6 bytes'
+				sze = dehrust(inbuf, sze, outbuf, sizeof(outbuf));		// no 'last 6 bytes'
 				src = outbuf;
 				break;
 			default:
