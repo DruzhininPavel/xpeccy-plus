@@ -3,6 +3,7 @@
 # languages are .po files under locale/.
 
 import json
+import os
 import re
 from pathlib import Path
 
@@ -140,8 +141,21 @@ ICONS = ROOT.parent.parent / "images"
 TITLES = {"ru": "Руководство Xpeccy+", "uk": "Посібник Xpeccy+", "es": "Manual de Xpeccy+"}
 
 
+# the manual of main, on Pages under dev/, says so over every page: it may describe what
+# the newest release does not have yet
+DEV_NOTES = {
+    "en": "This manual is for the nightly build: it may describe what the latest release does not have yet.",
+    "ru": "Это руководство к ночной сборке: в нём может быть то, чего ещё нет в последнем релизе.",
+    "uk": "Це посібник до нічної збірки: у ньому може бути те, чого ще немає в останньому релізі.",
+    "es": "Este manual es de la versión nocturna: puede describir lo que la última versión publicada aún no tiene.",
+}
+
+
 def set_title(app, config):
     config.html_title = TITLES.get(config.language, html_title)
+    if os.environ.get("XPECCY_MANUAL_DEV"):
+        config.html_theme_options = dict(config.html_theme_options,
+                                         announcement=DEV_NOTES.get(config.language, DEV_NOTES["en"]))
 
 
 def setup(app):

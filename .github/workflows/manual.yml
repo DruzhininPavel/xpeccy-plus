@@ -1,15 +1,25 @@
 name: Manual
 
-# Puts the user manual of a release on GitHub Pages, every language: what
-# Help > Manual opens in a build that carries no manual of its own.
-# The site follows releases, not main, so it says what the released program does.
+# Puts the user manual on GitHub Pages, every language. The top of the site is the manual
+# of the newest release, so it says what the released program does: what Help > Manual
+# opens in a build that carries no manual of its own. dev/ is main's, for the nightly
+# build, with a note over every page saying so. Until a release carries a manual, the top
+# sends the reader to dev/.
 #
 # Pages has to be set to "GitHub Actions" once, in the repository's settings
-# (Settings > Pages > Source). Started by hand: "gh workflow run manual.yml --ref <tag>".
+# (Settings > Pages > Source). Runs on a release tag, on a push to main that changes the
+# manual, and by hand: "gh workflow run manual.yml --ref main".
 
 on:
   push:
+    branches: [main]
     tags: ['v*']
+    # not looked at for a tag: a release always publishes
+    paths:
+      - 'docs/manual/**'
+      - 'images/**'
+      - 'tools/manual.py'
+      - '.github/workflows/manual.yml'
   workflow_dispatch:
 
 concurrency:
@@ -24,17 +34,51 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Build
+        env:
+          BASE: /${{ github.event.repository.name }}/
         run: |
+          py="$RUNNER_TEMP/docs/bin/python3"
+          site="$RUNNER_TEMP/site"
           python3 -m venv "$RUNNER_TEMP/docs"
-          "$RUNNER_TEMP/docs/bin/python3" -m pip install --disable-pip-version-check -r docs/manual/requirements.txt
-          "$RUNNER_TEMP/docs/bin/python3" tools/manual.py html
-          "$RUNNER_TEMP/docs/bin/python3" tools/manual.py check
+
+          # dev/: main's manual
+          "$py" -m pip install --disable-pip-version-check -r docs/manual/requirements.txt
+          "$py" tools/manual.py html --dev
+          "$py" tools/manual.py check
+          mkdir -p "$site"
+          cp -r build/manual "$site/dev"
+
+          # the top: the newest release, built with its own tools, if it has a manual
+          rel=$(git tag -l 'v*' --sort=-version:refname | head -n 1)
+          if git cat-file -e "$rel:docs/manual/conf.py" 2>/dev/null; then
+            echo "release: $rel"
+            git worktree add "$RUNNER_TEMP/rel" "$rel"
+            cd "$RUNNER_TEMP/rel"
+            "$py" -m pip install --disable-pip-version-check -r docs/manual/requirements.txt
+            "$py" tools/manual.py html
+            cp -r build/manual/. "$site/"
+          else
+            echo "release: $rel has no manual, the top sends to dev/"
+            printf '%s\n' '<!doctype html><meta charset="utf-8"><title>Xpeccy+ Manual</title>' \
+              '<script>location.replace("dev/")</script>' \
+              '<meta http-equiv="refresh" content="0; url=dev/"><a href="dev/">Xpeccy+ Manual</a>' \
+              > "$site/index.html"
+            # a page linked before dev/ existed, such as ru/disks.html, is in dev/ now
+            printf '%s\n' '<!doctype html><meta charset="utf-8"><title>Xpeccy+ Manual</title>' \
+              "<script>var b=\"$BASE\",p=location.pathname;" \
+              'location.replace(b+"dev/"+(p.indexOf(b)==0&&p.indexOf(b+"dev/")!=0?p.slice(b.length):"")+location.hash)</script>' \
+              "<a href=\"${BASE}dev/\">Xpeccy+ Manual</a>" \
+              > "$site/404.html"
+          fi
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: build/manual
+          path: ${{ runner.temp }}/site
 
   deploy:
     needs: build
