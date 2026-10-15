@@ -338,10 +338,10 @@ A right-click on the listing opens a shorter menu: **Breakpoints**, **View**,
   **Options**.
 - **Block separator** - the empty row after each return and jump. On by default.
 - **Show segment** - addresses as the memory and page they are in: `RAM:05:0000` is the
-  first byte of RAM page 5, `ROM:00:0038` a byte of ROM page 0. Off each time the program
-  starts.
+  first byte of RAM page 5, `ROM:00:0038` a byte of ROM page 0, and `DIV:` a byte of a
+  [divMMC](disks.md#divmmc)'s EEPROM or RAM. Off each time the program starts.
 - **Allow ROM wr** - lets the listing, the dump, the filler and a loaded dump write into
-  ROM.
+  ROM and into a divMMC's EEPROM.
 - **Runtime mapping**, **Clear mapping** - see [How memory is shown](#how-memory-is-shown).
 - **Reset panel layout** - see [Arranging the panels](debugger.md#arranging-the-panels).
 

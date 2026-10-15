@@ -317,7 +317,7 @@ The **MEMMAP** panel holds a few small blocks, one under another. The **Debugger
 **Options** sets which of them are shown.
 
 The four rows at the top are the four 16K banks of the Z80's memory, with what is in each:
-ROM or RAM and the page number. You can put another page into a bank from here. See
+ROM or RAM (or DIV, a [divMMC](disks.md#divmmc)'s memory) and the page number. You can put another page into a bank from here. See
 [Memory](debugger-memory.md).
 
 ```{index} FMAPS, TSConf; FMAPS
