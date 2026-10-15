@@ -49,7 +49,7 @@ int loadTAP(Computer* comp, const char* name, int drv) {
 	while (!feof(file)) {
 		len = fgetw(file);
 		if (!feof(file)) {
-			fread(blockBuf, len, 1, file);
+			len = (int)fread(blockBuf, 1, len, file);		// a file cut short: what there is
 			block = tapDataToBlock(blockBuf, len, NULL);
 			blkAddPause(&block, TAPTPS);
 			tap_add_block(tape, block);
