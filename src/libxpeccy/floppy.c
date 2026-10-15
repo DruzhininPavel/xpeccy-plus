@@ -26,6 +26,7 @@ Floppy* flpCreate(int id, cbflpirq cb, void* p) {
 }
 
 void flpDestroy(Floppy* flp) {
+	free(flp->path);
 	free(flp);
 }
 
@@ -125,6 +126,7 @@ unsigned short getCrc(unsigned char* ptr, int len) {
 		crc ^= val << 8;
 		for (i = 0; i < 8 ; i++) {
 			if ((crc *= 2) & 0x10000) crc ^= 0x1021;
+			crc &= 0xffff;		// only these 16 bits go on: no overflow over a long run
 		}
 		ptr++;
 	}

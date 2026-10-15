@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "xreplay.h"
 #include "xstate.h"
@@ -190,8 +191,8 @@ int xreplay_redraw(Computer* comp) {
 		cpuGetRegs(comp->cpu);
 		ok = xstate_save(stEnd, comp);
 	} else {
-		snprintf(why, sizeof(why), "the run ends at T %lld of %lld, %i INs of %i%s",
-			comp->tickTotal, target, feedPos, frm[0].len + frm[1].len, feedFail ? ", past the log" : "");
+		snprintf(why, sizeof(why), "the run ends at T %" PRId64 " of %" PRId64 ", %i INs of %i%s",
+			(int64_t)comp->tickTotal, (int64_t)target, feedPos, frm[0].len + frm[1].len, feedFail ? ", past the log" : "");
 	}
 	if (ok) {
 		const unsigned char* data = NULL;

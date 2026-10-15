@@ -29,7 +29,7 @@ int loadSCL(Computer* comp, const char* name, int drv) {
 	int i;
 
 	sclHead hd;
-	fread((char*)&hd, sizeof(sclHead), 1, file);
+	if (fread((char*)&hd, sizeof(sclHead), 1, file) != 1) memset(&hd, 0, sizeof(hd));	// no sign then
 	if (strncmp(hd.sign, "SINCLAIR", 8) != 0) {
 		err = ERR_SCL_SIGN;
 	} else if (hd.files > 128) {
@@ -39,7 +39,8 @@ int loadSCL(Computer* comp, const char* name, int drv) {
 		scnt = 0x10;
 		bptr = buf;					// start of TRK0
 		for (i = 0; i < hd.files; i++) {		// make catalog
-			fread((char*)bptr, 14, 1, file);	// file dsc
+			if (fread((char*)bptr, 14, 1, file) != 1)	// file dsc
+				memset(bptr, 0, 14);			// the file ends in the catalog
 			bptr[14] = scnt & 0x0f;			// sector
 			bptr[15] = ((scnt & 0xff0) >> 4);	// track
 			scnt += bptr[13];			// +sectors size
@@ -61,7 +62,9 @@ int loadSCL(Computer* comp, const char* name, int drv) {
 		flp_format_trk(flp, 0, 16, 256, (char*)buf);
 		i = 1;
 		while (!feof(file) && (i < 256)) {
-			fread((char*)buf, 0x1000, 1, file);
+			// as in loadTRD: a part track padded with zeros, a read of nothing keeps buf
+			size_t got = fread((char*)buf, 1, 0x1000, file);
+			if ((got > 0) && (got < 0x1000)) memset(buf + got, 0, 0x1000 - got);
 			flp_format_trk(flp, i, 16, 256, (char*)buf);
 			i++;
 		}

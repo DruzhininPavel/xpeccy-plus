@@ -380,6 +380,7 @@ static xFilerError err_tab[] = {
 	{ERR_NOTRD, "Not a TR-DOS disk"},
 	{ERR_CANT_SAVE, "Can't save in this format"},
 	{ERR_FILE_TYPE, "Unknown file type"},
+	{ERR_SNAP_SHORT, "The snapshot is cut short"},
 	{ERR_OK, ""}
 };
 

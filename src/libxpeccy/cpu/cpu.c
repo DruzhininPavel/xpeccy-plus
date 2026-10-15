@@ -61,70 +61,10 @@ void cpuSetCore(CPU* cpu, cpuCore* core) {
 	}
 }
 
-// new
-
-void cpu_close_lib(CPU* cpu) {
-	if (cpu->lib) {
-		dlclose(cpu->libhnd);
-		cpu->lib = 0;
-	}
-}
-
-int cpu_open_lib(CPU* cpu, const char* dir, const char* fname) {
+// the core by its name in the built-in table
+int cpu_set_type(CPU* cpu, const char* name) {
+	cpuCore* itm = cpuTab;
 	int res = 0;
-	if (cpu->lib) {					// some library opened
-		if (!strcmp(cpu->libname, fname)) {	// same lib
-			res = 1;
-		} else {
-			cpu_close_lib(cpu);
-		}
-	}
-	if (!res) {
-		char* buf = (char*)malloc(strlen(dir) + strlen(fname) + 2);
-		strcpy(buf, dir);
-		strcat(buf, "/");
-		strcat(buf, fname);
-		void* hnd = dlopen(buf, RTLD_LAZY | RTLD_GLOBAL);	// load library
-		if (hnd) {
-			cpuCore*(*getCore)();				// check callback
-			getCore = dlsym(hnd, "getCore");
-			if (getCore) {					// success
-				cpu->lib = 1;
-				cpu->libhnd = hnd;
-				cpu->libname = realloc(cpu->libname, strlen(fname) + 1);
-				strcpy(cpu->libname, fname);
-				res = 1;
-			}
-		}
-		free(buf);
-	}
-	return res;
-}
-
-// if fname==NULL take it from built-in table
-// e.g	cpu_set_type(cpu, "name", NULL, NULL) = built-in
-//	cpu_set_type(cpu, "name", dir, file) = from library
-int cpu_set_type(CPU* cpu, const char* name, const char* dir, const char* fname) {
-	cpuCore* itm;
-	int res = 0;
-	if (fname) {
-		if (cpu_open_lib(cpu, dir, fname)) {
-			cpuCore*(*foo)();
-			foo = dlsym(cpu->libhnd, "getCore");
-			if (foo) {
-				itm = foo();
-			} else {
-				itm = cpuTab;
-				cpu_close_lib(cpu);	// if lib isn't suitable
-			}
-		} else {
-			itm = cpuTab;
-			cpu_close_lib(cpu);		// if was opened before
-		}
-	} else {
-		itm = cpuTab;
-		cpu_close_lib(cpu);
-	}
 	while ((itm->type != CPU_NONE) && !res) {
 		if (!strcmp(itm->name, name)) {
 			cpuSetCore(cpu, itm);
@@ -139,10 +79,6 @@ int cpu_set_type(CPU* cpu, const char* name, const char* dir, const char* fname)
 int cpuSetType(CPU* cpu, int type) {
 	cpuCore* core = findCore(type);
 	if (core != NULL) {
-		if (cpu->lib) {
-			dlclose(cpu->libhnd);
-			cpu->lib = 0;
-		}
 		cpuSetCore(cpu, core);
 	} else {
 		cpuSetCore(cpu, &dumCore);
@@ -179,7 +115,6 @@ CPU* cpuCreate(int type, cbmr fmr, cbmw fmw, cbir fir, cbiw fiw, cbiack frq, cbi
 }
 
 void cpuDestroy(CPU* cpu) {
-	if (cpu->lib) cpu_close_lib(cpu);
 	free(cpu);
 }
 

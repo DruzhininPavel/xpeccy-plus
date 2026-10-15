@@ -96,7 +96,6 @@ void conf_init(char* confdir) {
 	mkdir((conf.path.confDir + "/shaders").c_str() ,0777);
 	conf.path.palDir = conf.path.confDir + "/palettes";
 	mkdir(conf.path.palDir.c_str() ,0777);
-	conf.path.plgDir = conf.path.confDir + "/plugins";
 	mkdir((conf.path.confDir + "/styles").c_str() ,0777);
 	conf.path.confFile = conf.path.confDir + "/config.conf";
 	conf.path.boot = conf.path.confDir + "/boot.$B";
@@ -112,7 +111,6 @@ void conf_init(char* confdir) {
 	conf.path.prfDir = conf.path.confDir + "\\profiles";
 	conf.path.nvDir = conf.path.confDir + "\\nvram";
 	conf.path.palDir = conf.path.confDir + "\\palettes";
-	conf.path.plgDir = conf.path.confDir + "\\plugins";
 	conf.path.confFile = conf.path.confDir + "\\config.conf";
 	conf.path.boot = conf.path.confDir + "\\boot.$B";
 	mkdir(conf.path.confDir.c_str());
@@ -517,7 +515,7 @@ QColor stylePaletteColor(const std::string& style, const QString& name) {
 
 void copyFile(const char* src, const char* dst) {
 	QFile fle(QString::fromLocal8Bit(src));
-	fle.open(QFile::ReadOnly);
+	if (!fle.open(QFile::ReadOnly)) return;
 	QByteArray fdata = fle.readAll();
 	fle.close();
 	fle.setFileName(QString::fromLocal8Bit(dst));

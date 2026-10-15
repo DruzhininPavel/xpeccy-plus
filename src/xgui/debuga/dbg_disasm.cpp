@@ -265,6 +265,13 @@ void dasmwr(Computer* comp, int adr, int bt) {
 				case MEM_RAM:
 					comp->mem->ramData[fadr & comp->mem->ramMask] = bt & 0xff;
 					break;
+				case MEM_DIV:		// its SRAM, and its EEPROM as a ROM is
+					fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
+					if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr) {
+						comp->div->data[fadr] = bt & 0xff;
+						if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
+					}
+					break;
 			}
 			break;
 		case XVIEW_RAM:
@@ -872,17 +879,19 @@ bool xDisasmModel::setData(const QModelIndex& cidx, const QVariant& val, int rol
 			if (!str.startsWith("db \"", Qt::CaseInsensitive))		// #NUM -> 0xNUM if not db "..."
 				str.replace("#", "0x");
 			if (str.startsWith("db ", Qt::CaseInsensitive)) {		// db
-				if ((str.at(3) == '"') && str.endsWith("\"")) {		// db "text"
+				if ((str.size() > 4) && (str.at(3) == '"') && str.endsWith("\"")) {		// db "text"
 					str = str.mid(4, str.size() - 5);
 					idx = 0;
-					cbyte = str.at(idx).cell();
-					while ((idx < 250) && (idx < str.size()) && (cbyte > 31) && (cbyte < 128)) {
+					while ((idx < 250) && (idx < str.size())) {
+						cbyte = str.at(idx).cell();
+						if ((cbyte < 32) || (cbyte > 127)) break;
 						buf[idx] = cbyte;
+						// each byte's own flag cell: the next one may be on
+						// another page, or (DIV, EXT) have none at all
+						ptr = getBrkPtr(comp, (adr + idx) & 0xffff);
 						*ptr &= 0x0f;
 						*ptr |= DBG_VIEW_TEXT;
-						ptr++;
 						idx++;
-						cbyte = str.at(idx).cell();
 					}
 					len = idx;
 				} else {						// db n
@@ -904,7 +913,7 @@ bool xDisasmModel::setData(const QModelIndex& cidx, const QVariant& val, int rol
 					idx = xadr.adr;
 					*ptr &= 0x0f;
 					*ptr |= DBG_VIEW_ADDR;
-					ptr++;
+					ptr = getBrkPtr(comp, (adr + 1) & 0xffff);
 					*ptr &= 0x0f;
 					*ptr |= DBG_VIEW_ADDR;
 					len = 2;
@@ -914,7 +923,7 @@ bool xDisasmModel::setData(const QModelIndex& cidx, const QVariant& val, int rol
 						len = 2;
 						*ptr &= 0x0f;
 						*ptr |= DBG_VIEW_WORD;
-						ptr++;
+						ptr = getBrkPtr(comp, (adr + 1) & 0xffff);
 						*ptr &= 0x0f;
 						*ptr |= DBG_VIEW_WORD;
 					} else {

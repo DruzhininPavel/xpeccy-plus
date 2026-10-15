@@ -583,13 +583,3 @@ xRegDsc z80RegTab[] = {
 	{Z80_FLG_IFF2, "IFF2", REG_BIT, 0, z80_get_iff2, z80_set_iff2, 0, REG_GRP_CTRL},
 	{REG_EOT, "SZ5H3PNC", 0, 0, NULL, NULL}				// name of REG_EOT element is flag names
 };
-
-// test (for external lib):
-// {id, family_id, generation, name, regtab, adr.size, data.size, @init, @reset, @exec, @txt2code, @disasm}
-// last entry must me with id=CPU_NONE
-static cpuCore z80core[] = {
-	{CPU_Z80, "Z80ext", z80RegTab, 16, NULL, z80_reset, z80_exec, z80_asm, z80_mnem},
-	{CPU_NONE, "none", NULL, 8, NULL, NULL, NULL, NULL, NULL}
-};
-
-EXPORTDLL cpuCore* getCore() {return z80core;}

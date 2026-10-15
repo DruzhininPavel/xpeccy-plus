@@ -140,10 +140,6 @@ struct CPU {
 	int adr;			// address bus for using from outside
 	int busmask;			// mask for address bus
 	int t;				// ticks counter
-	// if cpu is from external lib
-	unsigned lib:1;			// cpu core from exernal lib
-	char* libname;			// name of lib inside libs folder
-	void* libhnd;			// lib handler (dlopen)
 	// external callbacks
 	cbmr mrd;			// memory reading
 	cbmw mwr;			// memeory writing
@@ -205,7 +201,7 @@ typedef struct cpuCore cpuCore;
 
 CPU* cpuCreate(int,cbmr,cbmw,cbir,cbiw,cbiack,cbirq,void*);
 void cpuDestroy(CPU*);
-int cpu_set_type(CPU*, const char*, const char*, const char*);
+int cpu_set_type(CPU*, const char*);
 
 void cpu_reset(CPU*);
 // one opcode or interrupt, T back; called on every instruction

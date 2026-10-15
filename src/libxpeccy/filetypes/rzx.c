@@ -39,7 +39,8 @@ void rzx_reread(Computer* comp) {
 	if (!comp->rzx.play || !file) return;
 	if (comp->rzx.frm.size > 0) {
 		x_fseek(file, comp->rzx.dataAt, SEEK_SET);
-		fread(comp->rzx.frm.data, comp->rzx.frm.size, 1, file);
+		size_t got = fread(comp->rzx.frm.data, 1, comp->rzx.frm.size, file);
+		if (got < (size_t)comp->rzx.frm.size) memset(comp->rzx.frm.data + got, 0, comp->rzx.frm.size - got);
 	}
 	x_fseek(file, comp->rzx.next, SEEK_SET);
 }
@@ -53,8 +54,10 @@ static void rzx_frame_in(Computer* comp) {
 	if (size != 0xffff) {
 		comp->rzx.frm.size = size;
 		comp->rzx.dataAt = x_ftell(file);
-		if (size > 0)
-			fread(comp->rzx.frm.data, size, 1, file);
+		if (size > 0) {		// a recording cut short: the INs it has not are zeros
+			size_t got = fread(comp->rzx.frm.data, 1, size, file);
+			if (got < (size_t)size) memset(comp->rzx.frm.data + got, 0, size - got);
+		}
 	}
 	comp->rzx.frm.pos = 0;
 	comp->rzx.next = x_ftell(file);
@@ -252,13 +255,13 @@ int rzx_info(const char* name, rzxInfo* inf, int first) {
 		switch (id) {
 			case 0x10:
 				if (len >= 29) {
-					fread(blk->text, 20, 1, file);
+					if (fread(blk->text, 20, 1, file) != 1) memset(blk->text, 0, 20);
 					blk->text[20] = 0;
 					blk->major = fgetw(file);
 					blk->minor = fgetw(file);
 					n = (int)len - 29;
 					if (n >= (int)sizeof(blk->custom)) n = sizeof(blk->custom) - 1;
-					if (n > 0) fread(blk->custom, n, 1, file);
+					if ((n > 0) && (fread(blk->custom, n, 1, file) != 1)) n = 0;
 					blk->custom[n > 0 ? n : 0] = 0;
 				}
 				break;
@@ -273,7 +276,7 @@ int rzx_info(const char* name, rzxInfo* inf, int first) {
 					fgeti(file);			// checksum
 					n = (len > 21) ? (int)len - 21 : 0;
 					if (n >= (int)sizeof(blk->text)) n = sizeof(blk->text) - 1;
-					fread(blk->text, n, 1, file);
+					if ((n > 0) && (fread(blk->text, n, 1, file) != 1)) n = 0;
 					blk->text[n] = 0;
 					n = 0;
 					ext = rzx_open_beside(name, blk->text);
@@ -345,12 +348,27 @@ static FILE* rzx_open_beside(const char* rzx, const char* snap) {
 	return file;
 }
 
+// A block's body: len bytes into buf, which keeps a zero after them. -1 when
+// the file has not that many left - a length from a broken block, or a file
+// cut short.
+static int rzx_body(FILE* file, size_t fsize, char** buf, long long len) {
+	long long at = x_ftell(file);
+	if ((len < 0) || (at < 0) || (len > (long long)fsize - at)) return -1;
+	char* p = realloc(*buf, (size_t)len + 1);
+	if (!p) return -1;
+	*buf = p;
+	p[len] = 0;
+	if ((len > 0) && (fread(p, (size_t)len, 1, file) != 1)) return -1;
+	return 0;
+}
+
 int loadRZX(Computer* comp, const char* name, int drv) {
 	int err = ERR_OK;
 	if (comp->rzx.file) rzxStop(comp);
 	comp->rzx.play = 0;
 	comp->rzx.fTotal = 0;
 	FILE* file = fopen(name, "rb");
+	size_t fsize = file ? fgetSize(file) : 0;
 	int type;
 	int len;
 	rzxSnap shd;
@@ -364,7 +382,7 @@ int loadRZX(Computer* comp, const char* name, int drv) {
 		err = ERR_CANT_OPEN;
 	} else {
 		rzxHead hd;
-		fread(&hd, sizeof(rzxHead), 1, file);
+		if (fread(&hd, sizeof(rzxHead), 1, file) != 1) memset(&hd, 0, sizeof(hd));	// no sign then
 		hd.flags = swap32(hd.flags);
 		if (strncmp(hd.sign,"RZX!",4)) {
 			err = ERR_RZX_SIGN;
@@ -382,16 +400,20 @@ int loadRZX(Computer* comp, const char* name, int drv) {
 					if (feof(file)) break;
 					switch (type) {
 						case 0x30:
-							fread(&shd, sizeof(rzxSnap), 1, file);
+							if (fread(&shd, sizeof(rzxSnap), 1, file) != 1) {
+								err = ERR_RZX_UNPACK;
+								break;
+							}
 							shd.flag = swap32(shd.flag);
 							shd.usl = swap32(shd.usl);
 							// the scratch file's type byte carries the two flags its reader needs
 							int kind = rzxGetSnapType(shd.ext) | ((shd.flag & RZX_SNAP_NOINT) ? 0x80 : 0) | ((shd.flag & RZX_SNAP_MARK) ? 0x40 : 0);
 							if (shd.flag & 1) {		// external
 								fgeti(file);	// checksum
-								buf = realloc(buf, len - 20);
-								memset(buf, 0x00, len - 20);
-								fread(buf, len - 21, 1, file);
+								if (rzx_body(file, fsize, &buf, (long long)len - 21) < 0) {	// the file name
+									err = ERR_RZX_UNPACK;
+									break;
+								}
 								sfile = rzx_open_beside(name, buf);
 								if (sfile) {
 									len = fgetSize(sfile);
@@ -399,8 +421,10 @@ int loadRZX(Computer* comp, const char* name, int drv) {
 									fputi(len + 1, comp->rzx.file);
 									fputc(kind, comp->rzx.file);
 									while (len > 0) {
-										fread(obuf, 0x4000, 1, sfile);
-										fwrite(obuf, (len > 0x4000) ? 0x4000 : len, 1, comp->rzx.file);
+										int part = (len > 0x4000) ? 0x4000 : len;
+										size_t got = fread(obuf, 1, part, sfile);
+										if (got < (size_t)part) memset(obuf + got, 0, part - got);
+										fwrite(obuf, part, 1, comp->rzx.file);
 										len -= 0x4000;
 									}
 									fclose(sfile);
@@ -411,12 +435,16 @@ int loadRZX(Computer* comp, const char* name, int drv) {
 								fputc(0x30, comp->rzx.file);
 								fputi(shd.usl + 1, comp->rzx.file);
 								fputc(kind, comp->rzx.file);
-								buf = realloc(buf, len - 17);
-								fread(buf, len - 17, 1, file);
+								if (rzx_body(file, fsize, &buf, (long long)len - 17) < 0) {
+									err = ERR_RZX_UNPACK;
+									break;
+								}
 								err = inflateToFile(buf, len - 17, comp->rzx.file);
 							} else {			// not compressed
-								buf = realloc(buf, shd.usl);
-								fread(buf, shd.usl, 1, file);
+								if (rzx_body(file, fsize, &buf, (long long)(int)shd.usl) < 0) {
+									err = ERR_RZX_UNPACK;
+									break;
+								}
 								fputc(0x30, comp->rzx.file);
 								fputi(shd.usl + 1, comp->rzx.file);
 								fputc(kind, comp->rzx.file);
@@ -441,13 +469,11 @@ int loadRZX(Computer* comp, const char* name, int drv) {
 							// fputw(fhd.tStart, comp->rzx.file);
 							if (fhd.flags & 1) {			// crypted
 								err = ERR_RZX_CRYPT;
+							} else if (rzx_body(file, fsize, &buf, (long long)len - 18) < 0) {
+								err = ERR_RZX_UNPACK;
 							} else if (fhd.flags & 2) {		// packed
-								buf = realloc(buf, len - 18);
-								fread(buf, len - 18, 1, file);
 								err = inflateToFile(buf, len - 18, comp->rzx.file);
 							} else {				// raw
-								buf = realloc(buf, len - 18);
-								fread(buf, len - 18, 1, file);
 								fwrite(buf, len - 18, 1, comp->rzx.file);
 							}
 							// a seek steps over the block by it
@@ -457,6 +483,10 @@ int loadRZX(Computer* comp, const char* name, int drv) {
 							x_fseek(comp->rzx.file, recend, SEEK_SET);
 							break;
 						default:
+							if (len < 5) {			// would step back onto itself for ever
+								err = ERR_RZX_UNPACK;
+								break;
+							}
 							fseek(file, len - 5, SEEK_CUR);
 							break;
 					}

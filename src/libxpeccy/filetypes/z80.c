@@ -209,7 +209,7 @@ int loadZ80_f(Computer* comp, FILE* file) {
 	// a 128K reset, not a 48K one: that locks paging on a +2A, and byte 35 is still to come
 	comp_snap_reset(comp, RES_128);
 
-	fread((char*)&hd, sizeof(z80v1Header), 1, file);
+	if (fread((char*)&hd, sizeof(z80v1Header), 1, file) != 1) return ERR_SNAP_SHORT;
 	if (hd.flag12 == 0xff) hd.flag12 = 0x01;	// Because of compatibility, if byte 12 is 255, it has to be regarded as being 1.
 
 	comp->cpu->regA = hd.a;
@@ -324,12 +324,10 @@ xlog(XLG_FILE, XLL_DEBUG, ".z80 version 1");
 			memPutData(comp->mem,MEM_RAM,0,MEM_16K,pageBuf + MEM_32K);
 		} else {
 			xlog(XLG_FILE, XLL_DEBUG, "data is not compressed");
-			fread(pageBuf, 0x4000, 1, file);
+			if (fread(pageBuf, 0xc000, 1, file) != 1) return ERR_SNAP_SHORT;
 			memPutData(comp->mem,MEM_RAM,5,MEM_16K,pageBuf);
-			fread(pageBuf, 0x4000, 1, file);
-			memPutData(comp->mem,MEM_RAM,2,MEM_16K,pageBuf);
-			fread(pageBuf, 0x4000, 1, file);
-			memPutData(comp->mem,MEM_RAM,0,MEM_16K,pageBuf);
+			memPutData(comp->mem,MEM_RAM,2,MEM_16K,pageBuf + MEM_16K);
+			memPutData(comp->mem,MEM_RAM,0,MEM_16K,pageBuf + MEM_32K);
 		}
 	}
 	comp_set_frame_tick(comp, z80_frame_tick(comp, (err == ERR_OK) ? tlow : -1, thi));

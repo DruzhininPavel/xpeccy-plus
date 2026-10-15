@@ -912,7 +912,7 @@ static unsigned long long bench_mix(unsigned long long h, const unsigned char* p
 // "pc:" and a keymap name (UP, F1) is a PC key, scancodes and all.
 enum {BK_KEYS = 0, BK_JOY, BK_JOYB, BK_NMI, BK_PC};
 
-typedef struct {
+typedef struct benchKey {
 	int at = 0;
 	int hold = 4;
 	int kind = BK_KEYS;

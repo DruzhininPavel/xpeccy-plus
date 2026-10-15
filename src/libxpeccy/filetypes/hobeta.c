@@ -28,13 +28,17 @@ int loadHobeta(Computer* comp, const char* name, int drv) {
 	if (diskGetType(flp) != DISK_TYPE_TRD) {
 		err = ERR_NOTRD;
 	} else {
-		fread((char*)buf, 17, 1, file);		// header
-		memcpy((char*)&nfle,buf,14);
-		if (!nfle.slen)
-			nfle.slen = buf[14];
-		int len = nfle.slen << 8;
-		fread((char*)buf, len, 1, file);
-		if (diskCreateFile(flp, nfle, buf, len) != ERR_OK) {
+		int len = 0;
+		if (fread((char*)buf, 17, 1, file) == 1) {		// header
+			memcpy((char*)&nfle,buf,14);
+			if (!nfle.slen)
+				nfle.slen = buf[14];
+			len = nfle.slen << 8;
+			// data cut short: the rest of the sectors are zeros
+			size_t got = fread((char*)buf, 1, len, file);
+			if (got < (size_t)len) memset(buf + got, 0, len - got);
+		}
+		if ((len == 0) || (diskCreateFile(flp, nfle, buf, len) != ERR_OK)) {
 			err = ERR_HOB_CANT;
 		} else {
 			for (int i=0; i<256; i++) flpFillFields(flp, i, 1);

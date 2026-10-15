@@ -42,7 +42,7 @@ int loadFDI(Computer* comp, const char* name, int drv) {
 	size_t pos;
 //	int i;
 //	for (i = 0; i < 256; i++) trkImg[i].data = NULL;
-	fread((char*)&hd, sizeof(fdiHead), 1, file);
+	if (fread((char*)&hd, sizeof(fdiHead), 1, file) != 1) memset(&hd, 0, sizeof(hd));	// no sign then
 #ifdef WORDS_BIG_ENDIAN
 	hd.cyls = swap16(hd.cyls);
 	hd.heads = swap16(hd.heads);
@@ -57,14 +57,21 @@ int loadFDI(Computer* comp, const char* name, int drv) {
 	} else {
 		fseek(file, hd.xSize, SEEK_CUR);
 		int trk, head, sec;
-		for (trk = 0; trk < hd.cyls; trk++) {
-			for (head = 0; head < hd.heads; head++) {
-				fread((char*)&thd, sizeof(fdiTHead), 1, file);
+		int cut = 0;		// the file ended: the tracks before stay
+		for (trk = 0; (trk < hd.cyls) && !cut; trk++) {
+			for (head = 0; (head < hd.heads) && !cut; head++) {
+				if (fread((char*)&thd, sizeof(fdiTHead), 1, file) != 1) {
+					cut = 1;
+					break;
+				}
 #ifdef WORDS_BIG_ENDIAN
 				thd.dData = swap32(thd.dData);
 #endif
 				for (sec = 0; sec < thd.secCount; sec++) {
-					fread((char*)&shd, sizeof(fdiSHead), 1, file);
+					if (fread((char*)&shd, sizeof(fdiSHead), 1, file) != 1) {
+						cut = 1;
+						break;
+					}
 #ifdef WORDS_BIG_ENDIAN
 					shd.dData = swap16(shd.dData);
 #endif
@@ -76,10 +83,13 @@ int loadFDI(Computer* comp, const char* name, int drv) {
 					shd.len = shd.len & 3;
 					pos = ftell(file);
 					fseek(file, hd.dData + thd.dData + shd.dData, SEEK_SET);
-					fread((char*)trkImg[sec].data, (128 << (shd.len & 3)), 1, file);
+					// data past the end of the file reads as zeros
+					size_t want = 128 << (shd.len & 3);
+					size_t got = fread((char*)trkImg[sec].data, 1, want, file);
+					if (got < want) memset(trkImg[sec].data + got, 0, want - got);
 					fseek(file, pos, SEEK_SET);
 				}
-				diskFormTrack(flp, (trk << 1) + head, trkImg, thd.secCount);
+				diskFormTrack(flp, (trk << 1) + head, trkImg, sec);
 			}
 		}
 		flp->protect = hd.wp ? 1 : 0;

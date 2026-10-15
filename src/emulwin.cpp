@@ -347,8 +347,13 @@ MainWin::~MainWin() {
 // A bound key is a host key: the hotkey it means, as on the keyboard, or -1.
 // Splits the i-th key of the sequence on the way.
 int MainWin::mapHotkey(const QKeySequence& seq, int i, Qt::Key* key, Qt::KeyboardModifier* mod) {
-	*key = Qt::Key(seq[i] & ~Qt::KeyboardModifierMask);
-	*mod = Qt::KeyboardModifier(seq[i] & Qt::KeyboardModifierMask);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	int code = seq[i].toCombined();
+#else
+	int code = seq[i];
+#endif
+	*key = Qt::Key(code & ~Qt::KeyboardModifierMask);
+	*mod = Qt::KeyboardModifier(code & Qt::KeyboardModifierMask);
 	return hotkey_for(*key, *mod, pckAct->isChecked());
 }
 
@@ -1428,19 +1433,19 @@ void MainWin::drawIcons(QPainter& pnt) {
 	// same gap below it as to the edge
 	if (mode == osd_rewind) {
 		int t = rewind_back_tenths();
-		sprintf(numbuf, " -%d.%ds ", t / 10, t % 10);
+		snprintf(numbuf, sizeof(numbuf), " -%d.%ds ", t / 10, t % 10);
 		QRect slot = modeSlot();
 		drawText(&pnt, width() - strlen(numbuf) * 12 - MODE_ICON_RIGHT, slot.bottom() + 1 + MODE_ICON_RIGHT, numbuf);
 	}
 	pnt.setOpacity(1.0);
 // put fps
 	if (fpsOsd()) {
-		sprintf(numbuf, " %.1f ", conf.vid.curfps);
+		snprintf(numbuf, sizeof(numbuf), " %.1f ", conf.vid.curfps);
 		drawText(&pnt, width() - (strlen(numbuf) * 12) - 5, 5, numbuf);
 	}
 // put halt counter
 	if (conf.led.halt) {
-		sprintf(numbuf, " %d : %d ",comp->hCount, comp->fCount);
+		snprintf(numbuf, sizeof(numbuf), " %d : %d ",comp->hCount, comp->fCount);
 		drawText(&pnt, width() - strlen(numbuf) * 12 - 8, height() - 20, numbuf);
 	}
 // put cpu clock, but only when it is not the one the machine ships with: it is
@@ -1448,7 +1453,7 @@ void MainWin::drawIcons(QPainter& pnt) {
 // line when that is switched off
 	double clk = xspeed_clock();
 	if (conf.led.clock && (fabs(clk - comp->cpuFrq) > 1e-6)) {
-		sprintf(numbuf, " %.6g MHz ", clk);
+		snprintf(numbuf, sizeof(numbuf), " %.6g MHz ", clk);
 		drawText(&pnt, width() - strlen(numbuf) * 12 - 8, height() - (conf.led.halt ? 40 : 20), numbuf);
 	}
 // put messages
@@ -2396,7 +2401,7 @@ void MainWin::initMachineMenus() {
 	mac->addAction(slowAct);
 	mac->addAction(ffAct);
 	// the rewind itself is a key held down, which a menu cannot do; this is whether it may
-	QAction* rewOnAct = mac->addAction("Allow Rewind", this, [this](bool on) {
+	QAction* rewOnAct = mac->addAction("Allow Rewind", this, [](bool on) {
 		conf.emu.rewind.on = on ? 1 : 0;
 		saveConfig();
 	});
@@ -2419,7 +2424,7 @@ void MainWin::initMachineMenus() {
 	// a menu of its own, filled with dskMenu's items: one QMenu under two different
 	// items in two menus re-pops on every mouse move under one of them
 	drvMenu = media->addMenu(QIcon(":/images/fdd.png"), "Floppy Drives");
-	QAction* fdcFastAct = media->addAction("Fast Disk Access", this, [this](bool on) {
+	QAction* fdcFastAct = media->addAction("Fast Disk Access", this, [](bool on) {
 		setFlagBit(on, &fdcFlag, FDC_FAST);
 		saveConfig();
 	});

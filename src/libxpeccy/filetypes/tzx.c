@@ -190,7 +190,7 @@ void tzxBlock10(FILE* file, Tape* tape) {
 	int pausems = fgetw(file);
 	int len = fgetw(file);
 	char buf[0x10000];
-	fread(buf, len, 1, file);
+	len = (int)fread(buf, 1, len, file);		// a file cut short: what there is
 	tzxTakeData(tape, tapDataToBlock(buf, len, NULL));
 	tzxCloseBlock(tape, pausems);
 }
@@ -207,10 +207,12 @@ void tzxBlock11(FILE* file, Tape* tape) {
 	int bits = fgetc(file);				// used bits in last byte
 	int pausems = fgetw(file);
 	int len = fgett(file);		// freadLen(file, 3);
-	char* buf = (char*)malloc(len);
-	fread(buf, len-1, 1, file);
-	tzxTakeData(tape, tapDataToBlock(buf, len-1, altLens));
-	int data = fgetc(file);		// last byte
+	char* buf = (char*)malloc(len > 0 ? len : 1);
+	// all but the last byte, which may be part used; none at all in an empty block
+	int got = (len > 1) ? (int)fread(buf, 1, len - 1, file) : 0;
+	tzxTakeData(tape, tapDataToBlock(buf, got, altLens));
+	int data = (got == len - 1) ? fgetc(file) : EOF;		// last byte
+	if (data == EOF) bits = 0;
 	if (bits > 8) bits = 8;
 	if (bits != 8) tape->isData = 0;
 	while (bits > 0) {
@@ -261,13 +263,16 @@ void tzxBlock14(FILE* file, Tape* tape) {
 	if (bits > 8) bits = 8;
 	int asData = !blk->pend14 && (bits == 8);	// the only #14 in the run, whole bytes
 	blk->pend14 = 1;
-	while (len > 1) {
+	// the length is the block's word, not the file's: a file cut short ends it
+	data = 0;
+	while ((len > 1) && (data != EOF)) {
 		data = fgetc(file);
-		blkAddByte(blk, data & 0xff, bit0, bit1);
+		if (data != EOF) blkAddByte(blk, data & 0xff, bit0, bit1);
 		len--;
 	}
 	// last byte
-	data = fgetc(file);
+	data = (data != EOF) ? fgetc(file) : EOF;
+	if (data == EOF) bits = 0;
 	while (bits > 0) {
 		blkAddWave(blk, (data & 0x80) ? bit1 : bit0);
 		bits--;
@@ -315,8 +320,10 @@ void tzxBlock15(FILE* file, Tape* tape) {
 	int lev = -1;					// level of the pulse being measured
 	int memt = 0;
 	for (cnt = 0; cnt < len; cnt++) {
-		if ((cnt & 7) == 0)
-			data = fgetc(file) & 0xff;
+		if ((cnt & 7) == 0) {
+			data = fgetc(file);
+			if (data == EOF) break;		// a file cut short ends the recording
+		}
 		bit = (data & 0x80) ? 1 : 0;
 		data <<= 1;
 		if (lev < 0) {
@@ -508,7 +515,7 @@ static void tzxGetText(FILE* file, Tape* tape) {
 	char buf[256];
 	int len = fgetc(file);
 	if (len < 0) len = 0;			// truncated file
-	fread(buf, len, 1, file);
+	len = (int)fread(buf, 1, len, file);
 	buf[len] = 0;
 	tap_set_text(tape, buf);
 }
@@ -564,18 +571,20 @@ tzxBCall tzxBlockTab[] = {
 	{0xff, NULL}
 };
 
-static long tzxRead(FILE* file, long pos, int n) {
-	long res = 0;
+// long long: a 4-byte field with its top bit set would go negative in a 32-bit
+// long (Windows), and a negative size walks the index back for ever
+static long long tzxRead(FILE* file, long pos, int n) {
+	long long res = 0;
 	int i;
 	fseek(file, pos, SEEK_SET);
 	for (i = 0; i < n; i++)
-		res |= (long)(fgetc(file) & 0xff) << (i * 8);
+		res |= (long long)(fgetc(file) & 0xff) << (i * 8);
 	return res;
 }
 
 // The size of a block after its id, from the fields its header gives. A block
 // this list does not name starts with its length, as the spec asks of new ones.
-static long tzxBodySize(FILE* file, long pos, int id) {
+static long long tzxBodySize(FILE* file, long pos, int id) {
 	switch (id) {
 		case 0x10: return 0x04 + tzxRead(file, pos + 0x02, 2);
 		case 0x11: return 0x12 + tzxRead(file, pos + 0x0f, 3);
@@ -619,7 +628,7 @@ int loadTZX(Computer* comp, const char* name, int drv) {
 	if (!file) return ERR_CANT_OPEN;
 
 	tzxHead hd;
-	fread((char*)&hd, sizeof(tzxHead), 1, file);
+	if (fread((char*)&hd, sizeof(tzxHead), 1, file) != 1) memset(&hd, 0, sizeof(hd));	// no sign then
 	if ((strncmp(hd.sign, "ZXTape!",7) != 0) || (hd.eot != 0x1a)) {
 		fclose(file);
 		return ERR_TZX_SIGN;
@@ -635,7 +644,9 @@ int loadTZX(Computer* comp, const char* name, int drv) {
 		blk[cnt].id = (int)tzxRead(file, pos, 1);
 		blk[cnt].pos = pos + 1;
 		blk[cnt].taken = 0;
-		pos = blk[cnt].pos + tzxBodySize(file, blk[cnt].pos, blk[cnt].id);
+		long long size = tzxBodySize(file, blk[cnt].pos, blk[cnt].id);
+		if (size > fsize - blk[cnt].pos) size = fsize - blk[cnt].pos;		// past the end: the last one
+		pos = blk[cnt].pos + (long)size;
 		cnt++;
 	}
 

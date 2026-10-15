@@ -208,9 +208,11 @@ static uint32_t blend_3c(uint32_t p0, uint32_t p1, uint32_t p2, float ratio) {
 
 	// Encode averaged linear components back to RGBA encoded space (linear -> sRGB).
 	// Alpha forced opaque: the source pixels always are, but a bare RGB OR leaves it at 0.
-	return 	linear_to_srgb[int((frame0_r + frame1_r + frame2_r) / 3 * ratio + frame0_r * ratio_rev)] |
-			linear_to_srgb[int((frame0_g + frame1_g + frame2_g) / 3 * ratio + frame0_g * ratio_rev)] << 8 |
-			linear_to_srgb[int((frame0_b + frame1_b + frame2_b) / 3 * ratio + frame0_b * ratio_rev)] << 16 |
+	// the mean as a fraction: a whole-number /3 drops up to 2/3 of a step, which
+	// takes the darkest mixes down to black
+	return 	linear_to_srgb[int((frame0_r + frame1_r + frame2_r) * (1.0 / 3) * ratio + frame0_r * ratio_rev)] |
+			linear_to_srgb[int((frame0_g + frame1_g + frame2_g) * (1.0 / 3) * ratio + frame0_g * ratio_rev)] << 8 |
+			linear_to_srgb[int((frame0_b + frame1_b + frame2_b) * (1.0 / 3) * ratio + frame0_b * ratio_rev)] << 16 |
 			0xFF000000;
 }
 

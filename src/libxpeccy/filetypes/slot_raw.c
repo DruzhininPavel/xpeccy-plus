@@ -21,7 +21,10 @@ int loadSlot(Computer* comp, const char* name, int drv) {
 		memset(slot->brkMap, 0x00, tsiz);
 		slot->memMask = tsiz - 1;
 		sltSetPath(slot, name);
-		fread(slot->data, tsiz, 1, file);
+		// the image fills the slot only when its size is a power of two: the
+		// rest reads as an empty bus
+		size_t got = fread(slot->data, 1, tsiz, file);
+		if (got < (size_t)tsiz) memset(slot->data + got, 0xff, tsiz - got);
 		fclose(file);
 		err = ERR_OK;
 		compReset(comp, RES_DEFAULT);

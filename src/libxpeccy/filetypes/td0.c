@@ -42,14 +42,14 @@ typedef struct {
 
 #pragma pack(pop)
 
+// both return how many bytes they gave: fewer than asked when the file ends
 size_t fGetData(void* buf, size_t len, void* data) {
 	if (feof((FILE*)data)) return 0;
 	if (buf == NULL) {
 		fseek((FILE*)data,len,SEEK_CUR);
-	} else {
-		fread(buf, len, 1, (FILE*)data);
+		return len;
 	}
-	return len;
+	return fread(buf, 1, len, (FILE*)data);
 }
 
 size_t lhaDepack(void* buf, size_t len, void* data) {
@@ -64,12 +64,16 @@ size_t lhaDepack(void* buf, size_t len, void* data) {
 	return res;
 }
 
+// The sizes and counts come from the file: a cut or broken one stops the
+// reading (the tracks before it stay), and nothing is written past a
+// sector's buffer.
+#define TD0_GET(dst, len) if (getBytes((dst), (len), dptr) != (size_t)(len)) {bad = 1; break;}
+
 void doTD0(Floppy* flp, size_t(*getBytes)(void*, size_t,void*), void* dptr, int haveRem) {
 	td0RemHead rhd;
 	td0TrkHead thd;
 	td0SecHead shd;
 	Sector sec[256];
-	//int work = 1;
 	int idx;
 	int i;
 	int icnt;
@@ -79,92 +83,104 @@ void doTD0(Floppy* flp, size_t(*getBytes)(void*, size_t,void*), void* dptr, int 
 	unsigned char ch1,ch2;
 	unsigned char buf[8192];
 	unsigned char* ptr;
-//	for (i = 0; i < 256; i++) sec[i].data = NULL;
+	unsigned char* end;
+	size_t n;
+	int bad = 0;
 	if (haveRem) {		// skip comment
-		getBytes(&rhd, sizeof(td0RemHead), dptr);
+		if (getBytes(&rhd, sizeof(td0RemHead), dptr) != sizeof(td0RemHead)) return;
 #ifdef WORDS_BIG_ENDIAN
 		rhd.len = swap16(rhd.len);
 #endif
 		getBytes(NULL, rhd.len, dptr);
 	}
-	while (1) {
+	while (!bad) {
 		idx = 0;
-		getBytes(&thd, sizeof(td0TrkHead), dptr);
-		//printf("== TRK %i:%i (nsec = %i)\n",thd.trk, thd.head, thd.nsec);
+		TD0_GET(&thd, sizeof(td0TrkHead));
 		if (thd.nsec == 0xff) break;
 		for (i = 0; i < thd.nsec; i++) {
-			//if (!work) break;
-			getBytes(&shd, sizeof(td0SecHead), dptr);
-			//printf("%i: sec %i (sz = %i, ctrl = %.2X)\n",idx, shd.sec, shd.secz, shd.ctrl);
+			TD0_GET(&shd, sizeof(td0SecHead));
 			sec[idx].trk = shd.trk;
 			sec[idx].head = shd.head;
 			sec[idx].sec = shd.sec;
 			sec[idx].sz = shd.secz;
 			sec[idx].type = 0xfb;
 			sec[idx].crc = -1;
-			//if (!sec[idx].data) sec[idx].data = malloc(8192);
 			memset(sec[idx].data, 0x00, 4096);
 			if (shd.ctrl & 0x10) {				// empty sector
 				idx++;
-			} else {
-				getBytes(&ch1, 1, dptr);
-				getBytes(&ch2, 1, dptr);
-				dlen = ch1 | (ch2 << 8);		// data size
-				if ((idx > thd.nsec) || (shd.secz & 0xf8)) {
-					getBytes(NULL, dlen, dptr);	// skip data
-				} else {
-					getBytes(&btype, 1, dptr);
-					//printf("type = %i\n",btype);
-					switch (btype) {
-						case 0:
-							getBytes(sec[idx].data, dlen-1, dptr);
-							idx++;
-							break;
-						case 1:
-							getBytes(&ch1, 1, dptr);
-							getBytes(&ch2, 1, dptr);
-							cnt = ch1 | (ch2 << 8);
-							getBytes(&ch1, 1, dptr);
-							getBytes(&ch2, 1, dptr);
-							ptr = sec[idx].data;
-							while (cnt > 0) {
-								*(ptr++) = ch1;
-								*(ptr++) = ch2;
-								cnt--;
-							}
-							idx++;
-							break;
-						case 2:
-							ptr = sec[idx].data;
-							while (dlen > 1) {
-								getBytes(&ch1, 1, dptr);
-								getBytes(&ch2, 1, dptr);
-								dlen -= 2;
-								if (ch1 == 0) {
-									getBytes(ptr, ch2, dptr);
-									dlen -= ch2;
-									ptr += ch2;
-								} else {
-									icnt = (1 << ch1);
-									getBytes(buf, icnt, dptr);
-									dlen -= icnt;
-									while (ch2 > 0) {
-										memcpy(ptr, buf, icnt);
-										ptr += icnt;
-										ch2--;
-									}
-								}
-							}
-							idx++;
-							break;
-					}
-				}
+				continue;
 			}
+			TD0_GET(&ch1, 1);
+			TD0_GET(&ch2, 1);
+			dlen = ch1 | (ch2 << 8);		// data size
+			if ((idx > thd.nsec) || (shd.secz & 0xf8)) {
+				getBytes(NULL, dlen, dptr);	// skip data
+				continue;
+			}
+			if (dlen < 1) {				// not even the type byte
+				bad = 1;
+				break;
+			}
+			TD0_GET(&btype, 1);
+			ptr = sec[idx].data;
+			end = ptr + sizeof(sec[idx].data);
+			switch (btype) {
+				case 0:
+					n = dlen - 1;
+					if (n > sizeof(sec[idx].data)) {
+						TD0_GET(ptr, sizeof(sec[idx].data));
+						getBytes(NULL, n - sizeof(sec[idx].data), dptr);
+					} else {
+						TD0_GET(ptr, n);
+					}
+					idx++;
+					break;
+				case 1:
+					TD0_GET(&ch1, 1);
+					TD0_GET(&ch2, 1);
+					cnt = ch1 | (ch2 << 8);
+					TD0_GET(&ch1, 1);
+					TD0_GET(&ch2, 1);
+					while ((cnt > 0) && (end - ptr >= 2)) {
+						*(ptr++) = ch1;
+						*(ptr++) = ch2;
+						cnt--;
+					}
+					idx++;
+					break;
+				case 2:
+					while (!bad && (dlen > 1)) {
+						TD0_GET(&ch1, 1);
+						TD0_GET(&ch2, 1);
+						dlen -= 2;
+						if (ch1 == 0) {
+							if (ch2 > end - ptr) {bad = 1; break;}
+							TD0_GET(ptr, ch2);
+							dlen -= ch2;
+							ptr += ch2;
+						} else {
+							if (ch1 > 13) {bad = 1; break;}		// a pattern longer than buf
+							icnt = (1 << ch1);
+							TD0_GET(buf, icnt);
+							dlen -= icnt;
+							while ((ch2 > 0) && (end - ptr >= icnt)) {
+								memcpy(ptr, buf, icnt);
+								ptr += icnt;
+								ch2--;
+							}
+						}
+					}
+					idx++;
+					break;
+			}
+			if (bad) break;
 		}
+		if (bad) break;
 		diskFormTrack(flp, (thd.trk << 1) + thd.head, sec, idx);
 	}
-	//for (i = 0; i < 256; i++) if (sec[i].data) free(sec[i].data);
 }
+
+#undef TD0_GET
 
 int loadTD0(Computer* comp, const char* name, int drv) {
 	Floppy* flp = comp->dif->flp[drv & 3];
@@ -173,8 +189,9 @@ int loadTD0(Computer* comp, const char* name, int drv) {
 
 	int err = ERR_OK;
 	td0Head hd;
-	fread(&hd, sizeof(td0Head), 1, file);
-	if (strncmp(hd.sign, "td", 2) && strncmp(hd.sign, "TD", 2)) {
+	if (fread(&hd, sizeof(td0Head), 1, file) != 1) {
+		err = ERR_TD0_SIGN;
+	} else if (strncmp(hd.sign, "td", 2) && strncmp(hd.sign, "TD", 2)) {
 		err = ERR_TD0_SIGN;
 	} else if ((hd.dens != 0) || (hd.sides > 2)) {
 		err = ERR_TD0_TYPE;

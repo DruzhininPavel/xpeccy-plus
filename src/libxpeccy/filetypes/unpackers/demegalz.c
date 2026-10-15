@@ -1,20 +1,20 @@
 #include "unpackers.h"
 
-WORD demegalz(BYTE* src, BYTE* dst) {
+WORD demegalz(BYTE* src, int slen, BYTE* dst, int dlen) {
 //	BYTE* from = src;
 	BYTE* to = dst;
+	BYTE* end = dst + dlen;
 	bbStream strm;
 	bbStream* bs = &strm;
-	bsInit(bs, src, PAK_MLZ);
+	bsInit(bs, src, slen, PAK_MLZ);
 
-	*(to++) = bsGetByte(bs);
 	signed short offset = 0;
+	UNP_PUT(bsGetByte(bs));
 	unsigned char len;
 	int work = 1;
 	while (!bs->eof && work) {
 		while (bsGetBit(bs)) {
-			*to = bsGetByte(bs);
-			to++;
+			UNP_PUT(bsGetByte(bs));
 		}
 		len = bsGetBits(bs, 2);
 		switch (len) {
@@ -61,7 +61,7 @@ WORD demegalz(BYTE* src, BYTE* dst) {
 				break;
 		}
 		while (len > 0) {
-			*to = to[offset]; to++;
+			UNP_REF();
 			len--;
 		}
 

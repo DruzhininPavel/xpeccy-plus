@@ -2,11 +2,11 @@
 
 const WORD mask[]  = { 0x8000, 0x4000, 0x2000, 0x1000, 0x800, 0x400, 0x200, 0x100, 0x80, 0x40, 0x20, 0x10, 0x8, 0x4, 0x2, 0x1 };
 
-void bsInit(bbStream* bs, BYTE* from, int type) {
+void bsInit(bbStream* bs, BYTE* from, int len, int type) {
 	bs->base = bs->p = from;
 
 	bs->pType = type;
-	bs->len = 0xffff;
+	bs->len = len;		// past it every byte is 0 and eof is set
 	bs->eof = 0;
 
 	if (bs->pType == PAK_HRS) {
@@ -19,7 +19,7 @@ void bsInit(bbStream* bs, BYTE* from, int type) {
 }
 
 BYTE bsGetByte(bbStream* bs) {
-	if(bs->p - bs->base == bs->len ) {
+	if(bs->p - bs->base >= bs->len ) {
 		bs->eof = 1;
 		return 0;
 	}

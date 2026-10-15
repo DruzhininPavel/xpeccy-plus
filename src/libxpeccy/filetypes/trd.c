@@ -13,7 +13,10 @@ int loadTRD(Computer* comp, const char* name, int drv) {
 		int trk = 0;
 		char buf[0x1000];
 		do {
-			fread(buf, 0x1000, 1, file);
+			// a last track cut short is padded with zeros. A read of nothing
+			// (feof comes only after it) leaves buf as it was, as it always did
+			size_t got = fread(buf, 1, 0x1000, file);
+			if ((got > 0) && (got < 0x1000)) memset(buf + got, 0, 0x1000 - got);
 			flp_format_trk(flp, trk, 16, 256, buf);
 			trk++;
 		} while  (!feof(file));

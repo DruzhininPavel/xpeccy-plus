@@ -41,7 +41,7 @@ QString vrec_ffmpeg_dir();			// where a copy fetched for the user goes
 QString vrec_find_tool(const QString&);	// on PATH, or in Homebrew on macOS
 QString vrec_dir();				// where the videos go
 QString vrec_dir_auto();			// ...when the settings name none
-typedef struct {
+typedef struct vrecProbe {
 	QString version;	// its -version line, empty if it is not FFmpeg
 	unsigned works = 0;	// a bit per VREC_* codec this machine can record with
 } vrecProbe;

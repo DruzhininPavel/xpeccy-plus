@@ -42,7 +42,7 @@ enum {
 	JMAP_VJOY		// the player's joystick, whichever it is: dir is XJ_*, pressed as that row
 };
 
-typedef struct {
+typedef struct xJoyMapEntry {
 	int type = JOY_NONE;	// axis/button
 	int num = 0;		// number of axis/button
 	int state = 0;		// -x/+x for axis, 0/x for button

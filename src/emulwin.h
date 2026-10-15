@@ -447,30 +447,30 @@ typedef struct {
 		void machineKey(Computer*, keyEntry*, bool);
 		void mapKeySeq(const xJoyMapEntry&, bool);
 
-		void closeEvent(QCloseEvent*);
+		void closeEvent(QCloseEvent*) override;
 		bool eventFilter(QObject*, QEvent*) override;
 		bool focusNextPrevChild(bool) override {return false;}	// Tab is a key of the machine
-		void dragEnterEvent(QDragEnterEvent*);
-		void dropEvent(QDropEvent*);
-		void paintEvent(QPaintEvent*);
-		void keyPressEvent(QKeyEvent*);
-		void keyReleaseEvent(QKeyEvent*);
-		void mousePressEvent(QMouseEvent*);
-		void contextMenuEvent(QContextMenuEvent*);
-		void mouseReleaseEvent(QMouseEvent*);
-		void mouseMoveEvent(QMouseEvent*);
-		void wheelEvent(QWheelEvent*);
-		void focusOutEvent(QFocusEvent*);
-		void focusInEvent(QFocusEvent*);
-		void timerEvent(QTimerEvent*);
+		void dragEnterEvent(QDragEnterEvent*) override;
+		void dropEvent(QDropEvent*) override;
+		void paintEvent(QPaintEvent*) override;
+		void keyPressEvent(QKeyEvent*) override;
+		void keyReleaseEvent(QKeyEvent*) override;
+		void mousePressEvent(QMouseEvent*) override;
+		void contextMenuEvent(QContextMenuEvent*) override;
+		void mouseReleaseEvent(QMouseEvent*) override;
+		void mouseMoveEvent(QMouseEvent*) override;
+		void wheelEvent(QWheelEvent*) override;
+		void focusOutEvent(QFocusEvent*) override;
+		void focusInEvent(QFocusEvent*) override;
+		void timerEvent(QTimerEvent*) override;
 #if defined(USEOPENGL) && !BLOCKGL
 		unsigned curtex:2;
 		GLuint texids[4];
 		GLuint curtxid;
 		QList<GLuint> queue;
-		void initializeGL();
-		void resizeGL(int,int);
-		void paintGL();
+		void initializeGL() override;
+		void resizeGL(int,int) override;
+		void paintGL() override;
 		void cleanupGL();
 #if ISLEGACYGL
 		QGLContext* cont;

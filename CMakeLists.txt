@@ -78,8 +78,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(INC_PATHS local/include include)
 	set(LIB_PATHS lib lib64 local/lib local/lib64)
 
-	set(LIBRARIES ${LIBRARIES} dl)
-
 	if ("${PACK}" STREQUAL "rpm")
 
 	# RPM package
@@ -382,6 +380,8 @@ else(${SDL1BUILD})
 	find_package(SDL2 REQUIRED)
 	if (${SDL2_FOUND})
 		add_definitions(-DHAVESDL2)
+		# main.cpp keeps its own main(): no SDL_main rename (it clashed with Qt6's qMain)
+		add_definitions(-DSDL_MAIN_HANDLED)
 		include_directories(${SDL2_INCLUDE_DIR})
 		set(LIBRARIES ${LIBRARIES} ${SDL2_LIBRARY})
 		set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libsdl2-2.0-0 (>=2.0) | libSDL2 (>=2.0)")

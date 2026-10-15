@@ -660,7 +660,7 @@ QMenu* MainWin::volumeMenu() {
 	wact->setDefaultWidget(box);
 	menu->addAction(wact);
 	connect(menu, &QMenu::aboutToShow, box, &xVolBox::load);	// the wheel moves it too
-	connect(menu, &QMenu::aboutToHide, this, [this]() {saveConfig();});
+	connect(menu, &QMenu::aboutToHide, this, []() {saveConfig();});
 	return menu;
 }
 
