@@ -129,8 +129,9 @@ before that point is upstream's history and is not repeated here.
   and Moonlighter load.
 
 - **Flash loading** leaves the registers as the ROM's loader does and keeps the tape playing
-  through a short gap after the block, so Action Force 2 and Rick Dangerous load. A keyboard
-  scan during a pause no longer stops the tape.
+  through a short gap after the block, so Action Force 2, Rick Dangerous and Loco-Motion
+  load. A keyboard scan during a pause no longer stops the tape.
+  *(Loco-Motion reported by Volutar)*
 
 - **Apply with another model** in Options keeps what was changed on the other pages.
 
