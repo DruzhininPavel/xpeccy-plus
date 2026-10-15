@@ -7,6 +7,9 @@ config/profiles/**/*.nvram binary
 res/nvram/*.cmos binary
 res/nvram/*.nvram binary
 config/boot.$B binary
+# esxDOS as Papaya Dezign released it: dot commands have no extension, and every
+# file stays byte-identical to the release
+config/esxdos/** binary
 font.png binary
 *.png binary
 *.ico binary

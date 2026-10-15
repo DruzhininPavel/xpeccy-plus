@@ -1,5 +1,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QDir>
+#include <QDirIterator>
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 #include <QCheckBox>
@@ -46,6 +48,8 @@ void MainWin::fillCardMenu(QMenu* m, int card) {
 	}
 	m->addAction(QIcon(":/images/sdcard.png"), "Open Image...", this, [this, card]() {sdcOpen(card, false);});
 	m->addAction(QIcon(":/images/fileopen.png"), "Open Folder...", this, [this, card]() {sdcOpen(card, true);});
+	if (card >= 0)		// a divMMC's: esxDOS is its firmware
+		m->addAction(QIcon(":/images/doc-new.png"), "New esxDOS Folder...", this, [this, card]() {sdcNewEsx(card);});
 	act = m->addAction(QIcon(":/images/tape-eject.png"), "Eject", this, [this, card]() {
 		driveOp([card]() {sdc_mount(sd_card(conf.zx, card), QString());});
 	});
@@ -240,6 +244,49 @@ void MainWin::sdcOpen(int card, bool dir) {
 		: QFileDialog::getOpenFileName(this, "SD card image", "", "All files (*)", NULL, QFileDialog::DontUseNativeDialog);
 	pause(false, PR_FILE);
 	if (!path.isEmpty()) driveOp([card, path]() {sdc_mount(sd_card(conf.zx, card), path);});
+}
+
+static bool copy_tree(const QString& src, const QString& dst) {
+	if (!QDir().mkpath(dst)) return false;
+	QDirIterator it(src, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+	while (it.hasNext()) {
+		QString path = it.next();
+		QString to = dst + "/" + QDir(src).relativeFilePath(path);
+		if (it.fileInfo().isDir()) {
+			if (!QDir().mkpath(to)) return false;
+		} else if (!QFile::copy(path, to)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+// A card ready for esxDOS: a folder with the system files of the bundled one
+// (they must be the version the EEPROM holds), for the user to fill. Put in at
+// once, with the power off and on, so esxDOS finds it.
+void MainWin::sdcNewEsx(int card) {
+	QString esx = QString::fromLocal8Bit(conf.path.esxDir.c_str());
+	if (!QDir(esx + "/SYS").exists() || !QDir(esx + "/BIN").exists()) {
+		shitHappens("The esxDOS files are missing from the config folder");
+		return;
+	}
+	pause(true, PR_FILE);
+	QString path = QFileDialog::getExistingDirectory(this, "Folder for the esxDOS card", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
+	pause(false, PR_FILE);
+	if (path.isEmpty()) return;
+	QDir dir(path);
+	if (dir.exists("SYS") || dir.exists("BIN")) {
+		shitHappens("This folder has SYS or BIN already. Open it with Open Folder");
+		return;
+	}
+	if (!copy_tree(esx + "/SYS", path + "/SYS") || !copy_tree(esx + "/BIN", path + "/BIN") || !dir.mkpath("TMP")) {
+		shitHappens("Can't copy the esxDOS files into this folder");
+		return;
+	}
+	driveOp([card, path]() {
+		sdc_mount(sd_card(conf.zx, card), path);
+		xm_power_cycle();
+	});
 }
 
 // What the image in a hard disk is. The geometry comes from the image and is

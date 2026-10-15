@@ -99,6 +99,7 @@ void conf_init(char* confdir) {
 	mkdir((conf.path.confDir + "/styles").c_str() ,0777);
 	conf.path.confFile = conf.path.confDir + "/config.conf";
 	conf.path.boot = conf.path.confDir + "/boot.$B";
+	conf.path.esxDir = conf.path.confDir + "/esxdos";
 #elif defined(__WIN32)
 	if (confdir == NULL) {
 		// beside the exe, not argv[0]: that is what was typed, a bare name from a console
@@ -113,6 +114,7 @@ void conf_init(char* confdir) {
 	conf.path.palDir = conf.path.confDir + "\\palettes";
 	conf.path.confFile = conf.path.confDir + "\\config.conf";
 	conf.path.boot = conf.path.confDir + "\\boot.$B";
+	conf.path.esxDir = conf.path.confDir + "\\esxdos";
 	mkdir(conf.path.confDir.c_str());
 	mkdir(conf.path.romDir.c_str());
 	mkdir(conf.path.nvDir.c_str());

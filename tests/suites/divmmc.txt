@@ -11,6 +11,8 @@ esx_folder        zx48      boot  650   50      mac:storage.divmmc=divmmc eeprom
 esx_ls            zx48      boot  760   40      mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089 keys:660:Sm,672:l,684:s,696:E
 esx_nmi           zx48      boot  760   40      mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089 keys:660:nmi
 esx_folder_banner zx48      boot  100   20      mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN card1:divmmc/esxdos089
+# no eeprom: the EEPROM a fresh config starts with (the bundled esxDOS); same hashes as esx_folder
+esx_default       zx48      boot  650   50      mac:storage.divmmc=divmmc card1:divmmc/esxdos089
 esx_flash         zx48      auto  2500  20      divmmc/ESXMMC089.TAP mac:storage.divmmc=divmmc mac:storage.divmmc.eeprom=writable keys:400:_
 esx_pent          pent      boot  700   50      mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089
 esx_pent1024      pent1024  boot  700   50      mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089

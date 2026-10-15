@@ -148,6 +148,7 @@ typedef struct {
 		void hddOpen(int, bool);
 		void hddProps(int);
 		void sdcOpen(int, bool);
+		void sdcNewEsx(int);
 		void fillCardMenu(QMenu*, int);
 		void setTurbo(int);
 		void addFavorite(const QString& path);

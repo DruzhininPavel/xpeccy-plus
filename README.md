@@ -183,6 +183,11 @@ of this project - they stay under the terms of their own copyright holders. Deta
 where each image came from in [`config/roms/PROVENANCE.md`](config/roms/PROVENANCE.md).
 No image was modified; the copyright messages inside them are intact.
 
+`config/esxdos/` holds esxDOS 0.8.9, the divMMC's firmware and the files its card needs,
+unmodified. esxDOS is (c) Papaya Dezign and is bundled with their permission - many thanks to
+Miguel Guerreiro / Papaya Dezign. It keeps its own terms: see
+[`config/esxdos/LICENSE`](config/esxdos/LICENSE).
+
 `config/boot.$B` is bundled for the same reason: TR-DOS images that carry no boot file of
 their own get it appended when they are opened. It is Dimon boot 2024 by Dmitry Yurinov and
 keeps its own terms, like the ROM images.

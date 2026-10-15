@@ -102,6 +102,74 @@ The General Sound firmware sources are published at
 <https://github.com/psbhlw/gs-firmware> (sources only, no built images); the binaries
 bundled here are the original firmware releases.
 
+## esxDOS - permission of the rights holder
+
+`../esxdos/` holds esxDOS 0.8.9 by Papaya Dezign, the divMMC firmware (`ESXMMC.BIN`, the
+image its EEPROM starts with) and the `SYS` and `BIN` folders a card needs, plus the
+release's `README.TXT` and `ESX089.NFO` - unmodified, from the official
+<http://www.esxdos.org/files/esxdos089.zip>. Bundled with the permission of Papaya Dezign;
+thanks to Miguel Guerreiro / Papaya Dezign. Its terms are in `../esxdos/LICENSE`.
+
+| File | Size | MD5 |
+| --- | ---: | --- |
+| `ESXMMC.BIN` | 8192 | `fa50b0258e52b8d72bd83cc2fb6e1013` |
+| `BIN/128` | 512 | `9632dc64cbe81eb10b2028a925621dae` |
+| `BIN/CAL` | 603 | `5b858161928fc91e6563c25e67a7d5c5` |
+| `BIN/CD` | 512 | `50c40f96a11161cbad1b312d7517e8e3` |
+| `BIN/CHMOD` | 512 | `fb04875adc42097837b7839432f5103c` |
+| `BIN/CP` | 512 | `1e5a00d1a8acb2f5d46f8ff1b1347e80` |
+| `BIN/DATE` | 388 | `49281f0d780bcee65a8697d54ea12549` |
+| `BIN/DFWLOAD` | 1024 | `6c9fec59ad152fb55db55b3fc20f49c1` |
+| `BIN/DIVIDEO` | 917 | `1e3a152f884d9a310496870a3bc58766` |
+| `BIN/DRIVES` | 1008 | `9a8bc288f48b399974e5676a1dbd6bdc` |
+| `BIN/DSKPROBE` | 2837 | `d5336db574873f68edbfdbec72c2f404` |
+| `BIN/DUMPMEM` | 512 | `e9d02ffab7560f07adfc0739a1e5baf0` |
+| `BIN/FILE` | 1024 | `3dc7b278ed9f52ff6df9122066149791` |
+| `BIN/GRAMON` | 2560 | `930ec960019d5802b957d591ddcd7164` |
+| `BIN/GSC` | 4896 | `2e4f5e414e0b620f2ce566e5a32afeb6` |
+| `BIN/HEXDUMP` | 512 | `cd4f68ae03402de1a1299fcc91edde83` |
+| `BIN/HEXVIEW` | 2767 | `489543ce2372ebe07e3f292379660f7c` |
+| `BIN/LAUNCHER` | 1160 | `76a10020fffc4f672690f5496baaadfa` |
+| `BIN/LS` | 1189 | `8ceef180fe87f9a0de000721b7e01fc0` |
+| `BIN/LSTAP` | 1024 | `90c937f5d8e847b286dfb5fbb9dd850d` |
+| `BIN/MKDIR` | 512 | `7c2505a761948bf221f5083924eff968` |
+| `BIN/MKTRD` | 512 | `c9449b0a8cb9b3ad7f6f11123681bb50` |
+| `BIN/MORE` | 417 | `f414a55ee44f00286a50a231bd29054a` |
+| `BIN/MV` | 512 | `48ebee514da2b7e803fafa72507a5fe6` |
+| `BIN/PARTINFO` | 512 | `a35fbbf8a4b54e5dfbb4604a0dcb5b36` |
+| `BIN/PLAYPT3` | 3642 | `bfabb96b23412808f561e7666b1811a5` |
+| `BIN/PLAYSQT` | 1759 | `db65aad44667f1d3bd606abcf97e1ff6` |
+| `BIN/PLAYSTC` | 1475 | `fadead590fd9b02f32e20c1fd35664b7` |
+| `BIN/PLAYTFM` | 2232 | `c2fc51b9e118a57423bc9cf925908be8` |
+| `BIN/PLAYWAV` | 1536 | `9d617d24638646cc43cccba9f2c8c445` |
+| `BIN/RM` | 1289 | `b6d06591057859e061ac0a382f6ab3e8` |
+| `BIN/SCL2TRD` | 4075 | `601cd775f8646cdcaaeaf7d0e63b3e05` |
+| `BIN/SERCP` | 3072 | `94673dbd6a9d4275d99f7f9f15f0bff3` |
+| `BIN/SNAPLOAD` | 6656 | `e587f0ad0e05eb9c6aa0da38f53e2b24` |
+| `BIN/SPEAKCZ` | 1536 | `cd3b8cf7d0daa65051cb2877ef1a7031` |
+| `BIN/STRINGS` | 1045 | `e4d1d1ff1608736d82a07d7ea9442418` |
+| `BIN/TAPEIN` | 512 | `5db0a65f475f9d9eb91b0eda452bae8e` |
+| `BIN/TAPEOUT` | 512 | `b30b9f2fd6fdc78eed514fb15dcb3bfd` |
+| `BIN/TAR` | 2691 | `dcab1baa4907675ee3a845986fd53685` |
+| `BIN/TE` | 1024 | `bc73a3c7299b9e57a74b49a698343f49` |
+| `BIN/TSPLAY` | 3584 | `bbefe2eefd9adac8c6051741ce1977ba` |
+| `BIN/VDISK` | 512 | `3fb12c5773ae39c77a47c8d8bf9b077b` |
+| `ESX089.NFO` | 2965 | `8a17f0a54c0d1af43d38be5d14e1100c` |
+| `README.TXT` | 4320 | `740928f5527378845ef25b49c0bb1e18` |
+| `SYS/BDIR.KO` | 1024 | `d1a602cbc49f2200c0de7e9f855894eb` |
+| `SYS/BETADISK.SYS` | 2233 | `64a7ea5a4690c76bedcaed67874a0505` |
+| `SYS/BFILE.KO` | 1024 | `1f6c192703e8ef104f4efe5831eb042d` |
+| `SYS/CONFIG/ESXDOS.CFG` | 247 | `0eea6ed61b759a6c7a8285d2859c0bdf` |
+| `SYS/CONFIG/TRDOS.CFG` | 875 | `3e4870421391bdf18759eab6ae77aa3b` |
+| `SYS/ERRMSG.KO` | 512 | `62a5a9dd6ac8d1e048baa70073b7fecd` |
+| `SYS/ESXDOS.SYS` | 4090 | `484135f5803e399e09ef01b290f2f39e` |
+| `SYS/NMI.SYS` | 3539 | `7744e8f88ad5a0a38ae16132cdcbca1c` |
+| `SYS/NMI_HELP.SCR` | 6912 | `7c1fbd5d11172b79a8042334479a34c4` |
+| `SYS/TAPE.KO` | 1024 | `0dc2206e6ceaffa0810e7f99e2ac7c9a` |
+| `SYS/TRDBOOT.BIN` | 15360 | `313590e963124f498a5b3763aea66c7d` |
+| `SYS/TRDOS54T.KO` | 16412 | `2e0ef5b18368c4d432ec983cb34c6616` |
+| `SYS/VDISK.KO` | 512 | `7f8f7ed83b6c7ad1eee4aadc27c68f22` |
+
 ## Other files
 
 | File | What it is |
@@ -109,4 +177,5 @@ bundled here are the original firmware releases.
 | `AMSTRAD.copyright` | canonical Amstrad notice, verbatim copy from the Fuse distribution |
 | `LICENSE` | distribution terms for this directory |
 | `PROVENANCE.md` | this file |
+| `../esxdos/LICENSE` | terms of the bundled esxDOS |
 | `../boot.$B` | Dimon boot 2024 by Dmitry Yurinov, appended to TR-DOS images that carry no boot file - <https://zxart.ee/prod/540777> |
