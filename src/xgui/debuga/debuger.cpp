@@ -2740,6 +2740,13 @@ void dbg_mem_wr(Computer* comp, int adr, unsigned char bt) {
 			if (conf.dbg.romwr)
 				comp->mem->romData[fadr & comp->mem->romMask] = bt;
 			break;
+		case MEM_DIV:		// its SRAM, and its EEPROM as a ROM is
+			fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
+			if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr) {
+				comp->div->data[fadr] = bt;
+				if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
+			}
+			break;
 	}
 }
 

@@ -265,6 +265,13 @@ void dasmwr(Computer* comp, int adr, int bt) {
 				case MEM_RAM:
 					comp->mem->ramData[fadr & comp->mem->ramMask] = bt & 0xff;
 					break;
+				case MEM_DIV:		// its SRAM, and its EEPROM as a ROM is
+					fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
+					if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr) {
+						comp->div->data[fadr] = bt & 0xff;
+						if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
+					}
+					break;
 			}
 			break;
 		case XVIEW_RAM:
