@@ -29,3 +29,5 @@ config/keymaps/*.map text eol=lf
 # fuse ships these with LF; keep them that way whatever autocrlf is set to
 tools/z80test/tests/* text eol=lf
 tools/z80test/LICENSE text eol=lf
+# the .pok reader's test files are about their line ends: CRLF, LF, none at the end
+tests/core/pok/files/*.pok binary

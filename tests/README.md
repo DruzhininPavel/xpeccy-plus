@@ -64,3 +64,7 @@ libxpeccy as a static library and the benches in `core/` against it, into
   committed assembled in `bin/` beside their sources in `asm/`, so a run needs no assembler.
 - **tape** - TAP and TZX images written by `core/tape/mktape.py`: the blocks as read, the
   bytes decoded back, the pulse lengths a loader measures, and a TAP -> WAV -> TAP round trip.
+- **pok** - the `.pok` reader over the hand-made files in `core/pok/files` (line ends,
+  padding, every way a trainer goes bad), then pokes going in and out of a 16K, a 48K and
+  a 128K: the original check, a page poked while another is paged in, undo, a rollback.
+  `pok-bench -sweep <files>` prints one line a file, for a run over a collection.
