@@ -72,6 +72,11 @@ before that point is upstream's history and is not repeated here.
 
 ### Changed
 
+- **Reset with a divMMC on** clears the board's MAPRAM setting, as the ZX Spectrum Next's
+  board does, so a program that crashes into setting it (BREAK held during a load from the
+  card, for one) no longer leaves a machine that only Hard Reset brings back: a reset gives
+  esxDOS's warm start into 48K BASIC. The original board keeps MAPRAM until the power goes.
+
 - **The tape and drive lights** in the status bar are one set: dim with nothing in, gray
   loaded, green reading, red writing, and they blink while working. The tape's light stays
   with no tape in, and beside it is the block's progress. *(thanks to Volutar)*
@@ -97,6 +102,15 @@ before that point is upstream's history and is not repeated here.
   scaled down. *(thanks to Volutar)*
 
 ### Fixed
+
+- **Running a tape with a divMMC on** works on the 128K and the Pentagon too: esxDOS leaves
+  every machine in 48K BASIC, so those are the keys it gets, after a Hard Reset so that a
+  tape attached in esxDOS does not take the `LOAD` instead. A disk in a drive cannot be run
+  while the board is on - esxDOS owns the TR-DOS entry - and the emulator says so instead
+  of typing. *(reported by Volutar)*
+
+- **The window title with a divMMC** names the card while esxDOS reads it, by its image or
+  folder, and no longer a tape left in the deck. *(reported by Volutar)*
 
 - **FLASH no longer strobes under fast loading** and in Fast mode: the picture blinks at its
   usual rate. *(reported by Volutar)*

@@ -15,6 +15,8 @@ enum {
 int autostart_arm(Computer*, int kind);
 // could a machine of that core and disk interface (DIF_*) start it
 int autostart_can(int hwid, int dif, int kind);
+// a divMMC that maps takes the disk entries: that kind cannot be started now
+int autostart_board_blocks(Computer*, int kind);
 void autostart_frame(Computer*);
 // the machine it was typing into is gone: switched, reset, another file in
 void autostart_cancel();

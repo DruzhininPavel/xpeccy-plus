@@ -774,6 +774,7 @@ int main(int ac,char** av) {
 	}
 	// tape or disk from the command line: mounting is not enough, so press
 	// what the user would press by hand. Here, after every option is known
+	media_autorun_headless((bnFrames > 0) || bnSave || bnState || (ethread.benchRzx > 0) || ethread.benchRec);
 	media_autorun(conf.zx, astart);
 	vrec_auto_apply();
 	// labels named on the command line win over an image's own

@@ -58,7 +58,8 @@ A tape or a disk can be **run** or just **mounted**. Run resets the machine and 
 the program on it; Mount only puts the tape or disk in, as if into a real recorder or
 drive. The first time, Xpeccy+ asks which one you want. Tick **Remember my choice** to stop
 the question; to change the choice later, use the **File types** page of **Options**. To be
-asked about one file only, hold Shift as you open or drop it.
+asked about one file only, hold Shift as you open or drop it. With a [divMMC](disks.md#divmmc)
+on, Run starts a tape from a Hard Reset and cannot start a disk in a drive.
 
 ```{index} machine; switched by a file
 ```

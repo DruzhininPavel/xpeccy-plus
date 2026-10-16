@@ -18,3 +18,11 @@ esx_pent          pent      boot  700   50      mac:storage.divmmc=divmmc eeprom
 esx_pent1024      pent1024  boot  700   50      mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089
 esx_pent_trdos    pent      boot  960   40      mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089 keys:660:Sm,672:l,684:s,696:E,780:t,792:CS,804:l,816:1,828:5,840:6,852:1,864:6,876:E
 esx_128_trdos     zx128     boot  960   40      mac:storage.divmmc=divmmc mac:storage.disk=trdos eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089 keys:660:Sm,672:l,684:s,696:E,780:t,792:CS,804:l,816:1,828:5,840:6,852:1,864:6,876:E
+# an image started from outside the card, with the board on: a power cycle first (the firmware
+# forgets a tape attached in its browser), then the keys of the 48 BASIC esxDOS leaves every
+# machine in; a TR-DOS disk is refused - 3Dxx is the board's - and the machine sits in 48 BASIC
+as_esx48          zx48      auto  1000  20      tape/ninjaman.tap mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089
+as_esx48_nofast   zx48      auto  1000  20      tape/ninjaman.tap mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089 cfg:TAPE.fast=no
+as_esx128         zx128     auto  1000  20      tape/AYtest_v0.2.tap mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089
+as_esxpent        pent      auto  1000  20      tape/AYtest_v0.2.tap mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089
+as_esxpent_trd    pent      auto  700   20      disk/dwot.trd mac:storage.divmmc=divmmc eeprom:divmmc/ESXMMC089.BIN cardimg1:divmmc/esxdos089

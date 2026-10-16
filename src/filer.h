@@ -96,6 +96,8 @@ bool media_runnable(Computer*, const QString& path, int id, int drv);
 int file_autostart_kind();
 // reset the machine and start what was just opened, if run says so
 void media_autorun(Computer*, int run);
+// a run with no window: nothing is asked or shown, the log says what was refused
+void media_autorun_headless(int on);
 // drop that record: media a profile puts back was not opened by the user
 void media_autorun_forget();
 // live: the machine was running, so a snapshot may run it on to a better moment

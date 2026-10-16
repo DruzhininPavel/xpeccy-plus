@@ -667,7 +667,9 @@ void compDestroy(Computer* comp) {
 
 // A reset the user asked for, not one a loader does: the tape stops where it
 // stands, and the automatics follow the rom again whatever Stop said before.
+// A divMMC's MAPRAM goes with it, so the firmware can always start.
 void compUserReset(Computer* comp, int res) {
+	div_user_reset(comp->div);
 	compReset(comp, res);
 	tapStop(comp->tape);
 	comp->tape->userStop = 0;

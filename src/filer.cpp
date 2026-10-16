@@ -454,6 +454,26 @@ static char as_no_tape[] = "This machine cannot start a tape";
 static char as_no_disk[] = "This machine cannot start that disk";
 static char as_not_a[] = "Only drive A can be started";
 
+// a run with no window (--bench) has nowhere to put a question or a notice
+static int as_headless = 0;
+
+void media_autorun_headless(int on) {
+	as_headless = on;
+}
+
+// A disk cannot be started while a divMMC maps. Said in a window with the
+// machine paused: the message line is gone before it can be read.
+static void as_board_refused() {
+	if (as_headless) return;		// the log has the refusal
+	conf.emu.pause |= PR_EXTRA;
+	QMessageBox::information(nullptr, "Cannot start the disk",
+		"A divMMC is on, and its esxDOS owns the TR-DOS entry: a disk in a drive cannot be "
+		"started, so it is only mounted.\n\n"
+		"Start it from the esxDOS browser (Machine > NMI), or switch the divMMC off on the "
+		"Machine page of Options.");
+	conf.emu.pause &= ~PR_EXTRA;
+}
+
 // Media just opened from the gui: mounting is not enough when the user wants it
 // started, so do what the command line does - reset and press the keys. A
 // machine that cannot take this kind of media keeps running, the image just
@@ -479,10 +499,13 @@ void media_autorun(Computer* comp, int run) {
 	emu_lock();		// arming resets the machine
 	int ok = autostart_arm(comp, kind);
 	emu_unlock();
-	if (!ok)
-		comp->msg = (kind == AS_TAPE) ? as_no_tape : as_no_disk;
 	xlog(XLG_FILE, XLL_INFO, "autostart %s: %s", ok ? "armed" : "refused",
 		comp->hw->name);
+	if (ok) return;
+	if (autostart_board_blocks(comp, kind))
+		as_board_refused();
+	else
+		comp->msg = (kind == AS_TAPE) ? as_no_tape : as_no_disk;
 }
 
 static int as_kind_of(int ftype) {

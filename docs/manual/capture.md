@@ -129,7 +129,7 @@ The file name template can contain these keys:
 |---|---|
 | `%d` | the date, `20260929` |
 | `%t` | the time, `153012` |
-| `%image` | the name of the file in use (snapshot, tape or disk), or the machine's name when there is none |
+| `%image` | the name of the file in use (snapshot, tape, disk or divMMC card), or the machine's name when there is none |
 | `%machine` | the machine's name |
 
 The default is `xpeccy-plus_%d_%t_%image`. The name is made when the recording stops, so
