@@ -436,6 +436,7 @@ typedef struct {
 		bool fsCompose(bool);
 		bool fpsOsd();
 		bool fsHeld();
+		bool fsCovers();
 		void popupUserMenu(const QPoint&);
 		void placeWindow();
 		void fsReveal(int y);
