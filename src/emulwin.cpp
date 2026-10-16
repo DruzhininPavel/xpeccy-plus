@@ -127,8 +127,23 @@ void MainWin::updateWindow() {
 		// screen's exact size whatever size is set below - under the dialog that
 		// is up, Options after Apply, which is then no longer drawn over it while
 		// it still takes every key and click.
-		if (!fsCovers())
+		if (!fsCovers()) {
+#if defined(__WIN32)
+			// Qt keeps the window's style here, to put it back once the state goes
+			// (the first resize sees to that, after this returns). With a modal
+			// dialog up - Options, on OK - that style has the window disabled for
+			// the dialog, and put back after the dialog has gone it leaves the
+			// window taking no input at all: so it is enabled for the moment the
+			// style is kept.
+			HWND hwnd = reinterpret_cast<HWND>(frame->winId());
+			bool blocked = !IsWindowEnabled(hwnd);
+			if (blocked) EnableWindow(hwnd, TRUE);
 			frame->setWindowState(frame->windowState() | Qt::WindowFullScreen);
+			if (blocked) EnableWindow(hwnd, FALSE);
+#else
+			frame->setWindowState(frame->windowState() | Qt::WindowFullScreen);
+#endif
+		}
 	} else {
 		bool back = fsCovers();
 		// the picture: a whole number of pixels per dot, or it would be
