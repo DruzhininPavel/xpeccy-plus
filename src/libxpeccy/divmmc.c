@@ -56,6 +56,20 @@ void div_reset(DivMMC* div) {
 	div_spi_reset(div);
 }
 
+// On Prato's board and its kin (divIDE, divTIESUS, ZX-Uno) only the power
+// clears MAPRAM, and a program that crashed into writing the register leaves
+// the machine with RAM page 3 for a ROM until it is switched off: no reset
+// button helps. The Spectrum Next's board clears MAPRAM on any reset instead,
+// and a reset there gives the firmware's warm start into BASIC. The reset the
+// user presses here does as the Next does: nothing else of the board is
+// touched, and the firmware boots warm, with what it kept.
+void div_user_reset(DivMMC* div) {
+	div_reset(div);
+	if (!div->mapram) return;
+	div->mapram = 0;
+	div_map(div);
+}
+
 // Power-on: an RC on the board clears the register; the CPLD's flip-flops come
 // up 0. The SRAM's content is not defined by anything - it is taken as zeros. The
 // EEPROM keeps what it holds, and the cards come up as cards do.
