@@ -123,8 +123,31 @@ void MainWin::updateWindow() {
 		fsTall = fsWantTall(fsHeld());
 #endif
 		wsz = SCREENSIZE + QSize(0, fsTall ? 1 : 0);
-		frame->setWindowState(frame->windowState() | Qt::WindowFullScreen);
+		// The state is asked for on the way in only. A window that covers the
+		// screen has been out of the state since its first resize (the line it
+		// grows for a menu, see fsCompose), and asking again puts it back to the
+		// screen's exact size whatever size is set below - under the dialog that
+		// is up, Options after Apply, which is then no longer drawn over it while
+		// it still takes every key and click.
+		if (!fsCovers()) {
+#if defined(__WIN32)
+			// Qt keeps the window's style here, to put it back once the state goes
+			// (the first resize sees to that, after this returns). With a modal
+			// dialog up - Options, on OK - that style has the window disabled for
+			// the dialog, and put back after the dialog has gone it leaves the
+			// window taking no input at all: so it is enabled for the moment the
+			// style is kept.
+			HWND hwnd = reinterpret_cast<HWND>(frame->winId());
+			bool blocked = !IsWindowEnabled(hwnd);
+			if (blocked) EnableWindow(hwnd, TRUE);
+			frame->setWindowState(frame->windowState() | Qt::WindowFullScreen);
+			if (blocked) EnableWindow(hwnd, FALSE);
+#else
+			frame->setWindowState(frame->windowState() | Qt::WindowFullScreen);
+#endif
+		}
 	} else {
+		bool back = fsCovers();
 		// the picture: a whole number of pixels per dot, or it would be
 		// resampled and some columns come out a pixel wider than others
 		wsz = QSize(drawW, drawH);
@@ -135,6 +158,8 @@ void MainWin::updateWindow() {
 		if (win && (win->windowStates() & Qt::WindowFullScreen))
 			frame->setWindowState(frame->windowState() | Qt::WindowFullScreen);
 		frame->setWindowState(frame->windowState() & ~Qt::WindowFullScreen);
+		// back on the screen with its title bar, once it has its size
+		if (back) QTimer::singleShot(0, this, &MainWin::placeWindow);
 	}
 	setFixedSize(wsz);
 	blockSignals(false);
@@ -2266,6 +2291,19 @@ bool MainWin::fsCompose(bool on) {
 	(void)on;
 	return false;
 #endif
+}
+
+// The window covers the screen - exactly, or the line taller - from its corner:
+// fullscreen as it is once it has been resized there, whatever state Qt keeps.
+bool MainWin::fsCovers() {
+	if (frame->isFullScreen()) return true;
+#if QT_VERSION >= QT_VERSION_CHECK(5,14,0)
+	QRect scr = screen()->geometry();
+#else
+	QRect scr = QApplication::desktop()->screenGeometry();
+#endif
+	QRect fg = frame->geometry();
+	return (fg.topLeft() == scr.topLeft()) && (fg.width() == scr.width()) && (fg.height() >= scr.height());
 }
 
 // a window of ours, not a menu or a tip: those are seen to by fsCompose's callers

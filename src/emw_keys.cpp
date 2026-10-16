@@ -167,10 +167,8 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 			case XCUT_FULLSCR:
 				vid_set_fullscreen(!conf.vid.fullScreen);
 				setMessage(conf.vid.fullScreen ? " fullscreen on " : " fullscreen off ");
-				updateWindow();
+				updateWindow();		// puts the window back in place on the way out
 				saveConfig();
-				if (!conf.vid.fullScreen)
-					QTimer::singleShot(0, this, &MainWin::placeWindow);
 				break;
 			case XCUT_SIZEX1: case XCUT_SIZEX2: case XCUT_SIZEX3:
 			case XCUT_SIZEX4: case XCUT_SIZEX5: case XCUT_SIZEX6:

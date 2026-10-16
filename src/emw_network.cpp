@@ -14,6 +14,8 @@
 #include <QContextMenuEvent>
 #include <QDockWidget>
 #include <QTimer>
+#include <QWindow>
+#include "xcore/vscalers.h"
 #include <QToolButton>
 #include <QPainter>
 
@@ -613,6 +615,42 @@ void MainWin::socketRead() {
 		}
 		if (hit) list = line(hit) + "\r\n";
 		sock->write(list.isEmpty() ? "nothing\r\n" : list.toUtf8());
+	} else if (com == "uistate") {
+		// uistate: what holds the input and where the picture goes - the modal window,
+		// the popup, the grabs, the window's state, the crop and the draw rectangle
+		auto wname = [](QWidget* w) {
+			if (!w) return QString("none");
+			QRect g = w->geometry();
+			return QString("%0 \"%1\" %2,%3 %4x%5%6%7").arg(w->metaObject()->className(), w->windowTitle())
+				.arg(g.x()).arg(g.y()).arg(g.width()).arg(g.height())
+				.arg(w->isVisible() ? "" : " hidden").arg(w->isModal() ? " modal" : "");
+		};
+		QString out;
+		out += QString("modal: %0\r\n").arg(wname(QApplication::activeModalWidget()));
+		out += QString("popup: %0\r\n").arg(wname(QApplication::activePopupWidget()));
+		out += QString("active: %0\r\n").arg(wname(QApplication::activeWindow()));
+		out += QString("focus: %0\r\n").arg(wname(QApplication::focusWidget()));
+		out += QString("kbgrab: %0\r\n").arg(wname(QWidget::keyboardGrabber()));
+		out += QString("mgrab: %0\r\n").arg(wname(QWidget::mouseGrabber()));
+		QWindow* win = frame->windowHandle();
+		out += QString("frame: state %0 qwindow %1 fullscreen %2 geo %3,%4 %5x%6 picture %7x%8\r\n")
+			.arg(int(frame->windowState()), 0, 16).arg(win ? int(win->windowStates()) : -1, 0, 16)
+			.arg(frame->isFullScreen() ? 1 : 0).arg(frame->x()).arg(frame->y())
+			.arg(frame->width()).arg(frame->height()).arg(width()).arg(height());
+		out += QString("conf: fullScreen %0 keepRatio %1 scale %2 border %3 lowLatency %4 fsTall %5 pause %6\r\n")
+			.arg(conf.vid.fullScreen).arg(conf.vid.keepRatio).arg(conf.vid.scale).arg(conf.vid.border)
+			.arg(conf.vid.lowLatency).arg(fsTall).arg(conf.emu.pause, 0, 16);
+		Video* vid = comp->vid;
+		out += QString("crop: vsze %0x%1 lcut %2,%3 rcut %4,%5 full %6x%7 brdmode %8\r\n")
+			.arg(vid->vsze.x).arg(vid->vsze.y).arg(vid->lcut.x).arg(vid->lcut.y)
+			.arg(vid->rcut.x).arg(vid->rcut.y).arg(vid->full.x).arg(vid->full.y).arg(vid->brdmode);
+		out += QString("draw: %0,%1 %2x%3 zoom %4\r\n").arg(drawX).arg(drawY).arg(drawW).arg(drawH).arg(drawZoom);
+		out += QString("fsbar: %0 fstool: %1\r\n").arg(fsBar && fsBar->isVisible() ? 1 : 0).arg(fsTool && fsTool->isVisible() ? 1 : 0);
+		foreach(QWidget* w, QApplication::topLevelWidgets()) {
+			if (!w->isVisible()) continue;
+			out += QString("top: %0 type %1\r\n").arg(wname(w)).arg(int(w->windowType()), 0, 16);
+		}
+		sock->write(out.toUtf8());
 	} else {
 		sock->write("Unrecognized command\r\n");
 	}

@@ -264,6 +264,14 @@ int xstate_load(xState* st, Computer* comp) {
 	int nodrawNext = comp->vid->nodrawNext;
 	int flashShow = comp->vid->flashShow;
 	unsigned char hide = comp->vid->tsconf.hide;
+	// The frame shown of the raster is the window's too, and the window sets it
+	// with no lock: a fullscreen switch between a run-ahead's save and its load
+	// would be undone here, under a picture rectangle already fitted to the new
+	// frame - the dots come out wide, until the next refit.
+	vCoord lcut = comp->vid->lcut;
+	vCoord rcut = comp->vid->rcut;
+	vCoord vsze = comp->vid->vsze;
+	int brdmode = comp->vid->brdmode;
 	// A snapshot from under another playback, or none: its recording's file
 	// is closed, so the playback is the live one's - which the load ends.
 	size_t rzxLen = offsetof(Computer, rzx.frm.data) - offsetof(Computer, rzx);
@@ -282,6 +290,10 @@ int xstate_load(xState* st, Computer* comp) {
 	comp->vid->nodrawNext = nodrawNext;
 	comp->vid->flashShow = flashShow;
 	comp->vid->tsconf.hide = hide;
+	comp->vid->lcut = lcut;
+	comp->vid->rcut = rcut;
+	comp->vid->vsze = vsze;
+	comp->vid->brdmode = brdmode;
 	if (comp->ts) ts_state_restore(comp->ts);
 	// The image buffers are outside the snapshot and may have been swapped
 	// since, so the ray goes back by its offset into whichever buffer is

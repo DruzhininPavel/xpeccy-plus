@@ -112,6 +112,17 @@ before that point is upstream's history and is not repeated here.
 - **The window title with a divMMC** names the card while esxDOS reads it, by its image or
   folder, and no longer a tape left in the deck. *(reported by Volutar)*
 
+- **Options in fullscreen** stays in view after Apply: it used to vanish behind the picture
+  while still taking every key and click, so nothing in the emulator answered until it was
+  closed blind. Ticking Fullscreen and pressing OK no longer leaves the window deaf to the
+  mouse and the keyboard, and leaving fullscreen through that box puts the window back where
+  it was, title bar in view. *(reported by Alf)*
+
+- **Wide dots in fullscreen** with Keep Aspect Ratio on: now and then a switch into or out
+  of fullscreen, with the adaptive antiflicker's look ahead or run-ahead on, came up with the
+  picture stretched sideways (or squeezed, on the way out) until Keep Aspect Ratio was
+  switched off and on again. *(reported by Alf)*
+
 - **FLASH no longer strobes under fast loading** and in Fast mode: the picture blinks at its
   usual rate. *(reported by Volutar)*
 
