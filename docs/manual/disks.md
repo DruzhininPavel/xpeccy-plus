@@ -295,9 +295,24 @@ then the firmware skips the search and keeps what it found before.
   NMI button: esxDOS opens its file browser.
 - A folder used as a card is read only: esxDOS reports `I/O ERROR` when it tries to write.
   Use an image to save.
-- **Machine > Reset > Hard Reset** clears what a reset keeps: the board's MAPRAM
-  setting and its RAM. After `ESXMMC.TAP` has flashed the EEPROM, the firmware runs from a
-  copy in the board's RAM until a Hard Reset.
+- **Machine > Reset** (the plain one) is the board's reset button, with one difference
+  from the original board: it also clears the board's MAPRAM setting, as the ZX Spectrum
+  Next's board does. On the original, only the power clears it, and a program that crashes
+  into setting it (BREAK held during a load from the card is one way) leaves the machine
+  with garbage or stopped until it is switched off. Here a reset brings the firmware back,
+  warm: esxDOS keeps what it had, a tape attached in its browser included, and goes
+  straight to 48K BASIC. After `ESXMMC.TAP` has flashed the EEPROM, the firmware runs from
+  a copy in the board's RAM until that reset.
+- **Machine > Reset > Hard Reset** is the power switch: the board's RAM goes with the
+  machine's, and esxDOS starts cold, with its logo and the card read again.
+- A tape or disk opened to be run ([Run a program](getting-started.md#run-a-program))
+  starts from a Hard Reset while the board is on, so that a tape attached in esxDOS does
+  not take the `LOAD ""` instead; the keys go into the 48K BASIC the firmware leaves the
+  machine in. A disk in a drive cannot be started this way at all: esxDOS takes the TR-DOS
+  entry and the +3 Loader for its own files, so Xpeccy+ says so in a window and only mounts it. Start
+  it from the card, or switch the board off.
+- The window title names the card while esxDOS reads it, by its image file or folder, as it
+  names a disk while its drive runs.
 - esxDOS runs in 48K BASIC. 128 BASIC and +3 BASIC stop working with the board on, as they
   do on the real one.
 - On a machine with a Beta Disk, the board answers the calls to TR-DOS (`#3Dxx`) first:
