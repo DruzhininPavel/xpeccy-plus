@@ -104,6 +104,11 @@ before that point is upstream's history and is not repeated here.
   mouse and the keyboard, and leaving fullscreen through that box puts the window back where
   it was, title bar in view. *(reported by Alf)*
 
+- **Wide dots in fullscreen** with Keep Aspect Ratio on: now and then a switch into or out
+  of fullscreen, with the adaptive antiflicker's look ahead or run-ahead on, came up with the
+  picture stretched sideways (or squeezed, on the way out) until Keep Aspect Ratio was
+  switched off and on again. *(reported by Alf)*
+
 - **FLASH no longer strobes under fast loading** and in Fast mode: the picture blinks at its
   usual rate. *(reported by Volutar)*
 
