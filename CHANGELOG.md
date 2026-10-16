@@ -98,6 +98,11 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **Options in fullscreen** stays in view after Apply: it used to vanish behind the picture
+  while still taking every key and click, so nothing in the emulator answered until it was
+  closed blind. Leaving fullscreen through its Fullscreen box puts the window back where it
+  was, title bar in view. *(reported by Alf)*
+
 - **FLASH no longer strobes under fast loading** and in Fast mode: the picture blinks at its
   usual rate. *(reported by Volutar)*
 
