@@ -174,6 +174,8 @@ static const asMachine as_mtab[] = {
 
 static int as_kind = AS_NONE;	// what is being started: a tape has to be played
 static Computer* as_comp = NULL;
+static int as_board = 0;	// a divMMC maps: its firmware says where the machine ends up
+static int as_codeTape = 0;	// the tape's first header is bytes: LOAD ""CODE
 static const asKey* as_seq = NULL;	// what is left to press: NULL when idle
 static int as_step = 0;
 static int as_wait = 0;		// frames left before the next press or release
@@ -272,14 +274,46 @@ static int as_tape_code(Tape* tap) {
 	return 0;
 }
 
+// A divMMC that maps (a firmware in its EEPROM with the jumper closed, or
+// MAPRAM set) boots before the rom and decides where the machine ends up -
+// esxDOS leaves every machine in 48 BASIC - and the TR-DOS entry at 3Dxx and
+// the +3 Loader are its from then on: no disk in a drive can be started.
+static int as_board_maps(Computer* comp) {
+	DivMMC* div = comp->div;
+	return div->model && (!div->eeWrite || div->mapram);
+}
+
+int autostart_board_blocks(Computer* comp, int kind) {
+	return comp && (kind != AS_TAPE) && as_board_maps(comp);
+}
+
+// The 48 BASIC rom is the one paged in at 0000: bit 4 of 7FFD, and on a +2A/+3
+// bit 2 of 1FFD too (rom 3). Asked once the rom scans the keyboard, it says
+// which editor the keys go into, whatever firmware put the machine there.
+static int as_in_48_rom(Computer* comp) {
+	if (!(comp->p7FFD & 0x10)) return 0;
+	if ((comp->hw->id == HW_PLUS2A) || (comp->hw->id == HW_PLUS3))
+		return (comp->p1FFD & 0x04) ? 1 : 0;
+	return 1;
+}
+
 int autostart_arm(Computer* comp, int kind) {
 	autostart_stop();
 	const asAct* act = as_find(comp, kind);
 	if (!act) return 0;
+	if (autostart_board_blocks(comp, kind)) return 0;
 	const asAct* code = &as_row(comp->hw->id)->code;
-	if ((kind == AS_TAPE) && code->seq && as_tape_code(comp->tape))
+	as_codeTape = (kind == AS_TAPE) && code->seq && as_tape_code(comp->tape);
+	if (as_codeTape)
 		act = code;
-	x_user_reset(comp, act->res);
+	as_board = as_board_maps(comp);
+	// With the board on, the firmware is started from a power cycle: what it
+	// kept across a reset - esxDOS holds on to a tape attached in its browser,
+	// and LOAD "" would take that one - goes, and it boots as on a cold start.
+	if (as_board)
+		xm_power_cycle();
+	else
+		x_user_reset(comp, act->res);
 	if (act->snap) comp_snap_map(comp);
 	comp->keyb->scanmask = 0;
 	as_comp = comp;
@@ -310,6 +344,10 @@ void autostart_frame(Computer* comp) {
 	}
 	if (as_wait < 0) {		// the rom is scanning the matrix: it lives
 		if (comp->keyb->scanmask != 0xff) return;
+		// the board's firmware had its say: a machine left in 48 BASIC
+		// takes the 48 keys, not its boot menu's
+		if (as_board && (as_kind == AS_TAPE) && as_in_48_rom(comp))
+			as_seq = as_codeTape ? as_keyword_code : as_keyword;
 		as_wait = AS_SETTLE;
 	}
 	if (as_wait > 0) {
