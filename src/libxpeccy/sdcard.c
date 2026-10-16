@@ -599,6 +599,7 @@ static void sds_exec(SDCard* sdc) {
 			}
 			sdc->addr = lba;
 			sdc->cont = (cmd == CMD18);
+			sdc->reads++;
 			sdc->state = SDC_READ;		// no command heard until the block is out
 			sds_answer(sdc, sds_r1(sdc, 0));
 			sds_read_block(sdc);

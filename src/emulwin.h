@@ -247,9 +247,10 @@ typedef struct {
 		unsigned paintOwed:1;	// presentFrame asked, or resizeGL left an empty framebuffer
 
 		std::string shdLoaded;	// the shader the program is linked with now
-		int mediaSrc;		// where the image in use is: a drive, the tape, or a snapshot
-		int mediaSeen;		// the drive motors (bits 0..3) and the tape playing, as last seen
-		QByteArray mediaRaw[5];	// what each drive and the tape held, as last seen
+		int mediaSrc;		// where the image in use is: a drive, the tape, a divMMC card, or a snapshot
+		int mediaSeen;		// the drive motors (bits 0..3), the tape playing, the cards read, as last seen
+		QByteArray mediaRaw[7];	// what each drive, the tape and the cards held, as last seen
+		int cardReads[2];	// the divMMC cards' read counts as last seen
 		void watchMedia();
 		double hwMulSeen = 1.0;	// the board's turbo as last reported
 		std::string macSeen;	// ...on this machine

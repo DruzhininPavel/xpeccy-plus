@@ -72,6 +72,7 @@ typedef struct {
 		unsigned char data[530];	// gap, R1, gap, token, a block or a register, crc
 	} out;
 	int busyLeft;		// transfers still answered 00 after a block written
+	int reads;		// blocks read since the card was made: a card in use moves it
 } SDCard;
 
 SDCard* sdcCreate();

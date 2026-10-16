@@ -67,8 +67,10 @@
 #define	XPTITLE	XPRODUCT " (" XVERSION ")"
 #define	FPS_TICK_MS	200		// the timer the fps readout is sampled on
 
-// where the image named in the title is (drives are 0..3)
+// where the image named in the title is (drives are 0..3, the divMMC's cards 5..6)
 #define	MEDIA_TAPE	4
+#define	MEDIA_CARD	5
+#define	MEDIA_SRCS	7
 #define	MEDIA_SNAP	-1
 
 #if defined(__WIN32)
@@ -220,6 +222,7 @@ MainWin::MainWin(QMainWindow* frm) {
 	refit = 0;
 	mediaSrc = MEDIA_SNAP;
 	mediaSeen = 0;
+	cardReads[0] = cardReads[1] = 0;
 //	relskip = 0;
 
 	msgTimer = 0;
@@ -2801,8 +2804,10 @@ void MainWin::profileSelected(QAction* act) {
 
 // The title names the image the machine is using. A snapshot is in use the
 // moment it loads; a tape once it plays, a disk once its drive's motor comes
-// on - so what a start puts back in the drives stays out of the title until
-// the machine gets to it. A tape or a disk leaves it when it leaves its drive.
+// on, a divMMC's card once a block of it is read - so what a start puts back in
+// the drives stays out of the title until the machine gets to it. A tape, a
+// disk or a card leaves it when it leaves its drive. A card is named by its
+// image file or its folder.
 
 void MainWin::showMedia(const QString& path, int src) {
 	mediaSrc = src;
@@ -2990,8 +2995,9 @@ void MainWin::watchMedia() {
 		showMedia(snap, MEDIA_SNAP);
 	// another image in a drive, or none: the name goes if it was this one,
 	// and a motor still running from the last one counts as a new start
-	for (int src = 0; src <= MEDIA_TAPE; src++) {
-		const char* raw = (src == MEDIA_TAPE) ? comp->tape->path : comp->dif->flp[src]->path;
+	for (int src = 0; src < MEDIA_SRCS; src++) {
+		const char* raw = (src < MEDIA_TAPE) ? comp->dif->flp[src]->path
+			: (src == MEDIA_TAPE) ? comp->tape->path : comp->div->card[src - MEDIA_CARD]->image;
 		if (qstrcmp(raw ? raw : "", mediaRaw[src].constData()) == 0) continue;
 		mediaRaw[src] = raw;
 		mediaSeen &= ~(1 << src);
@@ -3003,15 +3009,26 @@ void MainWin::watchMedia() {
 		if (comp->dif->flp[i]->motor && comp->dif->flp[i]->insert)
 			seen |= 1 << i;
 	}
+	// a card has no motor: a block read since the last look is it turning
+	for (int i = 0; i < 2; i++) {
+		SDCard* card = comp->div->card[i];
+		if (card->reads == cardReads[i]) continue;
+		cardReads[i] = card->reads;
+		if (card->image) seen |= 1 << (MEDIA_CARD + i);
+	}
 	int rose = seen & ~mediaSeen;
 	mediaSeen = seen;
 	// flash loading reads the tape without playing it, but it moves it on;
 	// updateSatellites() clears the flag later in this same tick
 	if (comp->tape->blkChange)
 		rose |= 1 << MEDIA_TAPE;
-	for (int src = MEDIA_TAPE; src >= 0; src--) {	// the tape first: it plays alone
+	// the tape first: it plays alone; then the drives, then the board's cards
+	static const int order[MEDIA_SRCS] = {MEDIA_TAPE, 3, 2, 1, 0, MEDIA_CARD, MEDIA_CARD + 1};
+	for (int i = 0; i < MEDIA_SRCS; i++) {
+		int src = order[i];
 		if ((rose & (1 << src)) && !mediaRaw[src].isEmpty()) {
-			showMedia(QString::fromLocal8Bit(mediaRaw[src]), src);
+			// a folder's path may end with a separator, which would leave it nameless
+			showMedia(QDir::cleanPath(QString::fromLocal8Bit(mediaRaw[src])), src);
 			break;
 		}
 	}
