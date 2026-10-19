@@ -62,10 +62,16 @@ before that point is upstream's history and is not repeated here.
   an address and a value in decimal or hex. The Debug menu is now Tools.
 
 - **divMMC**: the SD card interface for the ZX Spectrum 48K, 128K, +2, +2A and +3 and the
-  Pentagons, with a card from an image or a folder in each of its two slots. esxDOS 0.8.9
-  comes with the emulator and is in its EEPROM from the start, and New esxDOS Folder in a
-  card's menu makes a card ready to fill with programs. *(thanks to Miguel Guerreiro / Papaya
-  Dezign for the permission to bundle esxDOS)*
+  Pentagons, with a card from an image or a folder in each of its two slots. esxDOS 0.8.5 to
+  0.8.9 come with the emulator, 0.8.9 in its EEPROM from the start, and New esxDOS Folder in
+  a card's menu makes a card of the release the EEPROM holds, ready to fill with programs.
+  *(thanks to Miguel Guerreiro / Papaya Dezign for the permission to bundle esxDOS)*
+
+- **divMMC on and off in one click**: Media > divMMC, the right-click menu, a toolbar button
+  or a hotkey of your choice. It is a Hard Reset, and the machine keeps the setting. While the
+  board is on, the floppy drives and the hard disk are out of the machine and come back with
+  their disks when it goes; the status bar shows them struck through and has a light for the
+  board's cards. *(thanks to Volutar)*
 
 - **View > Border** sets the border size at once, with the machine running or paused.
   *(thanks to Volutar)*
@@ -105,9 +111,8 @@ before that point is upstream's history and is not repeated here.
 
 - **Running a tape with a divMMC on** works on the 128K and the Pentagon too: esxDOS leaves
   every machine in 48K BASIC, so those are the keys it gets, after a Hard Reset so that a
-  tape attached in esxDOS does not take the `LOAD` instead. A disk in a drive cannot be run
-  while the board is on - esxDOS owns the TR-DOS entry - and the emulator says so instead
-  of typing. *(reported by Volutar)*
+  tape attached in esxDOS does not take the `LOAD` instead. Opening a disk while the board is
+  on offers to switch it off first. *(reported by Volutar)*
 
 - **The window title with a divMMC** names the card while esxDOS reads it, by its image or
   folder, and no longer a tape left in the deck. *(reported by Volutar)*
