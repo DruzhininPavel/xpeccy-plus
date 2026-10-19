@@ -149,6 +149,29 @@ void MainWin::fillDrivesMenu() {
 	for (QMenu* m : menus) m->menuAction()->setVisible(!m->isEmpty());
 }
 
+// The board in or out, as the divMMC row of Options puts it: with the power off,
+// so the machine comes up as after a Hard Reset, and into the machine's own file.
+// Its RAM and jumper stay as they were; the drives and the hard disk go out with
+// it on and come back with their disks (comp_board_storage).
+void MainWin::divToggle() {
+	Computer* comp = conf.zx;
+	if (!hw_takes_divmmc(comp->hw)) {
+		setMessage(" no divMMC on this machine ");
+		return;
+	}
+	bool on = !comp->div->model;
+	emu_lock();
+	div_set_model(comp->div, on ? DIV_MMC : DIV_NONE, comp->div->pages);
+	comp_board_storage(comp);
+	xm_power_cycle();
+	emu_unlock();
+	xm_save_over();
+	setMessage(on ? " divMMC on " : " divMMC off ");
+	fillDrivesMenu();
+	if (diskWin->isVisible()) diskWin->refresh();
+	syncActions();
+}
+
 // what a floppy drive's menu and the Disk manager's buttons do
 void MainWin::diskOp(int op, int drv) {
 	switch (op) {

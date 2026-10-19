@@ -198,6 +198,9 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 			case XCUT_RES_HARD:
 				hardReset();
 				break;
+			case XCUT_DIVMMC:
+				divToggle();
+				break;
 			case XCUT_KEYBOARD:
 				emit s_keywin_shide();
 				break;

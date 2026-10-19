@@ -143,6 +143,7 @@ typedef struct {
 		void resetMachine(int);
 		void resetTo(int);
 		void hardReset();
+		void divToggle();		// the divMMC in or out, with the power off
 		void fillDrivesMenu();
 		void driveOp(std::function<void()>);
 		void diskOp(int, int);
@@ -406,6 +407,7 @@ typedef struct {
 		QAction* slowAct;
 		QAction* rewAct;
 		QAction* diskAct;
+		QAction* divAct;		// the divMMC on or off
 		QAction* muteAct;
 		QAction* watchAct;
 		QMenu* helpMenu;

@@ -1948,6 +1948,9 @@ void MainWin::initUserMenu() {
 	userMenu->addSeparator();
 	dskMenu = userMenu->addMenu(QIcon(":/images/fdd_disk.png"), "Disk Manager");
 	cartMenu = userMenu->addMenu(QIcon(":/images/cartrige.png"), "Cartridge");
+	// the board itself, above its cards; a click is a Hard Reset
+	divAct = cutAction(userMenu, "divMMC", XCUT_DIVMMC, "sdcard");
+	divAct->setCheckable(true);
 	sdcMenu = userMenu->addMenu(QIcon(":/images/sdcard.png"), "SD Card");
 	hddMenu = userMenu->addMenu(QIcon(":/images/hdd.png"), "Drives");
 	diskWin = new xDiskWin(this);
@@ -2496,6 +2499,7 @@ void MainWin::initMachineMenus() {
 	fdcFastAct->setCheckable(true);
 	media->addSeparator();
 	media->addMenu(cartMenu);
+	media->addAction(divAct);
 	media->addMenu(sdcMenu);
 	media->addMenu(hddMenu);
 
