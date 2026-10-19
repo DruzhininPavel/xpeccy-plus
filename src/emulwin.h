@@ -160,6 +160,7 @@ typedef struct {
 		void sdcOpen(int, bool);
 		void sdcNewEsx(int);
 		void fillCardMenu(QMenu*, int);
+		void fillDivMenu();
 		void setTurbo(int);
 		void addFavorite(const QString& path);
 		bool recStart(const QString& file = QString());
@@ -417,7 +418,9 @@ typedef struct {
 		QAction* slowAct;
 		QAction* rewAct;
 		QAction* diskAct;
-		QAction* divAct;		// the divMMC on or off
+		QAction* divAct;		// the divMMC on or off: hotkey and toolbar
+		QAction* divItem;		// the same in the menus while it is off
+		QMenu* divMenu;			// while it is on: its cards, and the switch
 		QAction* muteAct;
 		QAction* watchAct;
 		QMenu* helpMenu;

@@ -76,13 +76,26 @@ void MainWin::fillDrivesMenu() {
 		m->clear();
 	}
 	for (int i = 0; i < 4; i++) flpMenu[i] = nullptr;
-	int drives = drive_count(comp);
+	// out under the divMMC: the drives the machine is set to have, grayed, under a
+	// line that says why
+	auto outLine = [](QMenu* m) {
+		m->addAction("Off while the divMMC is on")->setEnabled(false);
+		m->addSeparator();
+	};
+	bool flpOut = comp->dif->out;
+	int dif = comp->dif->cfg;
+	int drives = (dif == DIF_BDI) ? 4 : (dif == DIF_P3DOS) ? 2 : 0;
+	if (flpOut && drives) outLine(dskMenu);
 	for (int i = 0; i < drives; i++) {
 		Floppy* flp = comp->dif->flp[i];
 		if (!flp->fitted) continue;
 		// the drive's letter is on its icon
 		QMenu* m = dskMenu->addMenu(QIcon(QString(":/images/fdd_disk_%0.png").arg(QChar('A' + i))),
 			drive_media(flp->path, flp->insert) + ((flp->insert && flp->changed) ? " *" : ""));
+		if (flpOut) {
+			m->menuAction()->setEnabled(false);
+			continue;
+		}
 		flpMenu[i] = m;
 		m->addAction(QIcon(":/images/fileopen.png"), "Open...", this, [this, i]() {diskOp(DW_OPEN, i);});
 		m->addAction(QIcon(":/images/doc-new.png"), "New", this, [this, i]() {diskOp(DW_NEW, i);});
@@ -99,13 +112,19 @@ void MainWin::fillDrivesMenu() {
 		connect(act, &QAction::toggled, this, [i](bool on) {conf.zx->dif->flp[i]->protect = on ? 1 : 0;});
 	}
 
-	if (comp->ide->type != IDE_NONE) {
+	if (comp->ide->cfg != IDE_NONE) {
+		bool hddOut = comp->ide->out;
+		if (hddOut) outLine(hddMenu);
 		ATADev* dev[2] = {comp->ide->master, comp->ide->slave};
 		for (int i = 0; i < 2; i++) {
 			if (dev[i]->type == IDE_NONE) continue;
 			int id = i ? IDE_SLAVE : IDE_MASTER;
 			QMenu* m = hddMenu->addMenu(QIcon(":/images/hdd.png"),
 				QString("%0: %1").arg(i ? "Slave" : "Master").arg(drive_media(dev[i]->image, dev[i]->image != NULL)));
+			if (hddOut) {
+				m->menuAction()->setEnabled(false);
+				continue;
+			}
 			m->addAction(QIcon(":/images/hdd.png"), "Open Image...", this, [this, id]() {hddOpen(id, false);});
 			m->addAction(QIcon(":/images/fileopen.png"), "Open Folder...", this, [this, id]() {hddOpen(id, true);});
 			act = m->addAction(QIcon(":/images/tape-eject.png"), "Eject", this, [this, id]() {
@@ -119,16 +138,9 @@ void MainWin::fillDrivesMenu() {
 	}
 
 	int hw = comp->hw->id;
-	if ((hw == HW_PENTEVO) || (hw == HW_TSLAB)) {
+	if ((hw == HW_PENTEVO) || (hw == HW_TSLAB))
 		fillCardMenu(sdcMenu, -1);
-	} else if (comp->div->model) {		// a divMMC's two slots
-		for (int i = 0; i < 2; i++) {
-			SDCard* sdc = comp->div->card[i];
-			QMenu* m = sdcMenu->addMenu(QIcon(":/images/sdcard.png"),
-				QString("Card %0: %1").arg(i + 1).arg(sdc->image ? drive_media(sdc->image, true) : QString("(no card)")));
-			fillCardMenu(m, i);
-		}
-	}
+	fillDivMenu();
 
 	if ((hw == HW_ZX48) || (hw == HW_ALF)) {
 		xCartridge* slot = comp->slot;
@@ -147,16 +159,36 @@ void MainWin::fillDrivesMenu() {
 		});
 		act->setEnabled(slot->data != NULL);
 	}
-	// out under the divMMC: the menu stays, says why, and has the way back
-	auto outLine = [this](QMenu* m) {
-		QAction* why = m->addAction("Off while the divMMC is on");
-		why->setEnabled(false);
-		m->addAction(divAct);
-	};
-	if (comp->dif->out && (comp->dif->cfg != DIF_NONE)) outLine(dskMenu);
-	if (comp->ide->out && (comp->ide->cfg != IDE_NONE)) outLine(hddMenu);
 	drvMenu->addActions(dskMenu->actions());
 	for (QMenu* m : menus) m->menuAction()->setVisible(!m->isEmpty());
+}
+
+// The divMMC in the menus: off, the item that puts it on; on, a menu with the item
+// that takes it off and its two slots. The toolbar button's arrow opens the menu
+// either way, so it always has the switch.
+void MainWin::fillDivMenu() {
+	Computer* comp = conf.zx;
+	for (QAction* a : divMenu->actions())
+		if (a->menu()) a->menu()->deleteLater();
+	divMenu->clear();
+	bool fits = hw_takes_divmmc(comp->hw);
+	bool on = fits && comp->div->model;
+	divItem->setText(divAct->text());		// with its key
+	divItem->setEnabled(fits);
+	divItem->setVisible(!on);
+	divMenu->menuAction()->setVisible(on);
+	QAction* sw = divMenu->addAction(QIcon(":/images/sdcard.png"), divAct->text(), this, [this]() {divToggle();});
+	sw->setCheckable(true);
+	sw->setChecked(on);
+	sw->setEnabled(fits);
+	if (!on) return;
+	divMenu->addSeparator();
+	for (int i = 0; i < 2; i++) {
+		SDCard* sdc = comp->div->card[i];
+		QMenu* m = divMenu->addMenu(QIcon(":/images/sdcard.png"),
+			QString("Card %0: %1").arg(i + 1).arg(sdc->image ? drive_media(sdc->image, true) : QString("(no card)")));
+		fillCardMenu(m, i);
+	}
 }
 
 // The board in or out, as the divMMC row of Options puts it: with the power off,

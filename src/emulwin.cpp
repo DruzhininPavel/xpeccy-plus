@@ -814,15 +814,11 @@ bool MainWin::eventFilter(QObject* obj, QEvent* ev) {
 		bool left = (ev->type() == QEvent::MouseButtonPress) && (static_cast<QMouseEvent*>(ev)->button() == Qt::LeftButton);
 		if (!left && (ev->type() != QEvent::ContextMenu))
 			return QObject::eventFilter(obj, ev);
-		fillDrivesMenu();
-		QMenu menu(this);
-		menu.addAction(divAct);
-		menu.addSeparator();
-		menu.addActions(sdcMenu->actions());
+		fillDivMenu();
 		// the left button's over the light, as from a bar at the bottom; the right one at the pointer
-		QPoint pos = left ? sbCardBox->mapToGlobal(QPoint(0, 0)) - QPoint(0, menu.sizeHint().height())
+		QPoint pos = left ? sbCardBox->mapToGlobal(QPoint(0, 0)) - QPoint(0, divMenu->sizeHint().height())
 			: static_cast<QContextMenuEvent*>(ev)->globalPos();
-		menu.exec(pos);
+		divMenu->exec(pos);
 		setFocus();
 		return true;
 	}
@@ -1990,9 +1986,14 @@ void MainWin::initUserMenu() {
 	userMenu->addSeparator();
 	dskMenu = userMenu->addMenu(QIcon(":/images/fdd_disk.png"), "Disk Manager");
 	cartMenu = userMenu->addMenu(QIcon(":/images/cartrige.png"), "Cartridge");
-	// the board itself, above its cards; a click is a Hard Reset
-	divAct = cutAction(userMenu, "divMMC", XCUT_DIVMMC, "sdcard");
+	// The board: off, an item that puts it on; on, a menu of its cards with the
+	// item that takes it off. divAct is the hotkey's and the toolbar's, which the
+	// menus cannot hide; divItem stands for it in them. A click is a Hard Reset.
+	divAct = cutAct("divMMC", XCUT_DIVMMC, "sdcard");
 	divAct->setCheckable(true);
+	divItem = userMenu->addAction(QIcon(":/images/sdcard.png"), "divMMC", this, [this]() {divToggle();});
+	divMenu = userMenu->addMenu(QIcon(":/images/sdcard.png"), "divMMC");
+	connect(divMenu, &QMenu::aboutToShow, this, &MainWin::fillDivMenu);
 	sdcMenu = userMenu->addMenu(QIcon(":/images/sdcard.png"), "SD Card");
 	hddMenu = userMenu->addMenu(QIcon(":/images/hdd.png"), "Drives");
 	diskWin = new xDiskWin(this);
@@ -2541,7 +2542,8 @@ void MainWin::initMachineMenus() {
 	fdcFastAct->setCheckable(true);
 	media->addSeparator();
 	media->addMenu(cartMenu);
-	media->addAction(divAct);
+	media->addAction(divItem);
+	media->addMenu(divMenu);
 	media->addMenu(sdcMenu);
 	media->addMenu(hddMenu);
 

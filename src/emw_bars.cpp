@@ -413,7 +413,7 @@ void MainWin::initBars() {
 	connect(diskAct, &QAction::triggered, this, [this]() {diskWin->showWindow();});
 	add("menu.disks", "Media", diskAct, TB_SPLIT, dskMenu);
 	add("menu.cartridge", "Media", cartMenu->menuAction(), TB_LIST);
-	add("key.divmmc", "Media", divAct, TB_PLAIN);
+	add("key.divmmc", "Media", divAct, TB_SPLIT, divMenu);	// the arrow: its cards
 	add("menu.sdcard", "Media", sdcMenu->menuAction(), TB_LIST);
 	add("menu.hdd", "Media", hddMenu->menuAction(), TB_LIST);
 	add("key.rzxwin", "Capture", cut("RZX Player", XCUT_RZXWIN, "video"), TB_PLAIN);
