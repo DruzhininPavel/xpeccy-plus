@@ -1112,7 +1112,7 @@ void SetupWin::start() {
 	padSummary();
 	cbPadFiles->setChecked(conf.gpctrl->gameOn);
 // flp
-	diskTypeBox->setCurrentIndex(diskTypeBox->findData(comp->dif->type));
+	diskTypeBox->setCurrentIndex(diskTypeBox->findData(comp->dif->cfg));
 	bdtbox->setChecked(fdcFlag & FDC_FAST);
 	ui.mempaths->setChecked(conf.storePaths);
 	setRFIndex(ui.cbAutorun, conf.autorun);
@@ -1135,7 +1135,7 @@ void SetupWin::start() {
 		d80box->setChecked(flp->trk80);
 		ddsbox->setChecked(flp->doubleSide);
 // hdd
-	hiface->setCurrentIndex(hiface->findData(comp->ide->type));
+	hiface->setCurrentIndex(hiface->findData(comp->ide->cfg));
 
 	hm_type->setCurrentIndex(hm_type->findData(comp->ide->master->type));
 
@@ -1325,6 +1325,7 @@ void SetupWin::applyMachine() {
 	bool divPower = (divModel != comp->div->model) || (divModel && (divPages != comp->div->pages));
 	if (divPower)
 		div_set_model(comp->div, divModel, divPages);
+	comp_board_storage(comp);
 	comp->div->eeWrite = divWrBox->isChecked() ? 1 : 0;
 	div_map(comp->div);
 	// a chip written outside the machine goes back in with the power off too

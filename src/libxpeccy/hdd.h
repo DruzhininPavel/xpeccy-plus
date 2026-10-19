@@ -149,7 +149,9 @@ typedef struct {
 } IDECore;
 
 struct IDE {
-	int type;
+	int type;		// the interface the machine has now: none while out
+	int cfg;		// the one it is set to have, out or not
+	unsigned out:1;		// taken out of the machine for now (ide_set_out)
 	ATADev* master;
 	ATADev* slave;
 	ATADev* curDev;
@@ -174,6 +176,7 @@ void ideReset(IDE*);
 void ideCloseFiles(IDE*);
 
 void ide_set_type(IDE*, int);
+void ide_set_out(IDE*, int);	// out of the machine and back; the images stay
 void ideSetImage(IDE*,int,const char*);
 void ideSetFolder(IDE*,int,const char*,vFat*);
 ATAPassport ideGetPassport(IDE*,int);

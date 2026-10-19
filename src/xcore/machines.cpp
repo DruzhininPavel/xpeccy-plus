@@ -684,7 +684,7 @@ static void xm_load_nvram() {
 void xm_save_nvram() {
 	if (conf.macId.empty()) return;
 	mac_nv_write(mac_nv_path(".cmos"), conf.zx->cmos.data, 256);
-	if (conf.zx->ide->type == IDE_SMUC)
+	if (conf.zx->ide->cfg == IDE_SMUC)		// kept while the board has it out
 		mac_nv_write(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE);
 	if (conf.zx->div->eeDirty) {		// loaded in Options with the board off, too
 		mac_nv_write(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE);
@@ -1067,6 +1067,7 @@ static void mac_from_def(const xMachine* mac) {
 	difSetDrives(comp->dif, mac->drives);
 	ide_set_type(comp->ide, mac->ide);
 	div_set_model(comp->div, hw_takes_divmmc(comp->hw) ? mac->divmmc : DIV_NONE, mac->divmmcRam >> 3);
+	comp_board_storage(comp);
 	comp->div->eeWrite = mac->divmmcWr;
 	comp->mouse->enable = mac->mouse;
 	comp->mouse->hasWheel = mac->mouseWheel;
@@ -1218,11 +1219,11 @@ static void mac_put_all(QList<xMacLine>& out, const xMachine* mac) {
 	mac_put_yn(out, "saa", comp->saa->enabled, mac->saa);
 	mac_put_yn(out, "beeper.mic", comp->beep->mic, mac->beepmic);
 	mac_put(out, "soundrive", mac_word_name(sdrvTab, comp->sdrv->type), mac_word_name(sdrvTab, mac->soundrive));
-	mac_put(out, "disk", mac_word_name(diskTab, comp->dif->type), mac_word_name(diskTab, mac->disk));
+	mac_put(out, "disk", mac_word_name(diskTab, comp->dif->cfg), mac_word_name(diskTab, mac->disk));
 	int drives = 0;
 	while ((drives < 4) && comp->dif->flp[drives]->fitted) drives++;
 	mac_put(out, "drives", drives, mac->drives);
-	mac_put(out, "ide", mac_word_name(ideTab, comp->ide->type), mac_word_name(ideTab, mac->ide));
+	mac_put(out, "ide", mac_word_name(ideTab, comp->ide->cfg), mac_word_name(ideTab, mac->ide));
 	if (hw_takes_divmmc(comp->hw)) {	// elsewhere the board is off whatever the file says
 		mac_put(out, "divmmc", mac_word_name(divTab, comp->div->model), mac_word_name(divTab, mac->divmmc));
 		mac_put(out, "divmmc.ram", comp->div->pages << 3, mac->divmmcRam);

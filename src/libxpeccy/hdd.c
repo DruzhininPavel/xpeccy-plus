@@ -573,7 +573,7 @@ static void ataCloseFile(ATADev* dev) {
 
 // a folder serves the HDD boot sector written for this interface's ports
 static void ide_vfat_port(IDE* ide) {
-	int port = (ide->type == IDE_ATM) ? VF_PORT_ATM : VF_PORT_NEMO;
+	int port = (ide->cfg == IDE_ATM) ? VF_PORT_ATM : VF_PORT_NEMO;
 	if (ide->master->vfat) ide->master->vfat->hddport = port;
 	if (ide->slave->vfat) ide->slave->vfat->hddport = port;
 }
@@ -940,16 +940,21 @@ IDECore* find_ide_core(int id) {
 	return itm;
 }
 
+// what is live: the interface set, or none while it is out
+static void ide_apply(IDE* ide) {
+	ide->core = find_ide_core(ide->out ? IDE_NONE : ide->cfg);
+	ide->type = ide->core->id;
+}
+
 void ide_set_type(IDE* ide, int id) {
-	IDECore* core = find_ide_core(id);
-	if (core) {
-		ide->type = id;
-		ide->core = core;
-	} else {
-		ide->type = IDE_NONE;
-		ide->core = NULL;
-	}
+	ide->cfg = find_ide_core(id)->id;	// one it does not know is none
+	ide_apply(ide);
 	ide_vfat_port(ide);
+}
+
+void ide_set_out(IDE* ide, int out) {
+	ide->out = out ? 1 : 0;
+	ide_apply(ide);
 }
 
 // reopening is ide_mount()'s job: only it knows a path may be a folder

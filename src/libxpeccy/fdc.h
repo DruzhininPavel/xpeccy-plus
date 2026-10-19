@@ -115,7 +115,9 @@ typedef struct {
 
 struct DiskIF {
 	unsigned doors:1;	// a drive's door is still closing: difSync has to run
-	int type;
+	unsigned out:1;		// taken out of the machine for now (dif_set_out)
+	int type;		// the interface the machine has now: none while out
+	int cfg;		// the one it is set to have, out or not
 	int sys;		// the last write to the interface's own port (Beta: #FF)
 	Floppy* flp[4];
 	DiskHW* hw;
@@ -133,6 +135,9 @@ int difOut(DiskIF*, int, int, int);
 int difIn(DiskIF*, int, int*, int);
 
 void difSetHW(DiskIF*, int);
+// out of the machine and back, as a board that takes its place wants: the
+// setting, the drives and their disks stay
+void dif_set_out(DiskIF*, int);
 void difSetDrives(DiskIF*, int);	// how many drives are on the cable, from A
 // the plan in progress as a number a snapshot can keep, -1: one not known
 int dif_plan_id(DiskIF*);
