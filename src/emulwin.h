@@ -146,6 +146,8 @@ typedef struct {
 		void hardReset();
 		void divToggle();		// the divMMC in or out, with the power off
 		bool drivesBack();		// asks to switch the divMMC off when it has the drives out
+		void esxCheck();		// says when card 1 and the EEPROM are different esxDOS releases
+		QString esxSeen;		// the power cycle and card it looked at last
 		void fillDrivesMenu();
 		void driveOp(std::function<void()>);
 		void diskOp(int, int);

@@ -601,6 +601,7 @@ void MainWin::timerEvent(QTimerEvent* ev) {
 		lightLook();
 		updateStatus();
 		syncActions();
+		esxCheck();
 	} else if (ev->timerId() == cmsid) {	// 1-sec: cmos interrupt
 		// TODO: do
 	} else if (ev->timerId() == timid) {

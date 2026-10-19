@@ -7,6 +7,8 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QMenu>
+#include <QComboBox>
+#include <QMessageBox>
 
 #include "emulwin.h"
 #include "filer.h"
@@ -180,6 +182,34 @@ void MainWin::divToggle() {
 	syncActions();
 }
 
+// esxDOS starts only when the EEPROM and the card's system files are the same
+// release, and says nothing useful when they are not. Looked at once a power
+// cycle and once a card: a folder in slot 1 whose SYS is a bundled release other
+// than the chip's is told. An image card is not looked into.
+void MainWin::esxCheck() {
+	Computer* comp = conf.zx;
+	if (!comp->div->model) {
+		esxSeen.clear();
+		return;
+	}
+	const char* img = comp->div->card[0]->image;
+	QString card = img ? QString::fromLocal8Bit(img) : QString();
+	QString key = QString("%0|%1").arg(xm_power_count()).arg(card);
+	if (key == esxSeen) return;
+	esxSeen = key;
+	if (card.isEmpty() || !QFileInfo(card).isDir()) return;
+	std::string chip = div_esx_release_of(comp->div->data);
+	std::string sys = div_esx_card_release(img);
+	if (chip.empty() || sys.empty() || (chip == sys)) return;
+	pause(true, PR_EXTRA);
+	QMessageBox::warning(this, "esxDOS releases differ",
+		QString("Card 1 has the system files of esxDOS %0, the EEPROM holds esxDOS %1. "
+		"esxDOS starts only when both are the same release.\n\n"
+		"Write esxDOS %0 to the EEPROM in Options (divMMC, Firmware), or make the card again "
+		"with New esxDOS Folder.").arg(sys.c_str()).arg(chip.c_str()));
+	pause(false, PR_EXTRA);
+}
+
 // what a floppy drive's menu and the Disk manager's buttons do
 void MainWin::diskOp(int op, int drv) {
 	switch (op) {
@@ -292,17 +322,42 @@ static bool copy_tree(const QString& src, const QString& dst) {
 	return true;
 }
 
-// A card ready for esxDOS: a folder with the system files of the bundled one
-// (they must be the version the EEPROM holds), for the user to fill. Put in at
+// the bundled release a new card takes when the EEPROM holds none of them
+static QString esx_ask_release(QWidget* parent) {
+	QDialog dlg(parent);
+	dlg.setWindowTitle("New esxDOS Folder");
+	xOptSheet sheet;
+	QComboBox* box = new QComboBox;
+	for (int i = 0; div_esx_releases[i]; i++)
+		box->addItem(QString("esxDOS %0").arg(div_esx_releases[i]), QString(div_esx_releases[i]));
+	sheet.field("Release", box, "The EEPROM holds none of them: write the same one there in Options");
+	QVBoxLayout* lay = new QVBoxLayout(&dlg);
+	lay->addWidget(sheet.body);
+	QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dlg);
+	bbox->button(QDialogButtonBox::Ok)->setIcon(QIcon(":/images/ok-apply.png"));
+	bbox->button(QDialogButtonBox::Cancel)->setIcon(QIcon(":/images/cancel.png"));
+	lay->addWidget(bbox);
+	QObject::connect(bbox, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+	QObject::connect(bbox, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
+	return (dlg.exec() == QDialog::Accepted) ? box->currentData().toString() : QString();
+}
+
+// A card ready for esxDOS: a folder with the system files of the release the
+// EEPROM holds (both must be the same one), for the user to fill. Put in at
 // once, with the power off and on, so esxDOS finds it.
 void MainWin::sdcNewEsx(int card) {
-	QString esx = QString::fromLocal8Bit(conf.path.esxDir.c_str());
+	pause(true, PR_FILE);
+	QString rel = QString::fromStdString(div_esx_release_of(conf.zx->div->data));
+	if (rel.isEmpty()) rel = esx_ask_release(this);
+	pause(false, PR_FILE);
+	if (rel.isEmpty()) return;
+	QString esx = QString::fromLocal8Bit(div_esx_dir(rel.toStdString()).c_str());
 	if (!QDir(esx + "/SYS").exists() || !QDir(esx + "/BIN").exists()) {
 		shitHappens("The esxDOS files are missing from the config folder");
 		return;
 	}
 	pause(true, PR_FILE);
-	QString path = QFileDialog::getExistingDirectory(this, "Folder for the esxDOS card", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
+	QString path = QFileDialog::getExistingDirectory(this, QString("Folder for the esxDOS %0 card").arg(rel), "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
 	pause(false, PR_FILE);
 	if (path.isEmpty()) return;
 	QDir dir(path);
