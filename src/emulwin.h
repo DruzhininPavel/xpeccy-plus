@@ -77,7 +77,8 @@ enum {
 // The lights of the tape, the drives and the inputs, in the status bar and over the picture.
 // Each READ right after its IDLE.
 enum {SB_TAPE_EMPTY = 0, SB_TAPE_IN, SB_TAPE_RD, SB_TAPE_WR, SB_TAPE_RD_HI, SB_TAPE_WR_HI,
-	SB_DISK_EMPTY, SB_DISK_IN, SB_DISK_RD, SB_DISK_WR,
+	SB_DISK_EMPTY, SB_DISK_IN, SB_DISK_RD, SB_DISK_WR, SB_DISK_OUT,
+	SB_CARD_IN, SB_CARD_RD, SB_CARD_WR,
 	SB_JOY_IDLE, SB_JOY_READ, SB_MOUSE_IDLE, SB_MOUSE_READ, SB_COUNT};
 
 // what the machine's speed is doing, shown in the top right corner
@@ -144,6 +145,7 @@ typedef struct {
 		void resetTo(int);
 		void hardReset();
 		void divToggle();		// the divMMC in or out, with the power off
+		bool drivesBack();		// asks to switch the divMMC off when it has the drives out
 		void fillDrivesMenu();
 		void driveOp(std::function<void()>);
 		void diskOp(int, int);
@@ -374,6 +376,12 @@ typedef struct {
 		QLabel* sbDisk[4];	// "A:" and so on
 		QLabel* sbDiskIcon[4];
 		QWidget* sbDiskBox[4] = {nullptr, nullptr, nullptr, nullptr};
+		QLabel* sbCard;		// "SD" and the divMMC's light
+		QLabel* sbCardIcon;
+		QWidget* sbCardBox = nullptr;
+		int sbCardShown = -1;
+		int cardLight = SB_CARD_IN;
+		int cardLook[2][2] = {{0, 0}, {0, 0}};	// the cards' reads and writes at the last look
 		QLabel* sbTapeIcon;
 		QWidget* sbTapeBox = nullptr;
 		QLabel* sbJoyIcon;

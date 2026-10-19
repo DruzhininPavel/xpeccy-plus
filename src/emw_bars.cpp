@@ -16,6 +16,7 @@
 #include <QSlider>
 #include <QLabel>
 #include <QWidgetAction>
+#include <QFileInfo>
 #include <QStyleOptionSlider>
 #include <functional>
 
@@ -59,6 +60,20 @@ static QPixmap sb_lit(const QString& path, double k) {
 		return qRgba(int(qRed(p) + (255 - qRed(p)) * k), int(qGreen(p) + (255 - qGreen(p)) * k),
 			int(qBlue(p) + (255 - qBlue(p)) * k), qAlpha(p));
 	});
+}
+
+// struck through: a light for something out of the machine for now
+static QPixmap sb_strike(QPixmap pix) {
+	QPainter p(&pix);
+	p.setRenderHint(QPainter::Antialiasing);
+	p.setPen(QPen(QColor(200, 70, 60), 2));
+	p.drawLine(QPointF(1.5, pix.height() - 1.5), QPointF(pix.width() - 1.5, 1.5));
+	return pix;
+}
+
+// the divMMC's card light, out of the 32 px card picture
+static QPixmap sb_card(QColor col) {
+	return sb_tint(":/images/sdcard.png", col, 1.0).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 #define TB_SEPARATOR "|"
@@ -472,6 +487,11 @@ void MainWin::initBars() {
 	sbPix[SB_DISK_IN] = sb_tint(":/images/diskGreen.png", QColor(200, 200, 200), 1.0);
 	sbPix[SB_DISK_RD] = QPixmap(":/images/diskGreen.png");
 	sbPix[SB_DISK_WR] = QPixmap(":/images/diskRed.png");
+	sbPix[SB_DISK_OUT] = sb_strike(sbPix[SB_DISK_EMPTY]);	// out under the divMMC
+	// the divMMC's cards, one light for both: gray idle, green read, red written
+	sbPix[SB_CARD_IN] = sb_card(QColor(200, 200, 200));
+	sbPix[SB_CARD_RD] = sb_card(QColor(60, 200, 60));
+	sbPix[SB_CARD_WR] = sb_card(QColor(220, 60, 50));
 	sbPix[SB_JOY_READ] = QPixmap(":/images/joystick.png");
 	sbPix[SB_JOY_IDLE] = sb_tint(":/images/joystick.png", QColor(150, 150, 150), 0.3);
 	sbPix[SB_MOUSE_READ] = sb_bright(":/images/mouse.png", 1.3);	// gray of its own, so lit up instead of coloured
@@ -496,6 +516,10 @@ void MainWin::initBars() {
 	sbTapeBar->setTextVisible(false);
 	sbTapeBar->setFixedSize(36, 8);
 	sbTapeBox->layout()->addWidget(sbTapeBar);
+	// the divMMC, while it is on: its cards at work
+	sbCard = new QLabel("SD");
+	sbCardIcon = new QLabel;
+	sbCardBox = pair(sbCard, sbCardIcon);
 	for (int i = 0; i < 4; i++) {
 		sbDisk[i] = new QLabel(QString("%0:").arg(QChar('A' + i)));
 		sbDiskIcon[i] = new QLabel;
@@ -774,7 +798,9 @@ void MainWin::lightLook() {
 		bool busy = (seen & 3);
 		bool dark = busy && (seen & 4) && !diskDark[i];
 		diskDark[i] = dark;
-		if (!flp->insert) {
+		if (comp->dif->out) {
+			diskLight[i] = SB_DISK_OUT;
+		} else if (!flp->insert) {
 			diskLight[i] = SB_DISK_EMPTY;
 		} else if (!busy || dark) {
 			diskLight[i] = SB_DISK_IN;
@@ -783,6 +809,16 @@ void MainWin::lightLook() {
 			diskLight[i] = (seen & 2) ? SB_DISK_WR : SB_DISK_RD;
 		}
 	}
+	// the divMMC's cards: lit for a look after a block went either way
+	int card = 0;
+	for (int i = 0; i < 2; i++) {
+		SDCard* sdc = comp->div->card[i];
+		if (sdc->reads != cardLook[i][0]) card |= 1;
+		if (sdc->writes != cardLook[i][1]) card |= 2;
+		cardLook[i][0] = sdc->reads;
+		cardLook[i][1] = sdc->writes;
+	}
+	cardLight = (card & 2) ? SB_CARD_WR : (card & 1) ? SB_CARD_RD : SB_CARD_IN;
 }
 
 // a few times a second: QLabel leaves the text alone when it has not changed
@@ -814,16 +850,34 @@ void MainWin::updateStatus() {
 	}
 	QString tip = got ? QString::fromLocal8Bit(tape->path ? tape->path : "") : QString("empty");
 	if (sbTapeBox->toolTip() != tip) sbTapeBox->setToolTip(tip);	// a change is an event
+	// the drives the machine is set to have; out under the divMMC, dim and struck through
+	bool out = comp->dif->out;
 	for (int i = 0; i < 4; i++) {
 		Floppy* flp = comp->dif->flp[i];
-		sbDiskBox[i]->setVisible(flp->fitted && (comp->dif->type != DIF_NONE));
+		sbDiskBox[i]->setVisible(flp->fitted && (comp->dif->cfg != DIF_NONE));
+		sbDisk[i]->setEnabled(!out);
 		int st = diskLight[i];
 		if (st != sbDiskShown[i]) {
 			sbDiskIcon[i]->setPixmap(sbPix[st]);
 			sbDiskShown[i] = st;
 		}
-		QString tip = flp->insert ? QString::fromLocal8Bit(flp->path ? flp->path : "") : QString("empty");
+		QString tip = out ? QString("Off while the divMMC is on")
+			: flp->insert ? QString::fromLocal8Bit(flp->path ? flp->path : "") : QString("empty");
 		if (sbDiskBox[i]->toolTip() != tip) sbDiskBox[i]->setToolTip(tip);
+	}
+	sbCardBox->setVisible(comp->div->model);
+	if (comp->div->model) {
+		if (cardLight != sbCardShown) {
+			sbCardIcon->setPixmap(sbPix[cardLight]);
+			sbCardShown = cardLight;
+		}
+		QStringList cards;
+		for (int i = 0; i < 2; i++) {
+			const char* img = comp->div->card[i]->image;
+			cards << QString("Card %0: %1").arg(i + 1).arg(img ? QFileInfo(QString::fromLocal8Bit(img)).fileName() : QString("(no card)"));
+		}
+		QString tip = "divMMC\n" + cards.join("\n");
+		if (sbCardBox->toolTip() != tip) sbCardBox->setToolTip(tip);
 	}
 	// lit if the machine read it since the last look
 	auto light = [this](QLabel* icon, bool fitted, bool& seen, int& shown, int idle) {

@@ -1951,13 +1951,15 @@ void SetupWin::buildDevices() {
 	}
 	dgrid->setColumnStretch(3, 1);
 	disk.field(tr("Drives"), drvs);
-	devRow(grid, tr("Disk"), diskTypeBox, disk.body, "Machine: Disk");
+	btn = devRow(grid, tr("Disk"), diskTypeBox, disk.body, "Machine: Disk");
+	diskRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << diskTypeBox << btn;
 
 	// the images and what is in them are the Drives menu's
 	xOptSheet hdd;
 	hdd.field(tr("Master"), hm_type);
 	hdd.field(tr("Slave"), hs_type);
-	devRow(grid, tr("Hard disk"), hiface, hdd.body, "Machine: Hard Disk");
+	btn = devRow(grid, tr("Hard disk"), hiface, hdd.body, "Machine: Hard Disk");
+	hddRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << hiface << btn;
 
 	sdSum = new QLabel;
 	btn = devRow(grid, tr("SD card"), sdSum, NULL, NULL);
@@ -1984,6 +1986,14 @@ void SetupWin::buildDevices() {
 	btn = devRow(grid, tr("divMMC"), divBox, dv.body, "Machine: divMMC");
 	btn->setObjectName("divGear");
 	divRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << divBox << btn;
+	// with the board on, the disk systems are out of the machine (comp_board_storage)
+	divNote = new QLabel(tr("Disk and Hard disk are off while the divMMC is on"));
+	QFont nfnt = divNote->font();
+	nfnt.setItalic(true);
+	divNote->setFont(nfnt);
+	divNote->setWordWrap(true);
+	grid->addWidget(divNote, grid->rowCount(), 1, 1, 2);
+	connect(divBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() {showBoardStorage();});
 
 	slotSum = new QLabel;
 	btn = devRow(grid, tr("Cartridge"), slotSum, NULL, NULL);
@@ -2233,14 +2243,8 @@ void SetupWin::showDevRows() {
 	foreach(QWidget* w, slotRow) w->setVisible(slot);
 	foreach(QWidget* w, kbdRow) w->setVisible(kbd);
 	showDriveRows();
-	// a controller on the board is not swapped out
-	const xMachine* mac = xm_find(conf.macId);
-	int bi = mac ? mac->builtin : 0;
+	showBoardStorage();
 	QString fixed = tr("Built into this board");
-	diskTypeBox->setEnabled(!(bi & MAC_BI_DISK));
-	diskTypeBox->setToolTip((bi & MAC_BI_DISK) ? fixed : QString());
-	hiface->setEnabled(!(bi & MAC_BI_IDE));
-	hiface->setToolTip((bi & MAC_BI_IDE) ? fixed : QString());
 	// ALF reads its two joysticks its own way, on #1F and #FE
 	joyBox->setEnabled(hw != HW_ALF);
 	joyBox->setToolTip((hw == HW_ALF) ? fixed : QString());
@@ -2250,6 +2254,24 @@ void SetupWin::showDevRows() {
 	if (difs && (bdi >= 0)) difs->item(bdi)->setEnabled((hw != HW_PLUS2A) && (hw != HW_PLUS3));
 	fillDosRom();
 	fillDevSummary();
+}
+
+// The Disk and Hard disk rows: a controller on the board is not swapped out, and
+// with the divMMC set on both are out of the machine - they keep what they say,
+// for when it goes. Follows the divMMC row before Apply.
+void SetupWin::showBoardStorage() {
+	const xMachine* mac = xm_find(conf.macId);
+	int bi = mac ? mac->builtin : 0;
+	bool board = divBox->currentIndex() && hw_takes_divmmc(conf.zx->hw);
+	QString fixed = tr("Built into this board");
+	QString out = tr("Off while the divMMC is on");
+	foreach(QWidget* w, diskRow) w->setEnabled(!board);
+	foreach(QWidget* w, hddRow) w->setEnabled(!board);
+	diskTypeBox->setEnabled(!board && !(bi & MAC_BI_DISK));
+	diskTypeBox->setToolTip(board ? out : (bi & MAC_BI_DISK) ? fixed : QString());
+	hiface->setEnabled(!board && !(bi & MAC_BI_IDE));
+	hiface->setToolTip(board ? out : (bi & MAC_BI_IDE) ? fixed : QString());
+	divNote->setVisible(board);
 }
 
 // THE WHOLE CONFIGURATION, IN AND OUT

@@ -461,16 +461,18 @@ void media_autorun_headless(int on) {
 	as_headless = on;
 }
 
-// A disk cannot be started while a divMMC maps. Said in a window with the
-// machine paused: the message line is gone before it can be read.
+// A disk cannot be started while a divMMC is on: its drives are out. Said in a
+// window with the machine paused: the message line is gone before it can be read.
+// The gui asks to switch the board off before it gets here (drivesBack); this is
+// the command line's.
 static void as_board_refused() {
 	if (as_headless) return;		// the log has the refusal
 	conf.emu.pause |= PR_EXTRA;
 	QMessageBox::information(nullptr, "Cannot start the disk",
-		"A divMMC is on, and its esxDOS owns the TR-DOS entry: a disk in a drive cannot be "
-		"started, so it is only mounted.\n\n"
-		"Start it from the esxDOS browser (Machine > NMI), or switch the divMMC off on the "
-		"Machine page of Options.");
+		"The floppy drives are off while the divMMC is on: the disk is in its drive, "
+		"but cannot be started.\n\n"
+		"Switch the divMMC off with Media > divMMC, or start a disk image from the "
+		"card in the esxDOS browser (Machine > NMI).");
 	conf.emu.pause &= ~PR_EXTRA;
 }
 
@@ -502,7 +504,7 @@ void media_autorun(Computer* comp, int run) {
 	xlog(XLG_FILE, XLL_INFO, "autostart %s: %s", ok ? "armed" : "refused",
 		comp->hw->name);
 	if (ok) return;
-	if (autostart_board_blocks(comp, kind))
+	if (autostart_board_blocks(comp, kind) || ((kind != AS_TAPE) && comp->dif->out))
 		as_board_refused();
 	else
 		comp->msg = (kind == AS_TAPE) ? as_no_tape : as_no_disk;
@@ -597,6 +599,18 @@ bool media_machine(Computer* comp, const QString& path, int id, int drv, int run
 bool media_runnable(Computer* comp, const QString& path, int id, int drv) {
 	xFileTypeInfo* inf = file_type_of(comp, id, path);
 	return inf && as_runnable(as_kind_of(inf->id), drv);
+}
+
+// a file that goes into a floppy drive
+bool media_to_drive(Computer* comp, const QString& path, int id) {
+	xFileTypeInfo* inf = file_type_of(comp, id, path);
+	if (!inf) return false;
+	switch (inf->id) {
+		case FL_SCL: case FL_TRD: case FL_TD0: case FL_FDI: case FL_UDI: case FL_DSK:
+		case FL_IMA: case FL_PCIMG: case FL_HOBETA: case FL_RAW:
+			return true;
+	}
+	return false;
 }
 
 void disk_boot(Computer* comp, int drv, int id) {

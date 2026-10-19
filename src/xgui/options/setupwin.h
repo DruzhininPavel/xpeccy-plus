@@ -53,6 +53,7 @@ class SetupWin : public QDialog {
 		void divFirmwareFile();
 		bool applyDivFirmware();
 		void showDevRows();
+		void showBoardStorage();
 		void showDriveRows();
 		void tidySoundPage();
 		void fillGsRom(const QStringList&);
@@ -120,6 +121,9 @@ class SetupWin : public QDialog {
 		QCheckBox* divWrBox;
 		QComboBox* divFwBox;		// what its EEPROM holds, and what Apply writes there
 		QList<QWidget*> divRow;
+		QList<QWidget*> diskRow;	// Disk and Hard disk: off while the divMMC is on
+		QList<QWidget*> hddRow;
+		QLabel* divNote;		// says so under the divMMC row
 		QList<QWidget*> slotRow;
 		QList<QWidget*> kbdRow;
 		QList<QWidget*> drvRow[4];

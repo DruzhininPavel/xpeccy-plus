@@ -145,6 +145,14 @@ void MainWin::fillDrivesMenu() {
 		});
 		act->setEnabled(slot->data != NULL);
 	}
+	// out under the divMMC: the menu stays, says why, and has the way back
+	auto outLine = [this](QMenu* m) {
+		QAction* why = m->addAction("Off while the divMMC is on");
+		why->setEnabled(false);
+		m->addAction(divAct);
+	};
+	if (comp->dif->out && (comp->dif->cfg != DIF_NONE)) outLine(dskMenu);
+	if (comp->ide->out && (comp->ide->cfg != IDE_NONE)) outLine(hddMenu);
 	drvMenu->addActions(dskMenu->actions());
 	for (QMenu* m : menus) m->menuAction()->setVisible(!m->isEmpty());
 }
