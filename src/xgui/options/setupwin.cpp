@@ -2138,11 +2138,12 @@ void SetupWin::fillDevSummary() {
 
 // THE divMMC's FIRMWARE
 //
-// The combo shows what the EEPROM holds, told by its bytes: the bundled esxDOS,
-// erased, or something else - flashed in the machine or loaded from a file. A
-// choice is written by Apply, so opening and closing Options never touches the chip.
+// The combo shows what the EEPROM holds, told by its bytes: a bundled esxDOS
+// release, erased, or something else - flashed in the machine or loaded from a
+// file. A choice is written by Apply, so opening and closing Options never
+// touches the chip.
 
-#define	DIVFW_ESX	"@esx"
+#define	DIVFW_ESX	"@esx:"		// and the release
 #define	DIVFW_ERASED	"@erased"
 #define	DIVFW_CHIP	"@chip"		// keep what the chip has
 
@@ -2150,7 +2151,8 @@ void SetupWin::fillDevSummary() {
 static QByteArray div_fw_bytes(const QString& choice) {
 	QString path = choice;
 	if (choice == DIVFW_ERASED) return QByteArray(DIV_EE_SIZE, (char)0xff);
-	if (choice == DIVFW_ESX) path = QString::fromLocal8Bit((conf.path.esxDir + SLASH + DIV_ESX_ROM).c_str());
+	if (choice.startsWith(DIVFW_ESX))
+		path = QString::fromLocal8Bit(div_esx_rom(choice.mid(strlen(DIVFW_ESX)).toStdString()).c_str());
 	QFile file(path);
 	if (!file.open(QFile::ReadOnly)) return QByteArray();
 	QByteArray res = file.read(DIV_EE_SIZE);
@@ -2172,17 +2174,19 @@ static QString div_fw_banner(const QByteArray& img) {
 void SetupWin::fillDivFirmware() {
 	QByteArray chip = div_chip_bytes();
 	divFwBox->clear();
-	divFwBox->addItem(DIV_ESX_NAME, DIVFW_ESX);
+	for (int i = 0; div_esx_releases[i]; i++)
+		divFwBox->addItem(QString("esxDOS %0").arg(div_esx_releases[i]), QString(DIVFW_ESX) + div_esx_releases[i]);
 	divFwBox->addItem(tr("(erased)"), DIVFW_ERASED);
-	if (chip == div_fw_bytes(DIVFW_ESX)) {
-		divFwBox->setCurrentIndex(0);
+	std::string rel = div_esx_release_of(conf.zx->div->data);
+	if (!rel.empty()) {
+		divFwBox->setCurrentIndex(divFwBox->findData(QString(DIVFW_ESX) + rel.c_str()));
 	} else if (chip == div_fw_bytes(DIVFW_ERASED)) {
-		divFwBox->setCurrentIndex(1);
+		divFwBox->setCurrentIndex(divFwBox->findData(DIVFW_ERASED));
 	} else {
 		QString ban = div_fw_banner(chip);
 		divFwBox->addItem(ban.isEmpty() ? tr("Custom") : tr("Custom: %0").arg(ban), DIVFW_CHIP);
-		divFwBox->setItemData(2, tr("What the EEPROM holds now"), Qt::ToolTipRole);
-		divFwBox->setCurrentIndex(2);
+		divFwBox->setItemData(divFwBox->count() - 1, tr("What the EEPROM holds now"), Qt::ToolTipRole);
+		divFwBox->setCurrentIndex(divFwBox->count() - 1);
 	}
 }
 
@@ -2210,7 +2214,7 @@ bool SetupWin::applyDivFirmware() {
 	QByteArray img = div_fw_bytes(choice);
 	QByteArray chip = div_chip_bytes();
 	if (img.isEmpty() || (img == chip)) return false;
-	bool known = (chip == div_fw_bytes(DIVFW_ESX)) || (chip == div_fw_bytes(DIVFW_ERASED));
+	bool known = !div_esx_release_of(conf.zx->div->data).empty() || (chip == div_fw_bytes(DIVFW_ERASED));
 	if (!known && !areSure("The firmware in the EEPROM will be lost. Replace it?")) return false;
 	DivMMC* div = conf.zx->div;
 	emu_lock();

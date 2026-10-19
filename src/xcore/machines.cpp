@@ -656,6 +656,49 @@ static void mac_nv_write(const std::string& path, unsigned char* src, int size) 
 	fclose(file);
 }
 
+// THE BUNDLED esxDOS
+//
+// Every release from 0.8.5 is there, unmodified, in a folder of its own. Which
+// one an EEPROM or a card holds is told by the bytes, as the files carry no
+// version a program could read: the firmware's banner says it, ESXDOS.SYS does not.
+
+const char* const div_esx_releases[] = {"0.8.9", "0.8.8", "0.8.7", "0.8.6", "0.8.5", NULL};
+
+std::string div_esx_dir(const std::string& ver) {
+	return conf.path.esxDir + SLASH + ver;
+}
+
+std::string div_esx_rom(const std::string& ver) {
+	std::string bin = div_esx_dir(ver) + SLASH + "ESXMMC.BIN";
+	if (QFile::exists(QString::fromLocal8Bit(bin.c_str()))) return bin;
+	return div_esx_dir(ver) + SLASH + "ESXMMC.ROM";		// 0.8.6 names it so
+}
+
+static QByteArray esx_file(const std::string& path, int max) {
+	QFile file(QString::fromLocal8Bit(path.c_str()));
+	if (!file.open(QFile::ReadOnly)) return QByteArray();
+	return file.read(max);
+}
+
+std::string div_esx_release_of(const unsigned char* img) {
+	QByteArray chip((const char*)img, DIV_EE_SIZE);
+	for (int i = 0; div_esx_releases[i]; i++) {
+		QByteArray rom = esx_file(div_esx_rom(div_esx_releases[i]), DIV_EE_SIZE);
+		if (rom.size() == DIV_EE_SIZE && rom == chip) return div_esx_releases[i];
+	}
+	return std::string();
+}
+
+std::string div_esx_card_release(const std::string& folder) {
+	QByteArray sys = esx_file(folder + SLASH + "SYS" + SLASH + "ESXDOS.SYS", 0x10000);
+	if (sys.isEmpty()) return std::string();
+	for (int i = 0; div_esx_releases[i]; i++) {
+		std::string own = div_esx_dir(div_esx_releases[i]) + SLASH + "SYS" + SLASH + "ESXDOS.SYS";
+		if (esx_file(own, 0x10000) == sys) return div_esx_releases[i];
+	}
+	return std::string();
+}
+
 static void xm_load_nvram() {
 	std::string seed = std::string(":/res/nvram/") + conf.macId + ".cmos";
 	bool have = QFile::exists(QString::fromLocal8Bit(seed.c_str()));
@@ -675,7 +718,7 @@ static void xm_load_nvram() {
 	// esxDOS in it, copied once: a later bundle must not change the firmware under
 	// a card whose system files are this one's.
 	memset(conf.zx->div->data, 0xff, DIV_EE_SIZE);
-	std::string esx = conf.path.esxDir + SLASH + DIV_ESX_ROM;
+	std::string esx = div_esx_rom(div_esx_releases[0]);
 	mac_nv_read(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE, esx.c_str());
 	conf.zx->div->eeDirty = 0;
 	div_map(conf.zx->div);
@@ -1020,10 +1063,17 @@ static void mac_reread_folders(Computer* comp) {
 // machine's does, a divMMC's register, automapper and cards as theirs do. What
 // keeps without power - the CMOS, an EEPROM, the media - keeps; a folder is read
 // again.
+static int powerCount = 0;
+
+int xm_power_count() {
+	return powerCount;
+}
+
 void xm_power_cycle() {
 	const xMachine* mac = xm_find(conf.macId);
 	Computer* comp = conf.zx;
 	if (!mac || !comp) return;
+	powerCount++;
 	mac_reread_folders(comp);
 	mac_cold_ram(comp, mac->ramCold, mac->ramNoise);
 	div_power_on(comp->div);
