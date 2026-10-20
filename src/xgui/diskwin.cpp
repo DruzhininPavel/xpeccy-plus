@@ -370,7 +370,10 @@ void xDiskWin::fill() {
 	Floppy* flp = (drv < 0) ? NULL : conf.zx->dif->flp[drv];
 	fillDrive(flp);
 	unsigned char buf[256];
-	if (!flp || !flp->insert) {
+	DiskIF* dif = conf.zx->dif;
+	if (!flp && dif->out && (dif->cfg != DIF_NONE)) {
+		txt.append("The drives are off while the divMMC is on");
+	} else if (!flp || !flp->insert) {
 		txt.append("No disk in the drive");
 	} else if (trd_sys(flp, buf)) {
 		fillTRD(flp, buf, txt);

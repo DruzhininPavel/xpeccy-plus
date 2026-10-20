@@ -174,6 +174,7 @@ on the numeric keypad: Alt+Num++ is Alt with the keypad plus.
 | Reset to DOS | Alt+F12 | - |
 | Reset to Service | - | - |
 | Hard Reset | - | - |
+| divMMC On/Off | - | - |
 | NMI | Shift+F10 | F10 |
 | Switch Turbo | Alt+T | Alt+T |
 | Speed Up | Alt+Num++, Alt+= | Alt+Num++ |

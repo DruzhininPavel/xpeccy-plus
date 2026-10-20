@@ -103,7 +103,7 @@ static bool fm_exact_on(const std::string& id, int snap, const std::string& targ
 // it was set is not in its definition yet
 bool fm_runs(const std::string& id, int need, int snap) {
 	if ((id == conf.macId) && conf.zx)
-		return fm_takes(conf.zx->hw->id, conf.zx->dif->type, need, snap);
+		return fm_takes(conf.zx->hw->id, conf.zx->dif->cfg, need, snap);	// out under a divMMC is still its
 	const xMachine* mac = xm_find(id);
 	if (!mac) return false;
 	HardWare* hw = findHardware(mac->hw.c_str());

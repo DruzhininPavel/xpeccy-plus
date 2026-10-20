@@ -810,6 +810,17 @@ void comp_power_phase(Computer* comp) {
 	comp_set_frame_tick(comp, (int)((((xhost_seed() + calls++) * 2654435761u) >> 8) % (unsigned int)flen));
 }
 
+// A divMMC takes the place of the disk systems: while it is on, the floppy and
+// hard disk interfaces are out of the machine, and they come back with their
+// drives and disks when it goes. The board owns #3Dxx, so TR-DOS (and SMUC with
+// it) never runs, and a +3 enters ROM 1 through #3D00 too; a Nemo IDE would
+// work beside it, but the rule is one for all.
+void comp_board_storage(Computer* comp) {
+	int out = (comp->div->model != DIV_NONE);
+	dif_set_out(comp->dif, out);
+	ide_set_out(comp->ide, out);
+}
+
 // Where comp_set_frame_tick() would have to put the machine back to. Taken off
 // the beam, not frmtCount: that is zeroed inside the instruction the INT lands
 // in and then given all of its T, so it runs a few T ahead of the beam.

@@ -601,6 +601,7 @@ void MainWin::timerEvent(QTimerEvent* ev) {
 		lightLook();
 		updateStatus();
 		syncActions();
+		esxCheck();
 	} else if (ev->timerId() == cmsid) {	// 1-sec: cmos interrupt
 		// TODO: do
 	} else if (ev->timerId() == timid) {
@@ -807,6 +808,20 @@ bool MainWin::eventFilter(QObject* obj, QEvent* ev) {
 		setFocus();
 		return true;
 	}
+	// the divMMC's light: either button, its cards and the switch; a click is not
+	// the switch itself, which would cost a Hard Reset by a slip
+	if (obj == sbCardBox) {
+		bool left = (ev->type() == QEvent::MouseButtonPress) && (static_cast<QMouseEvent*>(ev)->button() == Qt::LeftButton);
+		if (!left && (ev->type() != QEvent::ContextMenu))
+			return QObject::eventFilter(obj, ev);
+		fillDivMenu();
+		// the left button's over the light, as from a bar at the bottom; the right one at the pointer
+		QPoint pos = left ? sbCardBox->mapToGlobal(QPoint(0, 0)) - QPoint(0, divMenu->sizeHint().height())
+			: static_cast<QContextMenuEvent*>(ev)->globalPos();
+		divMenu->exec(pos);
+		setFocus();
+		return true;
+	}
 	// the status bar's tape and drives: a click opens their window, the right button their menu
 	int drv = -1;
 	for (int i = 0; i < 4; i++)
@@ -826,7 +841,11 @@ bool MainWin::eventFilter(QObject* obj, QEvent* ev) {
 				tapeMenu(pos);
 			} else {
 				fillDrivesMenu();
-				if (flpMenu[drv]) flpMenu[drv]->exec(pos);
+				if (flpMenu[drv]) {
+					flpMenu[drv]->exec(pos);
+				} else if (conf.zx->dif->out) {
+					dskMenu->exec(pos);		// why it is off, and the way back
+				}
 			}
 			setFocus();
 			return true;
@@ -1642,6 +1661,9 @@ void MainWin::openMedia(const QString& path, int id, int drv, int run, bool pinn
 		run = media_runnable(comp, fpath, id, drv) ? askRunKeep(fpath) : AR_MOUNT;
 		if (run < 0) fpath.clear();
 	}
+	// a disk for drives the divMMC has out: the board goes, or the disk does not go in
+	if (!fpath.isEmpty() && media_to_drive(comp, fpath, id) && !drivesBack())
+		fpath.clear();
 	std::string mac;
 	if (!fpath.isEmpty() && (pinned || media_machine(comp, fpath, id, drv, run, &mac))) {
 		if (!mac.empty()) setMachine(mac);
@@ -1664,6 +1686,22 @@ void MainWin::openMedia(const QString& path, int id, int drv, int run, bool pinn
 	pause(false, PR_FILE);
 	rzxWatch();
 	emit s_tape_upd(comp->tape);
+}
+
+// The floppy drives are there for a disk: true at once unless the divMMC has them
+// out, and then only once the user has switched it off, here.
+bool MainWin::drivesBack() {
+	DiskIF* dif = conf.zx->dif;
+	if (!dif->out || (dif->cfg == DIF_NONE)) return true;
+	QMessageBox box(QMessageBox::Question, "Floppy drives are off",
+		"The floppy drives are off while the divMMC is on.", QMessageBox::NoButton, this);
+	QPushButton* off = box.addButton("Switch divMMC Off", QMessageBox::AcceptRole);
+	box.addButton(QMessageBox::Cancel);
+	box.setDefaultButton(off);
+	box.exec();
+	if (box.clickedButton() != off) return false;
+	divToggle();
+	return true;
 }
 
 // The last open made again, the way it was made. The labels file the user
@@ -1948,6 +1986,14 @@ void MainWin::initUserMenu() {
 	userMenu->addSeparator();
 	dskMenu = userMenu->addMenu(QIcon(":/images/fdd_disk.png"), "Disk Manager");
 	cartMenu = userMenu->addMenu(QIcon(":/images/cartrige.png"), "Cartridge");
+	// The board: off, an item that puts it on; on, a menu of its cards with the
+	// item that takes it off. divAct is the hotkey's and the toolbar's, which the
+	// menus cannot hide; divItem stands for it in them. A click is a Hard Reset.
+	divAct = cutAct("divMMC", XCUT_DIVMMC, "sdcard");
+	divAct->setCheckable(true);
+	divItem = userMenu->addAction(QIcon(":/images/sdcard.png"), "divMMC", this, [this]() {divToggle();});
+	divMenu = userMenu->addMenu(QIcon(":/images/sdcard.png"), "divMMC");
+	connect(divMenu, &QMenu::aboutToShow, this, &MainWin::fillDivMenu);
 	sdcMenu = userMenu->addMenu(QIcon(":/images/sdcard.png"), "SD Card");
 	hddMenu = userMenu->addMenu(QIcon(":/images/hdd.png"), "Drives");
 	diskWin = new xDiskWin(this);
@@ -2496,6 +2542,8 @@ void MainWin::initMachineMenus() {
 	fdcFastAct->setCheckable(true);
 	media->addSeparator();
 	media->addMenu(cartMenu);
+	media->addAction(divItem);
+	media->addMenu(divMenu);
 	media->addMenu(sdcMenu);
 	media->addMenu(hddMenu);
 

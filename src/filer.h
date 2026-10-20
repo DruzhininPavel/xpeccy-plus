@@ -92,6 +92,7 @@ void media_set_current(const QString& path);
 bool media_machine(Computer*, const QString& path, int id, int drv, int run, std::string* mac);
 // a tape, or a disk going into drive A: there is a choice between running it and mounting it
 bool media_runnable(Computer*, const QString& path, int id, int drv);
+bool media_to_drive(Computer*, const QString& path, int id);	// a disk image, or a file put on one
 // AS_* the last loaded file would need to start, see xcore/autostart.h
 int file_autostart_kind();
 // reset the machine and start what was just opened, if run says so

@@ -7,6 +7,8 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QMenu>
+#include <QComboBox>
+#include <QMessageBox>
 
 #include "emulwin.h"
 #include "filer.h"
@@ -74,13 +76,26 @@ void MainWin::fillDrivesMenu() {
 		m->clear();
 	}
 	for (int i = 0; i < 4; i++) flpMenu[i] = nullptr;
-	int drives = drive_count(comp);
+	// out under the divMMC: the drives the machine is set to have, grayed, under a
+	// line that says why
+	auto outLine = [](QMenu* m) {
+		m->addAction("Off while the divMMC is on")->setEnabled(false);
+		m->addSeparator();
+	};
+	bool flpOut = comp->dif->out;
+	int dif = comp->dif->cfg;
+	int drives = (dif == DIF_BDI) ? 4 : (dif == DIF_P3DOS) ? 2 : 0;
+	if (flpOut && drives) outLine(dskMenu);
 	for (int i = 0; i < drives; i++) {
 		Floppy* flp = comp->dif->flp[i];
 		if (!flp->fitted) continue;
 		// the drive's letter is on its icon
 		QMenu* m = dskMenu->addMenu(QIcon(QString(":/images/fdd_disk_%0.png").arg(QChar('A' + i))),
 			drive_media(flp->path, flp->insert) + ((flp->insert && flp->changed) ? " *" : ""));
+		if (flpOut) {
+			m->menuAction()->setEnabled(false);
+			continue;
+		}
 		flpMenu[i] = m;
 		m->addAction(QIcon(":/images/fileopen.png"), "Open...", this, [this, i]() {diskOp(DW_OPEN, i);});
 		m->addAction(QIcon(":/images/doc-new.png"), "New", this, [this, i]() {diskOp(DW_NEW, i);});
@@ -97,13 +112,19 @@ void MainWin::fillDrivesMenu() {
 		connect(act, &QAction::toggled, this, [i](bool on) {conf.zx->dif->flp[i]->protect = on ? 1 : 0;});
 	}
 
-	if (comp->ide->type != IDE_NONE) {
+	if (comp->ide->cfg != IDE_NONE) {
+		bool hddOut = comp->ide->out;
+		if (hddOut) outLine(hddMenu);
 		ATADev* dev[2] = {comp->ide->master, comp->ide->slave};
 		for (int i = 0; i < 2; i++) {
 			if (dev[i]->type == IDE_NONE) continue;
 			int id = i ? IDE_SLAVE : IDE_MASTER;
 			QMenu* m = hddMenu->addMenu(QIcon(":/images/hdd.png"),
 				QString("%0: %1").arg(i ? "Slave" : "Master").arg(drive_media(dev[i]->image, dev[i]->image != NULL)));
+			if (hddOut) {
+				m->menuAction()->setEnabled(false);
+				continue;
+			}
 			m->addAction(QIcon(":/images/hdd.png"), "Open Image...", this, [this, id]() {hddOpen(id, false);});
 			m->addAction(QIcon(":/images/fileopen.png"), "Open Folder...", this, [this, id]() {hddOpen(id, true);});
 			act = m->addAction(QIcon(":/images/tape-eject.png"), "Eject", this, [this, id]() {
@@ -117,16 +138,9 @@ void MainWin::fillDrivesMenu() {
 	}
 
 	int hw = comp->hw->id;
-	if ((hw == HW_PENTEVO) || (hw == HW_TSLAB)) {
+	if ((hw == HW_PENTEVO) || (hw == HW_TSLAB))
 		fillCardMenu(sdcMenu, -1);
-	} else if (comp->div->model) {		// a divMMC's two slots
-		for (int i = 0; i < 2; i++) {
-			SDCard* sdc = comp->div->card[i];
-			QMenu* m = sdcMenu->addMenu(QIcon(":/images/sdcard.png"),
-				QString("Card %0: %1").arg(i + 1).arg(sdc->image ? drive_media(sdc->image, true) : QString("(no card)")));
-			fillCardMenu(m, i);
-		}
-	}
+	fillDivMenu();
 
 	if ((hw == HW_ZX48) || (hw == HW_ALF)) {
 		xCartridge* slot = comp->slot;
@@ -147,6 +161,85 @@ void MainWin::fillDrivesMenu() {
 	}
 	drvMenu->addActions(dskMenu->actions());
 	for (QMenu* m : menus) m->menuAction()->setVisible(!m->isEmpty());
+}
+
+// The divMMC in the menus: off, the item that puts it on; on, a menu with the item
+// that takes it off and its two slots. The toolbar button's arrow opens the menu
+// either way, so it always has the switch.
+void MainWin::fillDivMenu() {
+	Computer* comp = conf.zx;
+	for (QAction* a : divMenu->actions())
+		if (a->menu()) a->menu()->deleteLater();
+	divMenu->clear();
+	bool fits = hw_takes_divmmc(comp->hw);
+	bool on = fits && comp->div->model;
+	divItem->setText(divAct->text());		// with its key
+	divItem->setEnabled(fits);
+	divItem->setVisible(!on);
+	divMenu->menuAction()->setVisible(on);
+	QAction* sw = divMenu->addAction(QIcon(":/images/sdcard.png"), divAct->text(), this, [this]() {divToggle();});
+	sw->setCheckable(true);
+	sw->setChecked(on);
+	sw->setEnabled(fits);
+	if (!on) return;
+	divMenu->addSeparator();
+	for (int i = 0; i < 2; i++) {
+		SDCard* sdc = comp->div->card[i];
+		QMenu* m = divMenu->addMenu(QIcon(":/images/sdcard.png"),
+			QString("Card %0: %1").arg(i + 1).arg(sdc->image ? drive_media(sdc->image, true) : QString("(no card)")));
+		fillCardMenu(m, i);
+	}
+}
+
+// The board in or out, as the divMMC row of Options puts it: with the power off,
+// so the machine comes up as after a Hard Reset, and into the machine's own file.
+// Its RAM and jumper stay as they were; the drives and the hard disk go out with
+// it on and come back with their disks (comp_board_storage).
+void MainWin::divToggle() {
+	Computer* comp = conf.zx;
+	if (!hw_takes_divmmc(comp->hw)) {
+		setMessage(" no divMMC on this machine ");
+		return;
+	}
+	bool on = !comp->div->model;
+	emu_lock();
+	div_set_model(comp->div, on ? DIV_MMC : DIV_NONE, comp->div->pages);
+	comp_board_storage(comp);
+	xm_power_cycle();
+	emu_unlock();
+	xm_save_over();
+	setMessage(on ? " divMMC on " : " divMMC off ");
+	fillDrivesMenu();
+	if (diskWin->isVisible()) diskWin->refresh();
+	syncActions();
+}
+
+// esxDOS starts only when the EEPROM and the card's system files are the same
+// release, and says nothing useful when they are not. Looked at once a power
+// cycle and once a card: a folder in slot 1 whose SYS is a bundled release other
+// than the chip's is told. An image card is not looked into.
+void MainWin::esxCheck() {
+	Computer* comp = conf.zx;
+	if (!comp->div->model) {
+		esxSeen.clear();
+		return;
+	}
+	const char* img = comp->div->card[0]->image;
+	QString card = img ? QString::fromLocal8Bit(img) : QString();
+	QString key = QString("%0|%1").arg(xm_power_count()).arg(card);
+	if (key == esxSeen) return;
+	esxSeen = key;
+	if (card.isEmpty() || !QFileInfo(card).isDir()) return;
+	std::string chip = div_esx_release_of(comp->div->data);
+	std::string sys = div_esx_card_release(img);
+	if (chip.empty() || sys.empty() || (chip == sys)) return;
+	pause(true, PR_EXTRA);
+	QMessageBox::warning(this, "esxDOS releases differ",
+		QString("Card 1 has the system files of esxDOS %0, the EEPROM holds esxDOS %1. "
+		"esxDOS starts only when both are the same release.\n\n"
+		"Write esxDOS %0 to the EEPROM in Options (divMMC, Firmware), or make the card again "
+		"with New esxDOS Folder.").arg(sys.c_str()).arg(chip.c_str()));
+	pause(false, PR_EXTRA);
 }
 
 // what a floppy drive's menu and the Disk manager's buttons do
@@ -261,17 +354,42 @@ static bool copy_tree(const QString& src, const QString& dst) {
 	return true;
 }
 
-// A card ready for esxDOS: a folder with the system files of the bundled one
-// (they must be the version the EEPROM holds), for the user to fill. Put in at
+// the bundled release a new card takes when the EEPROM holds none of them
+static QString esx_ask_release(QWidget* parent) {
+	QDialog dlg(parent);
+	dlg.setWindowTitle("New esxDOS Folder");
+	xOptSheet sheet;
+	QComboBox* box = new QComboBox;
+	for (int i = 0; div_esx_releases[i]; i++)
+		box->addItem(QString("esxDOS %0").arg(div_esx_releases[i]), QString(div_esx_releases[i]));
+	sheet.field("Release", box, "The EEPROM holds none of them: write the same one there in Options");
+	QVBoxLayout* lay = new QVBoxLayout(&dlg);
+	lay->addWidget(sheet.body);
+	QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dlg);
+	bbox->button(QDialogButtonBox::Ok)->setIcon(QIcon(":/images/ok-apply.png"));
+	bbox->button(QDialogButtonBox::Cancel)->setIcon(QIcon(":/images/cancel.png"));
+	lay->addWidget(bbox);
+	QObject::connect(bbox, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+	QObject::connect(bbox, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
+	return (dlg.exec() == QDialog::Accepted) ? box->currentData().toString() : QString();
+}
+
+// A card ready for esxDOS: a folder with the system files of the release the
+// EEPROM holds (both must be the same one), for the user to fill. Put in at
 // once, with the power off and on, so esxDOS finds it.
 void MainWin::sdcNewEsx(int card) {
-	QString esx = QString::fromLocal8Bit(conf.path.esxDir.c_str());
+	pause(true, PR_FILE);
+	QString rel = QString::fromStdString(div_esx_release_of(conf.zx->div->data));
+	if (rel.isEmpty()) rel = esx_ask_release(this);
+	pause(false, PR_FILE);
+	if (rel.isEmpty()) return;
+	QString esx = QString::fromLocal8Bit(div_esx_dir(rel.toStdString()).c_str());
 	if (!QDir(esx + "/SYS").exists() || !QDir(esx + "/BIN").exists()) {
 		shitHappens("The esxDOS files are missing from the config folder");
 		return;
 	}
 	pause(true, PR_FILE);
-	QString path = QFileDialog::getExistingDirectory(this, "Folder for the esxDOS card", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
+	QString path = QFileDialog::getExistingDirectory(this, QString("Folder for the esxDOS %0 card").arg(rel), "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
 	pause(false, PR_FILE);
 	if (path.isEmpty()) return;
 	QDir dir(path);

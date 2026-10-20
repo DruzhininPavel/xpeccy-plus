@@ -1112,7 +1112,7 @@ void SetupWin::start() {
 	padSummary();
 	cbPadFiles->setChecked(conf.gpctrl->gameOn);
 // flp
-	diskTypeBox->setCurrentIndex(diskTypeBox->findData(comp->dif->type));
+	diskTypeBox->setCurrentIndex(diskTypeBox->findData(comp->dif->cfg));
 	bdtbox->setChecked(fdcFlag & FDC_FAST);
 	ui.mempaths->setChecked(conf.storePaths);
 	setRFIndex(ui.cbAutorun, conf.autorun);
@@ -1135,7 +1135,7 @@ void SetupWin::start() {
 		d80box->setChecked(flp->trk80);
 		ddsbox->setChecked(flp->doubleSide);
 // hdd
-	hiface->setCurrentIndex(hiface->findData(comp->ide->type));
+	hiface->setCurrentIndex(hiface->findData(comp->ide->cfg));
 
 	hm_type->setCurrentIndex(hm_type->findData(comp->ide->master->type));
 
@@ -1325,6 +1325,7 @@ void SetupWin::applyMachine() {
 	bool divPower = (divModel != comp->div->model) || (divModel && (divPages != comp->div->pages));
 	if (divPower)
 		div_set_model(comp->div, divModel, divPages);
+	comp_board_storage(comp);
 	comp->div->eeWrite = divWrBox->isChecked() ? 1 : 0;
 	div_map(comp->div);
 	// a chip written outside the machine goes back in with the power off too
@@ -1950,13 +1951,15 @@ void SetupWin::buildDevices() {
 	}
 	dgrid->setColumnStretch(3, 1);
 	disk.field(tr("Drives"), drvs);
-	devRow(grid, tr("Disk"), diskTypeBox, disk.body, "Machine: Disk");
+	btn = devRow(grid, tr("Disk"), diskTypeBox, disk.body, "Machine: Disk");
+	diskRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << diskTypeBox << btn;
 
 	// the images and what is in them are the Drives menu's
 	xOptSheet hdd;
 	hdd.field(tr("Master"), hm_type);
 	hdd.field(tr("Slave"), hs_type);
-	devRow(grid, tr("Hard disk"), hiface, hdd.body, "Machine: Hard Disk");
+	btn = devRow(grid, tr("Hard disk"), hiface, hdd.body, "Machine: Hard Disk");
+	hddRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << hiface << btn;
 
 	sdSum = new QLabel;
 	btn = devRow(grid, tr("SD card"), sdSum, NULL, NULL);
@@ -1983,6 +1986,14 @@ void SetupWin::buildDevices() {
 	btn = devRow(grid, tr("divMMC"), divBox, dv.body, "Machine: divMMC");
 	btn->setObjectName("divGear");
 	divRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << divBox << btn;
+	// with the board on, the disk systems are out of the machine (comp_board_storage)
+	divNote = new QLabel(tr("Disk and Hard disk are off while the divMMC is on"));
+	QFont nfnt = divNote->font();
+	nfnt.setItalic(true);
+	divNote->setFont(nfnt);
+	divNote->setWordWrap(true);
+	grid->addWidget(divNote, grid->rowCount(), 1, 1, 2);
+	connect(divBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() {showBoardStorage();});
 
 	slotSum = new QLabel;
 	btn = devRow(grid, tr("Cartridge"), slotSum, NULL, NULL);
@@ -2127,11 +2138,12 @@ void SetupWin::fillDevSummary() {
 
 // THE divMMC's FIRMWARE
 //
-// The combo shows what the EEPROM holds, told by its bytes: the bundled esxDOS,
-// erased, or something else - flashed in the machine or loaded from a file. A
-// choice is written by Apply, so opening and closing Options never touches the chip.
+// The combo shows what the EEPROM holds, told by its bytes: a bundled esxDOS
+// release, erased, or something else - flashed in the machine or loaded from a
+// file. A choice is written by Apply, so opening and closing Options never
+// touches the chip.
 
-#define	DIVFW_ESX	"@esx"
+#define	DIVFW_ESX	"@esx:"		// and the release
 #define	DIVFW_ERASED	"@erased"
 #define	DIVFW_CHIP	"@chip"		// keep what the chip has
 
@@ -2139,7 +2151,8 @@ void SetupWin::fillDevSummary() {
 static QByteArray div_fw_bytes(const QString& choice) {
 	QString path = choice;
 	if (choice == DIVFW_ERASED) return QByteArray(DIV_EE_SIZE, (char)0xff);
-	if (choice == DIVFW_ESX) path = QString::fromLocal8Bit((conf.path.esxDir + SLASH + DIV_ESX_ROM).c_str());
+	if (choice.startsWith(DIVFW_ESX))
+		path = QString::fromLocal8Bit(div_esx_rom(choice.mid(strlen(DIVFW_ESX)).toStdString()).c_str());
 	QFile file(path);
 	if (!file.open(QFile::ReadOnly)) return QByteArray();
 	QByteArray res = file.read(DIV_EE_SIZE);
@@ -2161,17 +2174,19 @@ static QString div_fw_banner(const QByteArray& img) {
 void SetupWin::fillDivFirmware() {
 	QByteArray chip = div_chip_bytes();
 	divFwBox->clear();
-	divFwBox->addItem(DIV_ESX_NAME, DIVFW_ESX);
+	for (int i = 0; div_esx_releases[i]; i++)
+		divFwBox->addItem(QString("esxDOS %0").arg(div_esx_releases[i]), QString(DIVFW_ESX) + div_esx_releases[i]);
 	divFwBox->addItem(tr("(erased)"), DIVFW_ERASED);
-	if (chip == div_fw_bytes(DIVFW_ESX)) {
-		divFwBox->setCurrentIndex(0);
+	std::string rel = div_esx_release_of(conf.zx->div->data);
+	if (!rel.empty()) {
+		divFwBox->setCurrentIndex(divFwBox->findData(QString(DIVFW_ESX) + rel.c_str()));
 	} else if (chip == div_fw_bytes(DIVFW_ERASED)) {
-		divFwBox->setCurrentIndex(1);
+		divFwBox->setCurrentIndex(divFwBox->findData(DIVFW_ERASED));
 	} else {
 		QString ban = div_fw_banner(chip);
 		divFwBox->addItem(ban.isEmpty() ? tr("Custom") : tr("Custom: %0").arg(ban), DIVFW_CHIP);
-		divFwBox->setItemData(2, tr("What the EEPROM holds now"), Qt::ToolTipRole);
-		divFwBox->setCurrentIndex(2);
+		divFwBox->setItemData(divFwBox->count() - 1, tr("What the EEPROM holds now"), Qt::ToolTipRole);
+		divFwBox->setCurrentIndex(divFwBox->count() - 1);
 	}
 }
 
@@ -2199,7 +2214,7 @@ bool SetupWin::applyDivFirmware() {
 	QByteArray img = div_fw_bytes(choice);
 	QByteArray chip = div_chip_bytes();
 	if (img.isEmpty() || (img == chip)) return false;
-	bool known = (chip == div_fw_bytes(DIVFW_ESX)) || (chip == div_fw_bytes(DIVFW_ERASED));
+	bool known = !div_esx_release_of(conf.zx->div->data).empty() || (chip == div_fw_bytes(DIVFW_ERASED));
 	if (!known && !areSure("The firmware in the EEPROM will be lost. Replace it?")) return false;
 	DivMMC* div = conf.zx->div;
 	emu_lock();
@@ -2232,14 +2247,8 @@ void SetupWin::showDevRows() {
 	foreach(QWidget* w, slotRow) w->setVisible(slot);
 	foreach(QWidget* w, kbdRow) w->setVisible(kbd);
 	showDriveRows();
-	// a controller on the board is not swapped out
-	const xMachine* mac = xm_find(conf.macId);
-	int bi = mac ? mac->builtin : 0;
+	showBoardStorage();
 	QString fixed = tr("Built into this board");
-	diskTypeBox->setEnabled(!(bi & MAC_BI_DISK));
-	diskTypeBox->setToolTip((bi & MAC_BI_DISK) ? fixed : QString());
-	hiface->setEnabled(!(bi & MAC_BI_IDE));
-	hiface->setToolTip((bi & MAC_BI_IDE) ? fixed : QString());
 	// ALF reads its two joysticks its own way, on #1F and #FE
 	joyBox->setEnabled(hw != HW_ALF);
 	joyBox->setToolTip((hw == HW_ALF) ? fixed : QString());
@@ -2249,6 +2258,24 @@ void SetupWin::showDevRows() {
 	if (difs && (bdi >= 0)) difs->item(bdi)->setEnabled((hw != HW_PLUS2A) && (hw != HW_PLUS3));
 	fillDosRom();
 	fillDevSummary();
+}
+
+// The Disk and Hard disk rows: a controller on the board is not swapped out, and
+// with the divMMC set on both are out of the machine - they keep what they say,
+// for when it goes. Follows the divMMC row before Apply.
+void SetupWin::showBoardStorage() {
+	const xMachine* mac = xm_find(conf.macId);
+	int bi = mac ? mac->builtin : 0;
+	bool board = divBox->currentIndex() && hw_takes_divmmc(conf.zx->hw);
+	QString fixed = tr("Built into this board");
+	QString out = tr("Off while the divMMC is on");
+	foreach(QWidget* w, diskRow) w->setEnabled(!board);
+	foreach(QWidget* w, hddRow) w->setEnabled(!board);
+	diskTypeBox->setEnabled(!board && !(bi & MAC_BI_DISK));
+	diskTypeBox->setToolTip(board ? out : (bi & MAC_BI_DISK) ? fixed : QString());
+	hiface->setEnabled(!board && !(bi & MAC_BI_IDE));
+	hiface->setToolTip(board ? out : (bi & MAC_BI_IDE) ? fixed : QString());
+	divNote->setVisible(board);
 }
 
 // THE WHOLE CONFIGURATION, IN AND OUT

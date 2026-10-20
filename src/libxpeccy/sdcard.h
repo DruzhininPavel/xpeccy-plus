@@ -73,6 +73,7 @@ typedef struct {
 	} out;
 	int busyLeft;		// transfers still answered 00 after a block written
 	int reads;		// blocks read since the card was made: a card in use moves it
+	int writes;		// blocks the machine wrote, kept or not (a folder is read only)
 } SDCard;
 
 SDCard* sdcCreate();

@@ -166,11 +166,22 @@ void difSetDrives(DiskIF* dif, int cnt) {
 	}
 }
 
-void difSetHW(DiskIF* dif, int type) {
-	dif->hw = findDHW(type);
+// what is live: the interface set, or none while it is out
+static void dif_apply(DiskIF* dif) {
+	dif->hw = findDHW(dif->out ? DIF_NONE : dif->cfg);
 	if (!dif->hw)
 		dif->hw = findDHW(DIF_NONE);
 	dif->type = dif->hw->id;
+}
+
+void difSetHW(DiskIF* dif, int type) {
+	dif->cfg = findDHW(type) ? type : DIF_NONE;
+	dif_apply(dif);
+}
+
+void dif_set_out(DiskIF* dif, int out) {
+	dif->out = out ? 1 : 0;
+	dif_apply(dif);
 }
 
 FDC* fdc_create(cbirq cb, void* p) {

@@ -104,11 +104,227 @@ bundled here are the original firmware releases.
 
 ## esxDOS - permission of the rights holder
 
-`../esxdos/` holds esxDOS 0.8.9 by Papaya Dezign, the divMMC firmware (`ESXMMC.BIN`, the
-image its EEPROM starts with) and the `SYS` and `BIN` folders a card needs, plus the
-release's `README.TXT` and `ESX089.NFO` - unmodified, from the official
-<http://www.esxdos.org/files/esxdos089.zip>. Bundled with the permission of Papaya Dezign;
-thanks to Miguel Guerreiro / Papaya Dezign. Its terms are in `../esxdos/LICENSE`.
+`../esxdos/` holds esxDOS 0.8.5, 0.8.6, 0.8.7, 0.8.8 and 0.8.9 by Papaya Dezign, each release
+in a folder of its own: the divMMC firmware (`ESXMMC.BIN`; `ESXMMC.ROM` in 0.8.6, as that
+release names it), the `SYS` and `BIN` folders a card needs, and the release's `README.TXT`
+and `.NFO` - unmodified, from the official zips. Bundled with the permission of Papaya Dezign;
+thanks to Miguel Guerreiro / Papaya Dezign. Their terms are in `../esxdos/LICENSE`.
+
+### esxDOS 0.8.5
+
+`../esxdos/0.8.5/`, from <http://www.esxdos.org/files/esxdos085.zip> (sha256 `ae960bbcd0d31f687152cde03401e1e02bff0f85f2880698b6fe3d27de3d009a`).
+
+| File | Size | MD5 |
+| --- | ---: | --- |
+| `ESXMMC.BIN` | 8192 | `d58a3f24f40cd3f5a897faf40610a740` |
+| `BIN/CD` | 512 | `50c40f96a11161cbad1b312d7517e8e3` |
+| `BIN/CHMOD` | 512 | `fb04875adc42097837b7839432f5103c` |
+| `BIN/CP` | 512 | `1e5a00d1a8acb2f5d46f8ff1b1347e80` |
+| `BIN/DIVIDEO` | 917 | `1e3a152f884d9a310496870a3bc58766` |
+| `BIN/DSKPROBE` | 2837 | `d5336db574873f68edbfdbec72c2f404` |
+| `BIN/DUMPMEM` | 512 | `e9d02ffab7560f07adfc0739a1e5baf0` |
+| `BIN/FILE` | 1024 | `3dc7b278ed9f52ff6df9122066149791` |
+| `BIN/GRAMON` | 2560 | `930ec960019d5802b957d591ddcd7164` |
+| `BIN/HEXDUMP` | 512 | `cd4f68ae03402de1a1299fcc91edde83` |
+| `BIN/LS` | 638 | `a4b24245348fd51e46f8a5d1faf406bc` |
+| `BIN/LSTAP` | 1024 | `90c937f5d8e847b286dfb5fbb9dd850d` |
+| `BIN/MKDIR` | 512 | `7c2505a761948bf221f5083924eff968` |
+| `BIN/MORE` | 512 | `4a7beb3c741b49f51f5f11579d70bcf2` |
+| `BIN/MV` | 512 | `48ebee514da2b7e803fafa72507a5fe6` |
+| `BIN/PARTINFO` | 512 | `b6b734af5bf31e7023ad3f3925b5e59a` |
+| `BIN/PLAYPT3` | 2549 | `9ec0e9664bd546cc31d805f6facfcf68` |
+| `BIN/PLAYSQT` | 1759 | `db65aad44667f1d3bd606abcf97e1ff6` |
+| `BIN/PLAYSTC` | 1475 | `fadead590fd9b02f32e20c1fd35664b7` |
+| `BIN/PLAYWAV` | 1536 | `9d617d24638646cc43cccba9f2c8c445` |
+| `BIN/SNAPLOAD` | 6656 | `e587f0ad0e05eb9c6aa0da38f53e2b24` |
+| `BIN/SPEAKCZ` | 1536 | `cd3b8cf7d0daa65051cb2877ef1a7031` |
+| `BIN/TAPEIN` | 512 | `297ef7a55c655139b06aeb678abe56ee` |
+| `BIN/TAPEOUT` | 512 | `7ee30393fbbc9e581496b500cf9a46e1` |
+| `BIN/VDISK` | 512 | `3fb12c5773ae39c77a47c8d8bf9b077b` |
+| `ESX085.NFO` | 3804 | `8248680812cce36a288778c494cdb15b` |
+| `README.TXT` | 10556 | `2ba9a334a1151f8da2bc04a15e87dbb9` |
+| `SYS/BDIR.KO` | 1024 | `ad3e5608d0017fb546b22d6c92277823` |
+| `SYS/BETADISK.SYS` | 2163 | `afc7236fd8f8e03abe1d28c8978e7db8` |
+| `SYS/BFILE.KO` | 1024 | `5ab18a1d55ef4b6047ffef264a34b2fe` |
+| `SYS/CONFIG/TRDOS.CFG` | 602 | `1277b815d1f125eae8c20c566c79700a` |
+| `SYS/ERRMSG.KO` | 512 | `62a5a9dd6ac8d1e048baa70073b7fecd` |
+| `SYS/ESXDOS.SYS` | 3556 | `3af4100b54e71fe60f0369329693b4e3` |
+| `SYS/NMI.SYS` | 3554 | `a631121a77387c92c107ca6ba8cbd76b` |
+| `SYS/NMI_HELP.SCR` | 6912 | `d427bb8a4a21efc53067e2b6589da7fa` |
+| `SYS/TAPE.KO` | 1024 | `6dc247ed1387ae5eecd15b03bc3a78be` |
+| `SYS/TRDOS54T.KO` | 13285 | `6e14f8e7c43746c0b4dbd8fe77a60d11` |
+
+### esxDOS 0.8.6
+
+`../esxdos/0.8.6/`, from <http://www.esxdos.org/files/esxdos086.zip> (sha256 `643a16bcde212886caed395291e47f45e86b82e03bb6d9176730593c64e725ef`).
+
+| File | Size | MD5 |
+| --- | ---: | --- |
+| `ESXMMC.ROM` | 8192 | `e951363a13b45e9aecddd01be788a64a` |
+| `BIN/128` | 512 | `255451e44525d1752386efec2d827917` |
+| `BIN/CD` | 512 | `50c40f96a11161cbad1b312d7517e8e3` |
+| `BIN/CHMOD` | 512 | `fb04875adc42097837b7839432f5103c` |
+| `BIN/CP` | 512 | `1e5a00d1a8acb2f5d46f8ff1b1347e80` |
+| `BIN/DIVIDEO` | 917 | `1e3a152f884d9a310496870a3bc58766` |
+| `BIN/DRIVES` | 1008 | `9a8bc288f48b399974e5676a1dbd6bdc` |
+| `BIN/DSKPROBE` | 2837 | `d5336db574873f68edbfdbec72c2f404` |
+| `BIN/DUMPMEM` | 512 | `e9d02ffab7560f07adfc0739a1e5baf0` |
+| `BIN/FILE` | 1024 | `3dc7b278ed9f52ff6df9122066149791` |
+| `BIN/GRAMON` | 2560 | `930ec960019d5802b957d591ddcd7164` |
+| `BIN/HEXDUMP` | 512 | `cd4f68ae03402de1a1299fcc91edde83` |
+| `BIN/HEXVIEW` | 2767 | `489543ce2372ebe07e3f292379660f7c` |
+| `BIN/LAUNCHER` | 1024 | `978313757a735574065f7c5ef932bae5` |
+| `BIN/LS` | 1189 | `8ceef180fe87f9a0de000721b7e01fc0` |
+| `BIN/LSTAP` | 1024 | `90c937f5d8e847b286dfb5fbb9dd850d` |
+| `BIN/MKDIR` | 512 | `7c2505a761948bf221f5083924eff968` |
+| `BIN/MKTRD` | 512 | `c9449b0a8cb9b3ad7f6f11123681bb50` |
+| `BIN/MORE` | 512 | `4a7beb3c741b49f51f5f11579d70bcf2` |
+| `BIN/MV` | 512 | `48ebee514da2b7e803fafa72507a5fe6` |
+| `BIN/PARTINFO` | 512 | `a35fbbf8a4b54e5dfbb4604a0dcb5b36` |
+| `BIN/PLAYPT3` | 3642 | `bfabb96b23412808f561e7666b1811a5` |
+| `BIN/PLAYSQT` | 1759 | `db65aad44667f1d3bd606abcf97e1ff6` |
+| `BIN/PLAYSTC` | 1475 | `fadead590fd9b02f32e20c1fd35664b7` |
+| `BIN/PLAYTFM` | 2232 | `c2fc51b9e118a57423bc9cf925908be8` |
+| `BIN/PLAYWAV` | 1536 | `9d617d24638646cc43cccba9f2c8c445` |
+| `BIN/RM` | 1289 | `b6d06591057859e061ac0a382f6ab3e8` |
+| `BIN/SNAPLOAD` | 6656 | `e587f0ad0e05eb9c6aa0da38f53e2b24` |
+| `BIN/SPEAKCZ` | 1536 | `cd3b8cf7d0daa65051cb2877ef1a7031` |
+| `BIN/TAPEIN` | 512 | `5db0a65f475f9d9eb91b0eda452bae8e` |
+| `BIN/TAPEOUT` | 512 | `b30b9f2fd6fdc78eed514fb15dcb3bfd` |
+| `BIN/VDISK` | 512 | `3fb12c5773ae39c77a47c8d8bf9b077b` |
+| `ESX086.NFO` | 3726 | `d11fc8553f67ccecca1b7dd7ef3bc067` |
+| `README.TXT` | 6476 | `e1e5ca1cd68e3f606a4d7a694476e599` |
+| `SYS/BDIR.KO` | 1024 | `93520050b6b2ea9044685ed2fb0d911c` |
+| `SYS/BETADISK.SYS` | 2233 | `0cedd4ca07bacaf0dfd963d213a5634d` |
+| `SYS/BFILE.KO` | 1024 | `3188d51ab24e7999fc6205f1579b868f` |
+| `SYS/CONFIG/ESXDOS.CFG` | 181 | `b975b292246f0f57be8a84d656919254` |
+| `SYS/CONFIG/TRDOS.CFG` | 875 | `3e4870421391bdf18759eab6ae77aa3b` |
+| `SYS/ERRMSG.KO` | 512 | `62a5a9dd6ac8d1e048baa70073b7fecd` |
+| `SYS/ESXDOS.SYS` | 3809 | `f1b5a5d86cb13822be992f11d3c2061d` |
+| `SYS/NMI.SYS` | 3544 | `f16773b341322175f69d750d8d486c55` |
+| `SYS/NMI_HELP.SCR` | 6912 | `d427bb8a4a21efc53067e2b6589da7fa` |
+| `SYS/TAPE.KO` | 1024 | `ff8ca407ba862d04790ab097a70ab711` |
+| `SYS/TRDBOOT.BIN` | 14592 | `3bf4a800eecc95b8026e06c595630f31` |
+| `SYS/TRDOS54T.KO` | 13638 | `a850a565eb92f1c9709568ca6fec3e84` |
+
+### esxDOS 0.8.7
+
+`../esxdos/0.8.7/`, from <http://www.esxdos.org/files/esxdos087.zip> (sha256 `6f5b523ad34bc1f57c816d69279fd044cb923b35b88fe9b6a33879462b847a19`).
+
+| File | Size | MD5 |
+| --- | ---: | --- |
+| `ESXMMC.BIN` | 8192 | `9575a489a444d17243d6f6855313755c` |
+| `BIN/128` | 512 | `255451e44525d1752386efec2d827917` |
+| `BIN/CD` | 512 | `50c40f96a11161cbad1b312d7517e8e3` |
+| `BIN/CHMOD` | 512 | `fb04875adc42097837b7839432f5103c` |
+| `BIN/CP` | 512 | `1e5a00d1a8acb2f5d46f8ff1b1347e80` |
+| `BIN/DFWLOAD` | 1024 | `6c9fec59ad152fb55db55b3fc20f49c1` |
+| `BIN/DIVIDEO` | 917 | `1e3a152f884d9a310496870a3bc58766` |
+| `BIN/DRIVES` | 1012 | `ada452345221f871918bd7eff09a776e` |
+| `BIN/DSKPROBE` | 2837 | `d5336db574873f68edbfdbec72c2f404` |
+| `BIN/DUMPMEM` | 1024 | `0248920e86df0dd1f97715cde16d4ff6` |
+| `BIN/FILE` | 1024 | `3dc7b278ed9f52ff6df9122066149791` |
+| `BIN/GRAMON` | 2560 | `930ec960019d5802b957d591ddcd7164` |
+| `BIN/HEXDUMP` | 1024 | `54c58aa8d5f44617defcb35b122f32df` |
+| `BIN/HEXVIEW` | 2767 | `489543ce2372ebe07e3f292379660f7c` |
+| `BIN/LAUNCHER` | 1024 | `978313757a735574065f7c5ef932bae5` |
+| `BIN/LS` | 1189 | `8ceef180fe87f9a0de000721b7e01fc0` |
+| `BIN/LSTAP` | 1024 | `90c937f5d8e847b286dfb5fbb9dd850d` |
+| `BIN/MKDIR` | 512 | `7c2505a761948bf221f5083924eff968` |
+| `BIN/MKTRD` | 512 | `c9449b0a8cb9b3ad7f6f11123681bb50` |
+| `BIN/MORE` | 512 | `841c8214f79371c268dbae277166d9e0` |
+| `BIN/MV` | 512 | `48ebee514da2b7e803fafa72507a5fe6` |
+| `BIN/PARTINFO` | 512 | `a35fbbf8a4b54e5dfbb4604a0dcb5b36` |
+| `BIN/PLAYPT3` | 3642 | `bfabb96b23412808f561e7666b1811a5` |
+| `BIN/PLAYSQT` | 1759 | `db65aad44667f1d3bd606abcf97e1ff6` |
+| `BIN/PLAYSTC` | 1475 | `fadead590fd9b02f32e20c1fd35664b7` |
+| `BIN/PLAYTFM` | 2232 | `c2fc51b9e118a57423bc9cf925908be8` |
+| `BIN/PLAYWAV` | 1536 | `9d617d24638646cc43cccba9f2c8c445` |
+| `BIN/RM` | 1293 | `c1f6ec95a0caf5568e35664362233378` |
+| `BIN/SERCP` | 3072 | `e5175048a94fdfe58bb4ceab370fa16c` |
+| `BIN/SNAPLOAD` | 6656 | `e587f0ad0e05eb9c6aa0da38f53e2b24` |
+| `BIN/SPEAKCZ` | 1536 | `cd3b8cf7d0daa65051cb2877ef1a7031` |
+| `BIN/TAPEIN` | 512 | `5db0a65f475f9d9eb91b0eda452bae8e` |
+| `BIN/TAPEOUT` | 512 | `b30b9f2fd6fdc78eed514fb15dcb3bfd` |
+| `BIN/TSPLAY` | 3584 | `bbefe2eefd9adac8c6051741ce1977ba` |
+| `BIN/VDISK` | 512 | `3fb12c5773ae39c77a47c8d8bf9b077b` |
+| `ESX087.NFO` | 3728 | `a134f3f82e94e85debeb1ca4c66a9e15` |
+| `README.TXT` | 3204 | `38e765140a895ed3250ba9610204b110` |
+| `SYS/BDIR.KO` | 1024 | `ae94a386534c96bb22e238ab0d7711ee` |
+| `SYS/BETADISK.SYS` | 2233 | `1f8b88148b57793c27c36d2848eac7e6` |
+| `SYS/BFILE.KO` | 1024 | `a5e937d1c3c5c7f08191419a856e3e0b` |
+| `SYS/CONFIG/ESXDOS.CFG` | 252 | `22217dca75b0be50aa93a76720ea1ecf` |
+| `SYS/CONFIG/TRDOS.CFG` | 875 | `3e4870421391bdf18759eab6ae77aa3b` |
+| `SYS/ERRMSG.KO` | 512 | `62a5a9dd6ac8d1e048baa70073b7fecd` |
+| `SYS/ESXDOS.SYS` | 3891 | `53ef5b1367f873cc08fa60d466ee1c77` |
+| `SYS/NMI.SYS` | 3540 | `02ed3c53c2806642ee1bba583f890fd6` |
+| `SYS/NMI_HELP.SCR` | 6912 | `d427bb8a4a21efc53067e2b6589da7fa` |
+| `SYS/TAPE.KO` | 1024 | `67626b2f05053d9446c038f7d1cd3702` |
+| `SYS/TRDBOOT.BIN` | 14592 | `3bf4a800eecc95b8026e06c595630f31` |
+| `SYS/TRDOS54T.KO` | 13652 | `e01265ed175d7ade70f9f2129c9480e0` |
+
+### esxDOS 0.8.8
+
+`../esxdos/0.8.8/`, from <http://www.esxdos.org/files/esxdos088.zip> (sha256 `8bee2a0a0108c6a94f29870fa703a74e4711a9e5c8bba3c90b555f715845187b`).
+
+| File | Size | MD5 |
+| --- | ---: | --- |
+| `ESXMMC.BIN` | 8192 | `720b5bf903d912dc6dfb4967d957723a` |
+| `BIN/128` | 512 | `9632dc64cbe81eb10b2028a925621dae` |
+| `BIN/CAL` | 603 | `5b858161928fc91e6563c25e67a7d5c5` |
+| `BIN/CD` | 512 | `50c40f96a11161cbad1b312d7517e8e3` |
+| `BIN/CHMOD` | 512 | `fb04875adc42097837b7839432f5103c` |
+| `BIN/CP` | 512 | `1e5a00d1a8acb2f5d46f8ff1b1347e80` |
+| `BIN/DATE` | 388 | `49281f0d780bcee65a8697d54ea12549` |
+| `BIN/DFWLOAD` | 1024 | `6c9fec59ad152fb55db55b3fc20f49c1` |
+| `BIN/DIVIDEO` | 917 | `1e3a152f884d9a310496870a3bc58766` |
+| `BIN/DRIVES` | 1012 | `ada452345221f871918bd7eff09a776e` |
+| `BIN/DSKPROBE` | 2837 | `d5336db574873f68edbfdbec72c2f404` |
+| `BIN/DUMPMEM` | 512 | `e9d02ffab7560f07adfc0739a1e5baf0` |
+| `BIN/FILE` | 1024 | `3dc7b278ed9f52ff6df9122066149791` |
+| `BIN/GRAMON` | 2560 | `930ec960019d5802b957d591ddcd7164` |
+| `BIN/HEXDUMP` | 512 | `cd4f68ae03402de1a1299fcc91edde83` |
+| `BIN/HEXVIEW` | 2767 | `489543ce2372ebe07e3f292379660f7c` |
+| `BIN/LAUNCHER` | 1024 | `978313757a735574065f7c5ef932bae5` |
+| `BIN/LS` | 1189 | `8ceef180fe87f9a0de000721b7e01fc0` |
+| `BIN/LSTAP` | 1024 | `90c937f5d8e847b286dfb5fbb9dd850d` |
+| `BIN/MKDIR` | 512 | `7c2505a761948bf221f5083924eff968` |
+| `BIN/MKTRD` | 512 | `c9449b0a8cb9b3ad7f6f11123681bb50` |
+| `BIN/MORE` | 417 | `f414a55ee44f00286a50a231bd29054a` |
+| `BIN/MV` | 512 | `48ebee514da2b7e803fafa72507a5fe6` |
+| `BIN/PARTINFO` | 512 | `a35fbbf8a4b54e5dfbb4604a0dcb5b36` |
+| `BIN/PLAYPT3` | 3642 | `bfabb96b23412808f561e7666b1811a5` |
+| `BIN/PLAYSQT` | 1759 | `db65aad44667f1d3bd606abcf97e1ff6` |
+| `BIN/PLAYSTC` | 1475 | `fadead590fd9b02f32e20c1fd35664b7` |
+| `BIN/PLAYTFM` | 2232 | `c2fc51b9e118a57423bc9cf925908be8` |
+| `BIN/PLAYWAV` | 1536 | `9d617d24638646cc43cccba9f2c8c445` |
+| `BIN/RM` | 1293 | `c1f6ec95a0caf5568e35664362233378` |
+| `BIN/SCL2TRD` | 4075 | `601cd775f8646cdcaaeaf7d0e63b3e05` |
+| `BIN/SERCP` | 3072 | `94673dbd6a9d4275d99f7f9f15f0bff3` |
+| `BIN/SNAPLOAD` | 6656 | `e587f0ad0e05eb9c6aa0da38f53e2b24` |
+| `BIN/SPEAKCZ` | 1536 | `cd3b8cf7d0daa65051cb2877ef1a7031` |
+| `BIN/STRINGS` | 1045 | `e4d1d1ff1608736d82a07d7ea9442418` |
+| `BIN/TAPEIN` | 512 | `5db0a65f475f9d9eb91b0eda452bae8e` |
+| `BIN/TAPEOUT` | 512 | `b30b9f2fd6fdc78eed514fb15dcb3bfd` |
+| `BIN/TSPLAY` | 3584 | `bbefe2eefd9adac8c6051741ce1977ba` |
+| `BIN/VDISK` | 512 | `3fb12c5773ae39c77a47c8d8bf9b077b` |
+| `ESX088.NFO` | 2964 | `69f16f4f6f637f4f185afac706b0f4ce` |
+| `README.TXT` | 3485 | `03740da28901541724a80a475b154307` |
+| `SYS/BDIR.KO` | 1024 | `00907f03854e120d097e645be4c7fb88` |
+| `SYS/BETADISK.SYS` | 2233 | `806b40b5d5acb16caea26b33f13149a9` |
+| `SYS/BFILE.KO` | 1024 | `57a846cecb9de3f98fea6f142cb90bf6` |
+| `SYS/CONFIG/ESXDOS.CFG` | 198 | `fbb28aca7eb642ef4e93b552347ca1f9` |
+| `SYS/CONFIG/TRDOS.CFG` | 875 | `3e4870421391bdf18759eab6ae77aa3b` |
+| `SYS/ERRMSG.KO` | 512 | `62a5a9dd6ac8d1e048baa70073b7fecd` |
+| `SYS/ESXDOS.SYS` | 3994 | `d674fecf5abc36cbf4bed5edd081e831` |
+| `SYS/NMI.SYS` | 3540 | `02ed3c53c2806642ee1bba583f890fd6` |
+| `SYS/NMI_HELP.SCR` | 6912 | `d427bb8a4a21efc53067e2b6589da7fa` |
+| `SYS/TAPE.KO` | 1024 | `f5ed25b0d909cc326822105d403752bd` |
+| `SYS/TRDOS54T.KO` | 13652 | `3eb5971db4de4903e12ef182c718d736` |
+
+### esxDOS 0.8.9
+
+`../esxdos/0.8.9/`, from <http://www.esxdos.org/files/esxdos089.zip> (sha256 `d455888361cd13d455e362a4c841452b6f4568d30f9069443044affdd40de9a4`).
 
 | File | Size | MD5 |
 | --- | ---: | --- |
