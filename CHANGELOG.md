@@ -76,6 +76,9 @@ before that point is upstream's history and is not repeated here.
 - **View > Border** sets the border size at once, with the machine running or paused.
   *(thanks to Volutar)*
 
+- **Lock Toolbar** in the toolbar's right-click menu, on by default: a slip of the mouse no
+  longer moves a button. Untick it to drag buttons around. *(thanks to Volutar)*
+
 ### Changed
 
 - **Reset with a divMMC on** clears the board's MAPRAM setting, as the ZX Spectrum Next's

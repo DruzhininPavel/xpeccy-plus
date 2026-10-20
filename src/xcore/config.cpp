@@ -274,6 +274,7 @@ void saveConfig() {
 	fprintf(cfile, "toolbar = %s\n", YESNO(conf.win.toolbar));
 	fprintf(cfile, "toolbar.icons = %i\n", conf.win.tbIcons);
 	fprintf(cfile, "toolbar.items = %s\n", conf.win.tbItems.c_str());
+	fprintf(cfile, "toolbar.locked = %s\n", YESNO(conf.win.tbLocked));
 	fprintf(cfile, "statusbar = %s\n", YESNO(conf.win.statusbar));
 	fprintf(cfile, "lowlatency = %s\n", YESNO(conf.vid.lowLatency));
 	// kept beside lowlatency: the two are one page in the options, and moving
@@ -809,6 +810,7 @@ void loadConfig() {
 	conf.win.statusbar = 1;
 	conf.win.tbIcons = 24;
 	conf.win.tbItems = "*";
+	conf.win.tbLocked = 1;
 	conf.dbg.dbsize = 8;
 	conf.dbg.dwsize = 4;
 	conf.dbg.dmsize = 127;
@@ -1115,6 +1117,7 @@ void loadConfig() {
 					if (pnam=="toolbar") conf.win.toolbar = arg.b;
 					if (pnam=="toolbar.icons") conf.win.tbIcons = (arg.i == 16) ? 16 : 24;
 					if (pnam=="toolbar.items") conf.win.tbItems = pval;
+					if (pnam=="toolbar.locked") conf.win.tbLocked = arg.b;
 					if (pnam=="statusbar") conf.win.statusbar = arg.b;
 					if (pnam=="lowlatency") conf.vid.lowLatency = arg.b;
 					if (pnam=="runahead") conf.emu.runahead = getRanged(arg.s, 0, 2);

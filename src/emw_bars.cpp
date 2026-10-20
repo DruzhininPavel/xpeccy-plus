@@ -164,7 +164,9 @@ int xToolBar::dropAt(const QPoint& pos, int* x) const {
 
 // A press is a drag once it moves. A list button opens on the press, so the
 // press is held back from it and the list opened on a release that did not move.
+// A locked bar drags nothing, and its buttons take their presses as Qt gives them.
 bool xToolBar::eventFilter(QObject* obj, QEvent* ev) {
+	if (conf.win.tbLocked) return QToolBar::eventFilter(obj, ev);
 	QToolButton* btn = qobject_cast<QToolButton*>(obj);
 	bool list = btn && (btn->popupMode() == QToolButton::InstantPopup) && btn->menu();
 	switch (ev->type()) {
@@ -603,6 +605,7 @@ void MainWin::tbFill(QToolBar* bar) {
 			connect(btn, &QToolButton::released, this, [this]() {xcut_release(XCUT_REWIND);});
 		}
 	}
+	bar->setAcceptDrops(!conf.win.tbLocked);
 	static_cast<xToolBar*>(bar)->watch();
 }
 
@@ -678,6 +681,14 @@ void MainWin::tbMenu(const QPoint& pos, int idx) {
 		tbApply();
 	});
 	menu.addSeparator();
+	// as the taskbar's: a slip of the mouse moves no button
+	QAction* lock = menu.addAction("Lock Toolbar", this, [this](bool on) {
+		conf.win.tbLocked = on;
+		tbBuild();
+		saveConfig();
+	});
+	lock->setCheckable(true);
+	lock->setChecked(conf.win.tbLocked);
 	menu.addAction("Hide Toolbar", tbShowAct, &QAction::trigger);
 	menu.exec(pos);
 	setFocus();
