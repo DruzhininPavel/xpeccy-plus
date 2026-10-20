@@ -239,32 +239,35 @@ Pentagons take it on their ZX-BUS. The one emulated follows Mario Prato's origin
 which the boards sold since, such as the DivMMC EnJOY!, are built on: 8K of EEPROM for the
 firmware, 128K or 512K of RAM, and two SD card slots. Its SD card port has a clock of its
 own, so the card works at any usual CPU speed. Its firmware is esxDOS, which loads `.tap`,
-`.sna`, `.z80` and `.trd` files from the card and adds dot commands to BASIC. esxDOS 0.8.9
-comes with the emulator and is in the board's EEPROM from the start, by permission of its
-authors, Papaya Dezign.
+`.sna`, `.z80` and `.trd` files from the card and adds dot commands to BASIC. esxDOS 0.8.5
+to 0.8.9 come with the emulator, by permission of its authors, Papaya Dezign, and 0.8.9 is
+in the board's EEPROM from the start.
 
 ### Setting it up
 
-1. On the **Machine** page of **Options**, set the **divMMC** row to **divMMC**.
-   The {icon}`settings` gear opens **Machine: divMMC**:
+1. Switch the board on with **Media > divMMC**, or on the **Machine** page of **Options**
+   set the **divMMC** row to **divMMC**. The {icon}`settings` gear opens **Machine: divMMC**:
    - **RAM** - **128K** or **512K**.
    - **EEPROM writable** - the board's EEPROM jumper. Leave it off. When it is on, the
      Spectrum can write new firmware into the EEPROM, and the firmware does not start at a
      reset.
-   - **Firmware** - what the EEPROM holds: **esxDOS 0.8.9**, **(erased)**, or **Custom**
-     for anything else, with the esxDOS version in it when it has one. The
+   - **Firmware** - what the EEPROM holds: one of **esxDOS 0.8.9** to **esxDOS 0.8.5**,
+     **(erased)**, or **Custom** for anything else, with the esxDOS version in it when it has one. The
      {icon}`fileopen` button picks a firmware file. **Apply** writes the choice into the
      EEPROM; before it replaces a **Custom** firmware, which may exist only in the EEPROM,
      it asks.
-2. Make a card: **Media > SD Card** has a menu for each slot, **Card 1** and **Card 2**,
+2. Make a card: **Media > divMMC** has a menu for each slot, **Card 1** and **Card 2**,
    with the name of the card in it. **New esxDOS Folder...** asks for a folder - an empty
-   one, or a new one made in the same window - copies the esxDOS `SYS` and `BIN` folders
-   into it, adds `TMP`, puts it in the slot and powers the machine off and on. esxDOS starts
+   one, or a new one made in the same window - copies the `SYS` and `BIN` folders of the
+   esxDOS release the EEPROM holds into it, adds `TMP`, puts it in the slot and powers the
+   machine off and on. With no bundled release in the EEPROM it asks which one to copy. esxDOS starts
    from the card; put your programs into the folder.
 3. Or use a card of your own. Each slot's menu also has **Open Image...**, **Open
    Folder...**, **Eject** and **Write Protect**, as the ZX Evolution's card has. esxDOS
    needs an image with an MBR and one FAT16 or FAT32 partition, or a folder, holding the
-   `SYS`, `BIN` and `TMP` folders of the same esxDOS version as the EEPROM.
+   `SYS`, `BIN` and `TMP` folders of the same esxDOS release as the EEPROM. When a folder
+   in slot 1 holds another bundled release than the EEPROM, Xpeccy+ says so in a window
+   after the machine is switched on: esxDOS itself does not check, and fails in odd ways.
 
 Another esxDOS version, or a firmware of your own, goes in with the {icon}`fileopen` button,
 or the way the real board is flashed: turn **EEPROM writable** on, load the flasher, such as
@@ -287,6 +290,39 @@ also reads a folder used as a card again, with the files copied into it since;
 started with no card, esxDOS ignores the NMI button until then. A plain reset is not enough:
 then the firmware skips the search and keeps what it found before.
 
+### Switching it on and off
+
+**Media > divMMC** switches the board on and off in one go. It is in the right-click menu
+too, it can be a toolbar button - a click switches, its arrow lists the cards - or have a
+hotkey (**divMMC On/Off**). While the board is on, **divMMC** is a menu: the same item,
+ticked, to switch it off, then **Card 1** and **Card 2**. It works as the **divMMC** row of
+**Options** does: the machine is powered off and on, and the setting is the machine's, kept
+for the next start. The board's RAM, its jumper and its EEPROM stay as they were.
+
+While the board is on, the floppy drives and the hard disk are out of the machine: the
+board takes the TR-DOS entry, so on a real machine the drives would sit there unused. Their
+lights in the status bar are dim and struck through, the **Disk Manager** and **Drives**
+menus show the drives grayed under a line that says why, and **Options** shows **Disk** and
+**Hard disk** dimmed.
+Nothing is ejected: switch the board off, and the drives come back with their disks.
+Opening a disk while the board is on asks to switch it off first.
+
+### Which esxDOS
+
+The releases differ mostly in their TR-DOS emulator, which runs `.trd` images from the
+card:
+
+- **0.8.5** - the first with the TR-DOS emulator.
+- **0.8.6** - TR-DOS Navigator boots a disk with no boot file, Beta 48 support, the `.128`
+  command.
+- **0.8.7** - saving the EEPROM to the card works, Headball GS loads.
+- **0.8.8** - `SAVE ... BIN`, `GO TO` with a string variable, no parity check when loading
+  `.tap` files, the NMI silences the sound chips.
+- **0.8.9** - `.scl` images, TR-DOS `MOVE` and `FORMAT`, and a fix for a full card whose
+  root folder got damaged.
+
+Each release's own `README.TXT` is in `config/esxdos/<version>/`.
+
 ### Using it
 
 - The firmware starts on every reset, then goes to 48K BASIC. Type `.ls` for the files on
@@ -308,9 +344,9 @@ then the firmware skips the search and keeps what it found before.
 - A tape or disk opened to be run ([Run a program](getting-started.md#run-a-program))
   starts from a Hard Reset while the board is on, so that a tape attached in esxDOS does
   not take the `LOAD ""` instead; the keys go into the 48K BASIC the firmware leaves the
-  machine in. A disk in a drive cannot be started this way at all: esxDOS takes the TR-DOS
-  entry and the +3 Loader for its own files, so Xpeccy+ says so in a window and only mounts it. Start
-  it from the card, or switch the board off.
+  machine in. A disk cannot be started this way: the drives are out while the board is on,
+  so Xpeccy+ offers to switch the board off first. A `.trd` on the card starts from the
+  esxDOS browser.
 - The window title names the card while esxDOS reads it, by its image file or folder, as it
   names a disk while its drive runs.
 - esxDOS runs in 48K BASIC. 128 BASIC and +3 BASIC stop working with the board on, as they
@@ -354,9 +390,9 @@ mounted when you switch machines, and are opened again at the next start.
 ```{index} folder as a disk, Open Folder, FAT32, NedoOS
 ```
 
-**Open Folder...** in **Media > SD Card** and in **Media > Drives** lets the machine read a
-folder of your computer as if it were a FAT32 card or disk. There is no image to make: copy
-programs into the folder and open it.
+**Open Folder...** in **Media > SD Card**, in a divMMC's card menus and in **Media > Drives**
+lets the machine read a folder of your computer as if it were a FAT32 card or disk. There is
+no image to make: copy programs into the folder and open it.
 
 - It is **read only**. The machine can read every file but cannot write: nothing it does
   changes your files.

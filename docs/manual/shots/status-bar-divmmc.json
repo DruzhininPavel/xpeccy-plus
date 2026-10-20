@@ -1,0 +1,11 @@
+{
+  "args": ["-m", "pent", "--no-autostart", "{media}/demo.trd", "{media}/demo.tap"],
+  "steps": [
+    ["wait", 3000],
+    ["run", "run-action key.divmmc"],
+    ["wait", 3000]
+  ],
+  "crop": {"widget": "QStatusBar", "pad": 0},
+  "zoom": 1,
+  "frames": []
+}

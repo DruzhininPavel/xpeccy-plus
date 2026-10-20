@@ -88,6 +88,14 @@ Hold the mouse over the tape or a drive to see which file is in it. A click open
 **Tape Player** or the **Disk Manager**; a right-click opens a short menu of the same
 commands - play, rewind, open, eject.
 
+![The status bar with a divMMC on](images/status-bar-divmmc.png)
+
+While a [divMMC](disks.md#divmmc) is on, the {icon}`sdcard` **SD** light is the light of its
+cards - dim with no card in, blue with one, green while one is read, red while one is
+written - and either button on it
+opens a menu with the board's switch and its cards. The drives are out of the machine then:
+their lights are dim and struck through.
+
 ## The picture
 
 ```{index} right-click menu
