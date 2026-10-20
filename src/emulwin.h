@@ -78,7 +78,7 @@ enum {
 // Each READ right after its IDLE.
 enum {SB_TAPE_EMPTY = 0, SB_TAPE_IN, SB_TAPE_RD, SB_TAPE_WR, SB_TAPE_RD_HI, SB_TAPE_WR_HI,
 	SB_DISK_EMPTY, SB_DISK_IN, SB_DISK_RD, SB_DISK_WR, SB_DISK_OUT,
-	SB_CARD_IN, SB_CARD_RD, SB_CARD_WR,
+	SB_CARD_EMPTY, SB_CARD_IN, SB_CARD_RD, SB_CARD_WR,
 	SB_JOY_IDLE, SB_JOY_READ, SB_MOUSE_IDLE, SB_MOUSE_READ, SB_COUNT};
 
 // what the machine's speed is doing, shown in the top right corner

@@ -72,8 +72,8 @@ static QPixmap sb_strike(QPixmap pix) {
 }
 
 // the divMMC's card light, out of the 32 px card picture
-static QPixmap sb_card(QColor col) {
-	return sb_tint(":/images/sdcard.png", col, 1.0).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+static QPixmap sb_card(QColor col, double alpha = 1.0) {
+	return sb_tint(":/images/sdcard.png", col, alpha).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 #define TB_SEPARATOR "|"
@@ -488,8 +488,10 @@ void MainWin::initBars() {
 	sbPix[SB_DISK_RD] = QPixmap(":/images/diskGreen.png");
 	sbPix[SB_DISK_WR] = QPixmap(":/images/diskRed.png");
 	sbPix[SB_DISK_OUT] = sb_strike(sbPix[SB_DISK_EMPTY]);	// out under the divMMC
-	// the divMMC's cards, one light for both: gray idle, green read, red written
-	sbPix[SB_CARD_IN] = sb_card(QColor(200, 200, 200));
+	// the divMMC's cards, one light for both: dim with none in, its own blue with one,
+	// green read, red written
+	sbPix[SB_CARD_EMPTY] = sb_card(QColor(170, 170, 170), 0.45);
+	sbPix[SB_CARD_IN] = QPixmap(":/images/sdcard.png").scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	sbPix[SB_CARD_RD] = sb_card(QColor(60, 200, 60));
 	sbPix[SB_CARD_WR] = sb_card(QColor(220, 60, 50));
 	sbPix[SB_JOY_READ] = QPixmap(":/images/joystick.png");
@@ -811,14 +813,16 @@ void MainWin::lightLook() {
 	}
 	// the divMMC's cards: lit for a look after a block went either way
 	int card = 0;
+	bool any = false;
 	for (int i = 0; i < 2; i++) {
 		SDCard* sdc = comp->div->card[i];
 		if (sdc->reads != cardLook[i][0]) card |= 1;
 		if (sdc->writes != cardLook[i][1]) card |= 2;
 		cardLook[i][0] = sdc->reads;
 		cardLook[i][1] = sdc->writes;
+		if (sdc->image) any = true;
 	}
-	cardLight = (card & 2) ? SB_CARD_WR : (card & 1) ? SB_CARD_RD : SB_CARD_IN;
+	cardLight = (card & 2) ? SB_CARD_WR : (card & 1) ? SB_CARD_RD : any ? SB_CARD_IN : SB_CARD_EMPTY;
 }
 
 // a few times a second: QLabel leaves the text alone when it has not changed
