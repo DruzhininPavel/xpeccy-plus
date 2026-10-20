@@ -297,7 +297,8 @@ too, it can be a toolbar button - a click switches, its arrow lists the cards - 
 hotkey (**divMMC On/Off**). While the board is on, **divMMC** is a menu: the same item,
 ticked, to switch it off, then **Card 1** and **Card 2**. It works as the **divMMC** row of
 **Options** does: the machine is powered off and on, and the setting is the machine's, kept
-for the next start. The board's RAM, its jumper and its EEPROM stay as they were.
+for the next start. Since what is in the machine's memory is lost, a window asks first.
+The board's RAM, its jumper and its EEPROM stay as they were.
 
 While the board is on, the floppy drives and the hard disk are out of the machine: the
 board takes the TR-DOS entry, so on a real machine the drives would sit there unused. Their

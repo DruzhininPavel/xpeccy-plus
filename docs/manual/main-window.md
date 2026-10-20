@@ -93,7 +93,8 @@ commands - play, rewind, open, eject.
 While a [divMMC](disks.md#divmmc) is on, the {icon}`sdcard` **SD** light is the light of its
 cards - dim with no card in, blue with one, green while one is read, red while one is
 written - and either button on it
-opens a menu with the board's switch and its cards. The drives are out of the machine then:
+opens a menu of its cards. The board itself is switched off from the **Media** menu. The
+drives are out of the machine then:
 their lights are dim and struck through.
 
 ## The picture
