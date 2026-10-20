@@ -162,13 +162,19 @@ or a click here.
 Right-click beside the keys for a menu:
 
 - **Zoom x1**, **Zoom x1.5**, **Zoom x2**, **Zoom x3** - the size of the window. You can
-  also drag its edge; the picture keeps its shape.
+  also drag its edge; the picture keeps its shape and is drawn sharp at any size.
+- **Skin** - **Black** or **White** keyboard.
 - **Dock under the emulator** - the keyboard loses its frame and sits under the main window,
   as wide as the main window, and moves with it. In fullscreen, or when there is no room
   below, it lies over the bottom of the picture.
 - **Release all keys** - releases every key.
 
 Keys typed while the window is in front go to the machine. Esc closes the window.
+
+For layout authors: a file `zx-black.json` or `zx-white.json` in the `vkbd` folder of the
+settings folder (see [Where the settings are](getting-started.md#where-the-settings-are)) is
+drawn instead of the built-in skin of
+that name, and drawn again each time the file is saved.
 
 ## Joysticks
 
