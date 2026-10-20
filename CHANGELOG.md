@@ -72,6 +72,10 @@ before that point is upstream's history and is not repeated here.
 
 ### Changed
 
+- **The virtual keyboard** is drawn anew for the size of its window, sharp at every zoom
+  and screen scaling, and has a black and a white skin (**Skin** in its right-click menu).
+  *(drawn by Volutar)*
+
 - **Reset with a divMMC on** clears the board's MAPRAM setting, as the ZX Spectrum Next's
   board does, so a program that crashes into setting it (BREAK held during a load from the
   card, for one) no longer leaves a machine that only Hard Reset brings back: a reset gives
@@ -102,6 +106,9 @@ before that point is upstream's history and is not repeated here.
   scaled down. *(thanks to Volutar)*
 
 ### Fixed
+
+- **The docked virtual keyboard** takes the new width as soon as the emulator window changes
+  size, not on the next move of the window.
 
 - **Running a tape with a divMMC on** works on the 128K and the Pentagon too: esxDOS leaves
   every machine in 48K BASIC, so those are the keys it gets, after a Hard Reset so that a
