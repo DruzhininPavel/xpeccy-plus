@@ -194,10 +194,11 @@ void fdBE(CPU* cpu) {RDSHIFT(cpu->regIY); cpu->tmpb = z80_mrd(cpu, cpu->regWZ); 
 
 // cb	fdcb prefix	4 3rd
 void fdCB(CPU* cpu) {
-	cpu->opTab = fdcbTab;
+	opCode* tab = cpu->op->tab;		// the core's fdcb table
+	cpu->opTab = tab;
 	cpu->tmp = z80_mrd(cpu, cpu->regPC++);
 	cpu->com = z80_mrd(cpu, cpu->regPC++);		// not M1. in the same time as iy+e calculating?
-	cpu->op = &fdcbTab[cpu->com];
+	cpu->op = &tab[cpu->com];
 	cpu->op->exec(cpu);
 }
 

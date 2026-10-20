@@ -117,8 +117,22 @@ typedef struct {
 
 enum {
 	CPU_NONE = 0,		// dummy
-	CPU_Z80
+	CPU_Z80,
+	CPU_Z80N		// the ZX Spectrum Next's: the Z80 with the Next's opcodes and its own undocumented flags
 };
+
+// A Z80-family core's opcode tables: the prefixes go from one to the next
+// through opCode.tab, so a core with tables of its own (the Z80N) shares the
+// exec loop with the plain Z80
+typedef struct {
+	opCode* np;
+	opCode* cb;
+	opCode* ed;
+	opCode* dd;
+	opCode* fd;
+	opCode* ddcb;
+	opCode* fdcb;
+} opTabSet;
 
 #define flgHALT	flags[62]		// cpu halted, undo on interrput
 #define flgNOINT flags[60]		// Z80: don't handle INT after EI
@@ -129,6 +143,7 @@ enum {
 #define flgCONT	flags[54]		// the machine contends the bus: report the start of each cycle
 #define flgINTOK flags[53]		// Z80: the last exec took an INT; compExec clears it (the RZX recorder asks)
 #define flgNMIOK flags[52]		// Z80: ...and an NMI, the same way
+#define flgMSTART flags[51]		// Z80: the next internal tick starts an M-cycle (the Next's DMA may take the bus)
 
 #define regCallCnt regs[63].ih
 
@@ -175,6 +190,12 @@ struct CPU {
 	reg16(com, hcom, lcom);
 	opCode* opTab;
 	opCode* op;
+	const opTabSet* tabs;		// the core's tables (Z80 family), set by its init/reset
+	// Z80N: a NEXTREG instruction's register write (a side-band request, no I/O cycle)
+	void (*xnextreg)(void*, int, int);
+	// Z80: a maskable interrupt is taken, its acknowledge cycle about to run (PC is the
+	// return address); NULL for a machine that has nothing to do there
+	void (*xinta)(void*);
 	// common registers block
 	xreg32 regs[64];
 	// TODO: common flags (unnamed, must be defined same way as registers). replace cpuFlags with it

@@ -39,7 +39,9 @@ cpuCore dumCore = {CPU_NONE, "none", nil_reg_tab, 8, NULL, nil_reset, nil_exec, 
 extern xRegDsc z80RegTab[];
 
 cpuCore cpuTab[] = {
-	{CPU_Z80, "Z80", z80RegTab, 16, NULL, z80_reset, z80_exec, z80_asm, z80_mnem},
+	{CPU_Z80, "Z80", z80RegTab, 16, z80_init, z80_reset, z80_exec, z80_asm, z80_mnem},
+	// the same exec loop on the Z80N's tables, so fast mode sees a z80_exec core
+	{CPU_Z80N, "Z80N", z80RegTab, 16, z80n_init, z80n_reset, z80_exec, z80n_asm, z80_mnem},
 	{CPU_NONE, "none", nil_reg_tab, 8, NULL, nil_reset, nil_exec, nil_asm, nil_mnem}
 };
 
@@ -204,6 +206,16 @@ xMnem cpuDisasm(CPU* cpu, int adr, char* buf, cbdmr mrd, void* data) {
 						*buf++ = halfByte[tmp >> 4];
 						*buf++ = halfByte[tmp & 0x0f];
 						break;
+					case '6':		// word = (adr,adr+1), high byte first (Z80N push nn)
+						dth = mrd(adr++,data);
+						dtl = mrd(adr++,data);
+						mn.len += 2;
+						*buf++ = '#';
+						*buf++ = halfByte[dth >> 4];
+						*buf++ = halfByte[dth & 0x0f];
+						*buf++ = halfByte[dtl >> 4];
+						*buf++ = halfByte[dtl & 0x0f];
+						break;
 					case '7':		// = #adr
 						*buf++ = '#';
 						*buf++ = halfByte[(adr >> 12) & 0x0f];
@@ -319,6 +331,10 @@ int cpuAsm(CPU* cpu, const char* com, char* buf, unsigned short adr) {
 				case '2':
 					*ptr++ = num & 0xff;
 					*ptr++ = (num >> 8) & 0xff;
+					break;
+				case '6':
+					*ptr++ = (num >> 8) & 0xff;
+					*ptr++ = num & 0xff;
 					break;
 				case '3':
 					if (!sign) {
