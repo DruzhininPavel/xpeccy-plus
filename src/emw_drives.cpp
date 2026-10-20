@@ -183,9 +183,14 @@ void MainWin::fillDivMenu() {
 	sw->setEnabled(fits);
 	if (!on) return;
 	divMenu->addSeparator();
+	addDivCards(divMenu);
+}
+
+// the board's two slots, a submenu each
+void MainWin::addDivCards(QMenu* menu) {
 	for (int i = 0; i < 2; i++) {
-		SDCard* sdc = comp->div->card[i];
-		QMenu* m = divMenu->addMenu(QIcon(":/images/sdcard.png"),
+		SDCard* sdc = conf.zx->div->card[i];
+		QMenu* m = menu->addMenu(QIcon(":/images/sdcard.png"),
 			QString("Card %0: %1").arg(i + 1).arg(sdc->image ? drive_media(sdc->image, true) : QString("(no card)")));
 		fillCardMenu(m, i);
 	}
@@ -194,14 +199,30 @@ void MainWin::fillDivMenu() {
 // The board in or out, as the divMMC row of Options puts it: with the power off,
 // so the machine comes up as after a Hard Reset, and into the machine's own file.
 // Its RAM and jumper stay as they were; the drives and the hard disk go out with
-// it on and come back with their disks (comp_board_storage).
-void MainWin::divToggle() {
+// it on and come back with their disks (comp_board_storage). The restart is
+// asked about first, unless the caller has asked already.
+void MainWin::divToggle(bool ask) {
 	Computer* comp = conf.zx;
 	if (!hw_takes_divmmc(comp->hw)) {
 		setMessage(" no divMMC on this machine ");
 		return;
 	}
 	bool on = !comp->div->model;
+	if (ask) {
+		QString text = "Performs a Hard Reset. Memory contents are lost.";
+		if (on && ((comp->dif->cfg != DIF_NONE) || (comp->ide->cfg != IDE_NONE)))
+			text += "\nFloppy drives and hard disk are disabled while divMMC is on.";
+		QMessageBox box(QMessageBox::Question, on ? "Switch divMMC on" : "Switch divMMC off",
+			text, QMessageBox::NoButton, this);
+		QPushButton* go = box.addButton(on ? "Switch On" : "Switch Off", QMessageBox::AcceptRole);
+		box.addButton(QMessageBox::Cancel);
+		box.setDefaultButton(go);
+		pause(true, PR_EXTRA);
+		box.exec();
+		pause(false, PR_EXTRA);
+		syncActions();		// a click on the button ticked it already
+		if (box.clickedButton() != go) return;
+	}
 	emu_lock();
 	div_set_model(comp->div, on ? DIV_MMC : DIV_NONE, comp->div->pages);
 	comp_board_storage(comp);

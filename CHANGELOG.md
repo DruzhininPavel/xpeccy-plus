@@ -67,11 +67,11 @@ before that point is upstream's history and is not repeated here.
   a card's menu makes a card of the release the EEPROM holds, ready to fill with programs.
   *(thanks to Miguel Guerreiro / Papaya Dezign for the permission to bundle esxDOS)*
 
-- **divMMC on and off in one click**: Media > divMMC, the right-click menu, a toolbar button
-  or a hotkey of your choice. It is a Hard Reset, and the machine keeps the setting. While the
-  board is on, the floppy drives and the hard disk are out of the machine and come back with
-  their disks when it goes; the status bar shows them struck through and has a light for the
-  board's cards. *(thanks to Volutar)*
+- **divMMC on and off without Options**: Media > divMMC, the right-click menu, a toolbar button
+  or a hotkey of your choice. It is a Hard Reset, so it asks first, and the machine keeps the
+  setting. While the board is on, the floppy drives and the hard disk are out of the machine
+  and come back with their disks when it goes; the status bar shows them struck through and
+  has a light for the board's cards. *(thanks to Volutar)*
 
 - **View > Border** sets the border size at once, with the machine running or paused.
   *(thanks to Volutar)*

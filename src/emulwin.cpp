@@ -808,17 +808,18 @@ bool MainWin::eventFilter(QObject* obj, QEvent* ev) {
 		setFocus();
 		return true;
 	}
-	// the divMMC's light: either button, its cards and the switch; a click is not
-	// the switch itself, which would cost a Hard Reset by a slip
+	// the divMMC's light: either button, its cards. The status bar changes what is
+	// in the machine, not what the machine is, so the board's switch is not here.
 	if (obj == sbCardBox) {
 		bool left = (ev->type() == QEvent::MouseButtonPress) && (static_cast<QMouseEvent*>(ev)->button() == Qt::LeftButton);
 		if (!left && (ev->type() != QEvent::ContextMenu))
 			return QObject::eventFilter(obj, ev);
-		fillDivMenu();
+		QMenu menu(this);
+		addDivCards(&menu);
 		// the left button's over the light, as from a bar at the bottom; the right one at the pointer
-		QPoint pos = left ? sbCardBox->mapToGlobal(QPoint(0, 0)) - QPoint(0, divMenu->sizeHint().height())
+		QPoint pos = left ? sbCardBox->mapToGlobal(QPoint(0, 0)) - QPoint(0, menu.sizeHint().height())
 			: static_cast<QContextMenuEvent*>(ev)->globalPos();
-		divMenu->exec(pos);
+		menu.exec(pos);
 		setFocus();
 		return true;
 	}
@@ -1694,13 +1695,14 @@ bool MainWin::drivesBack() {
 	DiskIF* dif = conf.zx->dif;
 	if (!dif->out || (dif->cfg == DIF_NONE)) return true;
 	QMessageBox box(QMessageBox::Question, "Floppy drives are off",
-		"The floppy drives are off while the divMMC is on.", QMessageBox::NoButton, this);
+		"The floppy drives are off while the divMMC is on.\n"
+		"Switching it off performs a Hard Reset.", QMessageBox::NoButton, this);
 	QPushButton* off = box.addButton("Switch divMMC Off", QMessageBox::AcceptRole);
 	box.addButton(QMessageBox::Cancel);
 	box.setDefaultButton(off);
 	box.exec();
 	if (box.clickedButton() != off) return false;
-	divToggle();
+	divToggle(false);
 	return true;
 }
 
