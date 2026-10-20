@@ -33,7 +33,7 @@ A command that has a key shows it in the menu. The keys are set on the **Hotkeys
 
 ## Toolbar
 
-```{index} toolbar, toolbar; customizing, Restore Default Buttons, Icon Size
+```{index} toolbar, toolbar; customizing, Restore Default Buttons, Icon Size, Lock Toolbar
 ```
 
 By default the toolbar has {icon}`fileopen` **Open**, {icon}`save_all` **Save**,
@@ -52,9 +52,10 @@ Right-click the toolbar to change it:
 - **Add Separator Here**, **Add Space Here** - a line or a gap between groups.
 - **Icon Size** - 16 x 16 or 24 x 24.
 - **Restore Default Buttons** - back to the set above.
+- **Lock Toolbar** - on by default, so a slip of the mouse moves no button.
 - **Hide Toolbar** - **View > Toolbar** brings it back.
 
-Drag a button to move it.
+To move a button, untick **Lock Toolbar** and drag the button.
 
 ```{index} Mute, volume
 ```
