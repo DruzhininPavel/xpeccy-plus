@@ -144,7 +144,8 @@ typedef struct {
 		void resetMachine(int);
 		void resetTo(int);
 		void hardReset();
-		void divToggle();		// the divMMC in or out, with the power off
+		void divToggle(bool ask = true);	// the divMMC in or out, with the power off
+		void addDivCards(QMenu*);
 		bool drivesBack();		// asks to switch the divMMC off when it has the drives out
 		void esxCheck();		// says when card 1 and the EEPROM are different esxDOS releases
 		QString esxSeen;		// the power cycle and card it looked at last
