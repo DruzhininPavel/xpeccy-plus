@@ -4,58 +4,73 @@
 #include "xcore/xcore.h"
 #include "xgui/xgui.h"
 
+#include <QActionGroup>
 #include <QApplication>
+#include <QFile>
+#include <QGuiApplication>
 #include <QIcon>
 #include <QPainter>
 #include <QMenu>
+#include <QScreen>
 #include <QTimer>
+#include <QWindow>
 
 #if defined(_WIN32)
 #include <windows.h>
+#ifndef SPI_GETFONTSMOOTHINGORIENTATION
+#define SPI_GETFONTSMOOTHINGORIENTATION 0x2012
+#endif
+#ifndef FE_FONTSMOOTHINGORIENTATIONRGB
+#define FE_FONTSMOOTHINGORIENTATIONRGB 1
+#endif
 #endif
 
-typedef struct {
-	int x;
-	int y;
-	int dx;
-	int dy;
-} xRect;
+// the skins there are, as named in the config and in res/vkbd/zx-<name>.json
+static const struct {
+	const char* name;
+	const char* title;
+} vkSkins[] = {{"black", "Black"}, {"white", "White"}};
 
-typedef struct {
-	unsigned char ch;
-	xRect rect;
-	xRect rect2;
-} xVKeyMap;
+// Up to this size subpixel text is worth it; above it the triads are too small
+// against the letters to see, and only fringe the colours
+#define VK_LCD_MAX	1.5
 
-static const xVKeyMap vkZxMap[] = {
-	{'1',{2,10,46,60},{0,0,0,0}},{'2',{2 + 49,10,46,60},{0,0,0,0}},{'3',{2 + 49*2,10,46,60},{0,0,0,0}},{'4',{2 + 49*3,10,46,60},{0,0,0,0}},{'5',{2 + 49*4,10,46,60},{0,0,0,0}},
-	{'6',{2 + 49*5,10,46,60},{0,0,0,0}},{'7',{2 + 49*6,10,46,60},{0,0,0,0}},{'8',{2 + 49*7,10,46,60},{0,0,0,0}},{'9',{2 + 49*8,10,46,60},{0,0,0,0}},{'0',{2 + 49*9,10,46,60},{0,0,0,0}},
-	{'q',{26,70,46,60},{0,0,0,0}},{'w',{26 + 49,70,46,60},{0,0,0,0}},{'e',{26 + 49*2,70,46,60},{0,0,0,0}},{'r',{26 + 49*3,70,46,60},{0,0,0,0}},{'t',{26 + 49*4,70,46,60},{0,0,0,0}},
-	{'y',{26 + 49*5,70,46,60},{0,0,0,0}},{'u',{26 + 49*6,70,46,60},{0,0,0,0}},{'i',{26 + 49*7,70,46,60},{0,0,0,0}},{'o',{26 + 49*8,70,46,60},{0,0,0,0}},{'p',{26 + 49*9,70,46,60},{0,0,0,0}},
-	{'a',{38,130,46,60},{0,0,0,0}},{'s',{38 + 49,130,46,60},{0,0,0,0}},{'d',{38 + 49*2,130,46,60},{0,0,0,0}},{'f',{38 + 49*3,130,46,60},{0,0,0,0}},{'g',{38 + 49*4,130,46,60},{0,0,0,0}},
-	{'h',{38 + 49*5,130,46,60},{0,0,0,0}},{'j',{38 + 49*6,130,46,60},{0,0,0,0}},{'k',{38 + 49*7,130,46,60},{0,0,0,0}},{'l',{38 + 49*8,130,46,60},{0,0,0,0}},{'E',{38 + 49*9,130,46,60},{0,0,0,0}},
-	{'C',{2,190,46+12,60},{0,0,0,0}},{'z',{14 + 49,190,46,60},{0,0,0,0}},{'x',{14 + 49*2,190,46,60},{0,0,0,0}},{'c',{14 + 49*3,190,46,60},{0,0,0,0}},{'v',{14 + 49*4,190,46,60},{0,0,0,0}},
-	{'b',{14 + 49*5,190,46,60},{0,0,0,0}},{'n',{14 + 49*6,190,46,60},{0,0,0,0}},{'m',{14 + 49*7,190,46,60},{0,0,0,0}},{'S',{14 + 49*8,190,46,60},{0,0,0,0}},{' ',{14 + 49*9,190,46+24,60},{0,0,0,0}},
-	{0,{0,0,0,0},{0,0,0,0}}
-};
+// Subpixel text needs a screen with its subpixels in RGB stripes, and only
+// Windows says what the screen has: ClearType on, RGB order. A screen turned on
+// its side has its stripes running the other way.
+static bool hostLcd(QWidget* w) {
+#if defined(_WIN32)
+	BOOL on = FALSE;
+	UINT type = 0;
+	UINT order = 0;
+	if (!SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &on, 0) || !on) return false;
+	if (!SystemParametersInfo(SPI_GETFONTSMOOTHINGTYPE, 0, &type, 0) || (type != FE_FONTSMOOTHINGCLEARTYPE)) return false;
+	if (!SystemParametersInfo(SPI_GETFONTSMOOTHINGORIENTATION, 0, &order, 0) || (order != FE_FONTSMOOTHINGORIENTATIONRGB)) return false;
+	// QWidget::screen() is Qt 5.14 and later
+	QScreen* scr = w->windowHandle() ? w->windowHandle()->screen() : QGuiApplication::primaryScreen();
+	return !scr || (scr->geometry().width() >= scr->geometry().height());
+#else
+	(void)w;
+	return false;
+#endif
+}
 
 keyWindow::keyWindow(QWidget* p):QDialog(p) {
 	kb = NULL;
 	dock = 0;
+	picScale = 0;
 	memset(&xent, 0, sizeof(xent));
 	xent.key = ENDKEY;
-	pxm = QPixmap(":/images/keymap_volutar.png");
-	// The picture is drawn to sit on a ground of its own: the keys are opaque and
-	// only a thin rim around each one is clear, so what shows through it is the
-	// pressed colour. Take that ground from the picture's own corner - under a
-	// light theme the window colour would outline every key all the time.
-	ground = pxm.toImage().pixelColor(0, 0);
-	if (ground.alpha() < 255)
-		ground = QColor(Qt::black);
+	drawTimer.setSingleShot(true);
+	drawTimer.setInterval(60);
+	connect(&drawTimer, SIGNAL(timeout()), this, SLOT(redraw()));
+	connect(&watcher, SIGNAL(fileChanged(QString)), this, SLOT(loadSkin()));
+	connect(&watcher, SIGNAL(directoryChanged(QString)), this, SLOT(loadSkin()));
+	loadSkin();
 	setModal(false);
 	setWindowModality(Qt::NonModal);
 	setSizeGripEnabled(true);
-	setMinimumSize(pxm.width() / 2, pxm.height() / 2);
+	setMinimumSize(qRound(cnv.width() / 2), qRound(cnv.height() / 2));
 	setZoom(storedZoom());
 	setWindowIcon(QIcon(":/images/vkeys.png"));
 	setWindowTitle("Virtual Keyboard - ZX Spectrum");
@@ -63,38 +78,102 @@ keyWindow::keyWindow(QWidget* p):QDialog(p) {
 		setDock(true);
 }
 
-// window pixels per picture pixel. The picture keeps its shape, so a window of
+// The skin from the config. A file of the same name in the config folder's vkbd/
+// is taken instead of the built-in one, and taken again whenever it is saved, so
+// a layout can be tuned while the window shows it.
+void keyWindow::loadSkin() {
+	QString name = QString::fromStdString(conf.keywin.skin);
+	bool known = false;
+	for (const auto& sk : vkSkins)
+		known |= (name == sk.name);
+	if (!known) name = vkSkins[0].name;
+	QString dir = QString::fromLocal8Bit(conf.path.confDir.c_str()) + "/vkbd";
+	QString own = dir + "/zx-" + name + ".json";
+	if (!watcher.files().isEmpty()) watcher.removePaths(watcher.files());
+	if (!watcher.directories().isEmpty()) watcher.removePaths(watcher.directories());
+	if (QFile::exists(dir)) watcher.addPath(dir);	// a file put there later
+	VkSkin sk;
+	QString err;
+	QFile file(own);
+	if (file.exists()) {
+		watcher.addPath(own);
+		if (!file.open(QIODevice::ReadOnly) || !sk.load(file.readAll(), &err)) {
+			qWarning("vkbd: %s: %s", own.toLocal8Bit().constData(), err.toLocal8Bit().constData());
+			sk = VkSkin();
+		}
+	}
+	if (sk.isNull()) {
+		QFile res(":/res/vkbd/zx-" + name + ".json");
+		if (res.open(QIODevice::ReadOnly) && !sk.load(res.readAll(), &err))
+			qWarning("vkbd: built-in %s: %s", name.toLocal8Bit().constData(), err.toLocal8Bit().constData());
+	}
+	if (sk.isNull() && skin.isNull()) return;	// nothing to show at all
+	if (!sk.isNull()) skin = sk;
+	cnv = skin.canvas();
+	picScale = 0;
+	pic = QPixmap();
+	update();
+}
+
+// window pixels per canvas unit. The picture keeps its shape, so a window of
 // another aspect gets an empty strip beside it
 double keyWindow::scale() {
-	double sx = width() / (double)pxm.width();
-	double sy = height() / (double)pxm.height();
+	if (cnv.isEmpty()) return 0;
+	double sx = width() / cnv.width();
+	double sy = height() / cnv.height();
 	return (sx < sy) ? sx : sy;
+}
+
+// the same in the screen's own pixels: what the picture is drawn at
+double keyWindow::devScale() {
+	double dpr = devicePixelRatioF();
+	return qRound(cnv.width() * scale() * dpr) / cnv.width();
+}
+
+// The picture's top left corner, on a whole device pixel, so it is put down 1:1
+QPointF keyWindow::picOrigin() {
+	double dpr = devicePixelRatioF();
+	double sd = devScale();
+	int x = (int)((width() * dpr - qRound(cnv.width() * sd)) / 2);
+	int y = (int)((height() * dpr - qRound(cnv.height() * sd)) / 2);
+	return QPointF(x / dpr, y / dpr);
 }
 
 // the picture's shape, from one side to the other
 int keyWindow::higFor(int wid) {
-	return qRound(wid * pxm.height() / (double)pxm.width());
+	return qRound(wid * cnv.height() / cnv.width());
 }
 
 int keyWindow::widFor(int hig) {
-	return qRound(hig * pxm.width() / (double)pxm.height());
+	return qRound(hig * cnv.width() / cnv.height());
 }
 
 // the size the window was left at last time
 double keyWindow::storedZoom() {
-	return (conf.keywin.width > 0) ? (conf.keywin.width / (double)pxm.width()) : 1.0;
+	return (conf.keywin.width > 0) ? (conf.keywin.width / cnv.width()) : 1.0;
 }
 
-QPoint keyWindow::imgPos(QPoint pos) {
-	double sc = scale();
-	if (sc <= 0.0) return QPoint(-1, -1);
-	int x = (pos.x() - (width() - pxm.width() * sc) / 2) / sc;
-	int y = (pos.y() - (height() - pxm.height() * sc) / 2) / sc;
-	return QPoint(x, y);
+// a point of the window in canvas units
+QPointF keyWindow::imgPos(QPoint pos) {
+	double sc = devScale() / devicePixelRatioF();
+	if (sc <= 0.0) return QPointF(-1, -1);
+	QPointF org = picOrigin();
+	return QPointF((pos.x() - org.x()) / sc, (pos.y() - org.y()) / sc);
 }
 
 void keyWindow::setZoom(double z) {
-	resize(qRound(pxm.width() * z), qRound(pxm.height() * z));
+	resize(qRound(cnv.width() * z), qRound(cnv.height() * z));
+}
+
+// the picture at the size the window has now
+void keyWindow::redraw() {
+	double sd = devScale();
+	if (sd <= 0) return;
+	QImage img = skin.render(sd, (sd <= VK_LCD_MAX + 1e-6) && hostLcd(this));
+	pic = QPixmap::fromImage(img);
+	pic.setDevicePixelRatio(devicePixelRatioF());
+	picScale = sd;
+	update();
 }
 
 // docked: no frame of its own, the emulator window drags it around
@@ -153,6 +232,15 @@ void keyWindow::showMenu(QPoint gpos) {
 		act->setDisabled(dock);
 	}
 	mnu.addSeparator();
+	QMenu* skm = mnu.addMenu("Skin");
+	QActionGroup* skg = new QActionGroup(skm);
+	for (const auto& sk : vkSkins) {
+		act = skm->addAction(sk.title);
+		act->setCheckable(true);
+		act->setChecked(conf.keywin.skin == sk.name);
+		act->setData(QString(sk.name));
+		act->setActionGroup(skg);
+	}
 	QAction* dck = mnu.addAction("Dock under the emulator");
 	dck->setCheckable(true);
 	dck->setChecked(dock);
@@ -166,6 +254,9 @@ void keyWindow::showMenu(QPoint gpos) {
 		if (kb) x_kbd_release_all(kb);
 		xent.zxKey[0] = 0;
 		update();
+	} else if (act->actionGroup() == skg) {
+		conf.keywin.skin = act->data().toString().toStdString();
+		loadSkin();
 	} else if (act->data().isValid()) {
 		setZoom(act->data().toDouble());
 	}
@@ -181,6 +272,10 @@ void keyWindow::resizeEvent(QResizeEvent* ev) {
 	QDialog::resizeEvent(ev);
 	if (!dock)
 		conf.keywin.width = ev->size().width();
+	// drawing the picture anew on every step of a drag would hold the drag up:
+	// the old one is stretched meanwhile, the exact one comes when it settles
+	if (!pic.isNull())
+		drawTimer.start();
 }
 
 void keyWindow::showEvent(QShowEvent* ev) {
@@ -188,7 +283,7 @@ void keyWindow::showEvent(QShowEvent* ev) {
 #if defined(__APPLE__)
 	// the shape has to be told to the window itself, and a new one is made
 	// whenever the flags change, so it is set every time it comes up
-	vkbd_set_aspect(this, pxm.width(), pxm.height());
+	vkbd_set_aspect(this, qRound(cnv.width()), qRound(cnv.height()));
 #endif
 	snap();
 	// see moveEvent: a window manager can also map the window in its own place
@@ -276,64 +371,74 @@ void keyWindow::rall(Keyboard* k) {
 // TODO: untide from ZX-keyboard (row,pos calculation)
 void keyWindow::paintEvent(QPaintEvent*) {
 	QPainter pnt;
-	const xRect* prct;
 	unsigned char val;
 	int row, pos;
-	double sc = scale();
+	double sd = devScale();
+	// the first picture is drawn at once; a stale one is stretched until the
+	// timer draws the exact one (a drag, or the window moved to another screen)
+	if (pic.isNull() && (sd > 0))
+		redraw();
+	else if ((sd != picScale) && !drawTimer.isActive())
+		drawTimer.start();
+	const QVector<VkKey>& keys = skin.keys();
 	pnt.begin(this);
-	pnt.fillRect(rect(), ground);
-	// everything below is in the picture's own pixels, the painter sizes it
-	pnt.translate((width() - pxm.width() * sc) / 2, (height() - pxm.height() * sc) / 2);
-	pnt.scale(sc, sc);
-	pnt.setRenderHint(QPainter::SmoothPixmapTransform, true);
-	if (kb) {
+	// The picture is drawn to sit on a ground of its own: the keys are opaque and
+	// only a thin contour around each one is clear, so what shows through it is
+	// the pressed colour - under a light theme the window colour would outline
+	// every key all the time
+	pnt.fillRect(rect(), skin.ground());
+	// The picture drawn for this size is in device pixels, and so are its
+	// contours - the lit keys are put there in the same pixels. A stale one being
+	// stretched takes them in canvas units.
+	bool exact = (sd == picScale);
+	double dpr = devicePixelRatioF();
+	pnt.translate(picOrigin());
+	if (exact) {
+		pnt.scale(1 / dpr, 1 / dpr);
+	} else {
+		pnt.scale(sd / dpr, sd / dpr);
+	}
+	if (kb && (keys.size() >= 40)) {
 		for(int i = 0; i < 8; i++) {
 			pos = (i & 4) ? 0 : 9;
 			row = (i & 4) ? (i & 3) : (~i & 3);
 			val = ~kb->map[i] & 0x1f;
 			while(val) {
 				if (val & 1) {
-					prct = &vkZxMap[row * 10 + pos].rect;
-					pnt.fillRect(prct->x, prct->y, prct->dx, prct->dy, qRgb(0,200,255));
+					int n = row * 10 + pos;
+					if (exact) {
+						pnt.fillRect(skin.fillAt(n, sd), QColor(0, 200, 255));
+					} else {
+						pnt.fillRect(keys[n].fill, QColor(0, 200, 255));
+					}
 				}
 				val >>= 1;
 				pos += (i & 4) ? 1 : -1;
 			}
 		}
 	}
-	pnt.drawPixmap(0, 0, pxm);
+	if (exact) {
+		pnt.resetTransform();		// 1:1, the picture is in device pixels already
+		pnt.drawPixmap(picOrigin(), pic);
+	} else if (!pic.isNull()) {
+		pnt.setRenderHint(QPainter::SmoothPixmapTransform, true);
+		pnt.drawPixmap(QRectF(0, 0, cnv.width(), cnv.height()), pic, QRectF(pic.rect()));
+	}
 	pnt.end();
 }
 
 void keyWindow::mousePressEvent(QMouseEvent* ev) {
 	if (!kb) return;
 
-	const xRect* prct = NULL;
-	const xRect* rctp;
-	int idx = 0;
-	QPoint ipos = imgPos(QPoint(ev->xEventX, ev->xEventY));
-	int x = ipos.x();
-	int y = ipos.y();
-	int dx,dy;
-	while(vkZxMap[idx].ch != 0) {
-		rctp = &vkZxMap[idx].rect;
-		dx = x - rctp->x;
-		dy = y - rctp->y;
-		if ((dx >= 0) && (dy >= 0) && (dx < rctp->dx) && (dy < rctp->dy)) {
-			prct = rctp;
-			xent.zxKey[0] = vkZxMap[idx].ch;
-		} else {
-			rctp = &vkZxMap[idx].rect2;
-			dx = x - rctp->x;
-			dy = y - rctp->y;
-			if ((dx >= 0) && (dy >= 0) && (dx < rctp->dx) && (dy < rctp->dy)) {
-				prct = rctp;
-				xent.zxKey[0] = vkZxMap[idx].ch;
-			}
+	bool hit = false;
+	QPointF ipos = imgPos(QPoint(ev->xEventX, ev->xEventY));
+	foreach(const VkKey& key, skin.keys()) {
+		if (key.ch && key.hit.contains(ipos)) {
+			hit = true;
+			xent.zxKey[0] = key.ch;
 		}
-		idx++;
 	}
-	if (prct == NULL) {			// no hit: nothing to release on mouse up either
+	if (!hit) {			// no hit: nothing to release on mouse up either
 		xent.zxKey[0] = 0;
 		// the right button holds a key down, so the menu is on a miss
 		if (ev->button() == Qt::RightButton)

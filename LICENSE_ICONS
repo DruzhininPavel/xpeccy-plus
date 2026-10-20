@@ -27,3 +27,8 @@ NedoPC logo - free to use, https://nedopc.com/
 
 Drawn for Xpeccy+ by Volutar
   fullscreen-16.png, gamepad-16.png, tape-16.png
+  the virtual keyboard: res/vkbd/zx-black.json, res/vkbd/zx-white.json
+
+The virtual keyboard's lettering is res/vkbd/keys-font.ttf, "Xpeccy Keys Sans": Liberation
+Sans Bold 2.1.5 cut down to Latin-1 and renamed (tools/vkbd_font.py), under the SIL Open Font
+License 1.1 - see LICENSE_LIBERATION. It is drawn with FreeType - see LICENSE_FREETYPE.

@@ -211,6 +211,7 @@ void saveConfig() {
 	fprintf(cfile, "winpos = %i,%i\n",conf.xpos,conf.ypos);
 	fprintf(cfile, "keywin.dock = %s\n", YESNO(conf.keywin.dock));
 	fprintf(cfile, "keywin.width = %i\n", conf.keywin.width);
+	fprintf(cfile, "keywin.skin = %s\n", conf.keywin.skin.c_str());
 	fprintf(cfile, "flpinterleave = %i\n", flp_get_interleave());
 	fprintf(cfile, "style = %s\n", conf.style.c_str());
 	// a key, not a section: builds up to 2026.6 read an unknown section as the one before
@@ -795,6 +796,7 @@ void loadConfig() {
 	conf.macStartId.clear();
 	conf.keywin.dock = 0;
 	conf.keywin.width = 0;
+	conf.keywin.skin = "black";
 	conf.iosd.on = 0;
 	conf.iosd.keys = 1;
 	conf.iosd.joy = 1;
@@ -1262,6 +1264,7 @@ void loadConfig() {
 					}
 					if (pnam == "keywin.dock") conf.keywin.dock = arg.b;
 					if (pnam == "keywin.width") conf.keywin.width = arg.i;
+					if (pnam == "keywin.skin") conf.keywin.skin = std::string(arg.s);
 					if (pnam == "addboot") conf.boot = arg.b;
 					if (pnam == "autorun") conf.autorun = autorun_of(pval);
 					if (pnam == "exit.confirm") conf.confexit = arg.b;

@@ -18,6 +18,7 @@ font.png binary
 
 # third-party license, kept exactly as it ships with the font
 LICENSE_DEJAVU -text
+LICENSE_LIBERATION -text
 # FreeType as released, byte for byte (thirdparty/freetype/README.xpeccy.md)
 thirdparty/freetype/** -text
 
