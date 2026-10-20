@@ -231,6 +231,8 @@
         <file>images/filter.png</file>
         <file>images/font.png</file>
         <file>images/target.png</file>
-        <file>images/keymap_volutar.png</file>
+        <file>res/vkbd/zx-black.json</file>
+        <file>res/vkbd/zx-white.json</file>
+        <file>res/vkbd/keys-font.ttf</file>
     </qresource>
 </RCC>

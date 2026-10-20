@@ -18,6 +18,9 @@ font.png binary
 
 # third-party license, kept exactly as it ships with the font
 LICENSE_DEJAVU -text
+LICENSE_LIBERATION -text
+# FreeType as released, byte for byte (thirdparty/freetype/README.xpeccy.md)
+thirdparty/freetype/** -text
 
 # Linux files built from a Windows checkout, where autocrlf would otherwise give
 # them CRLF: bash chokes on the \r, and linuxdeploy reads "Icon=xpeccy-plus\r"

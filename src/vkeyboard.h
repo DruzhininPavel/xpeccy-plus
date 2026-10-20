@@ -11,7 +11,11 @@
 #include <QShowEvent>
 #include <QMoveEvent>
 
+#include <QTimer>
+#include <QFileSystemWatcher>
+
 #include "libxpeccy/input/input.h"
+#include "xgui/vkbdskin.h"
 
 #if defined(__APPLE__)
 // vkeyboard_mac.mm: let the window keep its shape by itself
@@ -30,17 +34,26 @@ class keyWindow : public QDialog {
 		void upd(Keyboard*);
 		void rall(Keyboard*);
 		void snap();		// sit under the emulator window
+	private slots:
+		void redraw();		// the picture at the window's size, now
+		void loadSkin();
 	private:
 		Keyboard* kb;
 		keyEntry xent;
-		QPixmap pxm;
-		QColor ground;		// what the picture is drawn to sit on
+		VkSkin skin;
+		QSizeF cnv;		// the layout's canvas, in its own units
+		QPixmap pic;		// the picture as last drawn
+		double picScale;	// device pixels per canvas unit it was drawn at
+		QTimer drawTimer;	// a size being dragged is drawn when it settles
+		QFileSystemWatcher watcher;	// a layout of the user's own, edited
 		unsigned dock:1;	// glued under the emulator window
 		double scale();
+		double devScale();
+		QPointF picOrigin();
 		double storedZoom();
 		int higFor(int);
 		int widFor(int);
-		QPoint imgPos(QPoint);
+		QPointF imgPos(QPoint);
 		void setZoom(double);
 		void setDock(bool);
 		void showMenu(QPoint);

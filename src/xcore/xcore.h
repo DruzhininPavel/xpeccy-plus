@@ -917,6 +917,7 @@ struct xConfig {
 	struct {
 		unsigned dock:1;	// glued under the emulator window
 		int width;		// window width; the height follows the picture
+		std::string skin;	// res/vkbd/zx-<skin>.json: black, white
 	} keywin;
 	struct {
 		int on;			// the player's input over the picture

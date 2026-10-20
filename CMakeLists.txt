@@ -401,6 +401,32 @@ set(LIBRARIES ${LIBRARIES} ${ZLIB_LIBRARY})
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, zlib1g (>=1.2)")
 set(CPACK_RPM_PACKAGE_DEPENDS "${CPACK_RPM_PACKAGE_DEPENDS}, zlib >= 1.2")
 
+# FreeType: the on-screen keyboard's lettering. Our own copy on every platform, so
+# the keyboard comes out the same everywhere (thirdparty/freetype/README.xpeccy.md)
+
+set(FT_DIR ${CMAKE_SOURCE_DIR}/thirdparty/freetype)
+add_library(xpfreetype STATIC
+	${FT_DIR}/src/base/ftsystem.c
+	${FT_DIR}/src/base/ftinit.c
+	${FT_DIR}/src/base/ftdebug.c
+	${FT_DIR}/src/base/ftbase.c
+	${FT_DIR}/src/base/ftbitmap.c
+	${FT_DIR}/src/sfnt/sfnt.c
+	${FT_DIR}/src/truetype/truetype.c
+	${FT_DIR}/src/autofit/autofit.c
+	${FT_DIR}/src/smooth/smooth.c
+)
+# xpeccy/ first: its config headers stand in for the ones under include/
+target_include_directories(xpfreetype PUBLIC ${FT_DIR}/xpeccy ${FT_DIR}/include)
+target_compile_definitions(xpfreetype PRIVATE FT2_BUILD_LIBRARY DARWIN_NO_CARBON)
+# with PostScript names off, ttpost.h still declares its two static functions
+target_compile_options(xpfreetype PRIVATE -Wno-unused-function)
+set(LIBRARIES ${LIBRARIES} xpfreetype)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	# Qt links the system's FreeType: ours must not be exported over it
+	set(LIBRARIES ${LIBRARIES} "-Wl,--exclude-libs,ALL")
+endif()
+
 # other
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -453,6 +479,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		${CMAKE_SOURCE_DIR}/LICENSE_rus
 		${CMAKE_SOURCE_DIR}/LICENSE_DEJAVU
 		${CMAKE_SOURCE_DIR}/LICENSE_YMFM
+		${CMAKE_SOURCE_DIR}/LICENSE_FREETYPE
+		${CMAKE_SOURCE_DIR}/LICENSE_LIBERATION
 		${CMAKE_SOURCE_DIR}/LICENSE_ICONS
 		${CMAKE_SOURCE_DIR}/README.md
 		${CMAKE_SOURCE_DIR}/CHANGELOG.md
@@ -505,6 +533,8 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 		${CMAKE_SOURCE_DIR}/LICENSE_rus
 		${CMAKE_SOURCE_DIR}/LICENSE_DEJAVU
 		${CMAKE_SOURCE_DIR}/LICENSE_YMFM
+		${CMAKE_SOURCE_DIR}/LICENSE_FREETYPE
+		${CMAKE_SOURCE_DIR}/LICENSE_LIBERATION
 		${CMAKE_SOURCE_DIR}/LICENSE_ICONS
 		${CMAKE_SOURCE_DIR}/README.md
 		${CMAKE_SOURCE_DIR}/CHANGELOG.md
@@ -525,6 +555,8 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		${CMAKE_SOURCE_DIR}/LICENSE_rus
 		${CMAKE_SOURCE_DIR}/LICENSE_DEJAVU
 		${CMAKE_SOURCE_DIR}/LICENSE_YMFM
+		${CMAKE_SOURCE_DIR}/LICENSE_FREETYPE
+		${CMAKE_SOURCE_DIR}/LICENSE_LIBERATION
 		${CMAKE_SOURCE_DIR}/LICENSE_ICONS
 		DESTINATION .
 	)

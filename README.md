@@ -199,6 +199,15 @@ The FM half of the YM2203, the chip a TurboSound FM board carries, is emulated b
 [ymfm](https://github.com/aaronsgiles/ymfm) by Aaron Giles, under the BSD 3-Clause license -
 see [`LICENSE_YMFM`](LICENSE_YMFM). Its sources are in `src/libxpeccy/sound/ymfm/`.
 
+The virtual keyboard's lettering is drawn with FreeType 2.14.3, under the FreeType License -
+see [`LICENSE_FREETYPE`](LICENSE_FREETYPE). Its sources are in `thirdparty/freetype/`.
+Portions of this software are copyright (C) 2026 The FreeType Project
+(https://freetype.org). All rights reserved.
+
+The lettering itself is "Xpeccy Keys Sans", cut down from Liberation Sans Bold 2.1.5 and
+built into the binary. It is under the SIL Open Font License 1.1 - see
+[`LICENSE_LIBERATION`](LICENSE_LIBERATION).
+
 FFmpeg is not shipped with Xpeccy+. Video recording runs it as a separate program, and the
 copy the emulator fetches on Windows is a GPL build from
 [BtbN/FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds), kept under its own terms.

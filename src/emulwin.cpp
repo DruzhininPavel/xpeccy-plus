@@ -786,6 +786,11 @@ bool MainWin::eventFilter(QObject* obj, QEvent* ev) {
 				}
 				emit s_keywin_snap();
 				break;
+			case QEvent::Resize:
+				// a new zoom or border: the frame takes its size after updateWindow()
+				// has asked for it, so a docked keyboard is told again from here
+				emit s_keywin_snap();
+				break;
 			case QEvent::Close:
 				closeEvent(static_cast<QCloseEvent*>(ev));	// accepts or ignores it
 				return true;
