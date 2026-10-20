@@ -33,6 +33,9 @@ class VkSkin {
 		// its contour as the picture has it, which on a small one is wider than the
 		// contour scaled down
 		QRect fillAt(int n, double scale) const;
+		// the Spectrum key at that place of the keyboard's matrix: half-row 0-3
+		// from the top, key 0-9 from the left; 0 for none
+		static unsigned char zxKeyAt(int row, int pos);
 		// the picture at that many pixels per canvas unit, premultiplied ARGB;
 		// lcd: subpixel (RGB) text on its opaque parts
 		QImage render(double scale, bool lcd) const;

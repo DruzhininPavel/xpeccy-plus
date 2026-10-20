@@ -253,8 +253,13 @@ bool VkSkin::load(const QByteArray& json, QString* err) {
 // Which Spectrum key each one is comes from its place: the rows are the
 // keyboard's, left to right. A key whose first label says otherwise is a sign the
 // layout was rearranged, and it is said so.
+static const char* zxRows[] = {"1234567890", "qwertyuiop", "asdfghjklE", "CzxcvbnmS "};
+
+unsigned char VkSkin::zxKeyAt(int row, int pos) {
+	return ((row >= 0) && (row < 4) && (pos >= 0) && (pos < 10)) ? zxRows[row][pos] : 0;
+}
+
 void VkSkin::makeKeys() {
-	static const char* zxRows[] = {"1234567890", "qwertyuiop", "asdfghjklE", "CzxcvbnmS "};
 	static const char* zxNames[] = {"ENTER", "CAPS", "SYMBOL", "BREAK"};
 	static const char zxNamed[] = "ECS ";
 	keytab.clear();
@@ -267,7 +272,7 @@ void VkSkin::makeKeys() {
 			VkKey vk;
 			vk.row = r;
 			vk.col = i;
-			vk.ch = ((r < 4) && (i < 10)) ? zxRows[r][i] : 0;
+			vk.ch = zxKeyAt(r, i);
 			vk.box = QRectF(key.x, row.y, key.w, row.h);
 			vk.fill = vk.box.adjusted(-outLR - 0.5, -outTB - 0.5, outLR + 0.5, outTB + 0.5);
 			// as wide as the key, from row to row: the gaps between the keys and the

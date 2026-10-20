@@ -398,14 +398,16 @@ void keyWindow::paintEvent(QPaintEvent*) {
 	} else {
 		pnt.scale(sd / dpr, sd / dpr);
 	}
-	if (kb && (keys.size() >= 40)) {
+	if (kb) {
 		for(int i = 0; i < 8; i++) {
 			pos = (i & 4) ? 0 : 9;
 			row = (i & 4) ? (i & 3) : (~i & 3);
 			val = ~kb->map[i] & 0x1f;
 			while(val) {
-				if (val & 1) {
-					int n = row * 10 + pos;
+				// the key is found by what it is, not by its place in the layout's list
+				unsigned char ch = (val & 1) ? VkSkin::zxKeyAt(row, pos) : 0;
+				for (int n = 0; ch && (n < keys.size()); n++) {
+					if (keys[n].ch != ch) continue;
 					if (exact) {
 						pnt.fillRect(skin.fillAt(n, sd), QColor(0, 200, 255));
 					} else {
