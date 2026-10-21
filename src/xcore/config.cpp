@@ -1288,9 +1288,8 @@ void loadConfig() {
 					}
 					if (pnam == "keywin.skin") {
 						conf.keywin.skin = std::string(arg.s);
-						// a config from before keywin.plain: its pick is the plain one
-						if ((conf.keywin.skin == "black") || (conf.keywin.skin == "white"))
-							conf.keywin.plain = conf.keywin.skin;
+						// a config from before keywin.plain: its pick gives the tone
+						conf.keywin.plain = (conf.keywin.skin.find("white") != std::string::npos) ? "white" : "black";
 					}
 					if (pnam == "keywin.plain") conf.keywin.plain = std::string(arg.s);
 					if (pnam == "keywin.bymachine") conf.keywin.bymac = arg.b;

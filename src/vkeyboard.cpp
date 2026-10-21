@@ -29,7 +29,12 @@
 static const struct {
 	const char* name;
 	const char* title;
-} vkSkins[] = {{"black", "Black"}, {"white", "White"}, {"128", "128"}};
+} vkSkins[] = {{"black", "48K (Classic)"}, {"white", "48K (White)"}, {"128", "128K (Classic)"}, {"128-white", "128K (White)"}};
+
+// a skin's tone: white, or black for the classic ones
+static std::string skinTone(const std::string& name) {
+	return (name.find("white") != std::string::npos) ? "white" : "black";
+}
 
 // where a layout of the user's own is looked for
 static QString ownSkinDir() {
@@ -42,12 +47,14 @@ static bool skinThere(const QString& name) {
 }
 
 // The skin to show: the one picked by hand, or by the machine - the 128's on a
-// Sinclair 128K, +2, +2A or +3, the plain one picked last on the rest
+// Sinclair 128K, +2, +2A or +3, the 48K's on the rest, in the tone picked last
 static QString wantedSkin() {
 	if (!conf.keywin.bymac) return QString::fromStdString(conf.keywin.skin);
 	int hw = (conf.zx && conf.zx->hw) ? conf.zx->hw->id : HW_NULL;
 	bool is128 = (hw == HW_ZX128) || (hw == HW_PLUS2A) || (hw == HW_PLUS3);
-	return is128 ? QString("128") : QString::fromStdString(conf.keywin.plain);
+	bool white = (conf.keywin.plain == "white");
+	if (is128) return white ? QString("128-white") : QString("128");
+	return white ? QString("white") : QString("black");
 }
 
 // whether every one of the keys is down
@@ -345,8 +352,7 @@ void keyWindow::showMenu(QPoint gpos) {
 	} else if (act->actionGroup() == skg) {
 		// a skin picked by hand stays, whatever the machine
 		conf.keywin.skin = act->data().toString().toStdString();
-		if ((conf.keywin.skin == "black") || (conf.keywin.skin == "white"))
-			conf.keywin.plain = conf.keywin.skin;
+		conf.keywin.plain = skinTone(conf.keywin.skin);
 		conf.keywin.bymac = 0;
 		loadSkin();
 	} else if (act->data().isValid()) {

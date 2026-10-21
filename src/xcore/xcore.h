@@ -921,8 +921,8 @@ struct xConfig {
 		unsigned haspos:1;	// xpos, ypos hold where it was left undocked
 		int xpos, ypos;
 		int width;		// window width; the height follows the picture
-		std::string skin;	// res/vkbd/zx-<skin>.json: black, white, 128 - the one picked by hand
-		std::string plain;	// black or white, whichever was picked last: by machine, a 48K's
+		std::string skin;	// res/vkbd/zx-<skin>.json: black, white, 128, 128-white - picked by hand
+		std::string plain;	// the tone picked last, black or white: By machine shows that one
 	} keywin;
 	struct {
 		int on;			// the player's input over the picture
