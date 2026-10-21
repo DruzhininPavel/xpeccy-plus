@@ -195,6 +195,7 @@ typedef struct {
 		void s_keywin_shide();
 		void s_keywin_close();
 		void s_keywin_snap();		// the window moved or changed size
+		void s_keywin_menu(QMenu*);	// its settings wanted in that menu
 		void s_emulwin_close();
 	public slots:
 		void d_frame();
@@ -364,6 +365,7 @@ typedef struct {
 		QHash<int, QAction*> cutById;
 		QAction* cutAct(const QString& name, int id, const QString& icon = QString());
 		QAction* cutAction(QMenu*, const QString& name, int id, const QString& icon = QString());
+		QMenu* keywinMenu(QMenu*);
 		QMenu* sizeMenu;
 		QMenu* brdMenu;
 		void fillBorderMenu();

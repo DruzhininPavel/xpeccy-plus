@@ -304,60 +304,64 @@ void keyWindow::placeUndocked() {
 
 void keyWindow::showMenu(QPoint gpos) {
 	QMenu mnu(this);
+	fillMenu(&mnu);
+	mnu.exec(gpos);
+}
+
+// The keyboard's settings, added to a menu: its own on a right click between the
+// rows, and the Virtual Keyboard submenus of the main window, filled as they open
+void keyWindow::fillMenu(QMenu* mnu) {
 	QAction* act;
+	// the main window's Show item: ticked while the keyboard is up
+	foreach(QAction* a, mnu->actions()) {
+		if (a->data().toString() == "keywin.show") a->setChecked(isVisible());
+	}
 	const double zval[] = {1.0, 1.5, 2.0, 3.0};
 	for (int i = 0; i < 4; i++) {
-		act = mnu.addAction(QString("Zoom x%1").arg(zval[i]));
-		act->setData(zval[i]);
+		double z = zval[i];
+		act = mnu->addAction(QString("Zoom x%1").arg(z), this, [this, z]() {setZoom(z);});
 		act->setDisabled(dock);
 	}
-	mnu.addSeparator();
-	QMenu* skm = mnu.addMenu("Skin");
-	QAction* bym = skm->addAction("By machine");
-	bym->setCheckable(true);
-	bym->setChecked(conf.keywin.bymac);
+	mnu->addSeparator();
+	QMenu* skm = mnu->addMenu("Skin");
+	act = skm->addAction("By machine", this, [this]() {
+		conf.keywin.bymac = !conf.keywin.bymac;
+		loadSkin();
+	});
+	act->setCheckable(true);
+	act->setChecked(conf.keywin.bymac);
 	skm->addSeparator();
 	QActionGroup* skg = new QActionGroup(skm);
 	for (const auto& sk : vkSkins) {
 		if (!skinThere(sk.name)) continue;
-		act = skm->addAction(sk.title);
+		std::string name = sk.name;
+		act = skm->addAction(sk.title, this, [this, name]() {
+			// a skin picked by hand stays, whatever the machine
+			conf.keywin.skin = name;
+			conf.keywin.plain = skinTone(name);
+			conf.keywin.bymac = 0;
+			loadSkin();
+		});
 		act->setCheckable(true);
 		act->setChecked(skinShown == sk.name);
-		act->setData(QString(sk.name));
 		act->setActionGroup(skg);
 	}
-	QAction* dck = mnu.addAction("Dock under the emulator");
-	dck->setCheckable(true);
-	dck->setChecked(dock);
-	QAction* hov = mnu.addAction("Highlight the key under the pointer");
-	hov->setCheckable(true);
-	hov->setChecked(conf.keywin.hover);
-	mnu.addSeparator();
-	QAction* rall = mnu.addAction("Release all keys");
-	act = mnu.exec(gpos);
-	if (act == NULL) return;
-	if (act == dck) {
-		setDock(!dock);
-	} else if (act == hov) {
+	act = mnu->addAction("Dock under the emulator", this, [this]() {setDock(!dock);});
+	act->setCheckable(true);
+	act->setChecked(dock);
+	act = mnu->addAction("Highlight the key under the pointer", this, [this]() {
 		conf.keywin.hover = !conf.keywin.hover;
 		hover = -1;		// the next move finds it again
 		update();
-	} else if (act == rall) {
+	});
+	act->setCheckable(true);
+	act->setChecked(conf.keywin.hover);
+	mnu->addSeparator();
+	mnu->addAction("Release all keys", this, [this]() {
 		if (kb) x_kbd_release_all(kb);
 		latched.fill(false);
 		update();
-	} else if (act == bym) {
-		conf.keywin.bymac = !conf.keywin.bymac;
-		loadSkin();
-	} else if (act->actionGroup() == skg) {
-		// a skin picked by hand stays, whatever the machine
-		conf.keywin.skin = act->data().toString().toStdString();
-		conf.keywin.plain = skinTone(conf.keywin.skin);
-		conf.keywin.bymac = 0;
-		loadSkin();
-	} else if (act->data().isValid()) {
-		setZoom(act->data().toDouble());
-	}
+	});
 }
 
 // The window is free to take any shape here; the picture keeps its own and sits

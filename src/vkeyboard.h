@@ -15,6 +15,8 @@
 #include <QFileSystemWatcher>
 
 #include "libxpeccy/input/input.h"
+
+class QMenu;
 #include "xgui/vkbdskin.h"
 
 #if defined(__APPLE__)
@@ -34,6 +36,7 @@ class keyWindow : public QDialog {
 		void upd(Keyboard*);
 		void rall(Keyboard*);
 		void snap();		// sit under the emulator window
+		void fillMenu(QMenu*);	// its settings, added to that menu
 	private slots:
 		void redraw();		// the picture at the window's size, now
 		void loadSkin();

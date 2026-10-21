@@ -2034,7 +2034,7 @@ void MainWin::initUserMenu() {
 		setMessage(on ? " grab keyboard, " XREL_KEYS " lets go " : " release keyboard ");
 	});
 	cutActs.append({pckAct, pckAct->text(), XCUT_GRABKBD});	// its key, shown; the action is its own
-	cutAction(userMenu, "Virtual Keyboard", XCUT_KEYBOARD, "vkeys");
+	keywinMenu(userMenu);
 	padMenu = userMenu->addMenu(QIcon(":/images/gamepad.png"), "Gamepads");
 	// on its own opening only: the presets are files, read for the check marks
 	connect(padMenu, &QMenu::aboutToShow, this, &MainWin::fillPadMenu);
@@ -2095,6 +2095,33 @@ QAction* MainWin::cutAction(QMenu* menu, const QString& name, int id, const QStr
 	QAction* act = cutAct(name, id, icon);
 	menu->addAction(act);
 	return act;
+}
+
+// The Virtual Keyboard submenu: Show, with its hotkey, then the keyboard's own
+// settings - the same as on a right click between its rows, where the 128K's
+// keys leave little room for one
+QMenu* MainWin::keywinMenu(QMenu* parent) {
+	QMenu* mnu = parent->addMenu(QIcon(":/images/vkeys.png"), "Virtual Keyboard");
+	// an action of its own, not the hotkey's shared one: this one is ticked while the
+	// keyboard is up, the toolbar's is a plain button
+	QAction* show = new QAction("Show", this);
+	show->setCheckable(true);
+	show->setData(QString("keywin.show"));
+	connect(show, &QAction::triggered, this, [this]() {
+		xkey_press(XCUT_KEYBOARD, true);
+		xcut_release(XCUT_KEYBOARD);
+	});
+	cutActs.append({show, show->text(), XCUT_KEYBOARD});	// its key, shown
+	connect(mnu, &QMenu::aboutToShow, this, [this, mnu, show]() {
+		// the keyboard's items are made anew, ticking what is now
+		mnu->clear();
+		foreach(QMenu* sub, mnu->findChildren<QMenu*>(QString(), Qt::FindDirectChildrenOnly))
+			sub->deleteLater();
+		mnu->addAction(show);
+		mnu->addSeparator();
+		emit s_keywin_menu(mnu);
+	});
+	return mnu;
 }
 
 // once, when an old config had its keys moved to the presets
@@ -2232,7 +2259,7 @@ void MainWin::initMenuBar() {
 	});
 	sbShowAct->setCheckable(true);
 	viewMenu->addSeparator();
-	cutAction(viewMenu, "Virtual Keyboard", XCUT_KEYBOARD, "vkeys");
+	keywinMenu(viewMenu);
 	initIosdMenu(viewMenu->addMenu("Input Overlay"));
 
 	QMenu* help = new xMenu("Help", this);
