@@ -161,6 +161,7 @@ void keyWindow::loadSkin() {
 	latched = QVector<bool>(skin.keys().size(), false);
 	picScale = 0;
 	pic = QPixmap();
+	litPic = QPixmap();
 	// a layout of another shape: the window takes it, as wide as it was
 	if (!old.isEmpty() && (old != cnv)) {
 		setMinimumSize(qRound(cnv.width() / 2), qRound(cnv.height() / 2));
@@ -230,9 +231,12 @@ void keyWindow::setZoom(double z) {
 void keyWindow::redraw() {
 	double sd = devScale();
 	if (sd <= 0) return;
-	QImage img = skin.render(sd, (sd <= VK_LCD_MAX + 1e-6) && hostLcd(this));
+	bool lcd = (sd <= VK_LCD_MAX + 1e-6) && hostLcd(this);
+	QImage img = skin.render(sd, lcd);
 	pic = QPixmap::fromImage(img);
 	pic.setDevicePixelRatio(devicePixelRatioF());
+	litPic = QPixmap::fromImage(skin.render(sd, lcd, true));
+	litPic.setDevicePixelRatio(devicePixelRatioF());
 	picScale = sd;
 	update();
 }
@@ -528,12 +532,11 @@ void keyWindow::paintEvent(QPaintEvent*) {
 	const QVector<VkKey>& keys = skin.keys();
 	pnt.begin(this);
 	// The picture is drawn to sit on a ground of its own: the keys are opaque and
-	// only a thin contour around each one is clear, so what shows through it is
-	// the pressed colour - under a light theme the window colour would outline
-	// every key all the time
+	// only a thin contour around each one is clear - under a light theme the
+	// window colour would outline every key
 	pnt.fillRect(rect(), skin.ground());
 	// The picture drawn for this size is in device pixels, and so are its
-	// contours - the lit keys are put there in the same pixels. A stale one being
+	// contours - the lit keys are clipped in the same pixels. A stale one being
 	// stretched takes them in canvas units.
 	bool exact = (sd == picScale);
 	double dpr = devicePixelRatioF();
@@ -556,24 +559,31 @@ void keyWindow::paintEvent(QPaintEvent*) {
 			lit[n] = (n == held) || ((n < latched.size()) && latched[n] && allIn(keys[n].zx, down));
 		}
 	}
-	// the key under the pointer: the ground a little brighter, only on a key that
-	// is up - a pressed one keeps its own colour
-	for (int n = 0; n < keys.size(); n++) {
-		bool hov = conf.keywin.hover && (n == hover) && !lit[n];
-		if (!lit[n] && !hov) continue;
-		QColor col = lit[n] ? skin.litColor() : skin.hoverColor();
+	// the key under the pointer, only one that is up: the same light, dimmer
+	QVector<bool> hov(keys.size(), false);
+	if (conf.keywin.hover && (hover >= 0) && (hover < keys.size()) && !lit[hover])
+		hov[hover] = true;
+	// a lit key is the lit picture over the plain one, on that key alone - the
+	// two differ only on the caps
+	QTransform onPic = pnt.transform();
+	auto drawPic = [&](const QPixmap& pm) {
 		if (exact) {
-			pnt.fillPath(skin.fillAt(n, sd), col);
-		} else {
-			pnt.fillPath(keys[n].fill, col);
+			pnt.resetTransform();		// 1:1, the picture is in device pixels already
+			pnt.drawPixmap(picOrigin(), pm);
+		} else if (!pm.isNull()) {
+			pnt.setRenderHint(QPainter::SmoothPixmapTransform, true);
+			pnt.drawPixmap(QRectF(0, 0, cnv.width(), cnv.height()), pm, QRectF(pm.rect()));
 		}
-	}
-	if (exact) {
-		pnt.resetTransform();		// 1:1, the picture is in device pixels already
-		pnt.drawPixmap(picOrigin(), pic);
-	} else if (!pic.isNull()) {
-		pnt.setRenderHint(QPainter::SmoothPixmapTransform, true);
-		pnt.drawPixmap(QRectF(0, 0, cnv.width(), cnv.height()), pic, QRectF(pic.rect()));
+	};
+	drawPic(pic);
+	for (int n = 0; n < keys.size(); n++) {
+		if (!lit[n] && !hov[n]) continue;
+		pnt.save();
+		pnt.setTransform(onPic);
+		pnt.setClipPath(exact ? skin.fillAt(n, sd) : keys[n].fill);
+		pnt.setOpacity(lit[n] ? 1.0 : 0.45);
+		drawPic(litPic);
+		pnt.restore();
 	}
 	pnt.end();
 }

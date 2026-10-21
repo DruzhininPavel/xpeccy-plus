@@ -22,8 +22,9 @@ All of them may be left out; a layout without them is drawn as before.
 In `canvas`:
 - `"ground"` - what shows through the contours around the keys (the picture's `bg` if not
   given).
-- `"lit"` - the color a pressed key's contour shows (`#00c8ff`), `"hover"` - the one under
-  the pointer (the ground, 30% of the way to white).
+- `"lit"` - the color of a pressed key's light (`#00c8ff`): the rim of its dome, or a ring
+  inside its cap's edge on a key with no dome, `"light_w"` units wide (1.8). The key under
+  the pointer gets the same light, dimmer.
 
 In a label: `"eb"` - that many canvas pixels thicker, a number or `[x, y]`.
 
