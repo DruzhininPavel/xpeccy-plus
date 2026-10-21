@@ -4,10 +4,10 @@
 // turns into an SVG, and it is drawn by the same rules: a key is anchored at its
 // centre, a label sits at anchor + (dx, dy), "sn" snaps either to the pixel grid,
 // "tl" squeezes a text run to a width and "th" stretches it to a height, the
-// contour around a key is cut out of the ground. What the SVG cannot say is
-// done here at the size the window has: key edges and text baselines land on
-// whole pixels of that size, and the text is hinted (FreeType, vertical-only)
-// and may be subpixel.
+// contour around a key is cut out of the ground so a pressed key's light can
+// show through it. What the SVG cannot say is done here at the size the window
+// has: key edges and text baselines land on whole pixels of that size, and the
+// text is hinted (FreeType, vertical-only) and may be subpixel.
 
 #include "vkbdskin.h"
 
@@ -259,10 +259,11 @@ bool VkSkin::load(const QByteArray& json, QString* err) {
 	// otherwise - a light keyboard needs a darker one, or its contours vanish
 	grnd = canv.contains("ground") ? QColor(canv.value("ground").toString()) : bg;
 	if (!grnd.isValid()) grnd = bg;
-	// a pressed key lit in cyan, on the key itself: the 128's gaps are too narrow
-	// to carry a light round it
+	// a pressed key lit in cyan: through the contour round it, or on the key
+	// itself by its pad's rim - the 128's gaps are too narrow to carry a light
 	litCol = QColor(canv.value("lit").toString());
 	if (!litCol.isValid()) litCol = QColor(0, 200, 255);
+	padLit = (canv.value("light").toString() == "pad");
 	litW = num(canv, "light_w", 1.8);
 	anchor = cfg.value("anchor").toString();
 	sn = cfg.value("sn").toString("off");
@@ -836,11 +837,13 @@ QPainterPath VkSkin::domePart(const Key& key, const DomePart& d, double s) const
 	return path;
 }
 
-// The contour's outer edge as render() cuts it, and a pixel more all round: the
-// lit picture differs from the plain one only on the caps, so the clip's edge
-// never shows. A box key takes a rectangle; an outline key takes its own shape,
-// as a rectangle round it would reach the keys in its corners. Where keys stand
-// so close that the excess reaches into a neighbour's contour, that is cut away.
+// The contour's outer edge as render() cuts it, and a pixel more all round: a
+// contour light's excess is under the opaque ground, so no rounding can leave a
+// dark seam; a pad light's picture differs from the plain one only on the caps,
+// so the clip's edge never shows. A box key takes a rectangle; an outline key
+// takes its own shape, as a rectangle round it would reach the keys in its
+// corners. Where keys stand so close that the excess reaches into a neighbour's
+// contour, that is cut away.
 QPainterPath VkSkin::fillAt(int n, double s) const {
 	QPainterPath path;
 	if ((n < 0) || (n >= keytab.size())) return path;

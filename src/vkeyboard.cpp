@@ -235,8 +235,11 @@ void keyWindow::redraw() {
 	QImage img = skin.render(sd, lcd);
 	pic = QPixmap::fromImage(img);
 	pic.setDevicePixelRatio(devicePixelRatioF());
-	litPic = QPixmap::fromImage(skin.render(sd, lcd, true));
-	litPic.setDevicePixelRatio(devicePixelRatioF());
+	litPic = QPixmap();
+	if (skin.padLight()) {
+		litPic = QPixmap::fromImage(skin.render(sd, lcd, true));
+		litPic.setDevicePixelRatio(devicePixelRatioF());
+	}
 	picScale = sd;
 	update();
 }
@@ -532,11 +535,12 @@ void keyWindow::paintEvent(QPaintEvent*) {
 	const QVector<VkKey>& keys = skin.keys();
 	pnt.begin(this);
 	// The picture is drawn to sit on a ground of its own: the keys are opaque and
-	// only a thin contour around each one is clear - under a light theme the
-	// window colour would outline every key
+	// only a thin contour around each one is clear, so what shows through it is
+	// a contour light - under a light theme the window colour would outline
+	// every key all the time
 	pnt.fillRect(rect(), skin.ground());
 	// The picture drawn for this size is in device pixels, and so are its
-	// contours - the lit keys are clipped in the same pixels. A stale one being
+	// contours - the lit keys are put there in the same pixels. A stale one being
 	// stretched takes them in canvas units.
 	bool exact = (sd == picScale);
 	double dpr = devicePixelRatioF();
@@ -563,8 +567,16 @@ void keyWindow::paintEvent(QPaintEvent*) {
 	QVector<bool> hov(keys.size(), false);
 	if (conf.keywin.hover && (hover >= 0) && (hover < keys.size()) && !lit[hover])
 		hov[hover] = true;
-	// a lit key is the lit picture over the plain one, on that key alone - the
-	// two differ only on the caps
+	// a contour light is the lit color under the picture; a pad light is the lit
+	// picture over the plain one, on that key alone - the two differ only on the
+	// caps
+	bool pad = !litPic.isNull();
+	for (int n = 0; (n < keys.size()) && !pad; n++) {
+		if (!lit[n] && !hov[n]) continue;
+		pnt.setOpacity(lit[n] ? 1.0 : 0.45);
+		pnt.fillPath(exact ? skin.fillAt(n, sd) : keys[n].fill, skin.litColor());
+	}
+	pnt.setOpacity(1.0);
 	QTransform onPic = pnt.transform();
 	auto drawPic = [&](const QPixmap& pm) {
 		if (exact) {
@@ -576,7 +588,7 @@ void keyWindow::paintEvent(QPaintEvent*) {
 		}
 	};
 	drawPic(pic);
-	for (int n = 0; n < keys.size(); n++) {
+	for (int n = 0; (n < keys.size()) && pad; n++) {
 		if (!lit[n] && !hov[n]) continue;
 		pnt.save();
 		pnt.setTransform(onPic);
