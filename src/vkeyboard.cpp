@@ -29,7 +29,34 @@
 static const struct {
 	const char* name;
 	const char* title;
-} vkSkins[] = {{"black", "Black"}, {"white", "White"}};
+} vkSkins[] = {{"black", "Black"}, {"white", "White"}, {"128", "128"}};
+
+// where a layout of the user's own is looked for
+static QString ownSkinDir() {
+	return QString::fromLocal8Bit(conf.path.confDir.c_str()) + "/vkbd";
+}
+
+// whether a skin has a layout to draw: built in, or the user's own
+static bool skinThere(const QString& name) {
+	return QFile::exists(":/res/vkbd/zx-" + name + ".json") || QFile::exists(ownSkinDir() + "/zx-" + name + ".json");
+}
+
+// The skin to show: the one picked by hand, or by the machine - the 128's on a
+// Sinclair 128K, +2, +2A or +3, the plain one picked last on the rest
+static QString wantedSkin() {
+	if (!conf.keywin.bymac) return QString::fromStdString(conf.keywin.skin);
+	int hw = (conf.zx && conf.zx->hw) ? conf.zx->hw->id : HW_NULL;
+	bool is128 = (hw == HW_ZX128) || (hw == HW_PLUS2A) || (hw == HW_PLUS3);
+	return is128 ? QString("128") : QString::fromStdString(conf.keywin.plain);
+}
+
+// whether every one of the keys is down
+static bool allIn(const QByteArray& keys, const QByteArray& down) {
+	for (char c : keys) {
+		if (!down.contains(c)) return false;
+	}
+	return !keys.isEmpty();
+}
 
 // Up to this size subpixel text is worth it; above it the triads are too small
 // against the letters to see, and only fringe the colours
@@ -59,6 +86,7 @@ keyWindow::keyWindow(QWidget* p):QDialog(p) {
 	kb = NULL;
 	dock = 0;
 	hover = -1;
+	held = -1;
 	picScale = 0;
 	setMouseTracking(true);		// for the key under the pointer
 	memset(&xent, 0, sizeof(xent));
@@ -84,12 +112,18 @@ keyWindow::keyWindow(QWidget* p):QDialog(p) {
 // is taken instead of the built-in one, and taken again whenever it is saved, so
 // a layout can be tuned while the window shows it.
 void keyWindow::loadSkin() {
-	QString name = QString::fromStdString(conf.keywin.skin);
+	QString name = wantedSkin();
+	skinWant = name;
 	bool known = false;
 	for (const auto& sk : vkSkins)
 		known |= (name == sk.name);
-	if (!known) name = vkSkins[0].name;
-	QString dir = QString::fromLocal8Bit(conf.path.confDir.c_str()) + "/vkbd";
+	// one that is not there (a 128 with no layout yet): the plain one, or the first
+	if (!known || !skinThere(name)) {
+		name = QString::fromStdString(conf.keywin.plain);
+		if (((name != "black") && (name != "white")) || !skinThere(name)) name = vkSkins[0].name;
+	}
+	skinShown = name;
+	QString dir = ownSkinDir();
 	QString own = dir + "/zx-" + name + ".json";
 	if (!watcher.files().isEmpty()) watcher.removePaths(watcher.files());
 	if (!watcher.directories().isEmpty()) watcher.removePaths(watcher.directories());
@@ -111,10 +145,25 @@ void keyWindow::loadSkin() {
 	}
 	if (sk.isNull() && skin.isNull()) return;	// nothing to show at all
 	if (!sk.isNull()) skin = sk;
+	QSizeF old = cnv;
 	cnv = skin.canvas();
 	hover = -1;
+	held = -1;		// heldZx stays: the button's release lets go of it
+	latched = QVector<bool>(skin.keys().size(), false);
 	picScale = 0;
 	pic = QPixmap();
+	// a layout of another shape: the window takes it, as wide as it was
+	if (!old.isEmpty() && (old != cnv)) {
+		setMinimumSize(qRound(cnv.width() / 2), qRound(cnv.height() / 2));
+#if defined(__APPLE__)
+		if (isVisible()) vkbd_set_aspect(this, qRound(cnv.width()), qRound(cnv.height()));
+#endif
+		if (dock) {
+			snap();
+		} else {
+			setZoom(storedZoom());
+		}
+	}
 	update();
 }
 
@@ -236,11 +285,16 @@ void keyWindow::showMenu(QPoint gpos) {
 	}
 	mnu.addSeparator();
 	QMenu* skm = mnu.addMenu("Skin");
+	QAction* bym = skm->addAction("By machine");
+	bym->setCheckable(true);
+	bym->setChecked(conf.keywin.bymac);
+	skm->addSeparator();
 	QActionGroup* skg = new QActionGroup(skm);
 	for (const auto& sk : vkSkins) {
+		if (!skinThere(sk.name)) continue;
 		act = skm->addAction(sk.title);
 		act->setCheckable(true);
-		act->setChecked(conf.keywin.skin == sk.name);
+		act->setChecked(skinShown == sk.name);
 		act->setData(QString(sk.name));
 		act->setActionGroup(skg);
 	}
@@ -262,10 +316,17 @@ void keyWindow::showMenu(QPoint gpos) {
 		update();
 	} else if (act == rall) {
 		if (kb) x_kbd_release_all(kb);
-		xent.zxKey[0] = 0;
+		latched.fill(false);
 		update();
+	} else if (act == bym) {
+		conf.keywin.bymac = !conf.keywin.bymac;
+		loadSkin();
 	} else if (act->actionGroup() == skg) {
+		// a skin picked by hand stays, whatever the machine
 		conf.keywin.skin = act->data().toString().toStdString();
+		if ((conf.keywin.skin == "black") || (conf.keywin.skin == "white"))
+			conf.keywin.plain = conf.keywin.skin;
+		conf.keywin.bymac = 0;
 		loadSkin();
 	} else if (act->data().isValid()) {
 		setZoom(act->data().toDouble());
@@ -366,8 +427,12 @@ void keyWindow::switcher() {
 		show();
 }
 
+// Comes on a switch of machine as well as on keys: a machine of another kind
+// may want another skin
 void keyWindow::upd(Keyboard* k) {
 	kb = k;
+	if (wantedSkin() != skinWant)
+		loadSkin();
 	if (isVisible())
 		repaint();
 }
@@ -378,11 +443,39 @@ void keyWindow::rall(Keyboard* k) {
 	}
 }
 
-// TODO: untide from ZX-keyboard (row,pos calculation)
+// the Spectrum keys down in the machine's matrix now, as keyEntry::zxKey names them
+QByteArray keyWindow::keysDown() {
+	QByteArray res;
+	if (!kb) return res;
+	for (int i = 0; i < 8; i++) {
+		int pos = (i & 4) ? 0 : 9;
+		int row = (i & 4) ? (i & 3) : (~i & 3);
+		unsigned char val = ~kb->map[i] & 0x1f;
+		while (val) {
+			if (val & 1) res.append((char)VkSkin::zxKeyAt(row, pos));
+			val >>= 1;
+			pos += (i & 4) ? 1 : -1;
+		}
+	}
+	return res;
+}
+
+// a key's string pressed or let go of all at once, as one entry
+void keyWindow::pressKeys(const QByteArray& zx, bool down) {
+	if (!kb || zx.isEmpty()) return;
+	memset(xent.zxKey, 0, sizeof(xent.zxKey));
+	memcpy(xent.zxKey, zx.constData(), std::min((int)zx.size(), KEYSEQ_MAXLEN - 1));
+	emu_lock();		// see x_key()
+	if (down) {
+		kbd_press(kb, &xent);
+	} else {
+		kbd_release(kb, &xent);
+	}
+	emu_unlock();
+}
+
 void keyWindow::paintEvent(QPaintEvent*) {
 	QPainter pnt;
-	unsigned char val;
-	int row, pos;
 	double sd = devScale();
 	// the first picture is drawn at once; a stale one is stretched until the
 	// timer draws the exact one (a drag, or the window moved to another screen)
@@ -408,35 +501,29 @@ void keyWindow::paintEvent(QPaintEvent*) {
 	} else {
 		pnt.scale(sd / dpr, sd / dpr);
 	}
+	// A key that is one Spectrum key is lit by the matrix, wherever the press
+	// came from, and every copy of it (the two CAPS SHIFTs). A combination - EDIT
+	// is CAPS SHIFT and 1 - is lit only while this window holds it down: the
+	// machine cannot tell it from its keys pressed one by one, which light anyway.
+	QByteArray down = keysDown();
 	QVector<bool> lit(keys.size(), false);
-	if (kb) {
-		for(int i = 0; i < 8; i++) {
-			pos = (i & 4) ? 0 : 9;
-			row = (i & 4) ? (i & 3) : (~i & 3);
-			val = ~kb->map[i] & 0x1f;
-			while(val) {
-				// the key is found by what it is, not by its place in the layout's list
-				unsigned char ch = (val & 1) ? VkSkin::zxKeyAt(row, pos) : 0;
-				for (int n = 0; ch && (n < keys.size()); n++) {
-					if (keys[n].ch == ch) lit[n] = true;
-				}
-				val >>= 1;
-				pos += (i & 4) ? 1 : -1;
-			}
+	for (int n = 0; n < keys.size(); n++) {
+		if (keys[n].ch) {
+			lit[n] = down.contains((char)keys[n].ch);
+		} else if (!keys[n].zx.isEmpty()) {
+			lit[n] = (n == held) || ((n < latched.size()) && latched[n] && allIn(keys[n].zx, down));
 		}
 	}
 	// the key under the pointer: the ground a little brighter, only on a key that
 	// is up - a pressed one keeps its own colour
-	QColor gnd = skin.ground();
-	QColor hcol((gnd.red() * 7 + 255 * 3) / 10, (gnd.green() * 7 + 255 * 3) / 10, (gnd.blue() * 7 + 255 * 3) / 10);
 	for (int n = 0; n < keys.size(); n++) {
 		bool hov = conf.keywin.hover && (n == hover) && !lit[n];
 		if (!lit[n] && !hov) continue;
-		QColor col = lit[n] ? QColor(0, 200, 255) : hcol;
+		QColor col = lit[n] ? skin.litColor() : skin.hoverColor();
 		if (exact) {
-			pnt.fillRect(skin.fillAt(n, sd), col);
+			pnt.fillPath(skin.fillAt(n, sd), col);
 		} else {
-			pnt.fillRect(keys[n].fill, col);
+			pnt.fillPath(keys[n].fill, col);
 		}
 	}
 	if (exact) {
@@ -453,7 +540,9 @@ void keyWindow::paintEvent(QPaintEvent*) {
 int keyWindow::keyAt(QPointF ipos) {
 	const QVector<VkKey>& keys = skin.keys();
 	for (int n = 0; n < keys.size(); n++) {
-		if (keys[n].ch && keys[n].hit.contains(ipos))
+		const VkKey& key = keys[n];
+		if (key.zx.isEmpty()) continue;		// lettering, not a key
+		if (key.hitPoly.isEmpty() ? key.hit.contains(ipos) : key.hitPoly.containsPoint(ipos, Qt::OddEvenFill))
 			return n;
 	}
 	return -1;
@@ -481,33 +570,33 @@ void keyWindow::mousePressEvent(QMouseEvent* ev) {
 	if (!kb) return;
 
 	int n = keyAt(imgPos(QPoint(ev->xEventX, ev->xEventY)));
-	bool hit = (n >= 0);
-	if (hit)
-		xent.zxKey[0] = skin.keys()[n].ch;
-	if (!hit) {			// no hit: nothing to release on mouse up either
-		xent.zxKey[0] = 0;
+	if (n < 0) {
 		// the right button holds a key down, so the menu is on a miss
 		if (ev->button() == Qt::RightButton)
 			showMenu(mapToGlobal(QPoint(ev->xEventX, ev->xEventY)));
 		return;
 	}
-	xent.zxKey[1] = 0;
+	QByteArray zx = skin.keys()[n].zx;
 	switch(ev->button()) {
-		case Qt::LeftButton:		// the lock: see x_key()
-			emu_lock();
-			kbd_press(kb, &xent);
-			emu_unlock();
+		case Qt::LeftButton:
+			pressKeys(heldZx, false);	// a press whose release was missed
+			held = n;
+			heldZx = zx;
+			pressKeys(zx, true);
 			update();
 			break;
-		case Qt::RightButton:
-			emu_lock();
-			kbdTrigger(kb, &xent);
-			emu_unlock();
+		case Qt::RightButton: {
+			// down for good, or up again if all its keys are down: a
+			// combination as one key, so a CAPS SHIFT down by itself stays down
+			bool all = allIn(zx, keysDown());
+			pressKeys(zx, !all);
+			if (n < latched.size()) latched[n] = !all && (zx.size() > 1);
 			update();
 			break;
+		}
 		case Qt::MiddleButton:
 			x_kbd_release_all(kb);
-			xent.zxKey[0] = 0;
+			latched.fill(false);
 			update();
 			break;
 		default:
@@ -518,9 +607,9 @@ void keyWindow::mousePressEvent(QMouseEvent* ev) {
 void keyWindow::mouseReleaseEvent(QMouseEvent* ev) {
 	if (!kb) return;
 	if (ev->button() == Qt::LeftButton) {
-		emu_lock();
-		kbd_release(kb, &xent);
-		emu_unlock();
+		pressKeys(heldZx, false);
+		heldZx.clear();
+		held = -1;
 	}
 	update();
 }

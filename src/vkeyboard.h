@@ -41,6 +41,8 @@ class keyWindow : public QDialog {
 		Keyboard* kb;
 		keyEntry xent;
 		VkSkin skin;
+		QString skinWant;	// the skin asked for when it was loaded: by hand or by the machine
+		QString skinShown;	// the one shown: another if that one has no layout
 		QSizeF cnv;		// the layout's canvas, in its own units
 		QPixmap pic;		// the picture as last drawn
 		double picScale;	// device pixels per canvas unit it was drawn at
@@ -48,7 +50,12 @@ class keyWindow : public QDialog {
 		QFileSystemWatcher watcher;	// a layout of the user's own, edited
 		unsigned dock:1;	// glued under the emulator window
 		int hover;		// the key under the pointer, -1 for none
+		int held;		// the key the left button holds down, -1 for none
+		QByteArray heldZx;	// what it pressed, to let go of the same
+		QVector<bool> latched;	// combination keys the right button put down
 		int keyAt(QPointF);
+		QByteArray keysDown();
+		void pressKeys(const QByteArray&, bool);
 		double scale();
 		double devScale();
 		QPointF picOrigin();

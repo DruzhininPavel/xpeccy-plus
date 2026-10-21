@@ -917,8 +917,10 @@ struct xConfig {
 	struct {
 		unsigned dock:1;	// glued under the emulator window
 		unsigned hover:1;	// the key under the pointer is lit dimly
+		unsigned bymac:1;	// the skin follows the machine: the 128's on a 128, plain elsewhere
 		int width;		// window width; the height follows the picture
-		std::string skin;	// res/vkbd/zx-<skin>.json: black, white
+		std::string skin;	// res/vkbd/zx-<skin>.json: black, white, 128 - the one picked by hand
+		std::string plain;	// black or white, whichever was picked last: by machine, a 48K's
 	} keywin;
 	struct {
 		int on;			// the player's input over the picture
