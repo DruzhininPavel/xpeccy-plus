@@ -210,10 +210,20 @@
         <file>images/wav.png</file>
         <file>images/osd-time-fast.png</file>
         <file>images/time-fast.png</file>
+        <file>images/time-fast-16.png</file>
+        <file>images/time-fast-24.png</file>
         <file>images/time-ffwd.png</file>
+        <file>images/time-ffwd-16.png</file>
+        <file>images/time-ffwd-24.png</file>
         <file>images/time-pause.png</file>
+        <file>images/time-pause-16.png</file>
+        <file>images/time-pause-24.png</file>
         <file>images/time-rewind.png</file>
+        <file>images/time-rewind-16.png</file>
+        <file>images/time-rewind-24.png</file>
         <file>images/time-slow.png</file>
+        <file>images/time-slow-16.png</file>
+        <file>images/time-slow-24.png</file>
         <file>images/osd-time-rewind.png</file>
         <file>images/osd-time-pause.png</file>
         <file>images/osd-time-ffwd2.png</file>
