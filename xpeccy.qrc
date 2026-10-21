@@ -233,6 +233,8 @@
         <file>images/target.png</file>
         <file>res/vkbd/zx-black.json</file>
         <file>res/vkbd/zx-white.json</file>
+        <file>res/vkbd/zx-128.json</file>
+        <file>res/vkbd/zx-128-white.json</file>
         <file>res/vkbd/keys-font.ttf</file>
     </qresource>
 </RCC>
