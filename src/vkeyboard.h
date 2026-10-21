@@ -47,6 +47,8 @@ class keyWindow : public QDialog {
 		QTimer drawTimer;	// a size being dragged is drawn when it settles
 		QFileSystemWatcher watcher;	// a layout of the user's own, edited
 		unsigned dock:1;	// glued under the emulator window
+		int hover;		// the key under the pointer, -1 for none
+		int keyAt(QPointF);
 		double scale();
 		double devScale();
 		QPointF picOrigin();
@@ -60,6 +62,8 @@ class keyWindow : public QDialog {
 		void paintEvent(QPaintEvent*);
 		void mousePressEvent(QMouseEvent*);
 		void mouseReleaseEvent(QMouseEvent*);
+		void mouseMoveEvent(QMouseEvent*);
+		void leaveEvent(QEvent*);
 		void keyPressEvent(QKeyEvent*);
 		void keyReleaseEvent(QKeyEvent*);
 		void resizeEvent(QResizeEvent*);

@@ -58,7 +58,9 @@ static bool hostLcd(QWidget* w) {
 keyWindow::keyWindow(QWidget* p):QDialog(p) {
 	kb = NULL;
 	dock = 0;
+	hover = -1;
 	picScale = 0;
+	setMouseTracking(true);		// for the key under the pointer
 	memset(&xent, 0, sizeof(xent));
 	xent.key = ENDKEY;
 	drawTimer.setSingleShot(true);
@@ -110,6 +112,7 @@ void keyWindow::loadSkin() {
 	if (sk.isNull() && skin.isNull()) return;	// nothing to show at all
 	if (!sk.isNull()) skin = sk;
 	cnv = skin.canvas();
+	hover = -1;
 	picScale = 0;
 	pic = QPixmap();
 	update();
@@ -244,12 +247,19 @@ void keyWindow::showMenu(QPoint gpos) {
 	QAction* dck = mnu.addAction("Dock under the emulator");
 	dck->setCheckable(true);
 	dck->setChecked(dock);
+	QAction* hov = mnu.addAction("Highlight the key under the pointer");
+	hov->setCheckable(true);
+	hov->setChecked(conf.keywin.hover);
 	mnu.addSeparator();
 	QAction* rall = mnu.addAction("Release all keys");
 	act = mnu.exec(gpos);
 	if (act == NULL) return;
 	if (act == dck) {
 		setDock(!dock);
+	} else if (act == hov) {
+		conf.keywin.hover = !conf.keywin.hover;
+		hover = -1;		// the next move finds it again
+		update();
 	} else if (act == rall) {
 		if (kb) x_kbd_release_all(kb);
 		xent.zxKey[0] = 0;
@@ -398,6 +408,7 @@ void keyWindow::paintEvent(QPaintEvent*) {
 	} else {
 		pnt.scale(sd / dpr, sd / dpr);
 	}
+	QVector<bool> lit(keys.size(), false);
 	if (kb) {
 		for(int i = 0; i < 8; i++) {
 			pos = (i & 4) ? 0 : 9;
@@ -407,16 +418,25 @@ void keyWindow::paintEvent(QPaintEvent*) {
 				// the key is found by what it is, not by its place in the layout's list
 				unsigned char ch = (val & 1) ? VkSkin::zxKeyAt(row, pos) : 0;
 				for (int n = 0; ch && (n < keys.size()); n++) {
-					if (keys[n].ch != ch) continue;
-					if (exact) {
-						pnt.fillRect(skin.fillAt(n, sd), QColor(0, 200, 255));
-					} else {
-						pnt.fillRect(keys[n].fill, QColor(0, 200, 255));
-					}
+					if (keys[n].ch == ch) lit[n] = true;
 				}
 				val >>= 1;
 				pos += (i & 4) ? 1 : -1;
 			}
+		}
+	}
+	// the key under the pointer: the ground a little brighter, only on a key that
+	// is up - a pressed one keeps its own colour
+	QColor gnd = skin.ground();
+	QColor hcol((gnd.red() * 7 + 255 * 3) / 10, (gnd.green() * 7 + 255 * 3) / 10, (gnd.blue() * 7 + 255 * 3) / 10);
+	for (int n = 0; n < keys.size(); n++) {
+		bool hov = conf.keywin.hover && (n == hover) && !lit[n];
+		if (!lit[n] && !hov) continue;
+		QColor col = lit[n] ? QColor(0, 200, 255) : hcol;
+		if (exact) {
+			pnt.fillRect(skin.fillAt(n, sd), col);
+		} else {
+			pnt.fillRect(keys[n].fill, col);
 		}
 	}
 	if (exact) {
@@ -429,17 +449,41 @@ void keyWindow::paintEvent(QPaintEvent*) {
 	pnt.end();
 }
 
+// the key a click at that point of the picture takes, -1 for none
+int keyWindow::keyAt(QPointF ipos) {
+	const QVector<VkKey>& keys = skin.keys();
+	for (int n = 0; n < keys.size(); n++) {
+		if (keys[n].ch && keys[n].hit.contains(ipos))
+			return n;
+	}
+	return -1;
+}
+
+void keyWindow::mouseMoveEvent(QMouseEvent* ev) {
+	QDialog::mouseMoveEvent(ev);
+	if (!conf.keywin.hover) return;
+	int n = keyAt(imgPos(QPoint(ev->xEventX, ev->xEventY)));
+	if (n != hover) {
+		hover = n;
+		update();
+	}
+}
+
+void keyWindow::leaveEvent(QEvent* ev) {
+	QDialog::leaveEvent(ev);
+	if (hover >= 0) {
+		hover = -1;
+		update();
+	}
+}
+
 void keyWindow::mousePressEvent(QMouseEvent* ev) {
 	if (!kb) return;
 
-	bool hit = false;
-	QPointF ipos = imgPos(QPoint(ev->xEventX, ev->xEventY));
-	foreach(const VkKey& key, skin.keys()) {
-		if (key.ch && key.hit.contains(ipos)) {
-			hit = true;
-			xent.zxKey[0] = key.ch;
-		}
-	}
+	int n = keyAt(imgPos(QPoint(ev->xEventX, ev->xEventY)));
+	bool hit = (n >= 0);
+	if (hit)
+		xent.zxKey[0] = skin.keys()[n].ch;
 	if (!hit) {			// no hit: nothing to release on mouse up either
 		xent.zxKey[0] = 0;
 		// the right button holds a key down, so the menu is on a miss
