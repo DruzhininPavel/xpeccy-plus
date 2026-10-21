@@ -146,7 +146,7 @@ void conf_init(char* confdir) {
 	conf.running = 0;
 	conf.boot = 1;
 	conf.autorun = AR_ASK;		// asked on the first tape or disk opened
-	conf.tape.rewind = 0;		// a tape that ran out stays there until it is asked for
+	conf.tape.rewind = 1;		// a tape that ran out starts over on the next Play or LOAD
 	conf.tape.flash = 1;		// both only refine fast loading, which the user switches
 	conf.tape.edge = 1;
 	conf.tape.exp = wav_export_default();
