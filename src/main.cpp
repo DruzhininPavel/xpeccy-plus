@@ -35,6 +35,7 @@
 #include "xgui/options/setupwin.h"
 #include "filer.h"
 #include "libxpeccy/xstate.h"
+#include "xgui/iconengine.h"
 
 #include <SDL.h>
 #undef main
@@ -154,6 +155,15 @@ void xApp::d_style() {
 	// file is compared, not the name: a style edited on disk still re-applies.
 	if (sheet != styleSheet())
 		setStyleSheet(sheet);
+	// the icons drawn for a dark ground, where the style's is one: what a widget
+	// it has polished takes for its ground says, the platform's own with no style
+	{
+		QWidget probe;
+		probe.ensurePolished();
+		if (xIconEngine::setDark(probe.palette().color(QPalette::Window).lightness() < 128)) {
+			foreach(QWidget* w, allWidgets()) w->update();
+		}
+	}
 	// a sheet cannot colour links, and Qt's blue drowns in a dark one: the
 	// style names its own in its .pal, the platform's comes back without one
 	static const QColor sysLink = palette().color(QPalette::Link);

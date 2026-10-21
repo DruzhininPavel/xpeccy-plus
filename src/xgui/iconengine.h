@@ -15,8 +15,11 @@
 // "x-24.png" as well where they are drawn, so a picture drawn for 16 px is the
 // one shown at 16 px everywhere, and not the big one scaled down. A size is
 // picked as Qt picks it: the smallest picture at least as big, else the biggest.
+// "x-dark.png" (and "x-dark-16.png"/"x-dark-24.png") come along too: drawn for a dark
+// ground, they stand in for the others while the style's ground is dark.
 class xIconEngine : public QIconEngine {
 	public:
+		static bool setDark(bool);	// true when that changed what is drawn
 		xIconEngine() {}
 		xIconEngine(const xIconEngine&) = default;
 		void paint(QPainter*, const QRect&, QIcon::Mode, QIcon::State) override;
@@ -40,8 +43,10 @@ class xIconEngine : public QIconEngine {
 			QIcon::State state;
 		};
 		QList<xPic> pics;
-		QHash<QString, QPixmap> made;	// scaled or greyed, by size, mode and state
-		const xPic* match(const QSize&, QIcon::Mode, QIcon::State) const;
+		QList<xPic> darkPics;		// the ones for a dark ground
+		QHash<QString, QPixmap> made;	// scaled or greyed, by ground, size, mode and state
+		static bool dark;
+		static const xPic* match(const QList<xPic>&, const QSize&, QIcon::Mode, QIcon::State);
 		const xPic* best(const QSize&, QIcon::Mode, QIcon::State) const;
 };
 
