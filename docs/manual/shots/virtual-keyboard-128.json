@@ -1,0 +1,5 @@
+{
+  "config": {"GENERAL": {"machine": "zx128", "start.machine": "zx128", "keywin.width": "1155"}},
+  "steps": [["wait", 3000], ["run", "run-action key.keywin"], ["wait", 1500]],
+  "frames": []
+}

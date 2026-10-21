@@ -211,7 +211,11 @@ void saveConfig() {
 	fprintf(cfile, "winpos = %i,%i\n",conf.xpos,conf.ypos);
 	fprintf(cfile, "keywin.dock = %s\n", YESNO(conf.keywin.dock));
 	fprintf(cfile, "keywin.width = %i\n", conf.keywin.width);
+	if (conf.keywin.haspos)
+		fprintf(cfile, "keywin.pos = %i,%i\n", conf.keywin.xpos, conf.keywin.ypos);
 	fprintf(cfile, "keywin.skin = %s\n", conf.keywin.skin.c_str());
+	fprintf(cfile, "keywin.plain = %s\n", conf.keywin.plain.c_str());
+	fprintf(cfile, "keywin.bymachine = %s\n", YESNO(conf.keywin.bymac));
 	fprintf(cfile, "keywin.hover = %s\n", YESNO(conf.keywin.hover));
 	fprintf(cfile, "flpinterleave = %i\n", flp_get_interleave());
 	fprintf(cfile, "style = %s\n", conf.style.c_str());
@@ -802,7 +806,12 @@ void loadConfig() {
 	conf.macStartId.clear();
 	conf.keywin.dock = 0;
 	conf.keywin.width = 0;
+	conf.keywin.haspos = 0;
+	conf.keywin.xpos = 0;
+	conf.keywin.ypos = 0;
 	conf.keywin.skin = "black";
+	conf.keywin.plain = "black";
+	conf.keywin.bymac = 1;
 	conf.keywin.hover = 1;
 	conf.iosd.on = 0;
 	conf.iosd.keys = 1;
@@ -1273,7 +1282,21 @@ void loadConfig() {
 					}
 					if (pnam == "keywin.dock") conf.keywin.dock = arg.b;
 					if (pnam == "keywin.width") conf.keywin.width = arg.i;
-					if (pnam == "keywin.skin") conf.keywin.skin = std::string(arg.s);
+					if (pnam == "keywin.pos") {
+						vect = splitstr(pval, ",");
+						if (vect.size() > 1) {
+							conf.keywin.xpos = strtol(vect[0].c_str(), NULL, 10);
+							conf.keywin.ypos = strtol(vect[1].c_str(), NULL, 10);
+							conf.keywin.haspos = 1;
+						}
+					}
+					if (pnam == "keywin.skin") {
+						conf.keywin.skin = std::string(arg.s);
+						// a config from before keywin.plain: its pick gives the tone
+						conf.keywin.plain = (conf.keywin.skin.find("white") != std::string::npos) ? "white" : "black";
+					}
+					if (pnam == "keywin.plain") conf.keywin.plain = std::string(arg.s);
+					if (pnam == "keywin.bymachine") conf.keywin.bymac = arg.b;
 					if (pnam == "keywin.hover") conf.keywin.hover = arg.b;
 					if (pnam == "addboot") conf.boot = arg.b;
 					if (pnam == "autorun") conf.autorun = autorun_of(pval);

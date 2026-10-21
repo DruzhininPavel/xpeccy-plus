@@ -6,18 +6,25 @@
 #include <QByteArray>
 #include <QColor>
 #include <QImage>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QLinearGradient>
 #include <QMap>
+#include <QPainterPath>
 #include <QPointF>
+#include <QPolygonF>
 #include <QRectF>
 #include <QSizeF>
 #include <QString>
 #include <QVector>
 
 struct VkKey {
-	unsigned char ch;	// the Spectrum key, as keyEntry::zxKey takes it
-	QRectF box;		// the key as drawn, in canvas units
-	QRectF fill;		// what shows through its contour when it is pressed
+	QByteArray zx;		// the Spectrum keys it presses, as keyEntry::zxKey takes them; none for lettering
+	unsigned char ch;	// the one key it is, 0 for a combination: what lights it from the matrix
+	QRectF box;		// the key as drawn (an outline's bounds), in canvas units
+	QPainterPath fill;	// what shows through its contour when it is pressed, in canvas units
 	QRectF hit;		// what a click on it takes: the key and its words
+	QPolygonF hitPoly;	// an outline key's contour: a click takes this, not hit
 	int row, col;		// where it is in the layout
 };
 
@@ -28,11 +35,14 @@ class VkSkin {
 		QSizeF canvas() const {return QSizeF(cw, ch);}
 		// what the window puts under the picture, so what the contours show
 		QColor ground() const {return grnd;}
+		// what a pressed key's contour shows, and one under the pointer
+		QColor litColor() const {return litCol;}
+		QColor hoverColor() const {return hovCol;}
 		const QVector<VkKey>& keys() const {return keytab;}
 		// what to light for key n in a picture drawn at that scale, in its pixels:
 		// its contour as the picture has it, which on a small one is wider than the
 		// contour scaled down
-		QRect fillAt(int n, double scale) const;
+		QPainterPath fillAt(int n, double scale) const;
 		// the Spectrum key at that place of the keyboard's matrix: half-row 0-3
 		// from the top, key 0-9 from the left; 0 for none
 		static unsigned char zxKeyAt(int row, int pos);
@@ -49,10 +59,46 @@ class VkSkin {
 			QString anchor;		// "", start, middle, end
 			QString sn;		// "", off, px, half
 		};
+		struct Grad {
+			QVector<QPair<double, QColor>> stops;
+			double h = 0;			// its length, 0 for the whole body
+			bool fromBottom = false;	// that length up from the bottom, not down from the top
+			double angle = 0;		// degrees off straight down, clockwise: 45 runs to the bottom right
+		};
+		// one shape of a dome: a box inside the key's, or a polygon of its own
+		struct DomePart {
+			double inset[4] = {0, 0, 0, 0};	// left, top, right, bottom from the key's box
+			double corner[4] = {0, 0, 0, 0};	// tl, tr, br, bl
+			double cut = -1;		// cut flat that far below the key's top; < 0 none
+			QVector<QPointF> outline;	// a polygon from the key's top left instead of the box...
+			QVector<double> radii;		// ...and the radius at each of its corners
+		};
+		// a shape laid on the cap, inside it: the 128's round pad with a flat top; the
+		// Enter's is two, its pad and a channel up its narrow part
+		struct Dome {
+			bool on = false;
+			DomePart shape;
+			QVector<DomePart> more;		// shapes joined to it
+			Grad grad;			// its own gradient...
+			QColor fill;			// ...or one color
+			QColor edge;			// a line inside its rim, ew wide
+			double ew = 0;
+		};
 		struct Key {
-			double x, w, ax, ay;
+			double x, y, w, h, ax, ay;	// an outline key: its bounds
 			QString shape, sn;
+			QByteArray zx;			// the keys it presses...
+			bool hasZx = false;		// ...or none given: its place says
+			QVector<QPointF> outline;	// a polygon of right angles instead of the box
+			double corner[4];		// tl, tr, br, bl...
+			bool hasCorner = false;		// ...or the preset's
+			Grad grad;			// the layout's, or its own
+			Dome dome;			// the layout's, or its own, or none
 			QVector<Label> labels;
+		};
+		struct Band {
+			QColor col;
+			double x;		// at the rainbow's top
 		};
 		struct Row {
 			double y, h;
@@ -69,15 +115,26 @@ class VkSkin {
 			double sw = 0;
 		};
 		double cw = 0, ch = 0;
-		QColor bg, grnd;
+		QColor bg, grnd, litCol, hovCol;
 		QString anchor, sn;
-		QVector<QPair<double, QColor>> stops;
+		Grad grad;		// the caps'
+		Dome dome;		// on every cap, unless a key says otherwise
 		double inset = 1, outLR = 0, outTB = 1, corner = 3;
-		double rbW = 11, rbSlope = -0.45;
+		double rbW = 11, rbSlope = -0.45, rbY0 = 0, rbY1 = 0;
+		QVector<Band> bands;
 		QMap<QString, QColor> colors;
 		QMap<QString, Icon> icons;
 		QVector<Row> rows;
 		QVector<VkKey> keytab;
-		void makeKeys();
+		bool makeKeys(QString* err);
 		bool labelSpan(const Label& lab, double y, double& top, double& bot) const;
+		QColor color(const QString& name) const;
+		void readGrad(const QJsonValue& v, Grad& g) const;
+		static QLinearGradient gradAt(const Grad& g, const QRectF& box, double s);
+		void readDome(const QJsonObject& o, Dome& d) const;
+		static void readDomePart(const QJsonObject& o, DomePart& p);
+		QPainterPath domePart(const Key& key, const DomePart& p, double s) const;
+		QRect keyBox(const Key& key, double s) const;
+		QPainterPath keyPath(const Key& key, double s, int dx, int dy, double base, double grow) const;
+		QPainterPath contourAt(const Key& key, double s) const;
 };

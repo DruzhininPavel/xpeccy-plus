@@ -91,9 +91,11 @@ before that point is upstream's history and is not repeated here.
   next Play or LOAD.
 
 - **The virtual keyboard** is drawn anew for the size of its window, sharp at every zoom
-  and screen scaling, and has a black and a white skin (**Skin** in its right-click menu).
-  The key under the pointer lights up dimly, and a right click between the rows opens the
-  menu. *(drawn by Volutar)*
+  and screen scaling, and has classic and white skins of the 48K and the 128K keyboards
+  (**Skin** in its right-click menu, and in **View > Virtual Keyboard**); **By machine**
+  shows the 128K's on a 128K, +2, +2A and +3. The key under the pointer lights up dimly, a
+  right click between the rows opens the menu, Caps Shift and Symbol Shift lock with a click,
+  and the window opens where it was left. *(48K skins drawn by Volutar)*
 
 - **Reset with a divMMC on** clears the board's MAPRAM setting, as the ZX Spectrum Next's
   board does, so a program that crashes into setting it (BREAK held during a load from the

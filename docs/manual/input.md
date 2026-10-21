@@ -150,21 +150,27 @@ group of the **Machine** page of **Options** sets the scan codes the machine get
 
 ![The Virtual Keyboard](images/virtual-keyboard.png)
 
-**View > Virtual Keyboard** opens a picture of the Spectrum keyboard. The keys that are
+**View > Virtual Keyboard > Show** (Alt+K) opens a picture of the Spectrum keyboard. The keys that are
 pressed on the machine light up, whether they come from the PC keyboard, a joystick on keys
 or a click here.
 
-- Left button on a key - holds the key down while the button is held.
-- Right button on a key - locks the key down; a second right click releases it. Lock Caps
-  Shift, then click a digit, to get a cursor key.
+- Left button on a key - holds the key down while the button is held. On Caps Shift and
+  Symbol Shift it locks the key down instead, and a second click releases it: click Caps
+  Shift, then a digit, to get a cursor key.
+- Right button on a key - locks the key down; a second right click releases it.
 - Middle button on a key - releases all the keys.
 
 A key takes clicks on itself and on the words over and under it. Right-click between the
-rows or beside the keys for a menu:
+rows or beside the keys for its settings; they are also under **Show** in **View > Virtual
+Keyboard** and in the **Virtual Keyboard** submenu of the picture's right-click menu, which
+is easier with the 128K's close-set keys:
 
 - **Zoom x1**, **Zoom x1.5**, **Zoom x2**, **Zoom x3** - the size of the window. You can
   also drag its edge; the picture keeps its shape and is drawn sharp at any size.
-- **Skin** - **Black** or **White** keyboard.
+- **Skin** - **48K (Classic)**, **48K (White)**, **128K (Classic)** or **128K (White)**; one
+  picked here stays whatever the machine. **By machine**, on by default, shows the 128K
+  keyboard on a 128K, +2, +2A or +3 and the 48K one on every other machine, classic or
+  white as picked last.
 - **Dock under the emulator** - the keyboard loses its frame and sits under the main window,
   as wide as the main window, and moves with it. In fullscreen, or when there is no room
   below, it lies over the bottom of the picture.
@@ -172,12 +178,19 @@ rows or beside the keys for a menu:
   up dimly, so you can see which key a click will take. On by default.
 - **Release all keys** - releases every key.
 
-Keys typed while the window is in front go to the machine. Esc closes the window.
+Keys typed while the window is in front go to the machine. Esc closes the window. Not
+docked, it opens again where it was left.
 
-For layout authors: a file `zx-black.json` or `zx-white.json` in the `vkbd` folder of the
-settings folder (see [Where the settings are](getting-started.md#where-the-settings-are)) is
-drawn instead of the built-in skin of
-that name, and drawn again each time the file is saved.
+![The Spectrum 128 skin](images/virtual-keyboard-128.png)
+
+On the 128 keyboard the extra keys (True Video, Edit, Delete, the cursor keys and the
+rest) press Caps Shift or Symbol Shift together with a key, as on the real one; a right
+click locks such a key whole.
+
+For layout authors: a file `zx-black.json`, `zx-white.json`, `zx-128.json` or
+`zx-128-white.json` in the `vkbd` folder of the settings folder (see
+[Where the settings are](getting-started.md#where-the-settings-are)) is drawn instead of the
+built-in skin of that name, and drawn again each time the file is saved.
 
 ## Joysticks
 

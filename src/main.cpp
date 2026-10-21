@@ -563,6 +563,7 @@ int main(int ac,char** av) {
 	app.connect(&mwin, SIGNAL(s_keywin_close()), &keyw, SLOT(close()));
 	app.connect(&mwin, SIGNAL(s_keywin_rall(Keyboard*)), &keyw, SLOT(rall(Keyboard*)));
 	app.connect(&mwin, SIGNAL(s_keywin_snap()), &keyw, SLOT(snap()));
+	app.connect(&mwin, SIGNAL(s_keywin_menu(QMenu*)), &keyw, SLOT(fillMenu(QMenu*)));
 	app.connect(&keyw, SIGNAL(s_key_press(QKeyEvent*)), &mwin, SLOT(kPress(QKeyEvent*)));
 	app.connect(&keyw, SIGNAL(s_key_release(QKeyEvent*)), &mwin, SLOT(kRelease(QKeyEvent*)));
 
