@@ -22,9 +22,12 @@ All of them may be left out; a layout without them is drawn as before.
 In `canvas`:
 - `"ground"` - what shows through the contours around the keys (the picture's `bg` if not
   given).
-- `"lit"` - the color of a pressed key's light (`#00c8ff`): the rim of its dome, or a ring
-  inside its cap's edge on a key with no dome, `"light_w"` units wide (1.8). The key under
-  the pointer gets the same light, dimmer.
+- `"lit"` - the color of a pressed key's light (`#00c8ff`). The key under the pointer gets
+  the same light, dimmer.
+- `"light"` - where the light is: `"contour"` (the default, and for any other value) shows it
+  through the contour around the key; `"pad"` puts it on the key itself, the rim of its dome,
+  or a ring inside its cap's edge on a key with no dome, `"light_w"` units wide (1.8) - for
+  keys set too close for a contour to carry a light (the 128K).
 
 In a label: `"eb"` - that many canvas pixels thicker, a number or `[x, y]`.
 

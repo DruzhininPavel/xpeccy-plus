@@ -22,7 +22,7 @@ struct VkKey {
 	QByteArray zx;		// the Spectrum keys it presses, as keyEntry::zxKey takes them; none for lettering
 	unsigned char ch;	// the one key it is, 0 for a combination: what lights it from the matrix
 	QRectF box;		// the key as drawn (an outline's bounds), in canvas units
-	QPainterPath fill;	// where its light is drawn on a stretched picture, in canvas units
+	QPainterPath fill;	// where its light goes on a stretched picture, in canvas units
 	QRectF hit;		// what a click on it takes: the key and its words
 	QPolygonF hitPoly;	// an outline key's contour: a click takes this, not hit
 	int row, col;		// where it is in the layout
@@ -35,17 +35,22 @@ class VkSkin {
 		QSizeF canvas() const {return QSizeF(cw, ch);}
 		// what the window puts under the picture, so what the contours show
 		QColor ground() const {return grnd;}
+		// a pressed key's light: its color, and where it is - through the contour
+		// round the key, under the picture, or by its pad's rim, the lit picture
+		// over the key ("light": "pad")
+		QColor litColor() const {return litCol;}
+		bool padLight() const {return padLit;}
 		const QVector<VkKey>& keys() const {return keytab;}
-		// where key n's light is drawn in a picture of that scale, in its pixels:
+		// where key n's light goes in a picture of that scale, in its pixels:
 		// the key and its contour as the picture has them, never a neighbour
 		QPainterPath fillAt(int n, double scale) const;
 		// the Spectrum key at that place of the keyboard's matrix: half-row 0-3
 		// from the top, key 0-9 from the left; 0 for none
 		static unsigned char zxKeyAt(int row, int pos);
 		// the picture at that many pixels per canvas unit, premultiplied ARGB;
-		// lcd: subpixel (RGB) text on its opaque parts; lit: every key lit, its
-		// pad's rim in the lit color, or a ring inside the cap's edge on a key
-		// with no pad - the window draws it over a pressed key alone
+		// lcd: subpixel (RGB) text on its opaque parts; lit: a pad light's, every
+		// key lit, its pad's rim in the lit color, or a ring inside the cap's edge
+		// on a key with no pad - the window draws it over a pressed key alone
 		QImage render(double scale, bool lcd, bool lit = false) const;
 	private:
 		struct Label {
@@ -114,7 +119,8 @@ class VkSkin {
 		};
 		double cw = 0, ch = 0;
 		QColor bg, grnd, litCol;
-		double litW = 1.8;	// the light's width
+		bool padLit = false;
+		double litW = 1.8;	// the pad light's width
 		QString anchor, sn;
 		Grad grad;		// the caps'
 		Dome dome;		// on every cap, unless a key says otherwise

@@ -49,7 +49,7 @@ class keyWindow : public QDialog {
 		QString skinShown;	// the one shown: another if that one has no layout
 		QSizeF cnv;		// the layout's canvas, in its own units
 		QPixmap pic;		// the picture as last drawn
-		QPixmap litPic;		// the same with every key lit, for over the pressed ones
+		QPixmap litPic;		// a pad light's: every key lit, for over the pressed ones
 		double picScale;	// device pixels per canvas unit it was drawn at
 		QTimer drawTimer;	// a size being dragged is drawn when it settles
 		QTimer hoverTimer;	// after a drag of the frame: pollHover() until Qt passes moves again

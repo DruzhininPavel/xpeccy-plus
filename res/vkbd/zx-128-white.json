@@ -1,5 +1,5 @@
 {
-  "canvas":   {"w": 770, "h": 290, "bg": "#b9b7b3", "ground": "#8e8c89"},
+  "canvas":   {"w": 770, "h": 290, "bg": "#b9b7b3", "ground": "#8e8c89", "light": "pad"},
   "anchor":   "middle",
   "gradient": {"stops": [[0, "#f3f2f0"], [1, "#dcdad7"]]},
   "dome":     {"inset": [3.76, 7.36, 3.76, 0.96], "corner": 23.6, "cut": 18.56, "gradient": {"angle": 35, "stops": [[0.2, "#ffffff"], [0.55, "#ebe9e6"], [1, "#d0cecb"]]}, "edge": "#b3b1ad", "ew": 0.88},
