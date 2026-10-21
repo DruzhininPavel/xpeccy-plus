@@ -15,9 +15,9 @@
 #include <QFileSystemWatcher>
 
 #include "libxpeccy/input/input.h"
+#include "xgui/vkbdskin.h"
 
 class QMenu;
-#include "xgui/vkbdskin.h"
 
 #if defined(__APPLE__)
 // vkeyboard_mac.mm: let the window keep its shape by itself
@@ -40,6 +40,7 @@ class keyWindow : public QDialog {
 	private slots:
 		void redraw();		// the picture at the window's size, now
 		void loadSkin();
+		void pollHover();	// the key under the pointer, by where the pointer is
 	private:
 		Keyboard* kb;
 		keyEntry xent;
@@ -50,6 +51,7 @@ class keyWindow : public QDialog {
 		QPixmap pic;		// the picture as last drawn
 		double picScale;	// device pixels per canvas unit it was drawn at
 		QTimer drawTimer;	// a size being dragged is drawn when it settles
+		QTimer hoverTimer;	// after a drag of the frame: pollHover() until Qt passes moves again
 		QFileSystemWatcher watcher;	// a layout of the user's own, edited
 		unsigned dock:1;	// glued under the emulator window
 		int hover;		// the key under the pointer, -1 for none

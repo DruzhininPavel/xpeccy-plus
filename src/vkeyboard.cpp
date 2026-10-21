@@ -101,6 +101,8 @@ keyWindow::keyWindow(QWidget* p):QDialog(p) {
 	drawTimer.setSingleShot(true);
 	drawTimer.setInterval(60);
 	connect(&drawTimer, SIGNAL(timeout()), this, SLOT(redraw()));
+	hoverTimer.setInterval(40);
+	connect(&hoverTimer, SIGNAL(timeout()), this, SLOT(pollHover()));
 	connect(&watcher, SIGNAL(fileChanged(QString)), this, SLOT(loadSkin()));
 	connect(&watcher, SIGNAL(directoryChanged(QString)), this, SLOT(loadSkin()));
 	loadSkin();
@@ -439,6 +441,13 @@ bool keyWindow::nativeEvent(const QByteArray& type, void* msg, long* res) {
 		if (res) *res = TRUE;
 		return true;
 	}
+	// The shape fixed above leaves the mouse inside the window when a corner is let
+	// go of, and Qt passes the window no mouse moves after that until the next
+	// click: the key under the pointer is found by where the pointer is meanwhile
+	if (wmsg->message == WM_EXITSIZEMOVE) {
+		pollHover();
+		hoverTimer.start();
+	}
 	// the shape fixed above leaves the mouse inside the window, not on the frame,
 	// and Qt's window class has no cursor to put back over the frame's sizing arrows
 	if ((wmsg->message == WM_SETCURSOR) && (LOWORD(wmsg->lParam) == HTCLIENT)
@@ -581,8 +590,24 @@ int keyWindow::keyAt(QPointF ipos) {
 	return -1;
 }
 
+// The key under the pointer by the pointer's place on the screen, while Qt passes
+// no moves; none when the pointer is outside the window or the window is hidden
+void keyWindow::pollHover() {
+	if (!isVisible() || !conf.keywin.hover) {
+		hoverTimer.stop();
+		return;
+	}
+	QPoint at = mapFromGlobal(QCursor::pos());
+	int n = rect().contains(at) ? keyAt(imgPos(at)) : -1;
+	if (n != hover) {
+		hover = n;
+		update();
+	}
+}
+
 void keyWindow::mouseMoveEvent(QMouseEvent* ev) {
 	QDialog::mouseMoveEvent(ev);
+	hoverTimer.stop();		// moves come again
 	if (!conf.keywin.hover) return;
 	int n = keyAt(imgPos(QPoint(ev->xEventX, ev->xEventY)));
 	if (n != hover) {
@@ -600,6 +625,7 @@ void keyWindow::leaveEvent(QEvent* ev) {
 }
 
 void keyWindow::mousePressEvent(QMouseEvent* ev) {
+	hoverTimer.stop();		// a click puts Qt's moves back
 	if (!kb) return;
 
 	int n = keyAt(imgPos(QPoint(ev->xEventX, ev->xEventY)));
