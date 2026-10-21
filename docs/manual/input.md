@@ -159,7 +159,8 @@ or a click here.
   Shift, then click a digit, to get a cursor key.
 - Middle button on a key - releases all the keys.
 
-Right-click beside the keys for a menu:
+A key takes clicks on itself and on the words over and under it. Right-click between the
+rows or beside the keys for a menu:
 
 - **Zoom x1**, **Zoom x1.5**, **Zoom x2**, **Zoom x3** - the size of the window. You can
   also drag its edge; the picture keeps its shape and is drawn sharp at any size.
@@ -167,6 +168,8 @@ Right-click beside the keys for a menu:
 - **Dock under the emulator** - the keyboard loses its frame and sits under the main window,
   as wide as the main window, and moves with it. In fullscreen, or when there is no room
   below, it lies over the bottom of the picture.
+- **Highlight the key under the pointer** - the outline of the key the mouse is over lights
+  up dimly, so you can see which key a click will take. On by default.
 - **Release all keys** - releases every key.
 
 Keys typed while the window is in front go to the machine. Esc closes the window.
