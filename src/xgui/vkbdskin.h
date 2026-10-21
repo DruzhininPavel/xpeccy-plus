@@ -17,7 +17,7 @@ struct VkKey {
 	unsigned char ch;	// the Spectrum key, as keyEntry::zxKey takes it
 	QRectF box;		// the key as drawn, in canvas units
 	QRectF fill;		// what shows through its contour when it is pressed
-	QRectF hit;		// what a click on it takes
+	QRectF hit;		// what a click on it takes: the key and its words
 	int row, col;		// where it is in the layout
 };
 
@@ -79,4 +79,5 @@ class VkSkin {
 		QVector<Row> rows;
 		QVector<VkKey> keytab;
 		void makeKeys();
+		bool labelSpan(const Label& lab, double y, double& top, double& bot) const;
 };

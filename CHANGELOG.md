@@ -83,7 +83,8 @@ before that point is upstream's history and is not repeated here.
 
 - **The virtual keyboard** is drawn anew for the size of its window, sharp at every zoom
   and screen scaling, and has a black and a white skin (**Skin** in its right-click menu).
-  *(drawn by Volutar)*
+  The key under the pointer lights up dimly, and a right click between the rows opens the
+  menu. *(drawn by Volutar)*
 
 - **Reset with a divMMC on** clears the board's MAPRAM setting, as the ZX Spectrum Next's
   board does, so a program that crashes into setting it (BREAK held during a load from the

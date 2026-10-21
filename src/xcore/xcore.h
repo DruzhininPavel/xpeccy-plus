@@ -916,6 +916,7 @@ struct xConfig {
 	xRecord rec;
 	struct {
 		unsigned dock:1;	// glued under the emulator window
+		unsigned hover:1;	// the key under the pointer is lit dimly
 		int width;		// window width; the height follows the picture
 		std::string skin;	// res/vkbd/zx-<skin>.json: black, white
 	} keywin;
