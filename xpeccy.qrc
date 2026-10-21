@@ -229,8 +229,11 @@
         <file>images/crt.png</file>
         <file>images/crt-16.png</file>
         <file>images/filter.png</file>
+        <file>images/filter-dark.png</file>
         <file>images/font.png</file>
+        <file>images/font-dark.png</file>
         <file>images/target.png</file>
+        <file>images/target-dark.png</file>
         <file>res/vkbd/zx-black.json</file>
         <file>res/vkbd/zx-white.json</file>
         <file>res/vkbd/keys-font.ttf</file>
