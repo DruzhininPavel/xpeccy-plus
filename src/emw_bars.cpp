@@ -24,6 +24,7 @@
 #include "xcore/rzxrecord.h"
 #include "filer.h"
 #include "xcore/vidrec.h"
+#include "xcore/vscalers.h"
 
 #define TB_MIME "application/x-xpeccy-toolbar-item"
 
@@ -92,11 +93,17 @@ class xToolBar : public QToolBar {
 		xToolBar(QWidget* p) : QToolBar(p) {setAcceptDrops(true);}
 		std::function<void(const QPoint&, int)> onMenu;		// at a point of the screen, on an item or -1
 		std::function<void(int, int)> onMove;			// an item dragged from one place to another
+		std::function<void()> onRestyle;			// a style or a font: the buttons have new widths
 		void watch();
 		QSize sizeHint() const override {return QSize(0, QToolBar::sizeHint().height());}
 		QSize minimumSizeHint() const override {return QSize(0, QToolBar::minimumSizeHint().height());}
 	protected:
 		bool eventFilter(QObject*, QEvent*) override;
+		void changeEvent(QEvent* ev) override {
+			QToolBar::changeEvent(ev);
+			if (onRestyle && ((ev->type() == QEvent::StyleChange) || (ev->type() == QEvent::FontChange)))
+				onRestyle();
+		}
 		void contextMenuEvent(QContextMenuEvent*) override;
 		void dragEnterEvent(QDragEnterEvent*) override;
 		void dragMoveEvent(QDragMoveEvent*) override;
@@ -332,8 +339,13 @@ void MainWin::initBars() {
 		tb->setFocusPolicy(Qt::NoFocus);
 		tb->onMenu = [this](const QPoint& pos, int idx) {tbMenu(pos, idx);};
 		tb->onMove = [this](int from, int to) {tbMove(from, to);};
+		tb->onRestyle = [this]() {tbRestyled.start();};
 		return tb;
 	};
+	// once the new style is on every widget, not at the first of them
+	tbRestyled.setSingleShot(true);
+	tbRestyled.setInterval(0);
+	connect(&tbRestyled, &QTimer::timeout, this, &MainWin::tbAuto);
 	toolBar = makeBar();
 	frame->addToolBar(Qt::TopToolBarArea, toolBar);
 	// fullscreen's own, out of the layout like fsBar, so the picture keeps its place
@@ -572,7 +584,6 @@ void MainWin::tbBuild() {
 
 void MainWin::tbFill(QToolBar* bar) {
 	bar->clear();
-	bar->setIconSize(QSize(conf.win.tbIcons, conf.win.tbIcons));
 	foreach(const QString& id, tbList) {
 		if (id == TB_SEPARATOR) {
 			bar->addSeparator();
@@ -607,13 +618,45 @@ void MainWin::tbFill(QToolBar* bar) {
 	}
 	bar->setAcceptDrops(!conf.win.tbLocked);
 	static_cast<xToolBar*>(bar)->watch();
+	// what there is to fit is known now; fullscreen's bar is as wide as the screen
+	tbSize(bar, (bar == fsTool) ? frame->width() : drawW);
+}
+
+// The user's size, or Auto: 24 while every button fits the width at 24, else 16. The
+// width the bar wants at 24 is taken from the bar itself - its own hint counts the
+// buttons under the arrow too - with the size put back in the same call, so nothing is
+// drawn in between. One width always gives one size: nothing flips at the edge.
+void MainWin::tbSize(QToolBar* bar, int width) {
+	int px = conf.win.tbIcons;
+	if (!px) {
+		QSize was = bar->iconSize();
+		if (was.width() != 24) bar->setIconSize(QSize(24, 24));
+		int need = bar->QToolBar::sizeHint().width();	// xToolBar's own says 0
+		if (was.width() != 24) bar->setIconSize(was);
+		px = (need <= width) ? 24 : 16;
+	}
+	if (bar->iconSize().width() != px)
+		bar->setIconSize(QSize(px, px));
+}
+
+// Auto, looked at again: the window follows a change of the bar's height. The width
+// comes from the picture alone, so updateWindow decides the same size and stops there.
+void MainWin::tbAuto() {
+	int was = toolBar->iconSize().width();
+	tbSize(toolBar, drawW);
+	if (fsTool && fsTool->isVisible()) tbSize(fsTool, frame->width());
+	if ((toolBar->iconSize().width() != was) && !conf.vid.fullScreen)
+		updateWindow();
 }
 
 // the list as the user left it, and the bar rebuilt from it
 void MainWin::tbApply() {
+	int was = toolBar->iconSize().width();
 	conf.win.tbItems = tbList.join(",").toStdString();
 	tbBuild();
 	saveConfig();
+	if ((toolBar->iconSize().width() != was) && !conf.vid.fullScreen)
+		updateWindow();		// a button more or less can change Auto's size
 }
 
 void MainWin::tbMove(int from, int to) {
@@ -666,12 +709,12 @@ void MainWin::tbMenu(const QPoint& pos, int idx) {
 			tbApply();
 		});
 	}
+	// Auto: as big as the window's width allows
 	QMenu* size = menu.addMenu("Icon Size");
-	foreach(int px, QList<int>() << 16 << 24) {
-		QAction* act = size->addAction(QString("%0 x %0").arg(px), this, [this, px]() {
+	foreach(int px, QList<int>() << 0 << 16 << 24) {
+		QAction* act = size->addAction(px ? QString("%0 x %0").arg(px) : QString("Auto"), this, [this, px]() {
 			conf.win.tbIcons = px;
-			tbApply();
-			updateWindow();		// the window follows the bar's height
+			tbApply();		// and the window follows the bar's height
 		});
 		act->setCheckable(true);
 		act->setChecked(conf.win.tbIcons == px);

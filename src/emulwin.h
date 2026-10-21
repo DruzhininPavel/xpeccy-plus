@@ -433,6 +433,9 @@ typedef struct {
 		void initMachineMenus();
 		void tbBuild();
 		void tbFill(QToolBar*);
+		void tbSize(QToolBar*, int);
+		void tbAuto();
+		QTimer tbRestyled;		// a style or a font changed the buttons' widths
 		void tbApply();
 		void tbMove(int, int);
 		void tbMenu(const QPoint&, int);

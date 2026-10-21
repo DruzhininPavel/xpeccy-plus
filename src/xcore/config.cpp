@@ -273,7 +273,11 @@ void saveConfig() {
 	fprintf(cfile, "fullscreen = %s\n", YESNO(conf.vid.fullScreen));
 	fprintf(cfile, "keepratio = %s\n", YESNO(conf.vid.keepRatio));
 	fprintf(cfile, "toolbar = %s\n", YESNO(conf.win.toolbar));
-	fprintf(cfile, "toolbar.icons = %i\n", conf.win.tbIcons);
+	if (conf.win.tbIcons) {
+		fprintf(cfile, "toolbar.icons = %i\n", conf.win.tbIcons);
+	} else {
+		fprintf(cfile, "toolbar.icons = auto\n");
+	}
 	fprintf(cfile, "toolbar.items = %s\n", conf.win.tbItems.c_str());
 	fprintf(cfile, "toolbar.locked = %s\n", YESNO(conf.win.tbLocked));
 	fprintf(cfile, "statusbar = %s\n", YESNO(conf.win.statusbar));
@@ -810,7 +814,7 @@ void loadConfig() {
 	conf.vid.scale = 2;		// a config with no scale must not make a zero-size window
 	conf.win.toolbar = 1;
 	conf.win.statusbar = 1;
-	conf.win.tbIcons = 24;
+	conf.win.tbIcons = 0;		// as the window's width allows
 	conf.win.tbItems = "*";
 	conf.win.tbLocked = 1;
 	conf.dbg.dbsize = 8;
@@ -1117,7 +1121,7 @@ void loadConfig() {
 					if (pnam=="fullscreen") conf.vid.fullScreen = arg.b;
 					if (pnam=="keepratio") conf.vid.keepRatio = arg.b;
 					if (pnam=="toolbar") conf.win.toolbar = arg.b;
-					if (pnam=="toolbar.icons") conf.win.tbIcons = (arg.i == 16) ? 16 : 24;
+					if (pnam=="toolbar.icons") conf.win.tbIcons = ((arg.i == 16) || (arg.i == 24)) ? arg.i : 0;
 					if (pnam=="toolbar.items") conf.win.tbItems = pval;
 					if (pnam=="toolbar.locked") conf.win.tbLocked = arg.b;
 					if (pnam=="statusbar") conf.win.statusbar = arg.b;
