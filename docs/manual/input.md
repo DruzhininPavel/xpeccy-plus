@@ -174,8 +174,8 @@ is easier with the 128K's close-set keys:
 - **Dock under the emulator** - the keyboard loses its frame and sits under the main window,
   as wide as the main window, and moves with it. In fullscreen, or when there is no room
   below, it lies over the bottom of the picture.
-- **Highlight the key under the pointer** - the outline of the key the mouse is over lights
-  up dimly, so you can see which key a click will take. On by default.
+- **Highlight the key under the pointer** - the key the mouse is over lights up as a
+  pressed one does, but dimly, so you can see which key a click will take. On by default.
 - **Release all keys** - releases every key.
 
 Keys typed while the window is in front go to the machine. Esc closes the window. Not
