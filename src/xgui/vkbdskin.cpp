@@ -259,6 +259,47 @@ unsigned char VkSkin::zxKeyAt(int row, int pos) {
 	return ((row >= 0) && (row < 4) && (pos >= 0) && (pos < 10)) ? zxRows[row][pos] : 0;
 }
 
+// How far a label reaches up and down, in canvas units, when its anchor point is
+// at height y: the ink of its glyphs (or its icon's shape), unhinted
+bool VkSkin::labelSpan(const Label& lab, double y, double& top, double& bot) const {
+	if (!lab.icon.isEmpty()) {
+		const Icon& ic = icons[lab.icon];
+		QRectF br;
+		if (ic.isLine) {
+			double hw = (ic.sw > 0 ? ic.sw : 1) / 2.0;
+			br = QRectF(ic.p1, ic.p2).normalized().adjusted(-hw, -hw, hw, hw);
+		} else if (ic.isBox) {
+			br = ic.box;
+		} else {
+			foreach(const QVector<QPointF>& c, ic.polys)
+				br |= QPolygonF(c).boundingRect().adjusted(-ic.sw / 2, -ic.sw / 2, ic.sw / 2, ic.sw / 2);
+		}
+		if (br.isNull()) return false;
+		top = y + br.top();
+		bot = y + br.bottom();
+		return true;
+	}
+	FT_Face face = keysFace();
+	if (!face || lab.text.isEmpty()) return false;
+	FT_Pos ymin = 0, ymax = 0;
+	bool any = false;
+	foreach(uint cp, lab.text.toUcs4()) {
+		if (FT_Load_Glyph(face, FT_Get_Char_Index(face, cp), FT_LOAD_NO_SCALE)) continue;
+		if (face->glyph->format != FT_GLYPH_FORMAT_OUTLINE) continue;
+		if (!face->glyph->outline.n_points) continue;		// a space
+		FT_BBox cb;
+		FT_Outline_Get_CBox(&face->glyph->outline, &cb);
+		ymin = any ? std::min(ymin, cb.yMin) : cb.yMin;
+		ymax = any ? std::max(ymax, cb.yMax) : cb.yMax;
+		any = true;
+	}
+	if (!any) return false;
+	double k = ((lab.th > 0) ? lab.th : lab.sz) / face->units_per_EM;	// "th" stretches it to that
+	top = y - ymax * k;
+	bot = y - ymin * k;
+	return true;
+}
+
 void VkSkin::makeKeys() {
 	static const char* zxNames[] = {"ENTER", "CAPS", "SYMBOL", "BREAK"};
 	static const char zxNamed[] = "ECS ";
@@ -275,10 +316,22 @@ void VkSkin::makeKeys() {
 			vk.ch = zxKeyAt(r, i);
 			vk.box = QRectF(key.x, row.y, key.w, row.h);
 			vk.fill = vk.box.adjusted(-outLR - 0.5, -outTB - 0.5, outLR + 0.5, outTB + 0.5);
-			// as wide as the key, from row to row: the gaps between the keys and the
-			// ground around them are left as misses, which is where the window's
+			// As wide as the key, and as tall as the key with its words over and
+			// under it, but never past halfway to the next row: the gaps between
+			// the keys and the rows are left as misses, which is where the window's
 			// menu opens (the right button on a key holds the key down)
-			vk.hit = QRectF(key.x, top, key.w, bot - top);
+			double ht = row.y;
+			double hb = row.y + row.h;
+			double cy = row.y + row.h / 2.0 + key.ay;
+			foreach(const Label& lab, key.labels) {
+				double lt, lb;
+				if (!labelSpan(lab, cy + lab.dy, lt, lb)) continue;
+				ht = std::min(ht, lt);
+				hb = std::max(hb, lb);
+			}
+			ht = std::max(ht, top);
+			hb = std::min(hb, bot);
+			vk.hit = QRectF(key.x, ht, key.w, hb - ht);
 			foreach(const Label& lab, key.labels) {
 				if (lab.text.isEmpty()) continue;
 				const char* nm = strchr(zxNamed, vk.ch);
