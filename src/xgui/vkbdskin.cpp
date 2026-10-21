@@ -579,7 +579,8 @@ QImage VkSkin::render(double s, bool lcd) const {
 					int ix = (int)std::floor(gx);
 					FT_Vector delta = {(FT_Pos)std::lround((gx - ix) * 64), 0};
 					FT_Set_Transform(face, nullptr, &delta);
-					if (FT_Load_Glyph(face, gid[i], lcd ? FT_LOAD_TARGET_LCD : FT_LOAD_TARGET_LIGHT)) continue;
+					// the font's own hinting on both paths; LIGHT would hand the glyph to the auto-hinter
+					if (FT_Load_Glyph(face, gid[i], (lcd ? FT_LOAD_TARGET_LCD : FT_LOAD_TARGET_NORMAL) | FT_LOAD_NO_AUTOHINT)) continue;
 					if ((lab.ebx != 0) || (lab.eby != 0))
 						FT_Outline_EmboldenXY(&face->glyph->outline, std::lround(lab.ebx * s * 64), std::lround(lab.eby * s * 64));
 					if (FT_Render_Glyph(face->glyph, lcd ? FT_RENDER_MODE_LCD : FT_RENDER_MODE_NORMAL)) continue;

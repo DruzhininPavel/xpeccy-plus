@@ -10,7 +10,7 @@ font = TTFont(src, recalcTimestamp=False)
 opt = subset.Options()
 opt.layout_features = []
 opt.drop_tables += ["GSUB", "GPOS", "GDEF", "FFTM"]
-opt.hinting = True          # TrueType hints kept: the light hinting runs them
+opt.hinting = True          # TrueType hints kept: the keyboard is hinted by them, not by the auto-hinter
 opt.legacy_kern = True      # the 'kern' table is where the kerning comes from
 opt.name_IDs = ["*"]
 opt.notdef_outline = True
