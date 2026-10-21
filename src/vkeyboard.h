@@ -56,6 +56,8 @@ class keyWindow : public QDialog {
 		int keyAt(QPointF);
 		QByteArray keysDown();
 		void pressKeys(const QByteArray&, bool);
+		void latchKey(int, const QByteArray&);
+		void placeUndocked();
 		double scale();
 		double devScale();
 		QPointF picOrigin();

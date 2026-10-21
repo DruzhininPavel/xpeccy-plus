@@ -239,6 +239,7 @@ void keyWindow::setDock(bool d) {
 	// beforehand it goes to the window manager as the position asked for, which
 	// is the one thing that can stop it placing the window somewhere of its own
 	snap();
+	placeUndocked();
 	if (vis) show();		// changing the flags takes the window off screen
 	if (!d)
 		setZoom(storedZoom());
@@ -270,8 +271,28 @@ void keyWindow::snap() {
 // is right, which is what stops this from bouncing.
 void keyWindow::moveEvent(QMoveEvent* ev) {
 	QDialog::moveEvent(ev);
-	if (dock)
+	if (dock) {
 		snap();
+	} else if (isVisible()) {
+		conf.keywin.xpos = pos().x();
+		conf.keywin.ypos = pos().y();
+		conf.keywin.haspos = 1;
+	}
+}
+
+// Undocked, the window comes back where it was left: a dialog shown again is
+// put in the middle of its parent otherwise. A position on a screen that is not
+// there any more is left to the system; one half off a screen is pulled onto it.
+void keyWindow::placeUndocked() {
+	if (dock || !conf.keywin.haspos) return;
+	QPoint at(conf.keywin.xpos, conf.keywin.ypos);
+	QScreen* scr = QGuiApplication::screenAt(at + QPoint(40, 10));
+	if (!scr) return;
+	QRect avail = scr->availableGeometry();
+	QRect fg = frameGeometry();
+	at.setX(std::max(avail.left(), std::min(at.x(), avail.right() + 1 - fg.width())));
+	at.setY(std::max(avail.top(), std::min(at.y(), avail.bottom() + 1 - fg.height())));
+	move(at);
 }
 
 void keyWindow::showMenu(QPoint gpos) {
@@ -421,10 +442,12 @@ bool keyWindow::nativeEvent(const QByteArray& type, void* msg, long* res) {
 #endif
 
 void keyWindow::switcher() {
-	if (isVisible())
+	if (isVisible()) {
 		hide();
-	else
+	} else {
+		placeUndocked();
 		show();
+	}
 }
 
 // Comes on a switch of machine as well as on keys: a machine of another kind
@@ -577,23 +600,24 @@ void keyWindow::mousePressEvent(QMouseEvent* ev) {
 		return;
 	}
 	QByteArray zx = skin.keys()[n].zx;
+	// a shift held for a click and let go would do nothing: the left button
+	// latches it, as the right one latches any key
+	bool shift = (zx == "C") || (zx == "S");
 	switch(ev->button()) {
 		case Qt::LeftButton:
+			if (shift) {
+				latchKey(n, zx);
+				break;
+			}
 			pressKeys(heldZx, false);	// a press whose release was missed
 			held = n;
 			heldZx = zx;
 			pressKeys(zx, true);
 			update();
 			break;
-		case Qt::RightButton: {
-			// down for good, or up again if all its keys are down: a
-			// combination as one key, so a CAPS SHIFT down by itself stays down
-			bool all = allIn(zx, keysDown());
-			pressKeys(zx, !all);
-			if (n < latched.size()) latched[n] = !all && (zx.size() > 1);
-			update();
+		case Qt::RightButton:
+			latchKey(n, zx);
 			break;
-		}
 		case Qt::MiddleButton:
 			x_kbd_release_all(kb);
 			latched.fill(false);
@@ -602,6 +626,15 @@ void keyWindow::mousePressEvent(QMouseEvent* ev) {
 		default:
 			break;
 	}
+}
+
+// Down for good, or up again if all its keys are down: a combination as one
+// key, so a CAPS SHIFT down by itself stays down when EDIT is let go
+void keyWindow::latchKey(int n, const QByteArray& zx) {
+	bool all = allIn(zx, keysDown());
+	pressKeys(zx, !all);
+	if (n < latched.size()) latched[n] = !all && (zx.size() > 1);
+	update();
 }
 
 void keyWindow::mouseReleaseEvent(QMouseEvent* ev) {
