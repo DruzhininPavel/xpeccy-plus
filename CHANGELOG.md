@@ -11,6 +11,12 @@ before that point is upstream's history and is not repeated here.
 
 ### Added
 
+- **A folder that takes writes**: a folder mounted as an SD card or a hard disk takes what the
+  machine saves. Files and folders the machine makes, changes, renames or deletes there change
+  in the folder itself, and a deleted file goes to the trash. The first write asks before the
+  folder changes; Read-only is in Options > Emulation, Folder as a disk, and a card's Write
+  Protect makes one folder read-only again.
+
 - **A user manual** in English, Russian, Ukrainian and Spanish: Help > Manual opens it from
   the package in the system's language, with search that works offline. Each release puts
   it on GitHub Pages too.
