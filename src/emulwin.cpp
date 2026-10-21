@@ -151,6 +151,7 @@ void MainWin::updateWindow() {
 		// the picture: a whole number of pixels per dot, or it would be
 		// resampled and some columns come out a pixel wider than others
 		wsz = QSize(drawW, drawH);
+		tbSize(toolBar, wsz.width());		// Auto: as the new width allows
 		// Qt 5 forgets a widget is fullscreen once it has been resized - the layout
 		// does that - while its window stays so, and leaving would then do nothing,
 		// title bar never coming back: the widget is told fullscreen again first.
@@ -2283,6 +2284,7 @@ void MainWin::initMenuBar() {
 		fsBar->raise();
 		fsBar->show();
 		if (fsTool && conf.win.toolbar) {	// the toolbar comes with it, if there is one in a window
+			tbSize(fsTool, frame->width());
 			fsTool->setGeometry(0, fsBar->height(), frame->width(), fsTool->sizeHint().height());
 			fsTool->raise();
 			fsTool->show();

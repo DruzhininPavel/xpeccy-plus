@@ -872,7 +872,7 @@ struct xConfig {
 		unsigned toolbar:1;	// the bars of the main window, off in fullscreen anyway
 		unsigned statusbar:1;
 		unsigned tbLocked:1;	// the toolbar's buttons are not dragged around
-		int tbIcons;		// 16 or 24
+		int tbIcons;		// 16 or 24; 0 for what the window's width allows
 		std::string tbItems;	// the toolbar's buttons, ids and "|", comma-separated; "*" for the default ones
 	} win;
 	struct {

@@ -81,6 +81,15 @@ before that point is upstream's history and is not repeated here.
 
 ### Changed
 
+- **The toolbar fits the window**: Icon Size has **Auto**, the default, with 24 x 24 icons
+  while every button fits the window's width and 16 x 16 at a smaller zoom or border.
+
+- **Icons on dark styles**: the time controls look like the tape player's buttons and read
+  on light and dark styles alike, and NMI, Filter and Font get a light version on a dark one.
+
+- **Rewind at end** is on in a new configuration: a tape played to its end starts over on the
+  next Play or LOAD.
+
 - **The virtual keyboard** is drawn anew for the size of its window, sharp at every zoom
   and screen scaling, and has a black and a white skin (**Skin** in its right-click menu).
   The key under the pointer lights up dimly, and a right click between the rows opens the

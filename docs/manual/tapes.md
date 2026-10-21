@@ -102,7 +102,7 @@ you press **Play**, rewind it, or put another tape in.
 
 **Rewind at end**: a tape that has played to its end starts again from the beginning on
 the next **Play**, or the next time a program loads. With this switch off, the tape stays
-at its end until you rewind it.
+at its end until you rewind it. It is on by default.
 
 The **Tape Rewind to Start** hotkey winds the tape back without opening the window:
 Shift+F4 (Modern).

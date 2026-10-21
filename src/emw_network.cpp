@@ -646,6 +646,9 @@ void MainWin::socketRead() {
 			.arg(vid->rcut.x).arg(vid->rcut.y).arg(vid->full.x).arg(vid->full.y).arg(vid->brdmode);
 		out += QString("draw: %0,%1 %2x%3 zoom %4\r\n").arg(drawX).arg(drawY).arg(drawW).arg(drawH).arg(drawZoom);
 		out += QString("fsbar: %0 fstool: %1\r\n").arg(fsBar && fsBar->isVisible() ? 1 : 0).arg(fsTool && fsTool->isVisible() ? 1 : 0);
+		// the size the icons are drawn at, and the one set (0 = Auto)
+		out += QString("toolbar: icons %0 set %1 fstool %2\r\n").arg(toolBar->iconSize().width()).arg(conf.win.tbIcons)
+			.arg(fsTool ? fsTool->iconSize().width() : 0);
 		foreach(QWidget* w, QApplication::topLevelWidgets()) {
 			if (!w->isVisible()) continue;
 			out += QString("top: %0 type %1\r\n").arg(wname(w)).arg(int(w->windowType()), 0, 16);

@@ -210,10 +210,20 @@
         <file>images/wav.png</file>
         <file>images/osd-time-fast.png</file>
         <file>images/time-fast.png</file>
+        <file>images/time-fast-16.png</file>
+        <file>images/time-fast-24.png</file>
         <file>images/time-ffwd.png</file>
+        <file>images/time-ffwd-16.png</file>
+        <file>images/time-ffwd-24.png</file>
         <file>images/time-pause.png</file>
+        <file>images/time-pause-16.png</file>
+        <file>images/time-pause-24.png</file>
         <file>images/time-rewind.png</file>
+        <file>images/time-rewind-16.png</file>
+        <file>images/time-rewind-24.png</file>
         <file>images/time-slow.png</file>
+        <file>images/time-slow-16.png</file>
+        <file>images/time-slow-24.png</file>
         <file>images/osd-time-rewind.png</file>
         <file>images/osd-time-pause.png</file>
         <file>images/osd-time-ffwd2.png</file>
@@ -229,8 +239,11 @@
         <file>images/crt.png</file>
         <file>images/crt-16.png</file>
         <file>images/filter.png</file>
+        <file>images/filter-dark.png</file>
         <file>images/font.png</file>
+        <file>images/font-dark.png</file>
         <file>images/target.png</file>
+        <file>images/target-dark.png</file>
         <file>res/vkbd/zx-black.json</file>
         <file>res/vkbd/zx-white.json</file>
         <file>res/vkbd/keys-font.ttf</file>

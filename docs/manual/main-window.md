@@ -50,7 +50,8 @@ Right-click the toolbar to change it:
 - **Buttons** - every command that can be a button, by group; tick the ones you want.
 - **Remove** - removes the button you right-clicked.
 - **Add Separator Here**, **Add Space Here** - a line or a gap between groups.
-- **Icon Size** - 16 x 16 or 24 x 24.
+- **Icon Size** - **Auto**, the default: 24 x 24 while every button fits the window's
+  width, 16 x 16 when it does not. Or always 16 x 16 or 24 x 24.
 - **Restore Default Buttons** - back to the set above.
 - **Lock Toolbar** - on by default, so a slip of the mouse moves no button.
 - **Hide Toolbar** - **View > Toolbar** brings it back.
