@@ -221,7 +221,8 @@ the slot, or **(no card)**, and has:
 - **Open Folder...** - use a folder on your computer as the card. See
   [A folder as a disk](#a-folder-as-a-disk).
 - **Eject** - take the card out.
-- **Write Protect** - the card's lock switch. It is always on for a folder.
+- **Write Protect** - the card's lock switch: the machine cannot write to the card. On a
+  folder card it makes that one folder read only.
 
 What the machine writes to a card image goes into the image file at once. To start with a
 card, use `--sdcard <file or folder>` on the [command line](command-line.md).
@@ -330,8 +331,9 @@ Each release's own `README.TXT` is in `config/esxdos/<version>/`.
   the card and `.cd` to go into a folder; the dot commands are the files in `BIN`.
 - **Machine > NMI** (Shift+F10 in the Modern preset, F10 in the Classic one) is the board's
   NMI button: esxDOS opens its file browser.
-- A folder used as a card is read only: esxDOS reports `I/O ERROR` when it tries to write.
-  Use an image to save.
+- A folder used as a card takes what esxDOS saves, unless folders are set to read only
+  (see [Writing to a folder](#writing-to-a-folder)): then esxDOS reports `I/O ERROR` when
+  it tries to write.
 - **Machine > Reset** (the plain one) is the board's reset button, with one difference
   from the original board: it also clears the board's MAPRAM setting, as the ZX Spectrum
   Next's board does. On the original, only the power clears it, and a program that crashes
@@ -392,21 +394,63 @@ mounted when you switch machines, and are opened again at the next start.
 ```
 
 **Open Folder...** in **Media > SD Card**, in a divMMC's card menus and in **Media > Drives**
-lets the machine read a folder of your computer as if it were a FAT32 card or disk. There is
-no image to make: copy programs into the folder and open it.
+lets the machine use a folder of your computer as if it were a FAT32 card or disk. There is
+no image to make: copy programs into the folder and open it. The window that picks the
+folder is **Folder to serve as the card** or **Folder to serve as the disk**.
 
-- It is **read only**. The machine can read every file but cannot write: nothing it does
-  changes your files.
 - The folder is read when it is opened, and again at **Machine > Reset > Hard Reset**,
   when you switch machines or click **Apply** in **Options**. Files added later show up
   only then.
-- The disk is made just big enough for the folder: from 512 MB up to 32 GB. A larger folder
+- The disk is made big enough for the folder, from 512 MB up to 32 GB. A folder that takes
+  writes gets as much free room again as its files take, and 256 MB more. A larger folder
   is not opened, and the message **folder too big for a disk** says so.
 - These are left out: files of 4 GB and over, folders more than 16 levels deep, entries
   past 65536 in one folder, and anything past 200000 entries in all. The message
   **folder: not all of it fits** says when something was left out.
+- A link to a folder (a junction on Windows) is followed once: one that leads back into
+  the folder, or to a place already shown, is left out.
 - On a hard disk, a folder that holds NedoOS with its `ZXLDR` file in the top level can
   boot NedoOS.
+
+### Writing to a folder
+
+```{index} folder as a disk; writing, Writing to a folder, Folders, Deleted files
+```
+
+A folder takes what the machine writes: a program it saves, a file it changes or deletes
+there changes the files in the folder itself. The folder follows about half a second after
+the machine stops writing. A file the machine saves with no date keeps the time it was
+written on your computer.
+
+The first time the machine writes to a folder, it stops and **Writing to a folder** asks:
+
+- **Allow writing** - the folder takes this write and every one after it.
+- **Read-only** - the folder stays as it is. What the machine wrote stays in memory, and
+  the machine sees it, until the folder is read again. Folders opened after that are
+  read only.
+
+It asks once: the answer becomes the **Folders** setting. Both settings are in the
+**Folder as a disk** group on the [Emulation](options.md#emulation) page of **Options**:
+
+- **Folders** - **Read/write** (the default) or **Read-only**. The machine cannot write to
+  a read-only folder: esxDOS reports `I/O ERROR`, a hard disk an error.
+- **Deleted files** - **Move to trash** (the default) puts a file the machine deletes in
+  your system's trash; **Delete permanently** removes it. A file the trash will not take
+  stays in the folder.
+
+**Write Protect** in a card's menu makes that one folder read only, whatever **Folders**
+says.
+
+What the machine wrote is never thrown away on the way. When something cannot be carried
+over - a file another program has open, a name your system refuses - a message says so
+once, naming the files, and a file's content that could not be put in its place is kept in
+the folder's top level with **(recovered)** in its name. A file you change on your computer
+while the machine has the folder keeps your change: the machine's version is saved beside it
+as **name (2)**, and the machine deleting it leaves it where it is.
+
+Keep a copy of anything you cannot afford to lose. Formatting the card or disk, or
+deleting most of the folder at once, does not reach your files: the folder is left alone
+from then on, what the machine writes stays in memory, and a message says so.
 
 ## Cartridge
 
