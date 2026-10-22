@@ -1,5 +1,5 @@
 {
-  "canvas":   {"w": 774, "h": 290, "bg": "#141519", "ground": "#141519", "light": "pad"},
+  "canvas":   {"w": 777, "h": 290, "bg": "#141519", "ground": "#141519", "light":"pad"},
   "anchor":   "middle",
   "gradient": {"stops": [[0, "#2c2d32"], [1, "#25262a"]]},
   "dome":     {
@@ -14,7 +14,7 @@
   "contour":  {"inset": 1, "out_lr": 0.6, "out_tb": 0.6, "corner": 2.5},
   "rainbow":  {"bands": []},
   "colors":   {
-    "ink": "#eae2dc",
+    "ink": "#dad2cc",
     "in2": "#faf2ec"},
   "icons":    {
     "qtr_1":    {"box": [0, 0, 12, 12], "cut": [[6,1, 5,5]]},
@@ -27,8 +27,7 @@
     "qtr_8":    {"box": [0, 0, 12, 12], "cut": []},
     "dash":     {"sw": 2.08, "line": [[0, 0], [9.6, 0]]},
     "wave":     {"pts": [[-1, 0.5], [3, -2.5], [6, 0.5], [9,-1.75], [10, 0], [6, 3.0], [3, 0], [0, 2.25]] },
-
-    "up_s":     {"pts": [[0, -3.6], [2.4, -0.8], [0.8, -0.8], [0.8, 3.6], [-0.8, 3.6], [-0.8, -0.8], [-2.4, -0.8]]},
+    "up_s":     {"pts": [[0, -3.6], [3.6, -0.8], [0.8, -0.8], [0.8, 3.6], [-0.8, 3.6], [-0.8, -0.8], [-3.6, -0.8]]},
     "star0":    {"sw": 1.36, "line": [[-4, 0], [4, 0]]},
     "star1":    {"sw": 1.36, "line": [[-2,3.46], [2,-3.46]]},
     "star2":    {"sw": 1.36, "line": [[-2,-3.46], [2,3.46]]},
@@ -38,17 +37,20 @@
     "arrow_u":  {"sw": 1.44, "pts": [[0, -2.8], [-8.4, 6.4], [-4.4, 6.4], [-4.4, 18], [4.4, 18], [4.4, 6.4], [8.4, 6.4]]},
     "arrow_d":  {"sw": 1.44, "pts": [[0, 18], [-8.4, 8.8], [-4.4, 8.8], [-4.4, -2.8], [4.4, -2.8], [4.4, 8.8], [8.4, 8.8]]}
   },
+
+
+
   "rows":     [
     { "y": 3, "h": 57, "keys": [
       { "x": 3, "w": 57, "zx": ["CS", "3"],
         "labels": [
-          { "t": "TRUE",     "col": "ink", "sz": 9,  "dx": 0,      "dy": 1 },
-          { "t": "VIDEO",    "col": "ink", "sz": 9,  "dx": 0,      "dy": 10 }
+          { "t": "TRUE",     "col": "in2", "sz": 9,  "dx": 0,      "dy": 1 },
+          { "t": "VIDEO",    "col": "in2", "sz": 9,  "dx": 0,      "dy": 10 }
         ]},
       { "x": 60, "w": 57, "zx": ["CS", "4"],
         "labels": [
-          { "t": "INV",      "col": "ink", "sz": 9,  "dx": 0,      "dy": 1 },
-          { "t": "VIDEO",    "col": "ink", "sz": 9,  "dx": 0,      "dy": 10 }
+          { "t": "INV",      "col": "in2", "sz": 9,  "dx": 0,      "dy": 1 },
+          { "t": "VIDEO",    "col": "in2", "sz": 9,  "dx": 0,      "dy": 10 }
         ]},
       { "x": 117, "w": 57, "zx": "1",
         "labels": [
@@ -111,24 +113,24 @@
           { "t": "POINT",    "col": "ink", "sz": 9,  "dx": 0,     "dy": -11 },
           { "i": "qtr_8",    "col": "ink",           "dx": -16.5, "dy": -5.5 },
           { "t": "(",        "col": "ink", "sz": 13, "dx": 8,     "dy": 4 },
-          { "t": "8",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "8",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 573, "w": 57, "zx": "9",
         "labels": [
           { "t": "CAT",      "col": "ink", "sz": 9,  "dx": 0,     "dy": -11 },
           { "t": ")",        "col": "ink", "sz": 13, "dx": 8,     "dy": 4 },
-          { "t": "9",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "9",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 630, "w": 57, "zx": "0",
         "labels": [
           { "t": "BLACK",    "col": "ink", "sz": 9,  "dx": 0,     "dy": -19 },
           { "t": "FORMAT",   "col": "ink", "sz": 9,  "dx": 0,     "dy": -11 },
           { "t": "-",        "col": "ink", "sz": 15, "dx": 9,     "dy": 9, "tl": 12 },
-          { "t": "Ø",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "Ø",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 687, "w": 83, "zx": ["CS", "SPACE"],
         "labels": [
-          { "t": "BREAK",    "col": "ink", "sz": 9,  "dx": 0,     "dy": 9 }
+          { "t": "BREAK",    "col": "in2", "sz": 9,  "dx": 0,     "dy": 9 }
         ]}
     ]},
 
@@ -139,11 +141,11 @@
     { "y": 60, "h": 57, "keys": [
       { "x": 3, "w": 85, "zx": ["CS", "0"],
         "labels": [
-          { "t": "DELETE",   "col": "ink", "sz": 9,  "dx": 0,     "dy": 9 }
+          { "t": "DELETE",   "col": "in2", "sz": 9,  "dx": 0,     "dy": 9 }
         ]},
       { "x": 88, "w": 57, "zx": ["CS", "9"],
         "labels": [
-          { "t": "GRAPH",    "col": "ink", "sz": 9,  "dx": 0,     "dy": 9 }
+          { "t": "GRAPH",    "col": "in2", "sz": 9,  "dx": 0,     "dy": 9 }
         ]},
       { "x": 145, "w": 57, "zx": "Q",
         "labels": [
@@ -152,7 +154,7 @@
           { "t": "PLOT",     "col": "ink", "sz": 9,  "dx": 0,     "dy": -1 },
           { "t": "<",        "col": "ink", "sz": 14, "dx": 6,     "dy": 9.5, "tl": 7 },
           { "t": "=",        "col": "ink", "sz": 12, "dx": 14,    "dy": 8.5, "tl": 7 },
-          { "t": "Q",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "Q",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 202, "w": 57, "zx": "W",
         "labels": [
@@ -161,7 +163,7 @@
           { "t": "DRAW",     "col": "ink", "sz": 9,  "dx": 0,     "dy": -1 },
           { "t": "<",        "col": "ink", "sz": 14, "dx": 6,     "dy": 9.5, "tl": 7 },
           { "t": ">",        "col": "ink", "sz": 14, "dx": 14,    "dy": 9.5, "tl": 7 },
-          { "t": "W",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "W",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 259, "w": 57, "zx": "E",
         "labels": [
@@ -170,7 +172,7 @@
           { "t": "REM",      "col": "ink", "sz": 9,  "dx": 0,     "dy": -1 },
           { "t": ">",        "col": "ink", "sz": 14, "dx": 6,     "dy": 9.5, "tl": 7 },
           { "t": "=",        "col": "ink", "sz": 12, "dx": 14,    "dy": 8.5, "tl": 7 },
-          { "t": "E",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "E",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 316, "w": 57, "zx": "R",
         "labels": [
@@ -178,7 +180,7 @@
           { "t": "VERIFY",   "col": "ink", "sz": 9,  "dx": 0,     "dy": -11 },
           { "t": "RUN",      "col": "ink", "sz": 9,  "dx": 0,     "dy": -1 },
           { "t": "<",        "col": "ink", "sz": 14, "dx": 10,    "dy": 9.5, "tl": 7 },
-          { "t": "R",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "R",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 373, "w": 57, "zx": "T",
         "labels": [
@@ -186,7 +188,7 @@
           { "t": "MERGE",    "col": "ink", "sz": 9,  "dx": 0,     "dy": -11 },
           { "t": "RAND",     "col": "ink", "sz": 9,  "dx": 0,     "dy": -1  },
           { "t": ">",        "col": "ink", "sz": 14, "dx": 10,    "dy": 9.5, "tl": 7 },
-          { "t": "T",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "T",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 430, "w": 57, "zx": "Y",
         "labels": [
@@ -194,7 +196,7 @@
           { "t": "[",        "col": "ink", "sz": 7,  "dx": -9,   "dy": -11.5, "tl":6 },
           { "t": "RETURN",   "col": "ink", "sz": 9,  "dx": 0,    "dy": -1  },
           { "t": "AND",      "col": "ink", "sz": 9,  "dx": 0,    "dy": 8 },
-          { "t": "Y",        "col": "ink", "sz": 16, "dx": 0,    "dy": 23 }
+          { "t": "Y",        "col": "in2", "sz": 16, "dx": 0,    "dy": 23 }
         ]},
       { "x": 487, "w": 57, "zx": "U",
         "labels": [
@@ -202,7 +204,7 @@
           { "t": "]",        "col": "ink", "sz": 7,  "dx": -9,   "dy": -11.5, "tl":6 },
           { "t": "IF",       "col": "ink", "sz": 9,  "dx": 0,    "dy": -1  },
           { "t": "OR",       "col": "ink", "sz": 9,  "dx": 0,    "dy": 8 },
-          { "t": "U",        "col": "ink", "sz": 16, "dx": 0,    "dy": 23 }
+          { "t": "U",        "col": "in2", "sz": 16, "dx": 0,    "dy": 23 }
         ]},
       { "x": 544, "w": 57, "zx": "I",
         "labels": [
@@ -210,14 +212,14 @@
           { "t": "IN",       "col": "ink", "sz": 9,  "dx": 0,    "dy": -11 },
           { "t": "INPUT",    "col": "ink", "sz": 9,  "dx": 0,    "dy": -1  },
           { "t": "AT",       "col": "ink", "sz": 9,  "dx": 0,    "dy": 8 },
-          { "t": "I",        "col": "ink", "sz": 16, "dx": 0,    "dy": 23 }
+          { "t": "I",        "col": "in2", "sz": 16, "dx": 0,    "dy": 23 }
         ]},
       { "x": 601, "w": 57, "zx": "O",
         "labels": [
           { "t": "PEEK",     "col": "ink", "sz": 9,  "dx": 0,    "dy": -19 },
           { "t": "OUT",      "col": "ink", "sz": 9,  "dx": 0,    "dy": -11 },
           { "t": "POKE",     "col": "ink", "sz": 9,  "dx": 0,    "dy": -1  },
-          { "t": "O",        "col": "ink", "sz": 16, "dx": 0,    "dy": 23 }
+          { "t": "O",        "col": "in2", "sz": 16, "dx": 0,    "dy": 23 }
         ]},
       { "x": 658, "w": 57, "zx": "P",
         "labels": [
@@ -225,7 +227,7 @@
           { "t": "(  )",     "col": "ink", "sz": 7,  "dx": 0,     "dy": -12, "tl": 14 },
           { "t": "C",        "col": "ink", "sz": 8,  "dx": 0,     "dy": -11, "tl": 7 },
           { "t": "PRINT",    "col": "ink", "sz": 9,  "dx": 0,     "dy": -1  },
-          { "t": "P",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "P",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]}
     ]},
 
@@ -237,12 +239,12 @@
     { "y": 117, "h": 57, "keys": [
       { "x": 3, "w": 85, "zx": ["CS", "SS"],
         "labels": [
-          { "t": "EXTEND",   "col": "ink", "sz": 9,  "dx": 0,     "dy": 1 },
-          { "t": "MODE",     "col": "ink", "sz": 9,  "dx": 0,     "dy": 10 }
+          { "t": "EXTEND",   "col": "in2", "sz": 9,  "dx": 0,     "dy": 1 },
+          { "t": "MODE",     "col": "in2", "sz": 9,  "dx": 0,     "dy": 10 }
         ]},
       { "x": 88, "w": 70, "zx": ["CS", "1"],
         "labels": [
-          { "t": "EDIT",     "col": "ink", "sz": 9,  "dx": 0,     "dy": 9 }
+          { "t": "EDIT",     "col": "in2", "sz": 9,  "dx": 0,     "dy": 9 }
         ]},
       { "x": 158, "w": 57, "zx": "A",
         "labels": [
@@ -250,7 +252,7 @@
           { "i": "wave",     "col": "ink",           "dx": -5,    "dy": -14 },
           { "t": "NEW",      "col": "ink", "sz": 9,  "dx": 0,     "dy": -1  },
           { "t": "STOP",     "col": "ink", "sz": 9,  "dx": 0,     "dy": 8 },
-          { "t": "A",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "A",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 215, "w": 57, "zx": "S",
         "labels": [
@@ -258,7 +260,7 @@
           { "t": "|",        "col": "ink", "sz": 7,  "dx": -8,    "dy": -13, "tl":4 },
           { "t": "SAVE",     "col": "ink", "sz": 9,  "dx": 0,     "dy": -1  },
           { "t": "NOT",      "col": "ink", "sz": 9,  "dx": 0,     "dy": 8 },
-          { "t": "S",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "S",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 272, "w": 57, "zx": "D",
         "labels": [
@@ -266,7 +268,7 @@
           { "t": "\\",       "col": "ink", "sz": 8,  "dx": -8,    "dy": -11, "tl":6 },
           { "t": "DIM",      "col": "ink", "sz": 9,  "dx": 0,     "dy": -1  },
           { "t": "STEP",     "col": "ink", "sz": 9,  "dx": 0,     "dy": 8 },
-          { "t": "D",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "D",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 329, "w": 57, "zx": "F",
         "labels": [
@@ -274,7 +276,7 @@
           { "t": "{",        "col": "ink", "sz": 7,  "dx": -10,   "dy": -12, "tl":7 },
           { "t": "FOR",      "col": "ink", "sz": 9,  "dx": 0,     "dy": -1  },
           { "t": "TO",       "col": "ink", "sz": 9,  "dx": 0,     "dy": 8 },
-          { "t": "F",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "F",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 386, "w": 57, "zx": "G",
         "labels": [
@@ -282,7 +284,7 @@
           { "t": "}",        "col": "ink", "sz": 7,  "dx": -10,   "dy": -12, "tl":7 },
           { "t": "GOTO",     "col": "ink", "sz": 9,  "dx": 0,     "dy": -1  },
           { "t": "THEN",     "col": "ink", "sz": 9,  "dx": 0,     "dy": 8 },
-          { "t": "G",        "col": "ink", "sz": 16, "dx": 0,     "dy": 23 }
+          { "t": "G",        "col": "in2", "sz": 16, "dx": 0,     "dy": 23 }
         ]},
       { "x": 443, "w": 57, "zx": "H",
         "labels": [
@@ -290,7 +292,7 @@
           { "t": "CIRCLE",   "col": "ink", "sz": 9,  "dx": 0,    "dy": -11 },
           { "t": "GOSUB",    "col": "ink", "sz": 9,  "dx": 0,    "dy": -1  },
           { "i": "up_s",     "col": "ink",           "dx": 12,   "dy": 5 },
-          { "t": "H",        "col": "ink", "sz": 16, "dx": 0,    "dy": 23 }
+          { "t": "H",        "col": "in2", "sz": 16, "dx": 0,    "dy": 23 }
         ]},
       { "x": 500, "w": 57, "zx": "J",
         "labels": [
@@ -298,7 +300,7 @@
           { "t": "VAL$",     "col": "ink", "sz": 9,   "dx": 0,   "dy": -11 },
           { "t": "LOAD",     "col": "ink", "sz": 9,   "dx": 0,   "dy": -1  },
           { "t": "-",        "col": "ink", "sz": 11,  "dx": 10,  "dy": 8, "tl":8},
-          { "t": "J",        "col": "ink", "sz": 16,  "dx": 0,   "dy": 23 }
+          { "t": "J",        "col": "in2", "sz": 16,  "dx": 0,   "dy": 23 }
         ]},
       { "x": 557, "w": 57, "zx": "K",
         "labels": [
@@ -306,7 +308,7 @@
           { "t": "SCRN$",    "col": "ink", "sz": 9,   "dx": 0,   "dy": -11 },
           { "t": "LIST",     "col": "ink", "sz": 9,   "dx": 0,   "dy": -1  },
           { "t": "+",        "col": "ink", "sz": 11,  "dx": 12,  "dy": 8, "tl":8, "th":13 },
-          { "t": "K",        "col": "ink", "sz": 16,  "dx": 0,   "dy": 23 }
+          { "t": "K",        "col": "in2", "sz": 16,  "dx": 0,   "dy": 23 }
         ]},
       { "x": 614, "w": 57, "zx": "L",
         "labels": [
@@ -314,7 +316,7 @@
           { "t": "ATTR",     "col": "ink", "sz": 9,   "dx": 0,   "dy": -11 },
           { "t": "LET",      "col": "ink", "sz": 9,   "dx": 0,   "dy": -1  },
           { "t": "=",        "col": "ink", "sz": 12,  "dx": 12,  "dy": 8.5, "tl":7 },
-          { "t": "L",        "col": "ink", "sz": 16,  "dx": 0,   "dy": 23 }
+          { "t": "L",        "col": "in2", "sz": 16,  "dx": 0,   "dy": 23 }
         ]},
       { "zx": "ENTER",
         "outline": [[715, 60], [770, 60], [770, 174], [671, 174], [671, 117], [715, 117]],
@@ -329,7 +331,7 @@
             "cut": 19}]
           },
         "labels": [
-            { "t": "ENTER",  "col": "ink", "sz": 9,   "dx": 0,   "dy": 38 }
+            { "t": "ENTER",  "col": "in2", "sz": 9,   "dx": 0,   "dy": 38 }
         ]}
     ]},
 
@@ -341,12 +343,12 @@
     { "y": 174, "h": 57, "keys": [
       { "x": 3, "w": 127, "zx": "CS",
         "labels": [
-          { "t": "CAPS SHIFT", "col": "ink", "sz": 9, "dx": 0,   "dy": 9 }
+          { "t": "CAPS SHIFT", "col": "in2", "sz": 9, "dx": 0,   "dy": 9 }
         ]},
       { "x": 130, "w": 57, "zx": ["CS", "2"],
         "labels": [
-          { "t": "CAPS",     "col": "ink", "sz": 9,   "dx": 0,   "dy": 1 },
-          { "t": "LOCK",     "col": "ink", "sz": 9,   "dx": 0,   "dy": 10 }
+          { "t": "CAPS",     "col": "in2", "sz": 9,   "dx": 0,   "dy": 1 },
+          { "t": "LOCK",     "col": "in2", "sz": 9,   "dx": 0,   "dy": 10 }
         ]},
       { "x": 187, "w": 57, "zx": "Z",
         "labels": [
@@ -354,7 +356,7 @@
           { "t": "BEEP",     "col": "ink", "sz": 9,   "dx": 0,   "dy": -11 },
           { "t": "COPY",     "col": "ink", "sz": 9,   "dx": 0,   "dy": -1  },
           { "t": ":",        "col": "ink", "sz": 11,  "dx": 12,  "dy": 8 },
-          { "t": "Z",        "col": "ink", "sz": 16,  "dx": 0,   "dy": 23 }
+          { "t": "Z",        "col": "in2", "sz": 16,  "dx": 0,   "dy": 23 }
         ]},
       { "x": 244, "w": 57, "zx": "X",
         "labels": [
@@ -362,7 +364,7 @@
           { "t": "INK",      "col": "ink", "sz": 9,   "dx": 0,   "dy": -11 },
           { "t": "CLEAR",    "col": "ink", "sz": 9,   "dx": 0,   "dy": -1  },
           { "t": "£",        "col": "ink", "sz": 11,  "dx": 12,  "dy": 8 },
-          { "t": "X",        "col": "ink", "sz": 16,  "dx": 0,   "dy": 23 }
+          { "t": "X",        "col": "in2", "sz": 16,  "dx": 0,   "dy": 23 }
         ]},
       { "x": 301, "w": 57, "zx": "C",
         "labels": [
@@ -370,7 +372,7 @@
           { "t": "PAPER",    "col": "ink", "sz": 9,   "dx": 0,   "dy": -11 },
           { "t": "CONT",     "col": "ink", "sz": 9,   "dx": 0,   "dy": -1  },
           { "t": "?",        "col": "ink", "sz": 11,  "dx": 12,  "dy": 8 },
-          { "t": "C",        "col": "ink", "sz": 16,  "dx": 0,   "dy": 23 }
+          { "t": "C",        "col": "in2", "sz": 16,  "dx": 0,   "dy": 23 }
         ]},
       { "x": 358, "w": 57, "zx": "V",
         "labels": [
@@ -378,39 +380,39 @@
           { "t": "FLASH",    "col": "ink", "sz": 9,   "dx": 0,   "dy": -11 },
           { "t": "CLS",      "col": "ink", "sz": 9,   "dx": 0,   "dy": -1  },
           { "t": "/",        "col": "ink", "sz": 11,  "dx": 12,  "dy": 8, "tl":5 },
-          { "t": "V",        "col": "ink", "sz": 16,  "dx": 0,   "dy": 23 }
+          { "t": "V",        "col": "in2", "sz": 16,  "dx": 0,   "dy": 23 }
         ]},
       { "x": 415, "w": 57, "zx": "B",
         "labels": [
           { "t": "BIN",      "col": "ink", "sz": 9, "dx": 0, "dy": -19 },
           { "t": "BRIGHT",   "col": "ink", "sz": 9, "dx": 0, "dy": -11 },
           { "t": "BORDER",   "col": "ink", "sz": 9, "dx": 0, "dy": -1  },
-          { "i": "star0",    "col": "ink", "dx": 12, "dy": 5 },
-          { "i": "star1",    "col": "ink", "dx": 12, "dy": 5 },
-          { "i": "star2",    "col": "ink", "dx": 12, "dy": 5 },
-          { "t": "B",        "col": "ink", "sz": 16,   "dx": 0, "dy": 23 }
+          { "i": "star0",    "col": "ink", "dx": 12, "dy": 4.5 },
+          { "i": "star1",    "col": "ink", "dx": 12, "dy": 4.5 },
+          { "i": "star2",    "col": "ink", "dx": 12, "dy": 4.5 },
+          { "t": "B",        "col": "in2", "sz": 16,   "dx": 0, "dy": 23 }
         ]},
       { "x": 472, "w": 57, "zx": "N",
         "labels": [
           { "t": "INKEY$",   "col": "ink", "sz": 9, "dx": 0, "dy": -19 },
           { "t": "OVER",     "col": "ink", "sz": 9, "dx": 0, "dy": -11 },
           { "t": "NEXT",     "col": "ink", "sz": 9, "dx": 0, "dy": -1  },
-          { "t": "N",        "col": "ink", "sz": 16,   "dx": 0, "dy": 23 }
+          { "t": "N",        "col": "in2", "sz": 16,   "dx": 0, "dy": 23 }
         ]},
       { "x": 529, "w": 57, "zx": "M",
         "labels": [
           { "t": "PI",       "col": "ink", "sz": 9, "dx": 0, "dy": -19 },
           { "t": "INVERS",   "col": "ink", "sz": 9, "dx": 0, "dy": -11 },
           { "t": "PAUSE",    "col": "ink", "sz": 9, "dx": 0, "dy": -1  },
-          { "t": "M",        "col": "ink", "sz": 16,   "dx": 0, "dy": 23 }
+          { "t": "M",        "col": "in2", "sz": 16,   "dx": 0, "dy": 23 }
         ]},
       { "x": 586, "w": 57, "zx": ["SS", "M"],
         "labels": [
-          { "t": ".",        "col": "ink", "sz": 16, "dx": 0, "dy": 9 }
+          { "t": ".",        "col": "in2", "sz": 16, "dx": 0, "dy": 9 }
         ]},
       { "x": 643, "w": 127, "zx": "CS",
         "labels": [
-          { "t": "CAPS SHIFT", "col": "ink", "sz": 9, "dx": 0, "dy": 9 }
+          { "t": "CAPS SHIFT", "col": "in2", "sz": 9, "dx": 0, "dy": 9 }
         ]}
     ]},
 
@@ -421,44 +423,44 @@
     { "y": 231, "h": 57, "keys": [
       { "x": 3, "w": 57, "zx": "SS",
         "labels": [
-          { "t": "SYMBOL",   "col": "ink", "sz": 9, "dx": 0, "dy": 1 },
-          { "t": "SHIFT",    "col": "ink", "sz": 9, "dx": 0, "dy": 10 }
+          { "t": "SYMBOL",   "col": "in2", "sz": 9, "dx": 0, "dy": 1 },
+          { "t": "SHIFT",    "col": "in2", "sz": 9, "dx": 0, "dy": 10 }
         ]},
       { "x": 60, "w": 57, "zx": ["SS", "O"],
         "labels": [
-          { "t": ";",        "col": "ink", "sz": 16, "dx": 0, "dy": 8 }
+          { "t": ";",        "col": "in2", "sz": 16, "dx": 0, "dy": 9 }
         ]},
       { "x": 117, "w": 57, "zx": ["SS", "P"],
         "labels": [
-          { "t": "\"",       "col": "ink", "sz": 16, "dx": 0, "dy": 6 }
+          { "t": "\"",       "col": "in2", "sz": 16, "dx": 0, "dy": 9 }
         ]},
       { "x": 174, "w": 57, "zx": ["CS", "5"],
         "labels": [
-          { "i": "arrow_l",  "col": "ink", "dx": 0, "dy": 0 }
+          { "i": "arrow_l",  "col": "in2", "dx": 0, "dy": 0 }
         ]},
       { "x": 231, "w": 57, "zx": ["CS", "8"],
         "labels": [
-          { "i": "arrow_r",  "col": "ink", "dx": 0, "dy": 0 }
+          { "i": "arrow_r",  "col": "in2", "dx": 0, "dy": 0 }
         ]},
       { "x": 288, "w": 254, "zx": "SPACE",
         "labels": [
         ]},
       { "x": 542, "w": 57, "zx": ["CS", "7"],
         "labels": [
-          { "i": "arrow_u",  "col": "ink", "dx": 0, "dy": 0 }
+          { "i": "arrow_u",  "col": "in2", "dx": 0, "dy": 0 }
         ]},
       { "x": 599, "w": 57, "zx": ["CS", "6"],
         "labels": [
-          { "i": "arrow_d",  "col": "ink", "dx": 0, "dy": 0 }
+          { "i": "arrow_d",  "col": "in2", "dx": 0, "dy": 0 }
         ]},
       { "x": 656, "w": 57, "zx": ["SS", "N"],
         "labels": [
-          { "t": ",",        "col": "ink", "sz": 16, "dx": 0, "dy": 10 }
+          { "t": ",",        "col": "in2", "sz": 16, "dx": 0, "dy": 9 }
         ]},
       { "x": 713, "w": 57, "zx": "SS",
         "labels": [
-          { "t": "SYMBOL",   "col": "ink", "sz": 9, "dx": 0, "dy": 1 },
-          { "t": "SHIFT",    "col": "ink", "sz": 9, "dx": 0, "dy": 10 }
+          { "t": "SYMBOL",   "col": "in2", "sz": 9, "dx": 0, "dy": 1 },
+          { "t": "SHIFT",    "col": "in2", "sz": 9, "dx": 0, "dy": 10 }
         ]}
     ]}
   ]

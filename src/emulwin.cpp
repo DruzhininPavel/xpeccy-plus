@@ -663,7 +663,10 @@ void MainWin::timerEvent(QTimerEvent* ev) {
 // satelites
 		updateSatellites();
 #if defined(__WIN32) && STICKY_KEY
-		if (!conf.emu.pause && isActiveWindow()) {		// if not paused (!)
+		// Shift, Ctrl and Alt come from here alone, so the virtual keyboard's window
+		// in front counts too: it passes the other keys on, and these must go with them
+		QWidget* front = QApplication::activeWindow();
+		if (!conf.emu.pause && (isActiveWindow() || (front && front->inherits("keyWindow")))) {		// if not paused (!)
 			int state;
 			QKeyEvent* ev;
 			// events: nativeScanCode = 0, nativeVirtualKey = XKEY_*
