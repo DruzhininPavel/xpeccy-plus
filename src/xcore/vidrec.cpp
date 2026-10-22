@@ -883,8 +883,14 @@ static void vr_push(vrJob* job) {
 void vrec_frame(Computer* comp) {
 	if (!vrOn.load(std::memory_order_acquire)) return;
 	em_sync();
-	if (bufSwaps == emSwaps) return;	// nothing new drawn
+	static int undrawn = 0;			// frames run since the last picture (fast forward draws one in so many)
+	if (bufSwaps == emSwaps) {		// nothing new drawn
+		undrawn++;
+		return;
+	}
 	emSwaps = bufSwaps;
+	int frames = undrawn + 1;
+	undrawn = 0;
 	Video* vid = comp->vid;
 	long long now = paceClockNs();
 	double span;
@@ -892,7 +898,7 @@ void vrec_frame(Computer* comp) {
 		span = double(now - emHost) / vid->nsPerFrame;
 		if (span > VR_GAP_MAX) span = VR_GAP_MAX;
 	} else {
-		span = 1.0 / conf.emu.speed;
+		span = frames / conf.emu.speed;
 	}
 	emHost = now;
 	emSlots += span;

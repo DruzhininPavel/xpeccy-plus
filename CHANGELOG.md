@@ -87,6 +87,10 @@ before that point is upstream's history and is not repeated here.
 
 ### Changed
 
+- **Fast forward** draws as many frames a second as normal speed does and skips the rest,
+  so it runs faster. A flickering sprite still shows both of its phases, antiflicker mixes
+  only the frames shown, and a video recorded meanwhile keeps its timing.
+
 - **The toolbar fits the window**: Icon Size has **Auto**, the default, with 24 x 24 icons
   while every button fits the window's width and 16 x 16 at a smaller zoom or border.
 
