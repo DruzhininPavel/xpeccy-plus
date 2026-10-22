@@ -174,6 +174,8 @@ bool lab_char(QChar);
 
 // offers to get FFmpeg and does: true when there is one to use afterwards
 bool ffmpeg_get(QWidget* parent);
+// the Next's own SD card, made from a System/Next release or picked; own: made here
+bool next_card_dialog(QWidget* parent, QString* path, bool* own);
 
 // a text that shortens in the middle to the width it gets, whole in its tooltip
 class xElideLabel : public QLabel {

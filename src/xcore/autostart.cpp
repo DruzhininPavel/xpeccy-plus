@@ -172,6 +172,36 @@ static const asMachine as_mtab[] = {
 	{HW_NULL,	{AS_NOPE, NULL},	{AS_NOPE, NULL},	{AS_NOPE, NULL},		{AS_NOPE, NULL}}
 };
 
+// NextZXOS: NextBASIC from its menu, .cd dir, then cls:.nexload name or, for a .snx,
+// cls:spectrum "name" - built per file, the lines NextZXOS's own browser types
+// (browser.cfg). Not the Command Line: it leaves the global transparency at 00, and a
+// file that keeps the Next's registers starts with it. A dot command takes its argument
+// as typed: no quotes, so a name with a space goes in 8.3
+#define AS_NEX_KEYS	160
+static asKey as_nex[AS_NEX_KEYS];
+static char as_nex_str[AS_NEX_KEYS][3];
+
+// one character of a file name as the keys that type it, NULL if none does
+static const char* as_nex_char(char c) {
+	static const char* sym[][2] = {
+		{".", "Sm"}, {"_", "S0"}, {"-", "Sj"}, {" ", " "}, {"(", "S8"}, {")", "S9"},
+		{"!", "S1"}, {"&", "S6"}, {"'", "S7"}, {"+", "Sk"}, {"=", "Sl"}, {",", "Sn"},
+		{"#", "S3"}, {"$", "S4"}, {"%", "S5"}, {"@", "S2"}, {";", "So"}, {"~", "Sa"},
+		{"{", "Sf"}, {"}", "Sg"}, {"\"", "Sp"}, {":", "Sz"}, {"/", "Sv"}, {NULL, NULL}
+	};
+	static char one[2];
+	if ((c >= 'A') && (c <= 'Z')) c += 'a' - 'A';	// names are matched without case
+	if (((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9'))) {
+		one[0] = c;
+		one[1] = 0;
+		return one;
+	}
+	for (int i = 0; sym[i][0]; i++) {
+		if (c == sym[i][0][0]) return sym[i][1];
+	}
+	return NULL;
+}
+
 static int as_kind = AS_NONE;	// what is being started: a tape has to be played
 static Computer* as_comp = NULL;
 static int as_board = 0;	// a divMMC maps: its firmware says where the machine ends up
@@ -320,6 +350,43 @@ int autostart_arm(Computer* comp, int kind) {
 	as_kind = kind;
 	as_seq = act->seq;
 	as_wait = -1;					// still waiting for the rom
+	as_life = AS_GIVEUP;
+	return 1;
+}
+
+// one typed line: a command, its argument and what closes it, then Enter; a space in
+// the argument only where it is quoted
+static int as_nex_line(int n, const char* cmd, const char* arg, const char* tail, int gap) {
+	for (int part = 0; part < 3; part++) {
+		for (const char* s = (part == 0) ? cmd : (part == 1) ? arg : tail; *s; s++) {
+			const char* k = ((part == 1) && (*s == ' ') && !*tail) ? NULL : as_nex_char(*s);
+			if (!k || (n >= AS_NEX_KEYS - 2)) return -1;
+			snprintf(as_nex_str[n], 3, "%s", k);
+			as_nex[n].keys = as_nex_str[n];
+			as_nex[n++].gap = AS_KEY_GAP;
+		}
+	}
+	as_nex[n++] = {ZK_ENTER, gap};
+	return n;
+}
+
+int autostart_arm_nex(Computer* comp, const char* dir, const char* name, int welcome, int snx) {
+	autostart_stop();
+	if (!comp || (comp->hw->id != HW_ZXNEXT)) return 0;
+	int n = 0;
+	if (welcome) as_nex[n++] = {" ", AS_MENU_GAP};	// SPACE=Start NextZXOS
+	as_nex[n++] = {"n", AS_MENU_GAP};		// NextBASIC
+	n = as_nex_line(n, ".cd ", dir, "", AS_MENU_GAP);
+	if ((n >= 0) && snx) n = as_nex_line(n, "cls:spectrum \"", name, "\"", 0);
+	else if (n >= 0) n = as_nex_line(n, "cls:.nexload ", name, "", 0);
+	if (n < 0) return 0;
+	as_nex[n] = {NULL, 0};
+	x_user_reset(comp, RES_DEFAULT);
+	comp->keyb->scanmask = 0;
+	as_comp = comp;
+	as_kind = AS_NONE;
+	as_seq = as_nex;
+	as_wait = -1;
 	as_life = AS_GIVEUP;
 	return 1;
 }

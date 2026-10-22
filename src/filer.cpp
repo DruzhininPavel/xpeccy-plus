@@ -2,6 +2,7 @@
 #include "xcore/rzxrecord.h"
 #include "xcore/xcore.h"
 #include "xcore/autostart.h"
+#include "xcore/vfat_scan.h"
 #include "xcore/filemachine.h"
 #include "xcore/cheats.h"
 #include "xcore/sound.h"
@@ -108,11 +109,102 @@ static int save_szx(Computer* comp, const char* name, int drv) {
 	return res;
 }
 
+// A .nex or .snx is started as on the machine: NextZXOS boots from the card, and on its
+// command line .cd goes into the file's folder and NEXLOAD or SPECTRUM starts it - the
+// program finds its own files, and an open file handle, where it expects them. A file
+// on the card itself starts where it is, so what it saves stays there; one from
+// elsewhere has its folder put onto the card as a folder of the root.
+// a node of a folder card by its name, without case as the guest sees it; -1 if none
+static int vf_child(vFat* vf, int dir, const char* name) {
+	for (int i = (dir >= 0) ? vf->node[dir].child : -1; i >= 0; i = vf->node[i].next) {
+		if (!QString::compare(QString::fromUtf8(vf->node[i].name), QString::fromUtf8(name), Qt::CaseInsensitive)) return i;
+	}
+	return -1;
+}
+
+// started from dir (a node of the card, cd the path NextZXOS goes there by): by its
+// name, else by the card's 8.3 name for it, which any name has and the keyboard can type
+static int nex_arm(Computer* comp, int dir, const QByteArray& cd, const QFileInfo& inf, int welcome, int snx) {
+	vFat* vf = comp->sdc->vfat;
+	if (autostart_arm_nex(comp, cd.constData(), inf.fileName().toLocal8Bit().constData(), welcome, snx)) return ERR_OK;
+	QByteArray want = inf.fileName().toUtf8();
+	for (int i = (dir >= 0) ? vf->node[dir].child : -1; i >= 0; i = vf->node[i].next) {
+		if (vf->node[i].isdir || (want != vf->node[i].name)) continue;
+		QString sn = QString::fromLatin1(vf->node[i].sname, 8).trimmed();
+		QString ext = QString::fromLatin1(vf->node[i].sname + 8, 3).trimmed();
+		if (!ext.isEmpty()) sn += "." + ext;
+		return autostart_arm_nex(comp, cd.constData(), sn.toLatin1().constData(), welcome, snx) ? ERR_OK : ERR_NEX_NAME;
+	}
+	return ERR_NEX_NAME;
+}
+
+static int load_next(Computer* comp, const char* name, int snx) {
+	if (comp->hw->id != HW_ZXNEXT) return ERR_NEX_HW;
+	if (!comp->sdc->vfat) return ERR_NEX_CARD;
+	QFileInfo inf(QString::fromLocal8Bit(name));
+	// a card nobody has booted yet runs its welcome pages until they are turned off
+	// with D, which a card served read only cannot keep
+	auto welcome = [comp]() {
+		vFat* vf = comp->sdc->vfat;
+		return (vf_child(vf, vf_child(vf, 0, "nextzxos"), "autoexec.1st") >= 0) ? 1 : 0;
+	};
+	// on the card: its folder there, found by name down from the root
+	QString card = QDir(QString::fromLocal8Bit(comp->sdc->image)).canonicalPath();
+	QString folder = inf.absoluteDir().canonicalPath();
+	if (!card.isEmpty() && ((folder == card) || folder.startsWith(card + "/"))) {
+		QString rel = QDir(card).relativeFilePath(folder);
+		if (rel == ".") rel.clear();
+		int node = 0;
+		foreach(QString part, rel.split('/', X_SkipEmptyParts))
+			node = vf_child(comp->sdc->vfat, node, part.toUtf8().constData());
+		if ((node >= 0) && (rel.toLatin1() == rel.toUtf8())) {
+			int res = nex_arm(comp, node, ("/" + rel).toLatin1(), inf, welcome(), snx);
+			if (res == ERR_OK) return res;
+		}
+		// a path the keyboard cannot type: as a file from elsewhere
+	}
+	// the folder's name, as the keyboard types it, and one the card's root has not got
+	QString base;
+	foreach(QChar c, inf.absoluteDir().dirName().toLower()) {
+		if (((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9')) || (c == '_') || (c == '-')) base += c;
+	}
+	base = base.left(20);
+	if (base.isEmpty()) base = "nex";
+	QStringList taken = QDir(QString::fromLocal8Bit(comp->sdc->image)).entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+	QString dir = base;
+	for (int i = 2; taken.contains(dir, Qt::CaseInsensitive); i++)
+		dir = base + QString::number(i);
+	if (!sdc_mount_over(comp->sdc, inf.absolutePath(), dir)) return ERR_NEX_CARD;
+	return nex_arm(comp, vf_child(comp->sdc->vfat, 0, dir.toUtf8().constData()), dir.toLatin1(), inf, welcome(), snx);
+}
+
+static int load_nex(Computer* comp, const char* name, int drv) {
+	return load_next(comp, name, 0);
+}
+
+// a .snx is a .sna that NextZXOS loads with the Next left as it is (no 48K/128K
+// modes) and the file left open for the program
+static int load_snx(Computer* comp, const char* name, int drv) {
+	return load_next(comp, name, 1);
+}
+
+// a .sna or .z80 on the Next goes the same way: its power-on boots the firmware over
+// anything put into memory, and SPECTRUM is how NextZXOS opens one
+static int load_sna(Computer* comp, const char* name, int drv) {
+	return (comp->hw->id == HW_ZXNEXT) ? load_next(comp, name, 1) : loadSNA(comp, name, drv);
+}
+
+static int load_z80(Computer* comp, const char* name, int drv) {
+	return (comp->hw->id == HW_ZXNEXT) ? load_next(comp, name, 1) : loadZ80(comp, name, drv);
+}
+
 static xFileTypeInfo ft_tab[] = {
-	{FL_SNA, 0, ".sna", "*.sna", loadSNA, saveSNA, "SNA snapshot"},
-	{FL_Z80, 0, ".z80", "*.z80", loadZ80, saveZ80, "Z80 snapshot"},
+	{FL_SNA, 0, ".sna", "*.sna", load_sna, saveSNA, "SNA snapshot"},
+	{FL_Z80, 0, ".z80", "*.z80", load_z80, saveZ80, "Z80 snapshot"},
 	{FL_SZX, 0, ".szx", "*.szx", loadSZX, save_szx, "SZX snapshot"},
 	{FL_SPG, 0, ".spg", "*.spg", loadSPG, NULL, "SPG snapshot"},
+	{FL_NEX, 0, ".nex", "*.nex", load_nex, NULL, "NEX program"},
+	{FL_SNX, 0, ".snx", "*.snx", load_snx, NULL, "SNX snapshot"},
 	{FL_TAP, 0, ".tap", "*.tap", loadTAP, saveTAP, "TAP tape image"},
 	{FL_TZX, 0, ".tzx", "*.tzx", loadTZX, NULL, "TZX tape image"},
 	{FL_WAV, 0, ".wav", "*.wav", loadWAV, save_wav, "WAV recording"},
@@ -142,7 +234,7 @@ static xFileTypeInfo ft_dum = {FL_NONE, 0, NULL, NULL, NULL, NULL, "Dummy entry"
 // 0..3 : disk (must be inserted for save)
 // 4 : tape (block count > 0)
 static xFileGroupInfo fg_tab[] = {
-	{FG_SNAPSHOT, ".szx", -1, "Snapshot", NULL, {FL_SZX, FL_SNA, FL_Z80, FL_SPG, 0}},
+	{FG_SNAPSHOT, ".szx", -1, "Snapshot", NULL, {FL_SZX, FL_SNA, FL_Z80, FL_SPG, FL_NEX, FL_SNX, 0}},
 	{FG_TAPE, ".tap", 4, "Tape", NULL, {FL_TAP, FL_TZX, FL_WAV, 0}},
 	{FG_DISK_A, ".trd", 0,"Disk A", NULL, {FL_SCL, FL_TRD, FL_TD0, FL_FDI, FL_UDI, FL_DSK, FL_IMA, FL_PCIMG, FL_HOBETA, 0}},
 	{FG_DISK_B, ".trd", 1, "Disk B", NULL, {FL_SCL, FL_TRD, FL_TD0, FL_FDI, FL_UDI, FL_DSK, FL_IMA, FL_PCIMG, FL_HOBETA, 0}},
@@ -174,7 +266,7 @@ static xFileHWInfo fh_tab[] = {
 };
 
 static xFileHWInfo hw_tab[] = {
-	{FH_SPECTRUM, {HW_ATM1, HW_ATM2, HW_P1024, HW_PENT, HW_PENTEVO, HW_PHOENIX, HW_PLUS2A, HW_PLUS3, HW_PROFI, HW_PROFI3, HW_SCORP, HW_SCORPTP, HW_TSLAB, HW_ZX48, HW_ZX128, 0}},
+	{FH_SPECTRUM, {HW_ATM1, HW_ATM2, HW_P1024, HW_PENT, HW_PENTEVO, HW_PHOENIX, HW_PLUS2A, HW_PLUS3, HW_PROFI, HW_PROFI3, HW_SCORP, HW_SCORPTP, HW_TSLAB, HW_ZX48, HW_ZX128, HW_ZXNEXT, 0}},
 	{FH_ALF, {HW_ALF, 0}},
 	{0, {0}}
 };
@@ -384,6 +476,10 @@ static xFilerError err_tab[] = {
 	{ERR_CANT_SAVE, "Can't save in this format"},
 	{ERR_FILE_TYPE, "Unknown file type"},
 	{ERR_SNAP_SHORT, "The snapshot is cut short"},
+	{ERR_NEX_HW, "NEX and SNX files need the ZX Spectrum Next"},
+	{ERR_NEX_CARD, "NEX and SNX files start from NextZXOS: put the System/Next folder in the SD card slot"},
+	{ERR_NEX_NAME, "The file's name cannot be typed in NextZXOS"},
+	{ERR_SNAP_NEXT, "Snapshots of the ZX Spectrum Next cannot be saved yet"},
 	{ERR_OK, ""}
 };
 
@@ -785,7 +881,7 @@ int load_file(Computer* comp, const char* name, int id, int drv) {
 				last_as_kind = as_kind_of(inf->id);
 				last_as_drv = drv;
 				switch (inf->id) {
-					case FL_SNA: case FL_Z80: case FL_SZX: case FL_SPG:
+					case FL_SNA: case FL_Z80: case FL_SZX: case FL_SPG: case FL_NEX: case FL_SNX:
 						rzx_rec_touch();
 						last_snapshot = path;
 						break;

@@ -1,4 +1,5 @@
 #include "sdcard.h"
+#include "fatfile.h"
 #include "xlog.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -126,6 +127,26 @@ void sdcRdSector(SDCard* sdc) {
 	} else {
 		memset((void*)&sdc->buf.data[1],0xff,512);
 	}
+}
+
+int sdc_read_lba(SDCard* sdc, unsigned int lba, unsigned char* buf) {
+	if (lba >= sdc->maxlba) return 0;
+	if (sdc->vfat) {
+		vfat_read(sdc->vfat, lba, buf);
+		return 1;
+	}
+	if (!sdc->file) return 0;
+	x_fseek(sdc->file, (long long)lba << 9, SEEK_SET);
+	return fread(buf, 512, 1, sdc->file) == 1;
+}
+
+static int sdc_fat_sector(void* ctx, unsigned int lba, unsigned char* buf) {
+	return sdc_read_lba((SDCard*)ctx, lba, buf);
+}
+
+int sdc_has_file(SDCard* sdc, const char* path) {
+	unsigned char b;
+	return sdc->image && (fat_read_file(sdc_fat_sector, sdc, path, &b, 1) >= 0);
 }
 
 // 0 when the sector was refused: a folder that would not take it

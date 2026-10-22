@@ -36,6 +36,7 @@ typedef struct {
 struct vfWr {
 	int detached;
 	int quiet;
+	int pinwrote;			// the guest changed a pinned folder: 1, 2 once told (vfat_pin_news)
 	unsigned int wgen;		// writes taken
 	unsigned int sgen;		// ...as of the last sync
 	int pending;
@@ -302,6 +303,12 @@ int vfat_detached(vFat* vf) {
 	return (vf && vf->wr) ? vf->wr->detached : 0;
 }
 
+int vfat_pin_news(vFat* vf) {
+	if (!vf || !vf->wr || (vf->wr->pinwrote != 1)) return 0;
+	vf->wr->pinwrote = 2;
+	return 1;
+}
+
 void vfat_flush(vFat* vf) {
 	vfWr* w;
 	if (!vf || !(w = vf->wr) || vf->hold || w->detached || (w->wgen == w->sgen)) return;
@@ -452,6 +459,7 @@ typedef struct {
 	unsigned char act;		// VFA_*
 	unsigned char moved;		// its host name or folder changes
 	unsigned char failed;
+	unsigned char pin;		// in a pinned folder: the host side leaves it be
 	unsigned char conflict;		// its host file was changed outside the emulator since
 	unsigned int clu, size;
 	unsigned short date, time;
@@ -818,6 +826,12 @@ char* vfat_tmp_restore(vFat* vf, const char* name) {
 
 static int sec_in_ovl(vFat* vf, unsigned int clu, unsigned int s) {
 	return ovl_find(vf->wr, clu_lba(vf, clu, s)) >= 0;
+}
+
+static int node_pinned(vFat* vf, int idx) {
+	for (; idx > 0; idx = vf->node[idx].parent)
+		if (vf->node[idx].pinned) return 1;
+	return 0;
 }
 
 static int depth_of(vFat* vf, int idx) {
@@ -1203,8 +1217,18 @@ int vfat_sync(vFat* vf, int force) {
 			}
 		}
 	}
-	for (i = 1; i < sc.n; i++)
-		if (!sc.ent[i].ok) sc.ent[i].failed = 1;	// left as it is
+	for (i = 1; i < sc.n; i++) {
+		vfEnt* e = sc.ent + i;
+		// a pinned folder and what is in it: what the guest does there stays in the volume
+		e->pin = sc.ent[e->parent].pin || ((e->node >= 0) && node_pinned(vf, e->node));
+		if (!e->ok || e->pin) e->failed = 1;	// left as it is
+		// new there, or a file changed: it lives only as long as the volume
+		if (e->pin && e->ok && !w->pinwrote) {
+			vfNode* nd = (e->node >= 0) ? vf->node + e->node : NULL;
+			if (!nd || (!e->isdir && ((e->size != nd->size) || (chain_rel(vf, &sc, e, e->node) != 2) || dirty[e->node])))
+				w->pinwrote = 1;
+		}
+	}
 	// == what goes: an old child of a folder read back that nothing became, and what a
 	// going folder held; a file only once its clusters are free or someone else's
 	live = 0;
@@ -1213,10 +1237,14 @@ int vfat_sync(vFat* vf, int force) {
 		vfEnt* e = sc.ent + i;
 		if (!e->isdir || !e->ok || (e->node < 0)) continue;
 		for (j = vf->node[e->node].child; j >= 0; j = vf->node[j].next)
-			if ((j < oldNodes) && (match[j] < 0) && !vf->node[j].dead) gone[j] = 1;
+			if ((j < oldNodes) && (match[j] < 0) && !vf->node[j].dead && !node_pinned(vf, j)) gone[j] = 1;
 	}
 	for (i = 1; i < oldNodes; i++) {
 		if (vf->node[i].dead || (match[i] >= 0) || gone[i]) continue;
+		if (node_pinned(vf, i)) {
+			if (!w->pinwrote) w->pinwrote = 1;	// deleted there: back on the next mount
+			continue;
+		}
 		for (j = vf->node[i].parent; j > 0; j = vf->node[j].parent) {
 			if (gone[j]) { gone[i] = 1; break; }
 			if (match[j] >= 0) break;
@@ -1246,7 +1274,7 @@ int vfat_sync(vFat* vf, int force) {
 	}
 	for (i = 1; i < sc.n; i++) {
 		vfEnt* e = sc.ent + i;
-		if (!e->ok || e->isdir) continue;
+		if (!e->ok || e->isdir || e->pin) continue;	// a pinned one stays in memory, whatever it took
 		for (k = 0; k < e->nch; k++) {
 			o = w->own[sc.pool[e->chain + k]];
 			if ((o > 0) && (o < oldNodes) && (o != e->node) && gone[o] && (claim[o] < 0)) claim[o] = i;
@@ -1533,7 +1561,7 @@ int vfat_sync(vFat* vf, int force) {
 	}
 	vf_close_cached(vf);
 	for (i = 1; i < sc.n; i++)
-		if (!sc.ent[i].ok) failed++;
+		if (!sc.ent[i].ok && !sc.ent[i].pin) failed++;
 	w->pending = failed;
 	w->sgen = wgen;
 	res = 1;

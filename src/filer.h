@@ -28,7 +28,9 @@ enum {
 	FL_IMA,
 	FL_PCIMG,
 	FL_SZX,
-	FL_POK
+	FL_POK,
+	FL_NEX,
+	FL_SNX
 };
 
 enum {
