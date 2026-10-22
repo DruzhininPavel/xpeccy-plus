@@ -586,8 +586,9 @@ bool VkSkin::makeKeys(QString* err) {
 			vk.ch = (vk.zx.size() == 1) ? (unsigned char)vk.zx[0] : 0;
 			vk.box = QRectF(key.x, key.y, key.w, key.h);
 			if (!key.outline.isEmpty()) {
-				// the contour as drawn, without its rounding: the click takes it all
-				vk.hitPoly = QPolygonF(offsetPoly(key.outline, outLR, outTB));
+				// the outline itself, as a box key takes its box: where keys touch,
+				// the contour around it is half the neighbour's
+				vk.hitPoly = QPolygonF(key.outline);
 				vk.hit = vk.hitPoly.boundingRect();
 				vk.fill.addPolygon(QPolygonF(offsetPoly(key.outline, outLR + 0.5, outTB + 0.5)));
 				vk.fill.closeSubpath();
