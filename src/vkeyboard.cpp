@@ -452,6 +452,15 @@ bool keyWindow::nativeEvent(const QByteArray& type, void* msg, long* res) {
 	// go of, and Qt passes the window no mouse moves after that until the next
 	// click: the key under the pointer is found by where the pointer is meanwhile
 	if (wmsg->message == WM_EXITSIZEMOVE) {
+		// A drag by the size grip began as a press inside the window, and the sizing
+		// loop ate its release: Qt still sees the button down and sends every move to
+		// the grip until the next click. Give Qt the release it missed
+		if (QGuiApplication::mouseButtons() & Qt::LeftButton) {
+			POINT cp;
+			GetCursorPos(&cp);
+			ScreenToClient(wmsg->hwnd, &cp);
+			PostMessage(wmsg->hwnd, WM_LBUTTONUP, 0, MAKELPARAM(cp.x, cp.y));
+		}
 		pollHover();
 		hoverTimer.start();
 	}
