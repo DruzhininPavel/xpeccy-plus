@@ -403,6 +403,7 @@ void MainWin::initBars() {
 	ffAct = speed("Fast Forward", XCUT_FFWD, XTM_FFWD, "time-ffwd");
 	add("key.ffwd", "Time", ffAct, TB_PLAIN);
 	slowAct = speed("Slow Motion", XCUT_SLOWMO, XTM_SLOW, "time-slow");
+	slowIcon();
 	add("key.slowmo", "Time", slowAct, TB_PLAIN);
 	// held like its key: the button's press and release drive it, see tbBuild
 	rewAct = new QAction(QIcon(":/images/time-rewind.png"), "Rewind", this);
@@ -777,6 +778,14 @@ void MainWin::volumeChanged() {
 	volTimer.start();	// and the file is written once the wheel stops
 }
 
+// Slow Motion's icon shows its speed, 1/2, 1/4 or 1/8; time-slow is the default's, 1/4
+void MainWin::slowIcon() {
+	int div = conf.emu.slowDiv;
+	if (div == slowShown) return;
+	slowShown = div;
+	slowAct->setIcon(QIcon((div == 4) ? QString(":/images/time-slow.png") : QString(":/images/time-slow%0.png").arg(div)));
+}
+
 // the buttons that are switches, read from what they switch
 void MainWin::syncActions() {
 	Computer* comp = conf.zx;
@@ -784,6 +793,7 @@ void MainWin::syncActions() {
 	fastAct->setChecked(conf.emu.fast);
 	ffAct->setChecked(conf.emu.tmode == XTM_FFWD);
 	slowAct->setChecked(conf.emu.tmode == XTM_SLOW);
+	slowIcon();		// Options may have changed the speed
 	rewAct->setEnabled(conf.emu.rewind.on);
 	diskAct->setEnabled(!dskMenu->isEmpty());
 	// on a machine that takes no board the switch stays, off, and says why
