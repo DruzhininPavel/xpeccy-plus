@@ -421,6 +421,7 @@ typedef struct {
 		QAction* mouseAct;
 		QAction* ffAct;
 		QAction* slowAct;
+		int slowShown = 0;		// the slow speed its icon shows
 		QAction* rewAct;
 		QAction* diskAct;
 		QAction* divAct;		// the divMMC on or off: hotkey and toolbar
@@ -445,6 +446,7 @@ typedef struct {
 		void tbMenu(const QPoint&, int);
 		void showBars();
 		void syncActions();
+		void slowIcon();
 		QMenu* volumeMenu();
 		class xVolBox* volPop;
 		QTimer volTimer;

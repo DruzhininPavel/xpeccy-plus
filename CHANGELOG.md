@@ -94,8 +94,10 @@ before that point is upstream's history and is not repeated here.
 - **The toolbar fits the window**: Icon Size has **Auto**, the default, with 24 x 24 icons
   while every button fits the window's width and 16 x 16 at a smaller zoom or border.
 
-- **Icons on dark styles**: the time controls look like the tape player's buttons and read
-  on light and dark styles alike, and NMI, Filter and Font get a light version on a dark one.
+- **The time controls** are drawn like the on-screen signs, white signs in a thin frame, and
+  read on light and dark styles alike. Slow Motion shows its speed: 1/2, 1/4 or 1/8.
+
+- **Icons on dark styles**: NMI, Filter and Font get a light version on a dark one.
 
 - **Rewind at end** is on in a new configuration: a tape played to its end starts over on the
   next Play or LOAD.

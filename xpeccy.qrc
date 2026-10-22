@@ -224,6 +224,12 @@
         <file>images/time-slow.png</file>
         <file>images/time-slow-16.png</file>
         <file>images/time-slow-24.png</file>
+        <file>images/time-slow2.png</file>
+        <file>images/time-slow2-16.png</file>
+        <file>images/time-slow2-24.png</file>
+        <file>images/time-slow8.png</file>
+        <file>images/time-slow8-16.png</file>
+        <file>images/time-slow8-24.png</file>
         <file>images/osd-time-rewind.png</file>
         <file>images/osd-time-pause.png</file>
         <file>images/osd-time-ffwd2.png</file>
