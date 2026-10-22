@@ -576,14 +576,13 @@ static void sds_exec(SDCard* sdc) {
 			if (cmd == CMD09) sds_csd(sdc, reg); else sds_cid(sdc, reg);
 			sds_block(sdc, reg, 16);
 			break;
-		case CMD12:			// a stuff byte, R1, and busy for a moment
-			sdc->cont = 0;
+		case CMD12:			// a stuff byte and R1; a read stops at once, with no busy after it
+			sdc->cont = 0;		// (a host may send its next command right after the R1)
 			sdc->state = SDC_FREE;
 			sdc->out.pos = sdc->out.len = 0;
 			sds_put(sdc, 0xff);
 			sds_gap(sdc, SDS_NCR);
 			sds_put(sdc, sds_r1(sdc, 0));
-			sdc->busyLeft = 2;
 			break;
 		case CMD13:			// R2: nothing wrong
 			sds_answer(sdc, sds_r1(sdc, 0));
