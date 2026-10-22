@@ -6,15 +6,18 @@ extern "C" {
 
 #include <stdio.h>
 
-// Read-only FAT32 volume synthesized from a host directory tree.
+// FAT32 volume synthesized from a host directory tree.
 // The caller builds the tree with vfat_add (a scanner lives in xcore, so this
 // file stays free of platform code), calls vfat_build, then asks for sectors.
+// A volume made writable takes the guest's writes and carries them over to the
+// host folder (vfat_wr.c).
 
 #define VF_SECSIZE	512
 #define VF_MAXNAME	255
 #define VF_MAXDENTS	65536		// FAT's limit on the entries of one directory
 #define VF_MAXFILE	0xfffffffeLL	// and on the size of a file
 #define VF_FULL		-2		// vfat_add: the directory has no room for the entry
+#define VF_TMPMARK	".xpeccy-sync~"	// names of the host side's temporary files: a scan skips them
 
 // IDE port sets the HDD boot sector comes in
 enum {
@@ -23,11 +26,28 @@ enum {
 	VF_HDDBOOTS
 };
 
+// What the host folder is reached through; every path is UTF-8. Each call but open
+// returns 0 when done.
+typedef struct {
+	void* ctx;
+	FILE* (*open)(void* ctx, const char* path, const char* mode);
+	int (*mkdir)(void* ctx, const char* path);
+	int (*rename)(void* ctx, const char* from, const char* to);	// never over an existing target
+	int (*replace)(void* ctx, const char* from, const char* to);	// from takes to's place, to's old content gone for good
+	int (*remove)(void* ctx, const char* path, int isdir);		// to the trash or for good, as the user set
+	int (*truncate)(void* ctx, const char* path, long long size);
+	int (*kind)(void* ctx, const char* path);			// 0 nothing there, 1 a file, 2 a folder
+	int (*empty)(void* ctx, const char* path);			// 1 when a folder holds nothing
+	void (*settime)(void* ctx, const char* path, unsigned int mtime);	// unix time, local
+	int (*stat)(void* ctx, const char* path, long long* size, long long* mtime);	// unix time; 0 when it is there
+} vfHost;
+
 typedef struct {
 	unsigned isdir:1;
 	unsigned lfn:1;			// name doesn't fit 8.3, needs long name entries
+	unsigned dead:1;		// gone from the volume and the folder
 	char* name;			// name shown to the guest, UTF-8
-	char* host;			// host path (files only), in the local 8-bit encoding
+	char* hname;			// name in the host folder, UTF-8 (NULL for the root)
 	char sname[12];			// generated 8.3 name, space padded, no dot
 	unsigned int shash;		// hash of sname and parent, the key in vFat.stab
 	int parent;			// owning directory, -1 for root
@@ -39,9 +59,14 @@ typedef struct {
 	unsigned int nclust;		// clusters occupied
 	unsigned short date;		// last write, FAT format
 	unsigned short time;
+	unsigned int hmtime;		// the host file's own time and size as the scan or the last sync left them
+	unsigned int hsize;
+	char* rname;			// where its content went when it could not be put in place
 	int ecnt;			// directory entries this node takes in its parent
 	int dents;			// entries this directory holds so far, end marker included
 } vfNode;
+
+typedef struct vfWr vfWr;
 
 typedef struct {
 	vfNode* node;
@@ -66,20 +91,53 @@ typedef struct {
 	int hddboots;			// how many of them were found
 	int hddport;			// which one to serve: VF_PORT_*, -1 for none
 
+	char* root;			// the host folder, UTF-8
+	vfHost host;			// how it is reached; open NULL: plain fopen
 	int cnode;			// cached open file
 	FILE* cfile;
+
+	int writable;			// the guest's writes are taken
+	int hold;			// and kept in memory: the folder waits for the user's word before it changes
+	vfWr* wr;			// what they did, from the first one on
 } vFat;
 
 vFat* vfat_create(void);
+// writes left to the host folder are carried over first
 void vfat_free(vFat*);
+// the host folder, and how to reach it (NULL: stdio); before vfat_build
+void vfat_set_root(vFat*, const char* root, const vfHost* host);
 
-// name: UTF-8; host: local 8-bit path (files only); returns node index,
-// VF_FULL if the parent directory has no room left, or -1 on failure
-int vfat_add(vFat*, int parent, const char* name, const char* host, unsigned int size, unsigned int mtime, int isdir);
+// name: UTF-8, also the host name; returns node index, VF_FULL if the parent
+// directory has no room left, or -1 on failure
+int vfat_add(vFat*, int parent, const char* name, unsigned int size, unsigned int mtime, int isdir);
 // lay the tree out on a volume of at least minsec sectors; 0 on failure
 int vfat_build(vFat*, unsigned int minsec);
 // fill one 512-byte sector; 0 if the LBA is outside the volume
 int vfat_read(vFat*, unsigned int lba, unsigned char* dst);
+
+// take one 512-byte sector from the guest; 0 if refused (read only, outside)
+int vfat_write(vFat*, unsigned int lba, const unsigned char* src);
+// once a frame: the folder follows the guest's writes after a quiet spell; 1 when it did
+int vfat_tick(vFat*);
+// carry the writes over now; force: even mid-operation (unmount), skipping what is unfinished
+int vfat_sync(vFat*, int force);
+// changes the folder has not taken (a failed host operation, an unfinished guest one)
+int vfat_pending(vFat*);
+// 1 once the folder stopped following the guest (a format, a mass delete): the volume lives on in memory
+int vfat_detached(vFat*);
+// carry over what the guest wrote, unless the volume is on hold or no longer follows:
+// before the folder is read again or let go
+void vfat_flush(vFat*);
+// what the user is to hear of, once each: 1 the folder stopped following (*why says why),
+// 2 host operations failed (*errors, *why names the first few); 0 nothing new
+int vfat_news(vFat*, const char** why, int* errors);
+// a name of ours an unfinished sync left in the folder's top level, made visible again;
+// returns the name it has now (malloc'd), NULL if it stays as it is
+char* vfat_tmp_restore(vFat*, const char* name);
+// 1 while the guest has written to a volume on hold
+int vfat_waiting(vFat*);
+// the user's word on a volume on hold: allow lets the folder follow, else it never will
+void vfat_release(vFat*, int allow);
 
 #ifdef __cplusplus
 }

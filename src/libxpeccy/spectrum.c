@@ -313,6 +313,16 @@ static void pwatch_hit(Computer* comp, int port, int val) {
 	}
 }
 
+// once a frame: a folder mounted writable follows the guest's writes
+void comp_media_tick(Computer* comp) {
+	if (x_runahead) return;
+	vfat_tick(comp->sdc->vfat);
+	vfat_tick(comp->div->card[0]->vfat);
+	vfat_tick(comp->div->card[1]->vfat);
+	vfat_tick(comp->ide->master->vfat);
+	vfat_tick(comp->ide->slave->vfat);
+}
+
 void comp_pwatch_clear(Computer* comp) {
 	comp->pwcount = 0;
 	comp->pwbus = 0;

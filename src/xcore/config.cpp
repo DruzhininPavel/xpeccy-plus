@@ -152,6 +152,9 @@ void conf_init(char* confdir) {
 	conf.tape.exp = wav_export_default();
 	conf.emu.pause = 0;
 	conf.emu.fast = 0;
+	conf.fold.rw = 1;
+	conf.fold.trash = 1;
+	conf.fold.asked = 0;
 	conf.emu.speed = 1.0;
 	conf.emu.tmode = XTM_NONE;
 	conf.emu.slowDiv = 4;
@@ -203,6 +206,9 @@ void saveConfig() {
 	fprintf(cfile, "lastdir = %s\n", conf.lastDir.c_str());
 	fprintf(cfile, "savepaths = %s\n", YESNO(conf.storePaths));
 	fprintf(cfile, "fdcturbo = %s\n", YESNO(fdcFlag & FDC_FAST));
+	fprintf(cfile, "folder.write = %s\n", YESNO(conf.fold.rw));
+	fprintf(cfile, "folder.trash = %s\n", YESNO(conf.fold.trash));
+	fprintf(cfile, "folder.asked = %s\n", YESNO(conf.fold.asked));
 	fprintf(cfile, "addboot = %s\n", YESNO(conf.boot));
 	fprintf(cfile, "autorun = %s\n", autorun_name[conf.autorun]);
 	fprintf(cfile, "exit.confirm = %s\n",YESNO(conf.confexit));
@@ -1272,6 +1278,9 @@ void loadConfig() {
 						conf.recentList.append(QString::fromLocal8Bit(pval.c_str()));
 					if (pnam=="savepaths") conf.storePaths = arg.b;
 					if (pnam == "fdcturbo") setFlagBit(arg.b, &fdcFlag, FDC_FAST);
+					if (pnam == "folder.write") conf.fold.rw = arg.b;
+					if (pnam == "folder.trash") conf.fold.trash = arg.b;
+					if (pnam == "folder.asked") conf.fold.asked = arg.b;
 					if (pnam == "port") conf.port = arg.i & 0xffff;
 					if (pnam == "winpos") {
 						vect = splitstr(pval, ",");

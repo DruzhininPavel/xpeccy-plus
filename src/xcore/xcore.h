@@ -856,6 +856,12 @@ struct xConfig {
 		// frame is the same length in T and the frame rate is what drops
 		double speed;
 	} emu;
+	// a folder mounted as a card or a disk (xcore/vfat_scan.cpp)
+	struct {
+		unsigned rw:1;		// takes the guest's writes, carried over to its files
+		unsigned trash:1;	// a file the guest deletes goes to the trash, not for good
+		unsigned asked:1;	// the user has answered the first write's question
+	} fold;
 	struct {
 		unsigned fullScreen:1;	// use fullscreen
 		unsigned keepRatio:1;	// keep ratio in fullscreen (add black borders)

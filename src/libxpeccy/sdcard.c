@@ -104,9 +104,13 @@ void sdcSetFolder(SDCard* sdc, const char* name, vFat* vf) {
 	sdcSetLock(sdc, 0);
 }
 
-// write protection: on by request, and always on for a folder
+// the card's lock switch, the user's; a folder that takes no writes is protected whatever it says
 void sdcSetLock(SDCard* sdc, int lock) {
-	sdc->lock = (lock || sdc->vfat) ? 1 : 0;
+	sdc->lock = lock ? 1 : 0;
+}
+
+int sdc_protected(SDCard* sdc) {
+	return sdc->lock || (sdc->vfat && !sdc->vfat->writable);
 }
 
 // file operation
@@ -124,16 +128,22 @@ void sdcRdSector(SDCard* sdc) {
 	}
 }
 
-void sdcWrSector(SDCard* sdc) {
+// 0 when the sector was refused: a folder that would not take it
+int sdcWrSector(SDCard* sdc) {
 //	printf("SDC write sector %i\n",sdc->addr);
-	if (x_runahead) return;			// this frame is going to be rolled back
+	if (x_runahead) return 1;		// this frame is going to be rolled back
 	sdc->writes++;
-	if (sdc->vfat) return;			// a folder is served read only
+	if (sdc->vfat) {
+		if ((sdc->addr >= sdc->maxlba) || !vfat_write(sdc->vfat, sdc->addr, sdc->buf.data + 1)) return 0;
+		x_media_writes++;
+		return 1;
+	}
 	if ((sdc->addr < sdc->maxlba) && sdc->file) {
 		x_fseek(sdc->file, (long long)sdc->addr << 9, SEEK_SET);
 		x_media_writes++;
 		fwrite(sdc->buf.data + 1,512,1,sdc->file);
 	}
+	return 1;
 }
 
 // io operations
@@ -297,12 +307,11 @@ void sdcWrite(SDCard* sdc, int val) {
 			sdc->buf.data[sdc->buf.pos] = val & 0xff;
 			sdc->buf.pos++;
 			if (sdc->buf.pos > 514) {	// 0..514 = 515 bytes = {1token,512data,2crc}
-				if (sdc->lock) {
+				if (sdc_protected(sdc) || !sdcWrSector(sdc)) {
 					sdcR1(sdc,0x1d);	// xxx01101 - data rejected due write error
 					sdc->state = SDC_FREE;
 				} else {
 					sdcR1(sdc,0x05);	// xxx00101 - data accepted
-					sdcWrSector(sdc);
 					if (sdc->cont) {
 						sdc->busy = 1;
 						sdc->buf.pos = 0;
@@ -661,10 +670,9 @@ static void sds_write_byte(SDCard* sdc, int val) {
 	int resp;
 	if (sdc->checkCrc && (sds_crc16(sdc->buf.data + 1, 512) != ((sdc->buf.data[513] << 8) | sdc->buf.data[514]))) {
 		resp = 0x0b;			// crc error
-	} else if (sdc->lock) {
+	} else if (sdc_protected(sdc) || !sdcWrSector(sdc)) {
 		resp = 0x0d;			// write error
 	} else {
-		sdcWrSector(sdc);
 		resp = 0x05;
 	}
 	sdc->out.pos = sdc->out.len = 0;

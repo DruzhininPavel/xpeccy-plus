@@ -645,6 +645,8 @@ void MainWin::timerEvent(QTimerEvent* ev) {
 			comp->msg = NULL;
 		}
 		watchMedia();
+		folderAsk();
+		folderNews();
 		watchClock();
 		watchPads();
 		QString vmsg = vrec_message();
@@ -1749,8 +1751,11 @@ void MainWin::closeEvent(QCloseEvent* ev) {
 		frm_tmr.stop();
 		killTimer(timid);
 		killTimer(secid);
+		// a folder that takes writes gets what it has not yet as it closes
 		ideCloseFiles(comp->ide);
 		sdcCloseFile(comp->sdc);
+		sdcCloseFile(comp->div->card[0]);
+		sdcCloseFile(comp->div->card[1]);
 		sltEject(comp->slot);		// this must save cartridge ram
 		emit s_keywin_close();
 		layouts_save();		// their own files, not the settings one
