@@ -13,6 +13,7 @@ long long fast_refresh_ns();		// host ns between two pictures of fast mode
 // The user's fast mode: which frames are drawn, and a pause asked for meanwhile.
 // Called at the end of every emulated frame, after the holders above.
 void fast_picture_frame(Computer*);
+int fast_ffwd_frame();
 int fast_picture_busy();		// frames are being left undrawn
 void fast_picture_hold(int);		// the bench draws them itself
 // let the machine go now - the debugger is about to take it

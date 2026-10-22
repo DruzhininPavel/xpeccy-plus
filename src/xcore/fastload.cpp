@@ -633,6 +633,9 @@ static int fp_held = 0;			// the frames are this policy's
 static int fp_hold = 0;			// the bench draws them itself
 static long long fp_drawn_at = 0;	// host time the picture shown was asked for
 static int fp_swaps = 0;		// bufSwaps at the frame end before
+static int fp_count = 0;		// fast forward: frames since the last one drawn
+static int fp_phase = 0;		// fast forward: the step after the next drawn frame is the short one
+static int fp_last = 1;			// the frame that just ended was drawn
 
 // a break can stop the machine mid-frame, and the picture up to the ray has to be there
 static int fp_watched(Computer* comp) {
@@ -646,10 +649,18 @@ static void fp_release(Computer* comp) {
 	comp->vid->flashShow = -1;
 }
 
+// The frame that just ended as fast forward left it: 1 drawn, -1 not, 0 when fast
+// forward does not choose (every frame drawn, or fast mode choosing by host time)
+int fast_ffwd_frame() {
+	if (!fp_held || conf.emu.fast) return 0;
+	return fp_last ? 1 : -1;
+}
+
 void fast_picture_frame(Computer* comp) {
 	Video* vid = comp->vid;
 	int drawn = (bufSwaps != fp_swaps);	// the frame that just ended swapped a picture in
 	fp_swaps = bufSwaps;
+	fp_last = drawn;
 	// a pause asked for in fast mode stops on a frame drawn whole, not on the
 	// picture of a while ago: the next one is drawn, then the machine stops
 	if (conf.emu.pauseReq) {
@@ -663,7 +674,10 @@ void fast_picture_frame(Computer* comp) {
 		}
 		return;
 	}
-	int want = conf.emu.fast && !fp_hold && !autostart_busy() && !fastload_busy() && !rzx_seeking()
+	// Fast forward draws one frame in as many as it runs for one: the picture keeps
+	// the rate it has at normal speed, and the frames no one would see cost nothing
+	int ffwd = (conf.emu.tmode == XTM_FFWD) && (conf.emu.speed > 1.0);
+	int want = (conf.emu.fast || ffwd) && !fp_hold && !autostart_busy() && !fastload_busy() && !rzx_seeking()
 		&& !rewind_active() && !fp_watched(comp);
 	if (!want) {
 		fp_release(comp);
@@ -672,6 +686,20 @@ void fast_picture_frame(Computer* comp) {
 	if (!fp_held) {
 		fp_held = 1;
 		fp_drawn_at = conf.vid.fctime;
+		fp_count = 0;
+	}
+	if (!conf.emu.fast) {
+		// an even step would show one phase of a sprite flickered on every other frame
+		// and never the other: the steps go N+1, N-1 in turn
+		int n = (int)(conf.emu.speed + 0.5);
+		int step = (n & 1) ? n : n + (fp_phase ? -1 : 1);
+		int due = (++fp_count >= step);
+		if (due) {
+			fp_count = 0;
+			fp_phase ^= 1;
+		}
+		vid_set_nodraw_next(vid, !due);
+		return;
 	}
 	fast_flash(comp);
 	int due = (conf.vid.fctime - fp_drawn_at >= fast_refresh_ns());

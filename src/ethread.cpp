@@ -537,7 +537,8 @@ static int ra_run_frame(Computer* comp) {
 
 // 1 when the machine has been run on and has to be wound back afterwards.
 int xThread::runAhead(Computer* comp) {
-	if ((conf.emu.runahead < 1) || comp->rzx.play) return 0;	// a recording takes no input to win time on
+	// a recording takes no input to win time on, and fast forward shows a frame in so many
+	if ((conf.emu.runahead < 1) || comp->rzx.play || (conf.emu.tmode == XTM_FFWD)) return 0;
 	if (!ra_snapshot(comp, finish)) return 0;
 	for (int i = 0; (i < conf.emu.runahead) && ra_run_frame(comp); i++);
 	return 1;
@@ -560,7 +561,7 @@ static void af_copy(uint32_t* dst, int dstride, const uint32_t* src, int sstride
 
 // AF_AHEAD frames after the one shown, or NULL
 static const uint32_t* af_look_ahead(Computer* comp, int wound, int finish) {
-	if (!noflicAhead || (noflic < 1)) return NULL;
+	if (!noflicAhead || (noflic < 1) || (conf.emu.tmode == XTM_FFWD)) return NULL;
 	if ((noflicMode != AF_2C_ADAPTIVE) && (noflicMode != AF_3C_ADAPTIVE)) return NULL;
 	if (!wound && !ra_snapshot(comp, finish)) return NULL;
 	Video* vid = comp->vid;
@@ -739,11 +740,13 @@ void xThread::emuCycle(Computer* comp) {
 			int wound = runAhead(comp);
 // process noflic/scanlines (if !fast ???)
 // buffers is already switches, bufimg - just painted (greyscale, if flag is set), scrimg - new
-			if (!conf.emu.fast && (noflic > 0)) {
+			// fast forward's undrawn frames are not mixed, and its drawn ones follow on
+			int ffwd = fast_ffwd_frame();
+			if (!conf.emu.fast && (noflic > 0) && (ffwd >= 0)) {
 				const uint32_t* ahead = af_look_ahead(comp, wound, finish);
 				scrMix(pscr, (unsigned char*)af_crop(comp->vid),
 					comp->vid->vsze.x * 2, comp->vid->vsze.y, bytesPerLine,
-					noflic / 100.0, noflicGamma, noflicMode, conf.vid.fcount != mixFrame + 1, ahead);
+					noflic / 100.0, noflicGamma, noflicMode, !ffwd && (conf.vid.fcount != mixFrame + 1), ahead);
 				mixFrame = conf.vid.fcount;
 			}
 
