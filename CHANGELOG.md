@@ -96,7 +96,7 @@ before that point is upstream's history and is not repeated here.
   shows the 128K's on a 128K, +2, +2A and +3. A pressed key lights up (on the 128K skins on
   the key itself, evenly at any size), and the one under the pointer dimly; a right click
   between the rows opens the menu, Caps Shift and Symbol Shift lock with a click, and the
-  window opens where it was left. *(48K skins drawn by Volutar)*
+  window opens where it was left. *(48K skins and the classic 128K drawn by Volutar)*
 
 - **Reset with a divMMC on** clears the board's MAPRAM setting, as the ZX Spectrum Next's
   board does, so a program that crashes into setting it (BREAK held during a load from the
