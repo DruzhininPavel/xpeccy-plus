@@ -131,8 +131,16 @@ def set_up(case, corpus, cfg, tmp):
     for card in cards:
         if card.is_dir():
             pin(card)
+    # the references are of folders served read-only; a writable one is a bigger volume
+    folder_ro = any(card.is_dir() for card in cards)
     if ini["cfg"]:
+        if folder_ro:
+            ini["cfg"].append(("GENERAL.folder.write", "no"))
         (cfg / "config.conf").write_text(ini_lines(ini["cfg"]), encoding="utf-8")
+    elif folder_ro:
+        # no settings of its own: the config a fresh start writes, with that one line in
+        base = (ROOT / "res" / "fallback" / "config.conf").read_text(encoding="utf-8")
+        (cfg / "config.conf").write_text(base.replace("[GENERAL]\n", "[GENERAL]\nfolder.write = no\n", 1), encoding="utf-8")
     if ini["mac"]:
         (cfg / "machines").mkdir(exist_ok=True)
         (cfg / "machines" / f"{case.machine}.conf").write_text(ini_lines(ini["mac"]), encoding="utf-8")

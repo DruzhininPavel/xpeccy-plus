@@ -44,6 +44,13 @@ foreach(BENCH ${BENCHES})
 	target_link_libraries(${BENCH}-bench xpeccycore)
 endforeach()
 
+# a folder volume taking writes, with FatFs (thirdparty/fatfs, ChaN's 1-clause BSD) as the guest
+set(FATFS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/fatfs)
+add_executable(vfat-bench core/vfat/main.c ${FATFS}/ff.c ${FATFS}/ffunicode.c)
+target_include_directories(vfat-bench PRIVATE ${FATFS})
+target_link_libraries(vfat-bench xpeccycore)
+set_source_files_properties(${FATFS}/ff.c ${FATFS}/ffunicode.c PROPERTIES COMPILE_FLAGS -w)
+
 # GPL v2+ (see tools/z80test/LICENSE): the Z80 sources only, never the library
 file(GLOB Z80_SOURCES CONFIGURE_DEPENDS ${XLIB}/cpu/Z80/*.c)
 add_executable(z80-coretest ${XROOT}/tools/z80test/coretest.c ${Z80_SOURCES})
@@ -54,4 +61,5 @@ if(MINGW)
 		target_link_options(${BENCH}-bench PRIVATE -static)
 	endforeach()
 	target_link_options(z80-coretest PRIVATE -static)
+	target_link_options(vfat-bench PRIVATE -static)
 endif()
