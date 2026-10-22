@@ -41,7 +41,6 @@ class xThread : public QThread {
 		void run();
 		void emuCycle(Computer*);
 		void rzx_begin(Computer*);
-		int runAhead(Computer*);
 		void rewindCheck(Computer*, int full);
 		void brkAction(Computer*, xBrkPoint*, int*);
 		void tap_catch_load(Computer*, int, int base = LD_ROM_BASE, int dir = 1);

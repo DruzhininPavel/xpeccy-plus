@@ -27,6 +27,7 @@ void mouseReleaseAll(Mouse* mou) {
 }
 
 void mousePress(Mouse* mou, int wut, int val) {
+	x_input_bump();
 	switch(wut) {
 		case XM_LMB: mou->lmb = 1; break;
 		case XM_RMB: mou->rmb = 1; break;
@@ -41,6 +42,7 @@ void mousePress(Mouse* mou, int wut, int val) {
 }
 
 void mouseRelease(Mouse* mou, int wut) {
+	x_input_bump();
 	switch(wut) {
 		case XM_LMB: mou->lmb = 0; break;
 		case XM_RMB: mou->rmb = 0; break;

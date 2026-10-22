@@ -11,6 +11,13 @@ extern "C" {
 
 #include "../defines.h"
 
+// Bumped by whatever reaches the machine from outside: a key, the joystick, the mouse,
+// a reset or a load. Frames run ahead are the machine's own while it stands still.
+extern unsigned int x_input_gen;
+static inline void x_input_bump(void) {
+	__atomic_add_fetch(&x_input_gen, 1, __ATOMIC_RELAXED);
+}
+
 // joystick type
 enum {
 	XJ_NONE = 0,
@@ -152,6 +159,11 @@ struct Keyboard {
 	unsigned grab:1;		// host keyboard grabbed: profi takes its xt layout
 	int prfshift;			// profi xt: Shift keys held
 	int prfsh[8];			// profi xt: keys that went down with their Shift pair
+	// the Next's ps/2 keyboard (input/keyboard/ps2_keyb.vhd): what the host holds down
+	unsigned char nxKeys[8];	// a matrix row's 7 columns, 1 pressed
+	unsigned char nxCaps, nxSym;	// CAPS / SYM SHIFT presses counted, 3 bits each
+	unsigned short nxLast;		// the last code taken, b9 release, b8 E0: the typematic filter
+	unsigned char nxDown[64];	// the codes down now, b8 E0: a host's make twice, or a break of a key up, is no key
 	// pc keyboard
 	unsigned lock:1;	// ps/2 keyboard disabled
 	int pcmode;		// xt/at/ps2 (self)
