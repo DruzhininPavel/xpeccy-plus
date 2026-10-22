@@ -726,6 +726,7 @@ void xThread::emuCycle(Computer* comp) {
 			fastload_frame(comp);
 			rzx_seek_frame(comp);
 			rzxr_frame(comp);
+			comp_media_tick(comp);
 			rewind_frame(comp, &sndNsFixed);
 			rewinding = rewind_active();
 			fast_picture_frame(comp);

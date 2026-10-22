@@ -674,6 +674,7 @@ SetupWin::SetupWin(QWidget* par):QDialog(par) {
 	buildStart();
 	buildDevices();
 	buildRecording();
+	buildFolders();
 	ui.vidViewGBox->setIcon(":/images/grp-picture.png");
 	ui.antiflickerGBox->setIcon(":/images/grp-antiflicker.png");
 	ui.groupBox->setIcon(":/images/grp-screenshot.png");
@@ -978,6 +979,8 @@ void SetupWin::start() {
 	setRFIndex(ui.cbFastKey, conf.emu.fastHold, XHOLD_HYBRID);
 	ui.cbFastFps->setEditText(QString::number(conf.emu.fastFps));
 	setRFIndex(ui.cbFastPic, conf.emu.fastPic, FPIC_RASTER);
+	setRFIndex(cbFolderWrite, (int)conf.fold.rw);
+	setRFIndex(cbFolderTrash, (int)conf.fold.trash);
 	ui.cbRewind->setChecked(conf.emu.rewind.on);
 	for (QWidget* w : {(QWidget*)ui.sbRewStep, (QWidget*)ui.labRewStep, (QWidget*)ui.sbRewSecs, (QWidget*)ui.labRewSecs})
 		w->setEnabled(conf.emu.rewind.on);
@@ -992,16 +995,15 @@ void SetupWin::start() {
 	// number set there.
 	int ctlw = qMax(comboFitWidth(ui.cbRunAhead), qMax(comboFitWidth(ui.cbSlowmo), comboFitWidth(ui.cbFfwd)));
 	ctlw = qMax(ctlw, comboFitWidth(ui.cbFastFps));
-	ui.cbRunAhead->setFixedWidth(ctlw);
-	ui.cbSlowmo->setFixedWidth(ctlw);
-	ui.cbFfwd->setFixedWidth(ctlw);
-	ui.cbFastFps->setFixedWidth(ctlw);
+	ctlw = qMax(ctlw, qMax(comboFitWidth(cbFolderWrite), comboFitWidth(cbFolderTrash)));
+	for (QComboBox* box : {ui.cbRunAhead, ui.cbSlowmo, ui.cbFfwd, ui.cbFastFps, cbFolderWrite, cbFolderTrash})
+		box->setFixedWidth(ctlw);
 	// the picture's mode in the keys' column, as wide as they are
 	int keyw = qMax(comboFitWidth(ui.cbFastKey), comboFitWidth(ui.cbFastPic));
 	for (QComboBox* box : {ui.cbSlowmoKey, ui.cbFfwdKey, ui.cbFastKey, ui.cbFastPic})
 		box->setFixedWidth(keyw);
 	ui.cbStyleSheet->setFixedWidth(comboFitWidth(ui.cbStyleSheet));
-	QGridLayout* emugrid[4] = {ui.gridLayout_lat, ui.gridLayout_rew, ui.gridLayout_look, ui.gridLayout_23};
+	QGridLayout* emugrid[5] = {ui.gridLayout_lat, ui.gridLayout_rew, gridFolders, ui.gridLayout_look, ui.gridLayout_23};
 	for (int col = 0; col < 2; col++) {
 		int wid = 0;
 		for (QGridLayout* g : emugrid)
@@ -1196,6 +1198,9 @@ void SetupWin::apply() {
 	int rwStep = conf.emu.rewind.step;
 	int rwSecs = conf.emu.rewind.secs;
 	// unset shows as Last, and stays unset - the first start still asks - until changed
+	// a folder's mode is taken when it is mounted, which the machine's part does again below
+	conf.fold.rw = getRFIData(cbFolderWrite) ? 1 : 0;
+	conf.fold.trash = getRFIData(cbFolderTrash) ? 1 : 0;
 	int ms = qMin(cbStart->currentIndex(), (int)MS_THIS);
 	if ((conf.macStart != MS_UNSET) || (ms != MS_LAST)) conf.macStart = ms;
 	if (ms == MS_THIS) conf.macStartId = getRFSData(cbStart).toLocal8Bit().data();
@@ -2896,6 +2901,40 @@ static QToolButton* rec_button(const char* icon, const QString& tip) {
 	btn->setIcon(QIcon(icon));
 	btn->setToolTip(tip);
 	return btn;
+}
+
+// Folder as a disk, under Speed and rewind: whether a folder mounted as a card or a disk
+// takes the machine's writes, and where a file the machine deletes there goes
+void SetupWin::buildFolders() {
+	QGroupBox* box = new QGroupBox(tr("Folder as a disk"));
+	gridFolders = new QGridLayout(box);
+	gridFolders->setHorizontalSpacing(12);
+	gridFolders->setVerticalSpacing(8);
+	gridFolders->setColumnStretch(2, 1);
+	cbFolderWrite = new QComboBox;
+	cbFolderWrite->addItem(tr("Read-only"), 0);
+	cbFolderWrite->addItem(tr("Read/write"), 1);
+	cbFolderTrash = new QComboBox;
+	cbFolderTrash->addItem(tr("Move to trash"), 1);
+	cbFolderTrash->addItem(tr("Delete permanently"), 0);
+	auto row = [this](int r, QComboBox* cb, const QString& name, const QString& hint, const QString& tip) {
+		QLabel* lab = new QLabel(name);
+		QLabel* note = new QLabel(hint);
+		QFont font = note->font();
+		font.setItalic(true);
+		note->setFont(font);
+		lab->setBuddy(cb);
+		cb->setToolTip(tip);
+		lab->setToolTip(tip);
+		gridFolders->addWidget(cb, r, 0);
+		gridFolders->addWidget(lab, r, 1);
+		gridFolders->addWidget(note, r, 2);
+	};
+	row(0, cbFolderWrite, tr("Folders"), tr("Whether a folder in a card slot or a drive takes what the machine saves"),
+		tr("Read/write: the folder's files follow what the machine writes"));
+	row(1, cbFolderTrash, tr("Deleted files"), tr("Where a file the machine deletes in such a folder goes"),
+		tr("A file the trash will not take stays in the folder"));
+	ui.verticalLayout_16->insertWidget(ui.verticalLayout_16->indexOf(ui.gbRewind) + 1, box);
 }
 
 void SetupWin::buildRecording() {

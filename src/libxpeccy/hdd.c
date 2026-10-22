@@ -140,7 +140,14 @@ void ataWriteSector(ATADev* dev) {
 	if (dev->lba >= dev->maxlba) {			// sector not found
 		dev->reg.state |= HDF_ERR;
 		dev->reg.err |= (HDF_ABRT | HDF_IDNF);
-	} else if (!dev->vfat) {			// a folder is served read only
+	} else if (dev->vfat) {
+		if (vfat_write(dev->vfat, dev->lba, dev->buf.data)) {
+			x_media_writes++;
+		} else {
+			dev->reg.state |= HDF_ERR;		// a folder that takes no writes
+			dev->reg.err |= HDF_ABRT;
+		}
+	} else {
 		if (dev->file) {
 			long long pos = (long long)dev->lba * dev->pass.bps + dev->offset;
 			x_fseek(dev->file, pos, SEEK_SET);

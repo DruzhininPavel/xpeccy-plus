@@ -57,11 +57,12 @@ void MainWin::fillCardMenu(QMenu* m, int card) {
 	});
 	act->setEnabled(sdc->image != NULL);
 	m->addSeparator();
-	// the card's lock switch; a folder is served read only whatever it says
+	// the card's lock switch; a folder is read only whatever it says unless Options lets
+	// folders take writes
 	act = m->addAction("Write Protect");
 	act->setCheckable(true);
-	act->setChecked(sdc->lock || dir);
-	act->setEnabled(!dir);
+	act->setChecked(sdc_protected(sdc));
+	act->setEnabled(!dir || (sdc->vfat && sdc->vfat->writable));
 	connect(act, &QAction::toggled, this, [card](bool on) {sdcSetLock(sd_card(conf.zx, card), on ? 1 : 0);});
 }
 
@@ -263,6 +264,55 @@ void MainWin::esxCheck() {
 	pause(false, PR_EXTRA);
 }
 
+// A folder mounted read/write changes the user's own files, so the first time
+// the machine writes to one, it is held in memory until this is answered. Asked
+// once for good: the answer is the setting in Options.
+void MainWin::folderAsk() {
+	static bool asking = false;
+	if (asking) return;
+	vFat* vf = fold_waiting(conf.zx);
+	if (!vf) return;
+	asking = true;
+	pause(true, PR_EXTRA);
+	QMessageBox box(QMessageBox::Warning, "Writing to a folder",
+		QString("The machine is writing to the folder\n%0\n\n"
+		"With Read/write on, what it saves, changes or deletes there changes the files "
+		"in the folder itself, and a deleted file %1. Keep a copy of anything you cannot "
+		"afford to lose.\n\n"
+		"Read-only keeps what the machine writes in memory until the folder is mounted "
+		"again. Both can be changed in Options (Emulation, Folder as a disk).")
+		.arg(QDir::toNativeSeparators(QString::fromUtf8(vf->root ? vf->root : "")))
+		.arg(conf.fold.trash ? "goes to the trash" : "is deleted permanently"), QMessageBox::NoButton, this);
+	QPushButton* allow = box.addButton("Allow writing", QMessageBox::AcceptRole);
+	QPushButton* ro = box.addButton("Read-only", QMessageBox::RejectRole);
+	box.setDefaultButton(allow);
+	box.setEscapeButton(ro);
+	box.exec();
+	bool yes = (box.clickedButton() == allow);
+	emu_lock();
+	fold_release(conf.zx, yes);
+	emu_unlock();
+	conf.fold.asked = 1;
+	if (!yes) conf.fold.rw = 0;
+	saveConfig();
+	pause(false, PR_EXTRA);
+	asking = false;
+}
+
+// A folder that stopped following the machine, or could not take some of what it wrote,
+// says so once: what the machine wrote there may otherwise be lost without a word.
+void MainWin::folderNews() {
+	static bool telling = false;
+	if (telling) return;
+	QString msg = fold_news(conf.zx);
+	if (msg.isEmpty()) return;
+	telling = true;
+	pause(true, PR_EXTRA);
+	QMessageBox::warning(this, "Writing to a folder", msg);
+	pause(false, PR_EXTRA);
+	telling = false;
+}
+
 // what a floppy drive's menu and the Disk manager's buttons do
 void MainWin::diskOp(int op, int drv) {
 	switch (op) {
@@ -345,7 +395,7 @@ void MainWin::diskEject(int drv) {
 void MainWin::hddOpen(int dev, bool dir) {
 	pause(true, PR_FILE);
 	QString path = dir
-		? QFileDialog::getExistingDirectory(this, "Folder to serve as the disk (read only)", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly)
+		? QFileDialog::getExistingDirectory(this, "Folder to serve as the disk", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly)
 		: QFileDialog::getOpenFileName(this, "Hard disk image", "", "All files (*)", NULL, QFileDialog::DontUseNativeDialog | QFileDialog::DontConfirmOverwrite);
 	pause(false, PR_FILE);
 	if (!path.isEmpty()) driveOp([dev, path]() {ide_mount(conf.zx->ide, dev, path);});
@@ -354,7 +404,7 @@ void MainWin::hddOpen(int dev, bool dir) {
 void MainWin::sdcOpen(int card, bool dir) {
 	pause(true, PR_FILE);
 	QString path = dir
-		? QFileDialog::getExistingDirectory(this, "Folder to serve as the card (read only)", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly)
+		? QFileDialog::getExistingDirectory(this, "Folder to serve as the card", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly)
 		: QFileDialog::getOpenFileName(this, "SD card image", "", "All files (*)", NULL, QFileDialog::DontUseNativeDialog);
 	pause(false, PR_FILE);
 	if (!path.isEmpty()) driveOp([card, path]() {sdc_mount(sd_card(conf.zx, card), path);});

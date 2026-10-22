@@ -1,17 +1,123 @@
+// GetFinalPathNameByHandleW is Vista's; a 32-bit MinGW defaults below it (Qt 5 needs Windows 7)
+#if defined(_WIN32) && (!defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0600))
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0600
+#endif
+
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QDateTime>
 #include <QStringList>
+#include <QSet>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <objbase.h>
+#else
+#include <stdio.h>
+#endif
 
 #include "vfat_scan.h"
 #include "xcore.h"
 #include "../libxpeccy/xlog.h"
 
-// Host folder -> synthetic FAT32 volume. The scan lives here so libxpeccy stays
-// free of platform directory code; vfat.c only ever sees a tree and file paths.
+// Host folder -> synthetic FAT32 volume. The scan and the host side of the guest's
+// writes live here so libxpeccy stays free of platform code; vfat.c only ever sees
+// a tree and calls through vfHost.
 
 #define VFS_MAXDEPTH	16		// deeper folders are left out
 #define VFS_MAXNODES	200000		// and so is anything past this many entries: the scan holds the gui
+#define VFS_ROOM	(256u * 2048)	// a folder taking writes has this much free room at least, in sectors
+
+// == the host side, all paths UTF-8 ==
+
+static QString vfh_str(const char* path) {
+	return QString::fromUtf8(path);
+}
+
+static FILE* vfh_open(void*, const char* path, const char* mode) {
+#ifdef _WIN32
+	return _wfopen(vfh_str(path).toStdWString().c_str(), QString(mode).toStdWString().c_str());
+#else
+	return fopen(QFile::encodeName(vfh_str(path)).constData(), mode);
+#endif
+}
+
+static int vfh_mkdir(void*, const char* path) {
+	return QDir().mkdir(vfh_str(path)) ? 0 : -1;
+}
+
+static int vfh_kind(void*, const char* path) {
+	QFileInfo inf(vfh_str(path));
+	if (!inf.exists() && !inf.isSymLink()) return 0;
+	return inf.isDir() ? 2 : 1;
+}
+
+static int vfh_rename(void* ctx, const char* from, const char* to) {
+	if (vfh_kind(ctx, to)) return -1;		// a plain rename() would take its place
+	return QDir().rename(vfh_str(from), vfh_str(to)) ? 0 : -1;
+}
+
+static int vfh_replace(void*, const char* from, const char* to) {
+#ifdef _WIN32
+	return MoveFileExW(vfh_str(from).toStdWString().c_str(), vfh_str(to).toStdWString().c_str(),
+		MOVEFILE_REPLACE_EXISTING) ? 0 : -1;
+#else
+	return ::rename(QFile::encodeName(vfh_str(from)).constData(), QFile::encodeName(vfh_str(to)).constData());
+#endif
+}
+
+static int vfh_remove(void*, const char* path, int isdir) {
+	QString p = vfh_str(path);
+	if (conf.fold.trash) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+#ifdef _WIN32
+		// the trash is a shell operation, which wants COM on the thread asking
+		static thread_local bool com = false;
+		if (!com) {
+			CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+			com = true;
+		}
+#endif
+		if (QFile::moveToTrash(p)) return 0;
+#endif
+		// no trash there: the file stays, and comes back on the next read of the folder
+		xlog(XLG_DISK, XLL_WARN, "folder: %s could not go to the trash, kept", path);
+		return -1;
+	}
+	return (isdir ? QDir().rmdir(p) : QFile::remove(p)) ? 0 : -1;
+}
+
+static int vfh_truncate(void*, const char* path, long long size) {
+	QFile file(vfh_str(path));
+	return file.resize(size) ? 0 : -1;
+}
+
+static int vfh_empty(void*, const char* path) {
+	QDir dir(vfh_str(path));
+	return dir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System).isEmpty() ? 1 : 0;
+}
+
+static void vfh_settime(void*, const char* path, unsigned int mtime) {
+	QFile file(vfh_str(path));
+	if (file.open(QIODevice::ReadWrite))
+		file.setFileTime(QDateTime::fromMSecsSinceEpoch((qint64)mtime * 1000), QFileDevice::FileModificationTime);
+}
+
+static int vfh_stat(void*, const char* path, long long* size, long long* mtime) {
+	QFileInfo inf(vfh_str(path));
+	if (!inf.exists()) return -1;
+	*size = inf.size();
+	*mtime = inf.lastModified().toMSecsSinceEpoch() / 1000;	// as the scan takes it
+	return 0;
+}
+
+static const vfHost vfs_host = {
+	NULL, vfh_open, vfh_mkdir, vfh_rename, vfh_replace, vfh_remove, vfh_truncate, vfh_kind, vfh_empty, vfh_settime, vfh_stat
+};
+
+// == the scan ==
 
 // what a scan had to leave out
 struct vfsDrop {
@@ -19,6 +125,7 @@ struct vfsDrop {
 	int full = 0;			// entries past VF_MAXDENTS in their folder
 	int big = 0;			// files too big for FAT
 	bool count = false;		// stopped at VFS_MAXNODES
+	unsigned long long bytes = 0;	// what the files hold
 };
 
 struct vfsDir {
@@ -27,18 +134,54 @@ struct vfsDir {
 	int depth;
 };
 
+// where a folder really is, junctions followed, in one spelling to compare: Qt's
+// canonical path does not see through a junction
+static QString real_dir(const QString& path) {
+#ifdef _WIN32
+	HANDLE h = CreateFileW((const wchar_t*)QDir::toNativeSeparators(path).utf16(), 0,
+		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+	if (h != INVALID_HANDLE_VALUE) {
+		wchar_t buf[4096];
+		DWORD n = GetFinalPathNameByHandleW(h, buf, 4096, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+		CloseHandle(h);
+		if (n && (n < 4096)) {
+			QString res = QString::fromWCharArray(buf, n);
+			if (res.startsWith("\\\\?\\UNC\\")) res = "\\\\" + res.mid(8);
+			else if (res.startsWith("\\\\?\\")) res = res.mid(4);
+			return QDir::fromNativeSeparators(res).toLower();
+		}
+	}
+	return QDir::cleanPath(QFileInfo(path).absoluteFilePath()).toLower();
+#else
+	QString res = QFileInfo(path).canonicalFilePath();
+	return res.isEmpty() ? QDir::cleanPath(QFileInfo(path).absoluteFilePath()) : res;
+#endif
+}
+
 // breadth first, so whatever a limit cuts off is the deepest level and never
-// the loader in the root
-static void vfat_scan_tree(vFat* vf, const QString& root, vfsDrop& drop) {
+// the loader in the root. A folder reached a second time - a junction back up the tree,
+// two to one place - is taken once, and a junction into the tree itself not at all:
+// deleting one copy would take the file from the other.
+static void vfat_scan_tree(vFat* vf, const QString& root, bool writable, vfsDrop& drop) {
 	QList<vfsDir> queue;
+	QSet<QString> seen;
+	QString top = real_dir(root);
+	seen.insert(top);
 	queue.append({0, root, 0});
 	for (int q = 0; q < queue.size(); q++) {
 		vfsDir cur = queue[q];			// a copy: appending moves the list
+		QString curReal = real_dir(cur.path);
 		QFileInfoList list = QDir(cur.path).entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDir::Name | QDir::DirsFirst);
 		foreach(QFileInfo inf, list) {
 			if (vf->nodes >= VFS_MAXNODES) {
 				drop.count = true;
 				return;
+			}
+			if (inf.fileName().startsWith(VF_TMPMARK)) {		// left by an interrupted sync
+				char* back = (writable && !cur.idx) ? vfat_tmp_restore(vf, inf.fileName().toUtf8().constData()) : NULL;
+				if (!back) continue;
+				inf = QFileInfo(QDir(cur.path).filePath(QString::fromUtf8(back)));
+				free(back);
 			}
 			unsigned int mtime = inf.lastModified().toMSecsSinceEpoch() / 1000;
 			QByteArray name = inf.fileName().toUtf8();
@@ -48,15 +191,24 @@ static void vfat_scan_tree(vFat* vf, const QString& root, vfsDrop& drop) {
 					drop.deep++;
 					continue;
 				}
-				idx = vfat_add(vf, cur.idx, name.constData(), NULL, 0, mtime, 1);
+				QString real = real_dir(inf.absoluteFilePath());
+				if (seen.contains(real)) continue;
+#ifdef _WIN32
+				bool link = (real != (curReal + "/" + inf.fileName()).toLower());
+#else
+				bool link = (real != curReal + "/" + inf.fileName());
+#endif
+				if (link && real.startsWith(top + "/")) continue;
+				seen.insert(real);
+				idx = vfat_add(vf, cur.idx, name.constData(), 0, mtime, 1);
 				if (idx >= 0) queue.append({idx, inf.absoluteFilePath(), cur.depth + 1});
 			} else if (inf.isFile()) {
 				if (inf.size() > VF_MAXFILE) {
 					drop.big++;
 					continue;
 				}
-				QByteArray host = inf.absoluteFilePath().toLocal8Bit();
-				idx = vfat_add(vf, cur.idx, name.constData(), host.constData(), inf.size(), mtime, 0);
+				idx = vfat_add(vf, cur.idx, name.constData(), inf.size(), mtime, 0);
+				if (idx >= 0) drop.bytes += inf.size();
 			} else {
 				continue;
 			}
@@ -66,16 +218,17 @@ static void vfat_scan_tree(vFat* vf, const QString& root, vfsDrop& drop) {
 	}
 }
 
-vFat* vfat_scan(const QString& path) {
+vFat* vfat_scan(const QString& path, bool writable) {
 	QFileInfo inf(path);
 	if (!inf.isDir() || !inf.isReadable()) return NULL;
 	vFat* vf = vfat_create();
 	if (!vf) return NULL;
+	QByteArray lpath = QDir::cleanPath(inf.absoluteFilePath()).toUtf8();
+	vfat_set_root(vf, lpath.constData(), &vfs_host);
 	unsigned int mtime = inf.lastModified().toMSecsSinceEpoch() / 1000;
 	vfsDrop drop;
-	vfat_add(vf, -1, "", NULL, 0, mtime, 1);		// root
-	vfat_scan_tree(vf, path, drop);
-	QByteArray lpath = path.toUtf8();
+	vfat_add(vf, -1, "", 0, mtime, 1);		// root
+	vfat_scan_tree(vf, path, writable, drop);
 	QStringList why;
 	if (drop.count) why << QString("everything past %0 entries").arg(VFS_MAXNODES);
 	if (drop.deep) why << QString("%0 folders deeper than %1").arg(drop.deep).arg(VFS_MAXDEPTH);
@@ -85,21 +238,78 @@ vFat* vfat_scan(const QString& path) {
 		xlog(XLG_DISK, XLL_WARN, "folder %s: %i entries taken, left out %s", lpath.constData(), vf->nodes - 1, qPrintable(why.join(", ")));
 		if (conf.zx) conf.zx->msg = (char*)" folder: not all of it fits ";
 	}
-	if (!vfat_build(vf, 0)) {
+	// room to write in: as much again as it holds, and VFS_ROOM at least
+	unsigned long long minsec = 0;
+	if (writable) {
+		minsec = (drop.bytes / VF_SECSIZE) * 2 + VFS_ROOM;
+		if (minsec > 0x7fffffffull) minsec = 0x7fffffffull;
+	}
+	if (!vfat_build(vf, (unsigned int)minsec)) {
 		xlog(XLG_DISK, XLL_WARN, "folder %s: more than a 32G disk holds, not mounted", lpath.constData());
 		if (conf.zx) conf.zx->msg = (char*)" folder too big for a disk ";
 		vfat_free(vf);
 		return NULL;
 	}
+	vf->writable = writable ? 1 : 0;
+	vf->hold = (writable && !conf.fold.asked) ? 1 : 0;	// the first write asks first (MainWin::folderAsk)
+	xlog(XLG_DISK, XLL_DEBUG, "folder %s: %i entries, %s", lpath.constData(), vf->nodes - 1, writable ? "read/write" : "read only");
 	return vf;
 }
 
+// every volume a folder serves, NULL where there is none
+static void fold_volumes(Computer* comp, vFat** vf) {
+	vf[0] = comp->sdc->vfat;
+	vf[1] = comp->div->card[0]->vfat;
+	vf[2] = comp->div->card[1]->vfat;
+	vf[3] = comp->ide->master->vfat;
+	vf[4] = comp->ide->slave->vfat;
+}
+
+vFat* fold_waiting(Computer* comp) {
+	vFat* vf[5];
+	fold_volumes(comp, vf);
+	for (int i = 0; i < 5; i++) {
+		if (vfat_waiting(vf[i])) return vf[i];
+	}
+	return NULL;
+}
+
+QString fold_news(Computer* comp) {
+	vFat* vf[5];
+	fold_volumes(comp, vf);
+	for (int i = 0; i < 5; i++) {
+		const char* why = "";
+		int errors = 0;
+		int k = vfat_news(vf[i], &why, &errors);
+		if (!k) continue;
+		QString root = QDir::toNativeSeparators(QString::fromUtf8(vf[i]->root ? vf[i]->root : ""));
+		if (k == 1)
+			return QString("The folder\n%0\nno longer follows the machine: %1.\n\n"
+				"What the machine writes there stays in memory, and is lost when the folder is "
+				"read again or the emulator closes.").arg(root).arg(why);
+		return QString("Not all of what the machine wrote reached the folder\n%0\n\n%1\n\n"
+			"Content that could not be put in its place is kept in the folder's top level, "
+			"with (recovered) in its name.").arg(root).arg(QString::fromUtf8(why));
+	}
+	return QString();
+}
+
+void fold_release(Computer* comp, bool allow) {
+	vFat* vf[5];
+	fold_volumes(comp, vf);
+	for (int i = 0; i < 5; i++)
+		vfat_release(vf[i], allow ? 1 : 0);
+}
+
+// What the guest wrote to the volume going goes to its folder before the folder is read
+// again: Options holds the machine, so the quiet spell that would carry it never comes.
 void sdc_mount(SDCard* sdc, const QString& path) {
 	if (!sdc) return;
+	vfat_flush(sdc->vfat);
 	if (path.isEmpty()) {
 		sdcSetImage(sdc, "");
 	} else if (QFileInfo(path).isDir()) {
-		sdcSetFolder(sdc, path.toLocal8Bit().constData(), vfat_scan(path));
+		sdcSetFolder(sdc, path.toLocal8Bit().constData(), vfat_scan(path, conf.fold.rw));
 	} else {
 		sdcSetImage(sdc, path.toLocal8Bit().constData());
 	}
@@ -113,10 +323,11 @@ void sdc_remount(SDCard* sdc) {
 
 void ide_mount(IDE* ide, int dev, const QString& path) {
 	if (!ide) return;
+	vfat_flush((dev == IDE_MASTER) ? ide->master->vfat : ide->slave->vfat);
 	if (path.isEmpty()) {
 		ideSetImage(ide, dev, "");
 	} else if (QFileInfo(path).isDir()) {
-		ideSetFolder(ide, dev, path.toLocal8Bit().constData(), vfat_scan(path));
+		ideSetFolder(ide, dev, path.toLocal8Bit().constData(), vfat_scan(path, conf.fold.rw));
 	} else {
 		ideSetImage(ide, dev, path.toLocal8Bit().constData());
 	}

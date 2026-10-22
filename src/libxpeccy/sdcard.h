@@ -90,6 +90,7 @@ void sdc_power_on(SDCard*);	// spec cards: the supply comes up, back in SD mode 
 
 void sdcSetImage(SDCard*,const char*);
 void sdcSetFolder(SDCard*,const char*,vFat*);
+int sdc_protected(SDCard*);
 void sdcSetLock(SDCard*,int);
 
 void sdcOpenFile(SDCard*);

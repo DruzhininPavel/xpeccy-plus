@@ -2,43 +2,35 @@
 #include <string.h>
 #include <time.h>
 
-#include "vfat.h"
+#include "vfat_int.h"
 #include "defines.h"
 
-// Synthetic read-only FAT32 volume over a host directory.
+// Synthetic FAT32 volume over a host directory, as built.
 //
 // Layout: MBR at LBA 0, one partition at LBA 2048, 4K clusters. Every node gets
 // a contiguous run of clusters at build time, so the FAT chains are arithmetic
-// and nothing but directory entries has to be built on the fly.
+// and nothing but directory entries has to be built on the fly. What the guest
+// writes is vfat_wr.c's.
 
 #define VF_PARTSTART	2048
 #define VF_RESERVED	32
 #define VF_SPC		8			// 4K clusters
 #define VF_MINVOL	(512 * 2048)		// 512 Mb, in sectors
 #define VF_MAXVOL	(32u * 1024 * 2048)	// 32 Gb, in sectors
-#define VF_EOC		0x0fffffff
 #define VF_LABEL	"XPECCY SD  "		// 11 chars, space padded
 
 // helpers
 
-static void wr16(unsigned char* p, unsigned int v) {
-	p[0] = v & 0xff;
-	p[1] = (v >> 8) & 0xff;
-}
+#define wr16 vf_wr16
+#define wr32 vf_wr32
 
-static void wr32(unsigned char* p, unsigned int v) {
-	p[0] = v & 0xff;
-	p[1] = (v >> 8) & 0xff;
-	p[2] = (v >> 16) & 0xff;
-	p[3] = (v >> 24) & 0xff;
-}
-
+// in 64 bits: a + b - 1 wraps for a file just under 4G
 static unsigned int divup(unsigned int a, unsigned int b) {
-	return (a + b - 1) / b;
+	return (unsigned int)(((unsigned long long)a + b - 1) / b);
 }
 
 // UTF-8 to UTF-16, returns the number of code units written
-static int utf16(const char* src, unsigned short* dst, int max) {
+int vf_utf16(const char* src, unsigned short* dst, int max) {
 	const unsigned char* s = (const unsigned char*)src;
 	int len = 0;
 	unsigned int cp;
@@ -111,7 +103,7 @@ static int sname_char(unsigned int chr, int* lossy) {
 // *ulen is the length of the real one in UTF-16
 static int sname_make(const char* name, char* dst, int* ulen) {
 	unsigned short buf[VF_MAXNAME + 1];
-	int len = utf16(name, buf, VF_MAXNAME);
+	int len = vf_utf16(name, buf, VF_MAXNAME);
 	int lossy = 0;
 	int dot = -1;
 	int i, c, pos;
@@ -247,18 +239,21 @@ vFat* vfat_create(void) {
 void vfat_free(vFat* vf) {
 	int i;
 	if (!vf) return;
-	if (vf->cfile) fclose(vf->cfile);
+	if (vf->wr) vfw_free(vf);
+	vf_close_cached(vf);
 	for (i = 0; i < vf->nodes; i++) {
 		free(vf->node[i].name);
-		free(vf->node[i].host);
+		free(vf->node[i].hname);
+		free(vf->node[i].rname);
 	}
 	free(vf->node);
 	free(vf->stab);
 	free(vf->order);
+	free(vf->root);
 	free(vf);
 }
 
-static char* xstrdup(const char* s) {
+char* vf_strdup(const char* s) {
 	char* res;
 	if (!s) return NULL;
 	res = (char*)malloc(strlen(s) + 1);
@@ -266,7 +261,51 @@ static char* xstrdup(const char* s) {
 	return res;
 }
 
-int vfat_add(vFat* vf, int parent, const char* name, const char* host, unsigned int size, unsigned int mtime, int isdir) {
+void vfat_set_root(vFat* vf, const char* root, const vfHost* host) {
+	if (!vf) return;
+	free(vf->root);
+	vf->root = vf_strdup(root);
+	if (host) vf->host = *host;
+	else memset(&vf->host, 0x00, sizeof(vfHost));
+}
+
+// the root, then the host names down to the node, parted by '/'
+int vf_path(vFat* vf, int idx, char* buf, int max) {
+	int chain[256];
+	int depth = 0;
+	int len, n, i;
+	if (!vf->root) return 0;
+	for (i = idx; i > 0; i = vf->node[i].parent) {
+		if (depth >= 256) return 0;
+		chain[depth++] = i;
+	}
+	len = strlen(vf->root);
+	if (len >= max) return 0;
+	memcpy(buf, vf->root, len);
+	while (depth > 0) {
+		const char* s = vf->node[chain[--depth]].hname;
+		if (!s) return 0;
+		n = strlen(s);
+		if (len + 1 + n >= max) return 0;
+		buf[len++] = '/';
+		memcpy(buf + len, s, n);
+		len += n;
+	}
+	buf[len] = 0;
+	return 1;
+}
+
+FILE* vf_open(vFat* vf, const char* path, const char* mode) {
+	return vf->host.open ? vf->host.open(vf->host.ctx, path, mode) : fopen(path, mode);
+}
+
+void vf_close_cached(vFat* vf) {
+	if (vf->cfile) fclose(vf->cfile);
+	vf->cfile = NULL;
+	vf->cnode = -1;
+}
+
+int vfat_add(vFat* vf, int parent, const char* name, unsigned int size, unsigned int mtime, int isdir) {
 	vfNode* nod;
 	char sname[12];
 	int idx, prev, lfn, ecnt, ulen;
@@ -287,13 +326,15 @@ int vfat_add(vFat* vf, int parent, const char* name, const char* host, unsigned 
 	nod = vf->node + idx;
 	memset(nod, 0x00, sizeof(vfNode));
 	nod->isdir = isdir ? 1 : 0;
-	nod->name = xstrdup(name);
-	nod->host = xstrdup(host);
+	nod->name = vf_strdup(name);
+	nod->hname = (parent < 0) ? NULL : vf_strdup(name);
 	nod->parent = parent;
 	nod->child = -1;
 	nod->last = -1;
 	nod->next = -1;
 	nod->size = isdir ? 0 : size;
+	nod->hmtime = mtime;
+	nod->hsize = nod->size;
 	nod->lfn = lfn ? 1 : 0;
 	nod->ecnt = ecnt;
 	nod->dents = (parent < 0) ? 2 : 3;		// the label or dot and dotdot, and the end marker
@@ -358,6 +399,7 @@ static void vfat_hddboot(vFat* vf) {
 	unsigned char* sec;
 	vfNode* nod;
 	FILE* file;
+	char path[2048];
 	unsigned int len, i;
 	int idx;
 	vf->hddboots = 0;
@@ -366,8 +408,8 @@ static void vfat_hddboot(vFat* vf) {
 	}
 	if (idx < 0) return;
 	nod = vf->node + idx;
-	if (!nod->host || !nod->clust || (nod->size > VF_ZXLDR_MAX)) return;
-	file = fopen(nod->host, "rb");
+	if (!nod->clust || (nod->size > VF_ZXLDR_MAX) || !vf_path(vf, idx, path, sizeof(path))) return;
+	file = vf_open(vf, path, "rb");
 	if (!file) return;
 	buf = (unsigned char*)malloc(nod->size);
 	len = buf ? fread(buf, 1, nod->size, file) : 0;
@@ -388,7 +430,7 @@ int vfat_build(vFat* vf, unsigned int minsec) {
 	int i;
 	if (!vf || (vf->nodes < 1)) return 0;
 	volume = VF_MINVOL;
-	while (volume < minsec)
+	while ((volume < minsec) && (volume < VF_MAXVOL))	// the room to write in is cut to the largest card
 		volume <<= 1;
 	cbytes = vf->spc * VF_SECSIZE;
 	while (1) {
@@ -426,8 +468,8 @@ int vfat_build(vFat* vf, unsigned int minsec) {
 	return 1;
 }
 
-// find the node owning a cluster, -1 if the cluster is free
-static int clust_node(vFat* vf, unsigned int clu) {
+// find the node owning a cluster in the volume as built, -1 if the cluster is free
+int vf_clust_node(vFat* vf, unsigned int clu) {
 	int a = 0;
 	int b = vf->ordcnt - 1;
 	int m, idx;
@@ -494,7 +536,7 @@ static void vfat_fsinfo(vFat* vf, unsigned char* dst) {
 	dst[511] = 0xaa;
 }
 
-static void vfat_fat(vFat* vf, unsigned int sec, unsigned char* dst) {
+void vf_gen_fat(vFat* vf, unsigned int sec, unsigned char* dst) {
 	unsigned int first = sec * (VF_SECSIZE / 4);
 	unsigned int clu, val;
 	int i, idx;
@@ -504,7 +546,7 @@ static void vfat_fat(vFat* vf, unsigned int sec, unsigned char* dst) {
 		else if (clu == 1) val = VF_EOC;
 		else if (clu >= vf->clusters + 2) val = 0;
 		else {
-			idx = clust_node(vf, clu);
+			idx = vf_clust_node(vf, clu);
 			if (idx < 0) val = 0;		// free
 			else if (clu == vf->node[idx].clust + vf->node[idx].nclust - 1) val = VF_EOC;
 			else val = clu + 1;
@@ -544,7 +586,7 @@ static void vfat_lfn(unsigned char* dst, unsigned short* name, int len, int part
 }
 
 // fill one sector of a directory
-static void vfat_dir(vFat* vf, int idx, unsigned int sec, unsigned char* dst) {
+void vf_gen_dir(vFat* vf, int idx, unsigned int sec, unsigned char* dst) {
 	unsigned short name[VF_MAXNAME + 1];
 	unsigned int first = sec * 16;			// first entry in this sector
 	unsigned int ent = 0;
@@ -574,7 +616,7 @@ static void vfat_dir(vFat* vf, int idx, unsigned int sec, unsigned char* dst) {
 		nod = vf->node + chd;
 		if (ent + nod->ecnt > first) {		// something of this child lands here
 			if (nod->lfn) {
-				len = utf16(nod->name, name, VF_MAXNAME);
+				len = vf_utf16(nod->name, name, VF_MAXNAME);
 				parts = divup(len, 13);
 				for (i = 0; i < parts; i++) {
 					part = parts - i;	// long name entries come tail first
@@ -584,7 +626,7 @@ static void vfat_dir(vFat* vf, int idx, unsigned int sec, unsigned char* dst) {
 				}
 			}
 			if ((ent >= first) && (ent < first + 16))
-				vfat_entry(dst + (ent - first) * 32, nod->sname, nod->isdir ? 0x10 : 0x21, nod->clust, nod->size, nod->date, nod->time);
+				vfat_entry(dst + (ent - first) * 32, nod->sname, nod->isdir ? 0x10 : (vf->writable ? 0x20 : 0x21), nod->clust, nod->size, nod->date, nod->time);
 			ent++;
 		} else {
 			ent += nod->ecnt;
@@ -595,13 +637,15 @@ static void vfat_dir(vFat* vf, int idx, unsigned int sec, unsigned char* dst) {
 }
 
 // fill one sector of a file
-static void vfat_file(vFat* vf, int idx, unsigned int sec, unsigned char* dst) {
-	unsigned int off = sec * VF_SECSIZE;
+void vf_gen_file(vFat* vf, int idx, unsigned int sec, unsigned char* dst) {
+	unsigned long long off = (unsigned long long)sec * VF_SECSIZE;	// a 4G file's last cluster runs past 32 bits
+	char path[2048];
 	size_t rd;
 	if (off >= vf->node[idx].size) return;
 	if (vf->cnode != idx) {				// keep the last file open: sectors come in runs
-		if (vf->cfile) fclose(vf->cfile);
-		vf->cfile = vf->node[idx].host ? fopen(vf->node[idx].host, "rb") : NULL;
+		vf_close_cached(vf);
+		if (vf_path(vf, idx, path, sizeof(path)))
+			vf->cfile = vf_open(vf, path, "rb");
 		vf->cnode = vf->cfile ? idx : -1;
 	}
 	if (!vf->cfile) return;
@@ -611,12 +655,9 @@ static void vfat_file(vFat* vf, int idx, unsigned int sec, unsigned char* dst) {
 	rd = fread(dst, 1, rd, vf->cfile);		// a short read leaves the tail zeroed
 }
 
-int vfat_read(vFat* vf, unsigned int lba, unsigned char* dst) {
-	unsigned int rel, clu, sec;
-	int idx;
-	if (!vf || !dst) return 0;
-	memset(dst, 0x00, VF_SECSIZE);
-	if (lba >= vf->volume) return 0;
+// a sector before the FATs, dst zeroed
+void vf_gen_reserved(vFat* vf, unsigned int lba, unsigned char* dst) {
+	unsigned int rel;
 	if (lba == 0) {
 		vfat_mbr(vf, dst);
 	} else if (lba < vf->partStart) {
@@ -625,25 +666,38 @@ int vfat_read(vFat* vf, unsigned int lba, unsigned char* dst) {
 			memcpy(dst, vf->hddboot[vf->hddport], VF_SECSIZE);
 	} else {
 		rel = lba - vf->partStart;
-		if (rel < vf->reserved) {
-			switch (rel) {
-				case 0:
-				case 6: vfat_boot(vf, dst); break;	// + backup copy
-				case 1:
-				case 7: vfat_fsinfo(vf, dst); break;
-			}
-		} else if (rel < vf->dataStart) {
-			vfat_fat(vf, (rel - vf->reserved) % vf->fatSize, dst);
+		switch (rel) {
+			case 0:
+			case 6: vfat_boot(vf, dst); break;	// + backup copy
+			case 1:
+			case 7: vfat_fsinfo(vf, dst); break;
+		}
+	}
+}
+
+int vfat_read(vFat* vf, unsigned int lba, unsigned char* dst) {
+	unsigned int rel, clu, sec;
+	int idx;
+	if (!vf || !dst) return 0;
+	if (vf->wr) return vfw_read(vf, lba, dst);
+	memset(dst, 0x00, VF_SECSIZE);
+	if (lba >= vf->volume) return 0;
+	if ((lba < vf->partStart) || (lba - vf->partStart < vf->reserved)) {
+		vf_gen_reserved(vf, lba, dst);
+	} else {
+		rel = lba - vf->partStart;
+		if (rel < vf->dataStart) {
+			vf_gen_fat(vf, (rel - vf->reserved) % vf->fatSize, dst);
 		} else {
 			clu = (rel - vf->dataStart) / vf->spc + 2;
 			sec = (rel - vf->dataStart) % vf->spc;
-			idx = clust_node(vf, clu);
+			idx = vf_clust_node(vf, clu);
 			if (idx >= 0) {
 				sec += (clu - vf->node[idx].clust) * vf->spc;
 				if (vf->node[idx].isdir)
-					vfat_dir(vf, idx, sec, dst);
+					vf_gen_dir(vf, idx, sec, dst);
 				else
-					vfat_file(vf, idx, sec, dst);
+					vf_gen_file(vf, idx, sec, dst);
 			}
 		}
 	}

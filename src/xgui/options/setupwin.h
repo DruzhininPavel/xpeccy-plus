@@ -69,6 +69,7 @@ class SetupWin : public QDialog {
 		void applyGlobal();
 		// video recording
 		void buildRecording();
+		void buildFolders();
 		void fillRecording();
 		void applyRecording();
 		void showFfmpeg();
@@ -97,6 +98,9 @@ class SetupWin : public QDialog {
 		int resTarget;			// where a reset starts, until Apply
 		QButtonGroup* resGroup;
 		QComboBox* cbStart;		// the machine a start takes: Last, Ask, then the machines
+		QComboBox* cbFolderWrite;	// Folder as a disk: read only or read and write
+		QComboBox* cbFolderTrash;	// ...and where a file deleted there goes
+		QGridLayout* gridFolders;
 
 		// the devices' own controls, see makeDevWidgets()
 		QCheckBox *cbTapeAuto, *cbTapeRewind, *cbTapeFast, *cbTapeFlash, *cbTapeEdge, *bdtbox, *cbAddBoot, *a80box, *b80box, *c80box, *d80box, *adsbox, *bdsbox, *cdsbox, *ddsbox, *gsrbox, *ratWheel, *cbSwapButtons;

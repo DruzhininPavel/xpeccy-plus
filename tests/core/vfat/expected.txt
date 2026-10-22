@@ -1,0 +1,27 @@
+== random
+4 seeds, 0 failed
+== torture
+1 seeds
+== scenarios
+swap: ok
+replace: ok
+fragment: ok
+bigdir: ok
+nested: ok
+format: ok
+open: ok
+names: ok
+trash: ok
+unknown: ok
+readonly: ok
+hostfail: ok
+halfmove: ok
+retype: ok
+hold: ok
+newdir: ok
+flush: ok
+bigfile: ok
+parked: ok
+cap: ok
+outside: ok
+sameslot: ok

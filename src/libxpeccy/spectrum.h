@@ -432,6 +432,7 @@ extern unsigned rzx_recording;
 void comp_brk(Computer*, int);
 void comp_brk_newstep(Computer*);
 
+void comp_media_tick(Computer*);
 void comp_pwatch_clear(Computer*);
 void comp_pwatch_add(Computer*, int, int, int);
 void comp_pwatch_sync(Computer*);
