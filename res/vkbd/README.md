@@ -4,9 +4,9 @@
   his `layout_svg.py` (canvas, gradient, contour, colors, icons, rows of keys with their
   labels). The program draws them itself at the size the window has (`src/xgui/vkbdskin.cpp`);
   the keys' places in the rows say which Spectrum key each one is.
-- `zx-128.json`, `zx-128-white.json` - the Spectrum 128 (the Spectrum+ keyboard), every
-  place and size measured off photos of the real one, the colors of the classic one too;
-  the block graphics as the 48K skins have them. Each key says what it presses.
+- `zx-128.json` - the Spectrum 128 (the Spectrum+ keyboard), drawn by Volutar on the places
+  and sizes measured off photos of the real one; `zx-128-white.json` - the same in white
+  plastic. Each key says what it presses.
 - In the menu: 48K (Classic), 48K (White), 128K (Classic), 128K (White) - black, white, 128,
   128-white in the config.
 - `keys-font.ttf` - the lettering, made by `tools/vkbd_font.py` from Liberation Sans Bold
