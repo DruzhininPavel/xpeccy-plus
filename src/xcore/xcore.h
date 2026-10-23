@@ -354,6 +354,8 @@ void xm_defer(const std::string&, const std::string&);
 bool xm_migrate(const std::string&, const std::string&);
 std::string xm_id_for_name(const std::string&);
 void xm_finish_load();
+void xm_next_card(bool force = false);	// a ZX Spectrum Next with no System/Next card gets its own (force: whatever is in)
+bool xm_next_wants_card();	// once: the Next has no card to start from, the window asks for one
 void xm_save_nvram();
 void xm_power_cycle();		// off and on again: the caller holds emu_lock
 int xm_power_count();		// power cycles so far: something to notice one by
@@ -862,6 +864,11 @@ struct xConfig {
 		unsigned trash:1;	// a file the guest deletes goes to the trash, not for good
 		unsigned asked:1;	// the user has answered the first write's question
 	} fold;
+	// the ZX Spectrum Next's own card (xcore/sysnext.cpp, xgui/nextcard.cpp), next.card in [MEDIA]
+	struct {
+		std::string card;	// a folder or an image; empty: none made or picked yet
+		unsigned own:1;		// made here: it takes writes and asks nothing
+	} next;
 	struct {
 		unsigned fullScreen:1;	// use fullscreen
 		unsigned keepRatio:1;	// keep ratio in fullscreen (add black borders)
@@ -923,7 +930,7 @@ struct xConfig {
 	struct {
 		unsigned dock:1;	// glued under the emulator window
 		unsigned hover:1;	// the key under the pointer is lit dimly
-		unsigned bymac:1;	// the skin follows the machine: the 128's on a 128, plain elsewhere
+		unsigned bymac:1;	// the skin follows the machine: the Next's on the Next, the 128's on a 128, plain elsewhere
 		unsigned haspos:1;	// xpos, ypos hold where it was left undocked
 		int xpos, ypos;
 		int width;		// window width; the height follows the picture
@@ -969,6 +976,7 @@ struct xConfig {
 		std::string font;
 		std::string boot;
 		std::string esxDir;	// esxdos/: the bundled esxDOS, its firmware and card files
+		std::string sysnextDir;	// sysnext/ beside the program, if any (tests): the Next's card when none was made
 	} path;
 	struct {
 		unsigned labels:1;
@@ -995,6 +1003,7 @@ struct xConfig {
 		unsigned sndlog:1;	// sound panel: the scope draws on a log curve
 		unsigned evodetach:1;	// ZX Evolution panel: shown in a window of its own
 		unsigned evonames:1;	// ZX Evolution panel: fields by their names in the docs, not in words
+		unsigned nxdetach:1;	// ZX Next panel: shown in a window of its own
 		unsigned imglabels:1;	// an image's .labels comes with it
 		QFont font;
 		int dbsize;
@@ -1008,6 +1017,7 @@ struct xConfig {
 		int reglayout;		// register panel: columns, or DBG_REGS_AUTO
 		int sndchip;		// sound panel: which chip it shows, 0..3
 		int evotab;		// ZX Evolution panel: the tab it shows
+		int nxtab;		// ZX Next panel, the same
 		QPoint pos;
 		QSize siz;
 		QPoint scrpos;		// screen window, -1 for wherever it lands
@@ -1016,6 +1026,8 @@ struct xConfig {
 		QSize sndsiz;
 		QPoint evopos;		// ZX Evolution window, the same way
 		QSize evosiz;
+		QPoint nxpos;		// ZX Next window, the same way
+		QSize nxsiz;
 		QPoint cheatpos;	// Cheats window, the same way
 		QSize cheatsiz;
 	} dbg;

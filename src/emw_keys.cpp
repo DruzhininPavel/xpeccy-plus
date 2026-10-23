@@ -390,8 +390,7 @@ void MainWin::xkey_press(int xkey, bool cmd) {
 				break;
 			case XCUT_NMI:
 				if (comp->rzx.play) break;
-				if (comp->cpu->type != CPU_Z80) break;
-				comp_irq(IRQ_NMI, comp);
+				comp_irq(IRQ_NMI, comp);	// every core is a Z80 now, the Next's Z80N included
 				break;
 			case XCUT_TAPWIN:
 				emit s_tape_show();

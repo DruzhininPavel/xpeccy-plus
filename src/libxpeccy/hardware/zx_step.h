@@ -107,11 +107,16 @@ static inline void zx_sync_in(Computer* comp, int ns) {
 
 // The end of an instruction (CPU.xend), where INT is sampled: the machine's kind of
 // acknowledge (hwQuiet.ack). cpu->t stands one tick back, as z80_exec() leaves it.
+void next_irq_ack(Computer*);
+void next_nmi_m1(Computer*, int);
+
 static inline void comp_ack_in(Computer* comp, int ack) {
 	if (ack == HWQ_ACK_ZX)
 		zx_irq_ack_in(comp);
 	else if (ack == HWQ_ACK_TS)
 		ts_irq_ack_in(comp);
+	else if (ack == HWQ_ACK_NEXT)
+		next_irq_ack(comp);
 }
 
 static inline int comp_ack_kind(Computer* comp) {
@@ -127,6 +132,7 @@ static inline int comp_exec_z80_in(Computer* comp, int ack) {
 		cpu->t--;
 		comp_ack_in(comp, ack);
 		cpu->t++;
+		t = cpu->t;		// the Next's DMA may hold the bus at the instruction's end
 	}
 	return t;
 }

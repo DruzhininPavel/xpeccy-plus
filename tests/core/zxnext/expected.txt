@@ -1,0 +1,4 @@
+== switch
+next: inta set, nextreg set
+48k:  inta none, nextreg none
+48k:  wait debt none

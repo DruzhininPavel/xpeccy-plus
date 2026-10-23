@@ -14,6 +14,8 @@ static const xFileMac fm_tab[] = {
 	{FL_Z80, "z80", "Z80 snapshot", FMN_SNAPSHOT, NULL, z80GetHardware},
 	{FL_SZX, "szx", "SZX snapshot", FMN_EXACT, NULL, szxGetHardware},
 	{FL_SPG, "spg", "SPG snapshot", FMN_TSCONF, "evo-tsconf", NULL},
+	{FL_NEX, "nex", "NEX program", FMN_NEXT, "zxnext", NULL},
+	{FL_SNX, "snx", "SNX snapshot", FMN_NEXT, "zxnext", NULL},
 	{FL_RZX, "rzx", "RZX playback", FMN_RZX, NULL, rzxGetHardware},
 	{FL_TAP, "tap", "TAP tape", FMN_ANY, NULL, NULL},
 	{FL_TZX, "tzx", "TZX tape", FMN_ANY, NULL, NULL},
@@ -52,7 +54,7 @@ std::string fm_snap_target(int snap) {
 }
 
 static const char* fm_need_tab[] = {
-	"any machine", "TSConf", "Beta Disk (TR-DOS)", "+3 disk drive", "read from the file",
+	"any machine", "TSConf", "ZX Spectrum Next", "Beta Disk (TR-DOS)", "+3 disk drive", "read from the file",
 	"exactly the one it was recorded on", "exactly the one it was taken on"
 };
 
@@ -78,6 +80,7 @@ const char* fm_need_text(int need) {
 static bool fm_takes(int hwid, int dif, int need, int snap) {
 	switch (need) {
 		case FMN_TSCONF: return hwid == HW_TSLAB;
+		case FMN_NEXT: return hwid == HW_ZXNEXT;
 		case FMN_TRDOS: return autostart_can(hwid, dif, AS_DISK);
 		case FMN_PLUS3DOS: return autostart_can(hwid, dif, AS_DISK3);
 		case FMN_SNAPSHOT: return snapHwRuns(snap, hwid);

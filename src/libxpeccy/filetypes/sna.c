@@ -127,6 +127,7 @@ int snaGetHardware(const char* name) {
 }
 
 int saveSNA(Computer* comp, const char* name, int drv) {
+	if (comp->hw->id == HW_ZXNEXT) return ERR_SNAP_NEXT;	// a 128K's state is not the Next's
 	FILE* file = fopen(name, "wb");
 	if (!file) return ERR_CANT_OPEN;
 	unsigned char bnk, i;

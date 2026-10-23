@@ -130,6 +130,8 @@ class SetupWin : public QDialog {
 		QLabel* divNote;		// says so under the divMMC row
 		QList<QWidget*> slotRow;
 		QList<QWidget*> kbdRow;
+		QComboBox* uartBox[2];		// the Next's UARTs: a serial port of the host each
+		QList<QWidget*> uartRow;
 		QList<QWidget*> drvRow[4];
 		QComboBox* drvCountBox;
 		// video recording
