@@ -15,7 +15,6 @@
 #include "esp.h"
 #include "espline.h"
 #include "espnet.h"
-#include "xcore.h"
 #include "../libxpeccy/spectrum.h"
 #include "../libxpeccy/hardware/hardware.h"
 #include "../libxpeccy/xlog.h"
@@ -136,13 +135,16 @@ static long long esp_now(Computer* comp) {
 
 // == flash ==
 
-static std::string esp_flash_path() {
-	return conf.path.nvDir + SLASH + "esp01.conf";
+static std::string flashFile;		// "" keeps nothing
+
+void esp_flash_file(const char* path) {
+	flashFile = path ? path : "";
 }
 
 static void esp_flash_load() {
 	E.loaded = true;
-	FILE* f = fopen(esp_flash_path().c_str(), "rb");
+	if (flashFile.empty()) return;
+	FILE* f = fopen(flashFile.c_str(), "rb");
 	if (!f) return;
 	char buf[512];
 	while (fgets(buf, sizeof(buf), f)) {
@@ -170,7 +172,8 @@ static void esp_flash_load() {
 }
 
 static void esp_flash_save() {
-	FILE* f = fopen(esp_flash_path().c_str(), "wb");
+	if (flashFile.empty()) return;
+	FILE* f = fopen(flashFile.c_str(), "wb");
 	if (!f) return;
 	fprintf(f, "ssid = %s\npass = %s\ncwmode = %i\nbaud = %li\nframe = %i\ndhcp = %s\n", E.fl.ssid.c_str(),
 		E.fl.pass.c_str(), E.fl.cwmode, E.fl.baud, E.fl.frame, E.fl.dhcp ? "yes" : "no");
