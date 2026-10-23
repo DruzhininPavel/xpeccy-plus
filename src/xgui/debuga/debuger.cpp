@@ -340,6 +340,7 @@ void DebugWin::stop() {
 	if (comp->flgDBG) snd_scope_step(comp, compExec(comp));
 	comp->flgDBG = 0;		// back to normal work, turn breakpoints on
 	comp->vid->debug = 0;
+	x_input_bump();			// memory, registers, ports may have been edited: frames run ahead go
 	comp->flgMAP = ui_asm.actMaping->isChecked() ? 1 : 0;
 	stopTrace();
 

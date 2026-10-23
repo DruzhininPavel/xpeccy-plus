@@ -12,7 +12,8 @@ extern "C" {
 #include "../defines.h"
 
 // Bumped by whatever reaches the machine from outside: a key, the joystick, the mouse,
-// a reset or a load. Frames run ahead are the machine's own while it stands still.
+// a reset or a load, a cheat, the debugger, Options. Frames run ahead are the machine's
+// own while it stands still.
 extern unsigned int x_input_gen;
 static inline void x_input_bump(void) {
 	__atomic_add_fetch(&x_input_gen, 1, __ATOMIC_RELAXED);

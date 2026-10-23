@@ -1216,6 +1216,7 @@ void SetupWin::start() {
 
 void SetupWin::apply() {
 	ui.tvHotkeys->commit();
+	x_input_bump();			// the machine changed from outside: frames run ahead go
 	// the rewind history holds the machine as it was: it goes only if the
 	// machine or the history's own settings change
 	std::string macWas = xm_signature();

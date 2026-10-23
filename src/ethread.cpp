@@ -642,8 +642,12 @@ static int ra_kept_frames(Computer* comp, int k, int shown, int finish) {
 		}
 		if (!last) ra_raster_get(raShown, vid);
 		if (raKept.count > 0) {
-			xstate_load(raKept.state, comp);
-			*comp->keyb = raKept.kbd;
+			if (xstate_load(raKept.state, comp)) {
+				*comp->keyb = raKept.kbd;
+			} else {		// not the machine it was taken from: run them all from this one
+				raKept.first = n + 1;
+				raKept.count = 0;
+			}
 		}
 		while (raKept.count < k) {
 			if (!ra_run_frame(comp)) {
