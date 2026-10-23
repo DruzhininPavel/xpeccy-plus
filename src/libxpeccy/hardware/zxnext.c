@@ -1269,6 +1269,9 @@ static void nx_vsync(Computer* comp) {
 }
 
 static void nx_reset(Computer* comp);
+static void nx_set_vmode(Computer* comp, int m);
+static int nx_vmode_of(int v);
+static int nxInFirmware = 0;		// the writes below are the firmware's own (nx_firmware)
 
 static void nx_nr_write(Computer* comp, int r, int v) {
 	unsigned char* nr = NX.nr;
@@ -1389,7 +1392,21 @@ static void nx_nr_write(Computer* comp, int r, int v) {
 			if (NX.configMode) nr[0x10] = (nr[0x10] & 0x60) | (v & 0x1f);
 			return;
 		case 0x11:
-			if (NX.configMode) nr[0x11] = v & 7;
+			// a change of timing is a power-on reset (zxnext_top_issue2.vhd 771-781), after
+			// which the firmware writes it again from its config: from the firmware the
+			// same write comes back and settles; from a program it ends in a power cycle
+			if (NX.configMode) {
+				int m = nx_vmode_of(v);
+				nr[0x11] = m;
+				if (m == NX.vmode) return;
+				nx_set_vmode(comp, m);
+				if (!nxInFirmware && !next_reset_open) {
+					NX.powered = 0;
+					NX.firmware = 1;
+					nx_reset(comp);
+					cpu_reset(comp->cpu);
+				}
+			}
 			return;
 		case 0x18: case 0x19: case 0x1a: case 0x1b: {
 			int c = r - 0x18;
@@ -2232,9 +2249,11 @@ static void nx_regs_reset(Computer* comp) {
 static void nx_power(Computer* comp) {
 	unsigned char* nr = NX.nr;
 	static unsigned char sram[sizeof(NX.shadow)];
+	int vm = NX.vmode;
 	memcpy(sram, NX.shadow, sizeof(sram));
 	memset(&NX, 0, sizeof(NX));
 	memcpy(NX.shadow, sram, sizeof(sram));
+	if (vm) comp_update_timings(comp);	// nr_11's declaration value: VGA 0, until the firmware says
 	nx_w = 0;
 	nx_rd_t = 0;
 	nx_uart_power(comp);
@@ -2306,24 +2325,39 @@ static const char* nx_menu_field(const char* s, char* out, int max) {
 	return (*s == ',') ? s + 1 : s;
 }
 
+// a "name=value" line of config.ini (config.c load_config: the name from the line's
+// start); -1 if there is none
+static int nx_config_value(const char* buf, const char* name) {
+	size_t len = strlen(name);
+	for (const char* l = buf; l && *l; l = strchr(l, '\n') ? strchr(l, '\n') + 1 : NULL) {
+		if (!strncmp(l, name, len) && (l[len] == '=')) return atoi(l + len + 1);
+	}
+	return -1;
+}
+
 // The menu entry the firmware boots (config.c): "default=" of config.ini, in menu.ini
 // or else menu.def. Its ROM names replace the standard ones when it is a Next entry
 // (mode 2) - the hand-off below is that mode's; another mode keeps them, said in the log.
-static void nx_menu_roms(Computer* comp, char* zx, char* div, char* mf) {
+// *vt: the video timing (update_video_settings): config.ini's "timing=", 8 (none, 0)
+// if absent, unless the entry's own is under 8
+static void nx_menu_roms(Computer* comp, char* zx, char* div, char* mf, int* vt) {
 	static unsigned char buf[8192];
 	int def = 0;
+	*vt = 8;
 	int n = fat_read_file(nx_card_sector, comp->sdc, "machines/next/config.ini", buf, sizeof(buf) - 1);
 	if (n > 0) {
 		buf[(n < (int)sizeof(buf)) ? n : (int)sizeof(buf) - 1] = 0;
 		const char* d = strstr((char*)buf, "default=");
 		if (d) def = atoi(d + 8);
+		int t = nx_config_value((char*)buf, "timing");
+		if (t >= 0) *vt = (t > 8) ? 8 : t;		// CLAMP(.., MAX_TIMING)
 	}
 	n = fat_read_file(nx_card_sector, comp->sdc, "machines/next/menu.ini", buf, sizeof(buf) - 1);
 	if (n <= 0) n = fat_read_file(nx_card_sector, comp->sdc, "machines/next/menu.def", buf, sizeof(buf) - 1);
 	if (n <= 0) return;
 	buf[(n < (int)sizeof(buf)) ? n : (int)sizeof(buf) - 1] = 0;
 	char title[64], mode[8], tim[8], f1[32], f2[32], f3[32], pick[3][32];
-	int count = 0, got = 0, pmode = -1;
+	int count = 0, got = 0, pmode = -1, ptim = 8;
 	for (const char* l = (char*)buf; l && *l; l = strchr(l, '\n') ? strchr(l, '\n') + 1 : NULL) {
 		if (strncmp(l, "menu=", 5)) continue;
 		const char* s = nx_menu_field(l + 5, title, sizeof(title));
@@ -2338,11 +2372,13 @@ static void nx_menu_roms(Computer* comp, char* zx, char* div, char* mf) {
 			snprintf(pick[1], 32, "%s", f2);
 			snprintf(pick[2], 32, "%s", f3);
 			pmode = atoi(mode);
+			ptim = atoi(tim);
 			got = (count == def);
 		}
 		count++;
 	}
 	if (pmode < 0) return;
+	if (ptim < 8) *vt = ptim;		// the entry's own timing overrides config.ini's
 	if (pmode != 2) {
 		xlog(XLG_HW, XLL_WARN, "zxnext: the card's menu boots mode %d, the Next's is used", pmode);
 		return;
@@ -2365,7 +2401,8 @@ static void nx_load_rom(Computer* comp, const char* name, unsigned char* dst, in
 // init_registers, config.c reset_settings and update_video_settings), with the
 // CONFIG.INI it ships and its first menu line: ZX Spectrum Next, mode 2, video
 // timing not overridden, enNextZX.rom, enNxtmmc.rom and enNextMF.rom - the last
-// two turn divMMC and the Multiface on.
+// two turn divMMC and the Multiface on. The card's own config.ini and menu say which
+// entry and video timing (nx_menu_roms).
 static void nx_firmware(Computer* comp) {
 	static const unsigned char wr[][2] = {
 		{0x07, 0x03}, {0x06, 0xa0},	// main: 28 MHz, PS/2 keyboard first
@@ -2404,17 +2441,24 @@ static void nx_firmware(Computer* comp) {
 		for (int k = 0; k < 11; k++)
 			nx_nr_write(comp, 0x2b, keyjoy[k]);
 	}
+	// load_config: the menu entry and the video timing
+	char zx[32] = "enNextZX.rom", div[32] = "enNxtmmc.rom", mf[32] = "enNextMF.rom";
+	int vt = 8;
+	if (comp->sdc->image) nx_menu_roms(comp, zx, div, mf, &vt);
+	nxInFirmware = 1;
 	for (int i = 0; i < (int)(sizeof(wr) / sizeof(wr[0])); i++) {
 		if ((wr[i][0] == 0x02) && (wr[i][1] & 1)) {
 			// load_roms, which ran before init_registers: nothing between reads them
-			char zx[32] = "enNextZX.rom", div[32] = "enNxtmmc.rom", mf[32] = "enNextMF.rom";
-			if (comp->sdc->image) nx_menu_roms(comp, zx, div, mf);
 			nx_load_rom(comp, div, sram + NX_DIVROM, 0x2000, 0x10000);
 			nx_load_rom(comp, mf, sram + NX_MFROM, 0x2000, 0x14000);
 			nx_load_rom(comp, zx, sram, 0x10000, 0);
 		}
-		nx_nr_write(comp, wr[i][0], wr[i][1]);
+		if (wr[i][0] == 0x11)		// set_video_mode: (timing & 7) | 0x80
+			nx_nr_write(comp, 0x11, (vt & 7) | 0x80);
+		else
+			nx_nr_write(comp, wr[i][0], wr[i][1]);
 	}
+	nxInFirmware = 0;
 }
 
 // The power comes on: the reset that follows configures the FPGA and then hands
@@ -2454,11 +2498,35 @@ static void nx_reset(Computer* comp) {
 	if (fw) comp->flgBOOT = 1;	// nx_firmware, once the card is in
 }
 
+// CLK_28 of each video timing (nextreg.txt 0x11): the CPU, the raster and everything
+// else the core clocks off it run that much faster than at 28 MHz
+static const double nxClk28[7] = {28000000.0, 28571429.0, 29464286.0, 30000000.0, 31000000.0, 32000000.0, 33000000.0};
+
+double nx_clk_scale(Computer* comp) {
+	int m = NX.vmode;
+	return (m > 0) && (m < 7) ? nxClk28[0] / nxClk28[m] : 1.0;
+}
+
+// NR 11 as the issue 2 core takes it (zxnext.vhd 5208-5217, g_video_inc "10": no VGA
+// module, HDMI only): 7 is 0, and of the rest only bit 0 - VGA 0 or VGA 1
+static int nx_vmode_of(int v) {
+	return ((v & 7) == 7) ? 0 : (v & 1);
+}
+
+// the board's clock moved: every period that comes off it again
+static void nx_set_vmode(Computer* comp, int m) {
+	if (NX.vmode == m) return;
+	NX.vmode = m;
+	comp_update_timings(comp);
+	xlog(XLG_HW, XLL_INFO, "zxnext: video timing %d, CLK_28 %.0f Hz", m, nxClk28[m]);
+}
+
 static void nx_init(Computer* comp) {
 	zx_init(comp);
 	// a 28 MHz tick is a quarter of a dot: a dot period that is a multiple of 8
-	// in 16.16 lets every speed's tick divide it exactly (0.6 ppm off the crystal)
-	long long dot = llround(comp->nsPerTick / 2.0 * 65536.0) & ~7LL;
+	// in 16.16 lets every speed's tick divide it exactly (0.6 ppm off the crystal).
+	// CLK_28 of the video timing (nx_clk_scale) is the crystal here
+	long long dot = llround(comp->nsPerTick / 2.0 * nx_clk_scale(comp) * 65536.0) & ~7LL;
 	vid_upd_timings(comp->vid, (double)dot / 65536.0);
 	// and the 3.5 MHz tick two of those dots, exactly: comp_update_timings divides it by
 	// the speed and rounds it against the dot, which leaves it whole only from here

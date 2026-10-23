@@ -427,6 +427,7 @@ typedef struct {
 	unsigned char ulapSel, ulapMode;	// ULA+ BF3B (b7:6 mode group, b5:0 index)
 	unsigned char resetType;	// nr_02_reset_type, 3 bits, never reset
 	unsigned char configMode;	// nr_03_config_mode (the firmware leaves it off)
+	unsigned char vmode;		// the video timing the board runs (NR 11): its CLK_28, 0 = 28 MHz
 	unsigned char lastSram;		// the byte of the last port A SRAM read (unmapped reads give it)
 	unsigned char busRomcs;		// the expansion bus ROMCS pin asks the internal ROM off
 	unsigned char palPhase;		// nr_44 first/second byte

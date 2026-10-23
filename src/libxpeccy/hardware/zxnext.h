@@ -55,6 +55,9 @@ void nxv_memw(Computer*, int, int, long long);
 int nxv_float(Computer*, long long);
 void nxv_retime(Computer*, long long, int);
 
+// the board's CLK_28 against 28 MHz, as a period: 1 at VGA 0 (zxnext.c, NR 11)
+double nx_clk_scale(Computer*);
+
 // sound (zxnext_snd.c)
 void nx_inp_power(Computer*);
 void nx_inp_nr(Computer*, int, int);
