@@ -1,0 +1,14 @@
+# esp-bench cases: the Next with the emulated ESP-01 on UART 0 and a server on 127.0.0.1.
+#
+#   bin  <file in bin/>  <source in asm/>  [DEFINE=value ...]   how mkbins.py assembles it
+#   run  <case>  <file in bin/>  <frames>  [ENV=value ...]      one run of esp-bench
+
+bin nxp_init.bin         nxp.asm            CASE=1
+bin nxp_fetch.bin        nxp.asm            CASE=2
+bin nxp_dinfo.bin        nxp.asm            CASE=3
+bin nxp_stall.bin        nxp.asm            CASE=4
+
+run nxp_init             nxp_init.bin       400
+run nxp_fetch            nxp_fetch.bin      1500
+run nxp_dinfo            nxp_dinfo.bin      1500
+run nxp_stall            nxp_stall.bin      1500

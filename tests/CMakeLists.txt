@@ -44,6 +44,14 @@ foreach(BENCH ${BENCHES})
 	target_link_libraries(${BENCH}-bench xpeccycore)
 endforeach()
 
+# the emulated ESP-01 on the Next's UART, with its host sockets: the app's own sources
+set(XESP ${XROOT}/src/xcore)
+add_executable(esp-bench core/esp/main.cpp ${XESP}/esp.cpp ${XESP}/espline.cpp ${XESP}/espnet.cpp)
+target_link_libraries(esp-bench xpeccycore)
+if(WIN32)
+	target_link_libraries(esp-bench ws2_32)
+endif()
+
 # a folder volume taking writes, with FatFs (thirdparty/fatfs, ChaN's 1-clause BSD) as the guest
 set(FATFS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/fatfs)
 add_executable(vfat-bench core/vfat/main.c ${FATFS}/ff.c ${FATFS}/ffunicode.c)
@@ -62,4 +70,5 @@ if(MINGW)
 	endforeach()
 	target_link_options(z80-coretest PRIVATE -static)
 	target_link_options(vfat-bench PRIVATE -static)
+	target_link_options(esp-bench PRIVATE -static)
 endif()
