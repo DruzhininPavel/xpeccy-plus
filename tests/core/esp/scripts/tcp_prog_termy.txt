@@ -1,0 +1,19 @@
+# termy's sequence: no ATE0, CIPMODE=1 before CIPSTART, the bare CIPSEND not waited for (the key
+# typed straight after is passthrough data), then the ESP reset through NR 0x02 instead of +++
+mask .*(\\x[0-9A-F][0-9A-F].*){8} <romlog>
+wait WIFI GOT IP\r\n 5000
+server echo
+send AT+CIPMUX=0
+wait \r\nOK\r\n
+send AT+CIPMODE=1
+wait \r\nOK\r\n
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait \r\nOK\r\n
+raw AT+CIPSEND\r\nhi
+wait hi
+nr 02 80
+pause 200
+nr 02 00
+wait WIFI GOT IP\r\n 5000
+send AT+CIPMODE?
+wait \r\nOK\r\n

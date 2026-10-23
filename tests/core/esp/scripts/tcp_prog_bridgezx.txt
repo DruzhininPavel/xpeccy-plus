@@ -1,0 +1,49 @@
+# BridgeZX's Next sequence: its rearm (MUX 0 leftovers answered with ERROR), MUX 1, passive
+# receive, a server, the 2.x AT+CIPSERVER? (ERROR on 1.7.6), a pull of 2048, an empty pull, its
+# 4-byte reply, the client leaving, the exit
+mask .*(\\x[0-9A-F][0-9A-F].*){8} <romlog>
+mask STAIP,"[0-9.]+" STAIP,"<ip>"
+mask STAMAC,"[0-9a-f:]+" STAMAC,"<mac>"
+wait WIFI GOT IP\r\n 5000
+send AT+CIPCLOSE=5
+wait \r\nERROR\r\n
+send AT+CIPMODE=0
+wait \r\nOK\r\n
+send AT+CIPSERVER=0
+wait \r\nERROR\r\n
+send ATE0
+wait \r\nOK\r\n
+send AT+CIPDINFO=0
+wait \r\nOK\r\n
+send AT+CIPMUX=1
+wait \r\nOK\r\n
+send AT+CIPRECVMODE=1
+wait \r\nOK\r\n
+send AT+CIPSERVER=1,23461
+wait \r\nOK\r\n
+send AT+CIPSERVER?
+wait \r\nERROR\r\n
+send AT+CIFSR
+wait \r\nOK\r\n
+dial 23461
+wait 0,CONNECT\r\n
+peer hello-file
+wait +IPD,0,10\r\n
+send AT+CIPRECVDATA=0,2048
+wait \r\nOK\r\n
+send AT+CIPRECVDATA=0,2048
+wait \r\nOK\r\n
+send AT+CIPSEND=0,4
+wait >\x20
+raw OK\r\n
+wait SEND OK\r\n
+pause 100
+peershow
+peerclose
+wait 0,CLOSED\r\n
+send AT+CIPRECVMODE=0
+wait \r\nOK\r\n
+send AT+CIPSERVER=0
+wait \r\nOK\r\n
+send AT+CIPMUX=0
+wait \r\nOK\r\n

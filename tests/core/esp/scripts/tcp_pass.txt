@@ -1,0 +1,49 @@
+# chapter 5: passthrough - CIPMODE, the bare CIPSEND, raw data both ways, +++, SYSMSG bit0's +QUITT
+mask .*\\x[0-9A-F][0-9A-F].* <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait \r\nOK\r\n
+server echo
+send AT+CIPSEND
+wait \r\nERROR\r\n
+send AT+CIPMODE=2
+wait \r\nERROR\r\n
+send AT+CIPMODE=1
+wait \r\nOK\r\n
+send AT+CIPMODE?
+wait \r\nOK\r\n
+send AT+CIPSEND
+wait \r\nERROR\r\n
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait \r\nOK\r\n
+send AT+CIPSEND=5
+wait \r\nERROR\r\n
+send AT+CIPSENDBUF=5
+wait \r\nERROR\r\n
+send AT+CIPMUX=1
+wait \r\nERROR\r\n
+send AT+CIPSEND
+wait >
+pause 100
+raw hello
+wait hello
+pause 500
+raw +++
+pause 1500
+send AT
+wait \r\nOK\r\n
+send AT+SYSMSG_CUR=1
+wait \r\nOK\r\n
+send AT+CIPSEND
+wait >
+pause 100
+raw abc
+wait abc
+pause 500
+raw +++
+wait +QUITT\r\n 3000
+pause 1500
+send AT+CIPMODE=0
+wait \r\nOK\r\n
+send AT+CIPCLOSE
+wait \r\nOK\r\n

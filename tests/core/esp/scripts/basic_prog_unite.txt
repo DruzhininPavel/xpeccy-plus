@@ -1,0 +1,29 @@
+# ZX-Next-Unite .sync (programs.md g3): the real rate told to the module with flow 3 (RTS+CTS); an ESP-01
+# wires neither, so the flow field is kept and reported but the line ignores it; exit by an NR 0x02 pulse.
+mask ^.*\\x[89A-F][0-9A-F].* <garbage>
+wait WIFI GOT IP\r\n 5000
+raw \r\n
+quiet 300
+send AT+UART_CUR=2000000,8,1,0,3
+quiet 100
+presc 14
+raw \r\n
+quiet 300
+send ATE0
+quiet 300
+send AT+UART_CUR?
+quiet 300
+send AT+UART_CUR=1167000,8,1,0,3
+quiet 100
+presc 24
+raw \r\n
+quiet 300
+send AT+UART_CUR?
+quiet 300
+nr 02 80
+pause 20
+nr 02 00
+presc 243
+wait WIFI GOT IP\r\n 5000
+send AT+UART_CUR?
+quiet 300

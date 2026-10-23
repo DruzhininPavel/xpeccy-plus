@@ -1,0 +1,56 @@
+# chapter 5, MUX 1: ids, CIPCLOSE=<id> and =5, the MUX rules, a refused link's <id>,CLOSED
+mask .*\\x[0-9A-F][0-9A-F].* <romlog>
+mask ,\d{5},0\\r\\n$ ,<lport>,0\r\n
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait \r\nOK\r\n
+send AT+CIPMUX=2
+wait \r\nERROR\r\n
+send AT+CIPMUX=1
+wait \r\nOK\r\n
+send AT+CIPMUX?
+wait \r\nOK\r\n
+send AT+CIPMODE=1
+wait \r\nERROR\r\n
+send AT+CIPMODE=0
+wait \r\nERROR\r\n
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait \r\nERROR\r\n
+send AT+CIPSTART=5,"TCP","127.0.0.1",<port>
+wait \r\nERROR\r\n
+send AT+CIPSTART=0"TCP","127.0.0.1",<port>
+wait \r\nERROR\r\n
+send AT+CIPSTART=0,"TCP","127.0.0.1",<port>
+wait \r\nOK\r\n
+send AT+CIPSTART=1,"TCP","127.0.0.1",<port>
+wait \r\nOK\r\n
+send AT+CIPSTART=0,"TCP","127.0.0.1",<port>
+wait \r\nERROR\r\n
+send AT+CIPSTATUS
+wait \r\nOK\r\n
+send AT+CIPCLOSE
+wait \r\nERROR\r\n
+send AT+CIPCLOSE=2
+wait \r\nERROR\r\n
+send AT+CIPCLOSE=6
+wait \r\nERROR\r\n
+send AT+CIPCLOSE=1,2
+wait \r\nERROR\r\n
+send AT+CIPCLOSEMODE=5,1
+wait \r\nERROR\r\n
+send AT+CIPCLOSEMODE=1,1
+wait \r\nOK\r\n
+send AT+CIPCLOSE=1
+wait \r\nOK\r\n
+send AT+CIPMUX=0
+wait \r\nERROR\r\n
+send AT+CIPSTART=2,"TCP","127.0.0.1",1
+wait CLOSED\r\n 15000
+send AT+CIPCLOSE=5
+wait \r\nOK\r\n
+send AT+CIPCLOSE=5
+wait \r\nOK\r\n
+send AT+CIPSTATUS
+wait \r\nOK\r\n
+send AT+CIPMUX=0
+wait \r\nOK\r\n

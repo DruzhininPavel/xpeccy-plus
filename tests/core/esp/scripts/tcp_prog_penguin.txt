@@ -1,0 +1,25 @@
+# penguin / nxtUDPTest's sequence: UDP with a local port, CIPDINFO=1, a frame of game data, a
+# datagram back. The UDP create and SEND OK come at once on the module: a line sent straight after
+# each is taken as a command, not met with busy p... / busy s...
+mask .*(\\x[0-9A-F][0-9A-F].*){8} <romlog>
+mask STAIP,"[0-9.]+" STAIP,"<ip>"
+mask STAMAC,"[0-9a-f:]+" STAMAC,"<mac>"
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait \r\nOK\r\n
+send AT+CIPCLOSE
+wait \r\nERROR\r\n
+send AT+CIPMUX=0
+wait \r\nOK\r\n
+send AT+CIFSR
+wait \r\nOK\r\n
+raw AT+CIPSTART="UDP","127.0.0.1",<uport>,333,0\r\nAT+CIPDINFO=1\r\n
+wait CONNECT\r\n\r\nOK\r\n\r\nOK\r\n
+send AT+CIPSEND=8
+wait >\x20
+raw \x01\x02frame1AT\r\n
+wait SEND OK\r\n\r\nOK\r\n
+udp 333 \x03\x04reply
+wait reply
+pause 100
+udpshow

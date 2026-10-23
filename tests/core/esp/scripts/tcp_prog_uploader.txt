@@ -1,0 +1,36 @@
+# SpectumNextWifiUploader's sequence: MUX 1 and a server (no change on a re-run), CIPSTATUS, a
+# client's request and its 1-byte answer, then its clean-up with the 2.x AT+CIPSERVER=0,1 (ERROR)
+mask .*(\\x[0-9A-F][0-9A-F].*){8} <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait \r\nOK\r\n
+send AT
+wait \r\nOK\r\n
+send AT+CIPMUX=1
+wait \r\nOK\r\n
+send AT+CIPSERVER=1,23462
+wait \r\nOK\r\n
+send AT+CIPSERVER=1,23462
+wait \r\nOK\r\n
+send AT+CIPSTATUS
+wait \r\nOK\r\n
+dial 23462
+wait 0,CONNECT\r\n
+peer \x01
+wait +IPD,0,1:\x01
+send AT+CIPSEND=0,1
+wait >\x20
+raw \x01
+wait SEND OK\r\n
+pause 100
+peershow
+send AT+CIPCLOSE=0
+wait \r\nOK\r\n
+send AT+CIPSERVER=0,1
+wait \r\nERROR\r\n
+send AT+CIPSERVER=0
+wait \r\nOK\r\n
+send AT+CIPMUX=0
+wait \r\nOK\r\n
+send ATE1
+wait \r\nOK\r\n

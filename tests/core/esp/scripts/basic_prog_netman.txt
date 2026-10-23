@@ -1,0 +1,16 @@
+# netman-zx Next driver (programs.md g3): +++ and a second, AT, AT+RST waiting for "eady", ATE0, then the
+# ESP-AT 2.x probe AT+SYSSTORE=1, which 1.7.6 does not have (ERROR sends it down its _DEF path).
+mask ^.*\\x[89A-F][0-9A-F].* <garbage>
+wait WIFI GOT IP\r\n 5000
+raw +++
+pause 1000
+send AT
+quiet 300
+send AT+RST
+wait WIFI GOT IP\r\n 5000
+send ATE0
+quiet 300
+send AT+SYSSTORE=1
+quiet 300
+send AT+SYSSTORE?
+quiet 300

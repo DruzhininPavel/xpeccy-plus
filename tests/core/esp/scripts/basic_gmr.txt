@@ -1,0 +1,58 @@
+# chapter 3: GMR, RST, RESTORE and what RESTORE resets
+mask ^.*\\x[89A-F][0-9A-F].* <garbage>
+wait WIFI GOT IP\r\n 5000
+send AT+GMR
+quiet 300
+send AT+GMR?
+quiet 300
+send AT+GMR=?
+quiet 300
+send AT+GMR=1
+quiet 300
+send AT+GMR1
+quiet 300
+send AT+RST?
+quiet 300
+send AT+RST=?
+quiet 300
+send AT+RST=1
+quiet 300
+send AT+RST1
+quiet 300
+send AT+RESTORE?
+quiet 300
+send AT+RESTORE=?
+quiet 300
+send AT+RESTORE=1
+quiet 300
+print -- RST, echo comes back on
+send AT+RST
+wait WIFI GOT IP\r\n 5000
+send ATE0
+quiet 300
+send AT+RST
+wait WIFI GOT IP\r\n 5000
+send AT
+quiet 300
+print -- RESTORE
+send AT+SYSMSG_DEF=3
+quiet 300
+send AT+RFAUTOTRACE=0
+quiet 300
+send AT+UART_DEF=115200,8,1,0,2
+quiet 300
+send AT+UART_DEF?
+quiet 300
+send AT+RESTORE
+wait ready\r\n 3000
+quiet 1500
+send AT+UART_DEF?
+quiet 300
+send AT+UART_CUR?
+quiet 300
+send AT+SYSMSG_DEF?
+quiet 300
+send AT+SYSMSG_CUR?
+quiet 300
+send AT+RFAUTOTRACE?
+quiet 300

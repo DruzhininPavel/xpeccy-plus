@@ -46,10 +46,11 @@ endforeach()
 
 # the emulated ESP-01 on the Next's UART, with its host sockets: the app's own sources
 set(XESP ${XROOT}/src/xcore)
-add_executable(esp-bench core/esp/main.cpp ${XESP}/esp.cpp ${XESP}/espline.cpp ${XESP}/espnet.cpp)
+add_executable(esp-bench core/esp/main.cpp ${XESP}/esp.cpp ${XESP}/esp_basic.cpp ${XESP}/esp_wifi.cpp ${XESP}/esp_tcp.cpp
+	${XESP}/espline.cpp ${XESP}/espnet.cpp)
 target_link_libraries(esp-bench xpeccycore)
 if(WIN32)
-	target_link_libraries(esp-bench ws2_32)
+	target_link_libraries(esp-bench ws2_32 iphlpapi)
 endif()
 
 # a folder volume taking writes, with FatFs (thirdparty/fatfs, ChaN's 1-clause BSD) as the guest

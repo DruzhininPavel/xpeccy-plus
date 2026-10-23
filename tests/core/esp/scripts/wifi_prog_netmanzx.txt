@@ -1,0 +1,49 @@
+# chapter 4 (at176-ch4.md): wifi_prog_netmanzx.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+raw +++
+pause 1500
+send AT+CIPMODE=0
+wait OK\r\n 10000
+send ATE0
+wait OK\r\n 10000
+send AT+CWMODE=1
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CWLAPOPT=0,31
+wait OK\r\n 10000
+send AT+CWLAP=,,,,200,200
+wait OK\r\n 10000
+send AT+CWQAP
+wait WIFI DISCONNECT\r\n 10000
+send 
+wait ERROR\r\n 10000
+send AT
+wait OK\r\n 10000
+send AT+CWJAP="Xpeccy","pw","5C:CF:7F:00:00:01"
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CIPSTAMAC?
+wait OK\r\n 10000
+send AT+CWHOSTNAME?
+wait OK\r\n 10000
+send AT+CWHOSTNAME="netman"
+wait OK\r\n 10000
+send AT+CIPSTA_CUR="192.168.1.50"
+wait OK\r\n 10000
+send AT+CIPSTA_CUR?
+wait OK\r\n 10000
+send AT+CWQAP
+wait WIFI DISCONNECT\r\n 10000
+send AT+WPS=1
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+WPS=0
+wait OK\r\n 10000
+send AT+CWQAP
+wait OK\r\n 10000

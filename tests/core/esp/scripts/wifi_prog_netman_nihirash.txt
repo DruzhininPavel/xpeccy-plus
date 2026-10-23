@@ -1,0 +1,26 @@
+# chapter 4 (at176-ch4.md): wifi_prog_netman_nihirash.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+raw +++
+pause 1000
+send AT
+wait OK\r\n 10000
+send AT+RST
+wait ready\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+SYSSTORE=1
+wait ERROR\r\n 10000
+send AT+CWMODE_DEF=1
+wait OK\r\n 10000
+send AT+CWAUTOCONN=1
+wait OK\r\n 10000
+send AT+CWQAP
+wait OK\r\n 10000
+quiet 2000
+send AT+CWLAP
+wait OK\r\n 10000
+send AT+CWJAP_DEF="Xpeccy","pw"
+wait OK\r\n 10000
+send AT+CWJAP_DEF?
+wait OK\r\n 10000

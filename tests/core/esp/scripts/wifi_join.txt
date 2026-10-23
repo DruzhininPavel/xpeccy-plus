@@ -1,0 +1,106 @@
+# chapter 4 (at176-ch4.md): wifi_join.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CWJAP_CUR?
+wait OK\r\n 10000
+send AT+CWJAP_DEF?
+wait OK\r\n 10000
+send AT+CWJAP=?
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="","x"
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="abc"
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR=abc,"x"
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="abc","x",2
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="abc","x","zz:22:33:44:55:66"
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="abc","x",,2
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="abc","x"junk
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="123456789012345678901234567890123","x"
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="abc","ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="Lab\\,Net","pw\\"1",,1
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CWJAP_DEF?
+wait OK\r\n 10000
+send AT+CWJAP_CUR="Lab","pw","5c:cf:7f:00:00:01"
+wait OK\r\n 10000
+send AT+CWJAP="Home","secret"
+wait OK\r\n 10000
+send AT+CWJAP_DEF?
+wait OK\r\n 10000
+send AT+CWJAPTO?
+wait OK\r\n 10000
+send AT+CWJAPTO=0
+wait ERROR\r\n 10000
+send AT+CWJAPTO=?
+wait ERROR\r\n 10000
+send AT+CWJAPTO=3
+wait OK\r\n 10000
+send AT+CWJAPTO?
+wait OK\r\n 10000
+send AT+CWJAP_CUR="Home","secret","11:22:33:44:55:66"
+wait FAIL\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CWJAP_DEF?
+wait OK\r\n 10000
+send AT+CWQAP=?
+wait OK\r\n 10000
+send AT+CWQAP?
+wait ERROR\r\n 10000
+send AT+CWQAP=1
+wait ERROR\r\n 10000
+send AT+CWQAP
+wait OK\r\n 10000
+send AT+CWJAP_CUR="Home","secret"
+wait OK\r\n 10000
+send AT+CWQAP
+wait WIFI DISCONNECT\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CWAUTOCONN?
+wait OK\r\n 10000
+send AT+CWAUTOCONN=2
+wait ERROR\r\n 10000
+send AT+CWAUTOCONN=?
+wait ERROR\r\n 10000
+send AT+CWAUTOCONN
+wait ERROR\r\n 10000
+send AT+CWAUTOCONN=0
+wait OK\r\n 10000
+send AT+CWAUTOCONN?
+wait OK\r\n 10000
+send AT+RST
+wait ready\r\n 5000
+quiet 2500
+send ATE0
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CWAUTOCONN?
+wait OK\r\n 10000
+send AT+CWAUTOCONN=1
+wait OK\r\n 10000
+send AT+RST
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CWJAPTO?
+wait OK\r\n 10000
