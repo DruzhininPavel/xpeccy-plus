@@ -8,6 +8,7 @@
 #include "xcore.h"
 #include "rewind.h"
 
+#include <atomic>
 #include <iostream>
 #include <QMutex>
 #include <QWaitCondition>
@@ -160,9 +161,35 @@ static long long sndAutoLastNs = 0;
 static int sndLogLat = 0;
 static int sndLogAuto = -1;
 
+// What is queued is dropped where the machine's sound stops following on from
+// it: after fast mode, a rewind, a load or a reset. Only the callback moves the
+// play position, so the emulation marks where the new sound starts, at the
+// first sample made after snd_drop(), and the callback jumps there. It then
+// holds until the ring is back at its target - played at once, the ring would
+// sit a block from running dry from then on - and fades from the frame it held
+// into the new sound. A pause drops nothing: the machine stood still, and what
+// is queued is just what comes next.
+static int sndDropWant = 0;			// emulation side, or under emu_lock
+static std::atomic<int> sndDropMark(-1);	// a ring position, -1 for none
+static std::atomic<int> sndDropBytes(0);	// dropped, for the pacer's tick to log
+static int sndRefill = 0;	// the callback is waiting for the ring to fill
+static int sndFade = 0;		// frames of the fade still to go
+static short sndOutL = 0, sndOutR = 0;	// the last frame the callback sent
+static short sndFadeL = 0, sndFadeR = 0;	// ...and the one the fade starts from
+
+#define SND_FADE_MS	SND_BLOCK_MS
+
+void snd_drop() {
+	sndDropWant = 1;
+}
+
 static void snd_start_playback();
 
 static void snd_ring_put(sndPair lev) {
+	if (sndDropWant) {
+		sndDropWant = 0;
+		sndDropMark.store(posf & SND_RING_MASK);
+	}
 	sbuf[posf & SND_RING_MASK] = lev.left & 0xff;
 	posf++;
 	sbuf[posf & SND_RING_MASK] = (lev.left >> 8) & 0xff;
@@ -262,6 +289,8 @@ int sndSync(Computer* comp) {
 				snd_ring_put(sndLev);
 			}
 			smpCount++;
+		} else if (conf.emu.fast) {
+			snd_drop();		// the GS's flush is all fast mode runs here
 		}
 	}
 #if NEW_SMP_METHOD
@@ -392,6 +421,9 @@ static void snd_log_setting() {
 // window is measured in time rather than in ticks so that a late or coarse SDL
 // timer cannot stretch it.
 void sndAutoTick(long long nowNs) {
+	int dropped = sndDropBytes.exchange(0);
+	if (dropped > 0)
+		xlog(XLG_SOUND, XLL_DEBUG, "dropped %i ms of queued sound", snd_bytes_to_ms(dropped));
 	if (nowNs - sndAutoLastNs < SND_AUTO_WINDOW_MS * 1000000LL) return;
 	sndAutoLastNs = nowNs;
 	int low = sndLowMark;
@@ -506,24 +538,55 @@ void sdlPlayAudio(void*, Uint8* stream, int len) {
 	// conf.snd.need is no longer filled here - it is filled from a steady
 	// timer in pacing.cpp, so frame making does not run in audio-buffer sized
 	// bursts. See pacing.h for why. This callback only plays the ring buffer.
+	int mark = sndDropMark.exchange(-1);
+	if (mark >= 0) {
+		int ahead = (mark - posp) & SND_RING_MASK;
+		if (ahead <= sndGetRingDistance()) {	// else it was played already
+			posp += ahead;
+			sndDropBytes += ahead;
+		}
+		sndRefill = 1;
+	}
 	int dist = sndGetRingDistance();
-	int idle = conf.emu.fast || conf.emu.pause;
-	if ((dist < len) || idle) {				// overfill : fill with last sample of previous buf
-//		printf("overfill : %i %i\n", posf, posp);
-		while(len > 0) {
-			*(stream++) = sbuf[(posp - 4) & SND_RING_MASK];
-			*(stream++) = sbuf[(posp - 3) & SND_RING_MASK];
-			*(stream++) = sbuf[(posp - 2) & SND_RING_MASK];
-			*(stream++) = sbuf[(posp - 1) & SND_RING_MASK];
+	// the target is what the ring keeps once this block is taken out of it
+	if (sndRefill && (dist >= sndGetRingTargetBytes() + len)) {
+		sndRefill = 0;
+		sndFade = conf.snd.rate * SND_FADE_MS / 1000;
+		sndFadeL = sndOutL;
+		sndFadeR = sndOutR;
+	}
+	int idle = conf.emu.fast || conf.emu.pause || sndRefill;
+	if ((dist < len) || idle) {
+		// nothing to play: hold the frame last sent. Not the one behind the
+		// play position - after a drop that is a sample nobody heard.
+		while (len >= 4) {
+			*(stream++) = sndOutL & 0xff;
+			*(stream++) = (sndOutL >> 8) & 0xff;
+			*(stream++) = sndOutR & 0xff;
+			*(stream++) = (sndOutR >> 8) & 0xff;
 			len -= 4;
 		}
-	} else {						// normal : play buffer
-		while(len > 0) {
-			*(stream++) = sbuf[posp & SND_RING_MASK];
-			posp++;
-			len--;
+	} else {
+		int fadeLen = conf.snd.rate * SND_FADE_MS / 1000;
+		while (len >= 4) {
+			int l = (short)(sbuf[posp & SND_RING_MASK] | (sbuf[(posp + 1) & SND_RING_MASK] << 8));
+			int r = (short)(sbuf[(posp + 2) & SND_RING_MASK] | (sbuf[(posp + 3) & SND_RING_MASK] << 8));
+			posp += 4;
+			if (sndFade > 0) {		// from the held frame into the new sound
+				l += (sndFadeL - l) * sndFade / fadeLen;
+				r += (sndFadeR - r) * sndFade / fadeLen;
+				sndFade--;
+			}
+			sndOutL = (short)l;
+			sndOutR = (short)r;
+			*(stream++) = l & 0xff;
+			*(stream++) = (l >> 8) & 0xff;
+			*(stream++) = r & 0xff;
+			*(stream++) = (r >> 8) & 0xff;
+			len -= 4;
 		}
 	}
+	while (len-- > 0) *(stream++) = 0;
 	if (conf.snd.mute && (want > 0)) memset(out, 0, (size_t)want);	// signed 16 bit: silence is zero
 	// how little the ring was left with. while idle it is not drained at all,
 	// so leave the mark alone.
@@ -623,6 +686,10 @@ int sdlopen() {
 	memset(sbuf, 0x00, SND_RING_SIZE);
 	posp = 0x0004;
 	posf = posp;
+	sndDropMark = -1;		// the ring it marked is gone
+	sndRefill = 0;
+	sndFade = 0;
+	sndOutL = sndOutR = 0;
 	return res;
 }
 

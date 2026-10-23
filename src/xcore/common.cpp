@@ -76,6 +76,7 @@ void x_user_reset(Computer* comp, int res) {
 // resets through x_user_reset() too, before it arms, so it does not cancel itself.
 void x_state_replaced() {
 	x_input_bump();
+	snd_drop();		// the old machine's sound
 	autostart_cancel();
 	fastload_forget();
 	cheats_forget();
