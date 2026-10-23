@@ -533,10 +533,10 @@ SetupWin::SetupWin(QWidget* par):QDialog(par) {
 		ui.cbFastFps->addItem(QString::number(f), f);
 	ui.cbFastFps->setValidator(new QIntValidator(1, 100, ui.cbFastFps));
 	ui.cbFastFps->setInsertPolicy(QComboBox::NoInsert);
-	ui.cbFastPic->addItem("Raster (normal)", FPIC_RASTER);
-	ui.cbFastPic->setItemData(0, "Drawn line by line, as at normal speed", Qt::ToolTipRole);
-	ui.cbFastPic->addItem("Video memory dump (simplified)", FPIC_WHOLE);
-	ui.cbFastPic->setItemData(1, "Video memory at a frame end: no multicolor", Qt::ToolTipRole);
+	ui.cbFastPic->addItem("Raster", FPIC_RASTER);
+	ui.cbFastPic->setItemData(0, "The normal picture: drawn line by line,\nas at normal speed", Qt::ToolTipRole);
+	ui.cbFastPic->addItem("Memory dump", FPIC_WHOLE);
+	ui.cbFastPic->setItemData(1, "A simplified picture: video memory\nat a frame end, no multicolor", Qt::ToolTipRole);
 	for (QComboBox* box : {ui.cbSlowmoKey, ui.cbFfwdKey, ui.cbFastKey}) {
 		box->addItem("Toggle", XHOLD_TOGGLE);
 		box->addItem("Hold", XHOLD_HOLD);
@@ -1011,13 +1011,16 @@ void SetupWin::start() {
 	// number set there.
 	int ctlw = qMax(comboFitWidth(ui.cbRunAhead), qMax(comboFitWidth(ui.cbSlowmo), comboFitWidth(ui.cbFfwd)));
 	ctlw = qMax(ctlw, comboFitWidth(ui.cbFastFps));
-	ctlw = qMax(ctlw, qMax(comboFitWidth(cbFolderWrite), comboFitWidth(cbFolderTrash)));
-	for (QComboBox* box : {ui.cbRunAhead, ui.cbSlowmo, ui.cbFfwd, ui.cbFastFps, cbFolderWrite, cbFolderTrash})
+	ctlw = qMax(ctlw, comboFitWidth(cbFolderWrite));
+	for (QComboBox* box : {ui.cbRunAhead, ui.cbSlowmo, ui.cbFfwd, ui.cbFastFps, cbFolderWrite})
 		box->setFixedWidth(ctlw);
-	// the picture's mode in the keys' column, as wide as they are
-	int keyw = qMax(comboFitWidth(ui.cbFastKey), comboFitWidth(ui.cbFastPic));
-	for (QComboBox* box : {ui.cbSlowmoKey, ui.cbFfwdKey, ui.cbFastKey, ui.cbFastPic})
+	// the keys' column: the three key modes alike, the picture's mode and the deleted
+	// files as wide as their own text, so neither widens the keys
+	int keyw = comboFitWidth(ui.cbFastKey);
+	for (QComboBox* box : {ui.cbSlowmoKey, ui.cbFfwdKey, ui.cbFastKey})
 		box->setFixedWidth(keyw);
+	for (QComboBox* box : {ui.cbFastPic, cbFolderTrash})
+		box->setFixedWidth(comboFitWidth(box));
 	ui.cbStyleSheet->setFixedWidth(comboFitWidth(ui.cbStyleSheet));
 	QGridLayout* emugrid[5] = {ui.gridLayout_lat, ui.gridLayout_rew, gridFolders, ui.gridLayout_look, ui.gridLayout_23};
 	for (int col = 0; col < 2; col++) {
@@ -2945,7 +2948,8 @@ static QToolButton* rec_button(const char* icon, const QString& tip) {
 }
 
 // Folder as a disk, under Speed and rewind: whether a folder mounted as a card or a disk
-// takes the machine's writes, and where a file the machine deletes there goes
+// takes the machine's writes, and where a file the machine deletes there goes. Laid out
+// as Speed and rewind is: a short list first, a mode in the keys' column
 void SetupWin::buildFolders() {
 	QGroupBox* box = new QGroupBox(tr("Folder as a disk"));
 	gridFolders = new QGridLayout(box);
@@ -2953,28 +2957,31 @@ void SetupWin::buildFolders() {
 	gridFolders->setVerticalSpacing(8);
 	gridFolders->setColumnStretch(2, 1);
 	cbFolderWrite = new QComboBox;
-	cbFolderWrite->addItem(tr("Read-only"), 0);
-	cbFolderWrite->addItem(tr("Read/write"), 1);
+	cbFolderWrite->addItem(tr("R/O"), 0);
+	cbFolderWrite->setItemData(0, tr("Read-only: the folder stays as it is"), Qt::ToolTipRole);
+	cbFolderWrite->addItem(tr("R/W"), 1);
+	cbFolderWrite->setItemData(1, tr("Read/write: the folder's files follow\nwhat the machine writes"), Qt::ToolTipRole);
 	cbFolderTrash = new QComboBox;
 	cbFolderTrash->addItem(tr("Move to trash"), 1);
 	cbFolderTrash->addItem(tr("Delete permanently"), 0);
-	auto row = [this](int r, QComboBox* cb, const QString& name, const QString& hint, const QString& tip) {
+	auto label = [](QComboBox* cb, const QString& name, const QString& tip) {
 		QLabel* lab = new QLabel(name);
-		QLabel* note = new QLabel(hint);
-		QFont font = note->font();
-		font.setItalic(true);
-		note->setFont(font);
 		lab->setBuddy(cb);
 		cb->setToolTip(tip);
 		lab->setToolTip(tip);
-		gridFolders->addWidget(cb, r, 0);
-		gridFolders->addWidget(lab, r, 1);
-		gridFolders->addWidget(note, r, 2);
+		return lab;
 	};
-	row(0, cbFolderWrite, tr("Folders"), tr("Whether a folder in a card slot or a drive takes what the machine saves"),
-		tr("Read/write: the folder's files follow what the machine writes"));
-	row(1, cbFolderTrash, tr("Deleted files"), tr("Where a file the machine deletes in such a folder goes"),
-		tr("A file the trash will not take stays in the folder"));
+	QLabel* note = new QLabel(tr("Whether a folder in a card slot or a drive takes what the machine saves"));
+	QFont font = note->font();
+	font.setItalic(true);
+	note->setFont(font);
+	gridFolders->addWidget(cbFolderWrite, 0, 0);
+	gridFolders->addWidget(label(cbFolderWrite, tr("Folders"),
+		tr("R/O: read-only, the folder stays as it is\nR/W: read/write, the folder's files follow\nwhat the machine writes")), 0, 1);
+	gridFolders->addWidget(note, 0, 2);
+	gridFolders->addWidget(label(cbFolderTrash, tr("Deleted files"),
+		tr("Where a file the machine deletes in such\na folder goes. A file the trash will not\ntake stays in the folder")), 1, 1);
+	gridFolders->addWidget(cbFolderTrash, 1, 2, Qt::AlignLeft);
 	ui.verticalLayout_16->insertWidget(ui.verticalLayout_16->indexOf(ui.gbRewind) + 1, box);
 }
 
