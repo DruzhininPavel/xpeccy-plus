@@ -55,7 +55,7 @@ static QString pal_name(int p) {
 
 // the palette each layer takes now
 static int pal_active(Computer* comp, int layer) {
-	unsigned char* nr = comp->next.nr;
+	unsigned char* nr = comp->next->nr;
 	switch (layer) {
 		case NXP_ULA: return NXP_ULA | ((nr[0x43] & 2) ? 4 : 0);
 		case NXP_L2: return NXP_L2 | ((nr[0x43] & 4) ? 4 : 0);
@@ -66,8 +66,8 @@ static int pal_active(Computer* comp, int layer) {
 
 // a colour of palette p, 0 (transparent) when global transparency takes it
 static QRgb pal_dot(Computer* comp, int p, int idx, bool global) {
-	int c = comp->next.pal[p & 7][idx & 0xff] & 0x1ff;
-	if (global && ((c >> 1) == comp->next.nr[0x14])) return 0;
+	int c = comp->next->pal[p & 7][idx & 0xff] & 0x1ff;
+	if (global && ((c >> 1) == comp->next->nr[0x14])) return 0;
 	return nx_qrgb(c);
 }
 
@@ -253,9 +253,9 @@ static QString ctc_bits(int v) {
 }
 
 static QString clip_text(Computer* comp, int w) {
-	unsigned char* c = comp->next.clip[w];
+	unsigned char* c = comp->next->clip[w];
 	static const char* const next[4] = {"X1", "X2", "Y1", "Y2"};
-	return QString("x %0..%1, y %2..%3; %4 next").arg(c[0]).arg(c[1]).arg(c[2]).arg(c[3]).arg(next[comp->next.clipIdx[w] & 3]);
+	return QString("x %0..%1, y %2..%3; %4 next").arg(c[0]).arg(c[1]).arg(c[2]).arg(c[3]).arg(next[comp->next->clipIdx[w] & 3]);
 }
 
 // the address in bank 5 or 7 NR 6E/6F point at, as the cpu sees it in its usual map
@@ -265,7 +265,7 @@ static QString tm_base(int v) {
 }
 
 static QString mmu_text(Computer* comp, int s) {
-	int pg = comp->next.mmu[s];
+	int pg = comp->next->mmu[s];
 	QString area = QString("#%0: ").arg(gethexword(s << 13));
 	if (pg == 0xff && (s < 2)) return area + QString("ROM %0").arg(next_rom(comp));
 	if (pg >= 0xe0) return area + "nothing (reads #FF)";
@@ -273,7 +273,7 @@ static QString mmu_text(Computer* comp, int s) {
 }
 
 void xNxRegsPage::draw(Computer* comp) {
-	xNextState& N = comp->next;
+	xNextState& N = *comp->next;
 	unsigned char* nr = N.nr;
 	auto rd = [comp](int r) {return next_nr_peek(comp, r);};
 	list->begin();
@@ -505,7 +505,7 @@ void xNxSprPage::draw(Computer* comp) {
 	}
 	nxSpriteView sp[128];
 	next_sprites(comp, sp);
-	bool on = comp->next.nr[0x15] & 1;
+	bool on = comp->next->nr[0x15] & 1;
 	QColor dim = palette().color(QPalette::Disabled, QPalette::Text);
 	for (int i = 0; i < 128; i++) {
 		nxSpriteView* s = &sp[i];
@@ -538,8 +538,8 @@ void xNxSprPage::draw(Computer* comp) {
 
 // the pattern's index at x, y of its 16x16, 0..255, or -1 where it is transparent
 static int spr_pixel(Computer* comp, const nxSpriteView* s, int x, int y) {
-	unsigned char* pat = comp->next.spr.pat;
-	int tr = comp->next.nr[0x4b];
+	unsigned char* pat = comp->next->spr.pat;
+	int tr = comp->next->nr[0x4b];
 	int base = (s->pat >> 1) << 8;
 	if (s->bits4) {
 		int b = pat[(base + ((s->pat & 1) << 7) + (y << 3) + (x >> 1)) & 0x3fff];
@@ -623,7 +623,7 @@ static QString cop_text(int w) {
 }
 
 void xNxCopPage::draw(Computer* comp) {
-	xNextState& N = comp->next;
+	xNextState& N = *comp->next;
 	static const char* const modes[4] = {"stopped", "runs from 0, loops", "runs on from where it stopped, loops", "runs from 0, again at each frame"};
 	labState->setText(QString("The copper %0. PC %1, writes go to %2.").arg(modes[N.nr[0x62] >> 6]).arg(hx3(N.copPc)).arg(hx3(N.coppAdr >> 1)));
 	if (!filled) {
@@ -741,7 +741,7 @@ static int l2_index(int b, int res, int x, int off) {
 
 // the ULA's ink or paper index for a pixel: plain, or ULANext's
 static int ula_index(Computer* comp, int attr, int pen) {
-	unsigned char* nr = comp->next.nr;
+	unsigned char* nr = comp->next->nr;
 	if (!(nr[0x43] & 1)) {
 		int br = (attr & 0x40) ? 8 : 0;
 		return pen ? ((attr & 7) | br) : (16 | ((attr >> 3) & 7) | br);
@@ -759,7 +759,7 @@ static int ula_addr(int x, int y) {
 }
 
 void xNxLayerPage::draw(Computer* comp) {
-	xNextState& N = comp->next;
+	xNextState& N = *comp->next;
 	unsigned char* nr = N.nr;
 	int mode = cbLayer->currentData().toInt();
 	if (mode != shown) setup(mode);
@@ -854,7 +854,7 @@ void xNxLayerPage::draw(Computer* comp) {
 void xNxLayerPage::info() {
 	Computer* comp = conf.zx;
 	if (!comp || (comp->hw->id != HW_ZXNEXT)) return;
-	xNextState& N = comp->next;
+	xNextState& N = *comp->next;
 	unsigned char* nr = N.nr;
 	int mode = shown;
 	bool in = (mx >= 0) && (my >= 0);
@@ -951,7 +951,7 @@ static int tm_base_of(int v) {
 
 // the map entry of cell c: tile and attribute
 static void tm_cell(Computer* comp, int c, int* tile, int* attr, int* adr) {
-	unsigned char* nr = comp->next.nr;
+	unsigned char* nr = comp->next->nr;
 	int mapb = tm_base_of(nr[0x6e]);
 	bool strip = nr[0x6b] & 0x20;
 	int sub = strip ? c : c * 2;
@@ -963,7 +963,7 @@ static void tm_cell(Computer* comp, int c, int* tile, int* attr, int* adr) {
 // tile t9's dot at x, y under attribute attr, as the tilemap's fetch makes it: the index,
 // or -1 for the transparent nibble
 static int tm_dot(Computer* comp, int t9, int attr, int x, int y) {
-	unsigned char* nr = comp->next.nr;
+	unsigned char* nr = comp->next->nr;
 	int tileb = tm_base_of(nr[0x6f]);
 	if (nr[0x6b] & 0x08) {
 		int b = tm_byte(comp, tileb, (t9 << 3) | y);
@@ -1021,7 +1021,7 @@ int xNxTilePage::fitWidth(int w, int h) {
 }
 
 void xNxTilePage::draw(Computer* comp) {
-	unsigned char* nr = comp->next.nr;
+	unsigned char* nr = comp->next->nr;
 	int mode = cbView->currentData().toInt();
 	if (mode != shown) setup(mode);
 	sbPal->setEnabled(mode == TV_TILES);
@@ -1073,7 +1073,7 @@ void xNxTilePage::draw(Computer* comp) {
 void xNxTilePage::info() {
 	Computer* comp = conf.zx;
 	if (!comp || (comp->hw->id != HW_ZXNEXT)) return;
-	unsigned char* nr = comp->next.nr;
+	unsigned char* nr = comp->next->nr;
 	int mode = shown;
 	int v = nr[0x6b];
 	int cols = (v & 0x40) ? 80 : 40;
@@ -1172,7 +1172,7 @@ int xNxPalPage::fitWidth(int w, int h) {
 }
 
 void xNxPalPage::draw(Computer* comp) {
-	xNextState& N = comp->next;
+	xNextState& N = *comp->next;
 	int p = cbPal->currentData().toInt();
 	// which palettes are in use, written on the list
 	for (int i = 0; i < cbPal->count(); i++) {
@@ -1192,7 +1192,7 @@ void xNxPalPage::draw(Computer* comp) {
 void xNxPalPage::info() {
 	Computer* comp = conf.zx;
 	if (!comp || (comp->hw->id != HW_ZXNEXT)) return;
-	xNextState& N = comp->next;
+	xNextState& N = *comp->next;
 	int p = cbPal->currentData().toInt();
 	int i = (hov >= 0) ? hov : view->pick;
 	QStringList vl;
@@ -1226,7 +1226,7 @@ static QString dma_port(int adr, int io, int mode, int len) {
 }
 
 void xNxDmaPage::draw(Computer* comp) {
-	nxDma& D = comp->next.dma;
+	nxDma& D = comp->next->dma;
 	list->begin();
 	QString g = "Set up";
 	list->put(g, "port", {D.zmode ? "0B" : "6B", "Port", "", D.zmode ? "Z80 DMA" : "zxnDMA"});

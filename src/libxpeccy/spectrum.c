@@ -598,7 +598,9 @@ void comp_set_identity(Computer* comp, const char* name, int ymd, int release) {
 Computer* compCreate() {
 	Computer* comp = (Computer*)malloc(sizeof(Computer));
 	memset(comp, 0x00, sizeof(Computer));
-	ds_init(&comp->rtc);
+	comp->next = (xNextState*)calloc(1, sizeof(xNextState));
+	comp->rtc = (DS1307*)calloc(1, sizeof(DS1307));
+	ds_init(comp->rtc);
 	comp->resbank = RES_48;
 	comp->earback = EAR_ISSUE3;
 	comp->flgFRN = 1;
@@ -677,6 +679,8 @@ void compDestroy(Computer* comp) {
 	saaDestroy(comp->saa);
 	bcDestroy(comp->beep);
 	sltDestroy(comp->slot);
+	free(comp->next);
+	free(comp->rtc);
 	free(comp);
 }
 

@@ -100,6 +100,9 @@ typedef struct {
 	// The dots leave nothing the machine can see but the border latch and what
 	// latch says, so an undrawn frame skips them (vid_skips()) - in every mode.
 	int latch;		// VL_*: a byte of the drawing the machine reads back
+	// where the picture really stops, for a mode that draws through a pointer of its
+	// own (VID_NEXT, behind the ray); NULL: at ray.ptr
+	unsigned char* (*drawn)(Video*);
 } xVideoMode;
 
 // What a mode's dots leave behind that the machine can read: worked out from

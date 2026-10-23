@@ -414,8 +414,12 @@ static unsigned char nxtatr = 0;
 
 void vid_dark_tail(Video* vid) {
 	if (vid->tail) return;				// no filling while current fill is active (till end of frame)
-	unsigned char* ptr = vid->ray.ptr;		// fill current line till EOL
-	unsigned char* zptr = bufimg + (vid->ray.ptr - scrimg); // ptr to prev.frame (place is same as ray at cur.frame)
+	vid_unlazy(vid);				// the dots counted are drawn first
+	// from where the picture stops: on the Next its mixer's own pointer, a few dots
+	// behind the ray - ray.ptr stays at the line's start there, and darkening from it
+	// left the part of the line already drawn dark for the rest of the frame
+	unsigned char* ptr = vid->cb->drawn ? vid->cb->drawn(vid) : vid->ray.ptr;
+	unsigned char* zptr = bufimg + (ptr - scrimg);	// the same place in the previous frame
 	unsigned char* btr = scrimg;			// begin of current buffer
 	// current line
 	while (ptr - vid->ray.lptr < bytesPerLine) {	// dark tail from prev.frame to cur.frame
@@ -1659,6 +1663,7 @@ static void vidProfiMono(Video* vid) {vid_profi(vid, 1);}
 void vts_hblk(Video*);
 void nxv_dot(Video*);
 int nxv_run(Video*, int);
+unsigned char* nxv_drawn(Video*);
 void vts_line(Video*);
 void vts_frame(Video*);
 void vidDrawTSLNormal(Video*);
@@ -1687,7 +1692,7 @@ static xVideoMode vidModeTab[] = {
 	{VID_TSL_TEXT, NULL, vidDrawTSLText, vts_hblk, vts_line, NULL, vts_frame, NULL, VL_NONE},
 	{VID_PRF_MC, NULL, vidProfiScr, NULL, NULL, NULL, NULL, NULL, VL_NONE},
 	{VID_PRF_MONO, NULL, vidProfiMono, NULL, NULL, NULL, NULL, NULL, VL_NONE},
-	{VID_NEXT, NULL, nxv_dot, NULL, NULL, NULL, NULL, nxv_run, VL_NONE},
+	{VID_NEXT, NULL, nxv_dot, NULL, NULL, NULL, NULL, nxv_run, VL_NONE, nxv_drawn},
 
 
 	{VID_UNKNOWN, NULL, vidDrawBorder, NULL, NULL, NULL, NULL, NULL, VL_NONE}

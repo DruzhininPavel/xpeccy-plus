@@ -58,9 +58,13 @@ void xFileTypesBox::fill() {
 			ft_add(box, "Ask", FM_ASK, "When this machine cannot run the file, ask which one to use");
 		ft_add(box, "Keep current", FM_KEEP, "Never switch the machine");
 		box->insertSeparator(box->count());
+		std::string family;		// parted by family, as the Model menu is
 		foreach(const xMachine& mac, xm_list()) {
-			if (fm_runs(mac.id, rows[i].need))
-				ft_add(box, xm_list_name(mac), mac.id.c_str(), "Always open on this machine");
+			if (!fm_runs(mac.id, rows[i].need)) continue;
+			if (!family.empty() && (mac.family != family))
+				box->insertSeparator(box->count());
+			family = mac.family;
+			ft_add(box, xm_list_name(mac), mac.id.c_str(), "Always open on this machine");
 		}
 		// a machine that is not there any more comes out as Auto
 		setRFIndex(box, QString::fromLocal8Bit(fm_pref(rows[i].key).c_str()), 0);

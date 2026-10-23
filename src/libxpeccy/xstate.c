@@ -85,6 +85,11 @@ static int xst_build(Computer* comp, xStateChunk* list) {
 
 	ADD(comp->vid, sizeof(Video));
 	ADD(comp->vid->ula, sizeof(ulaPlus));
+	// the Next's own, ~120K no other machine has to carry in every snapshot
+	if (comp->hw && (comp->hw->id == HW_ZXNEXT)) {
+		ADD(comp->next, sizeof(xNextState));
+		ADD(comp->rtc, sizeof(DS1307));
+	}
 
 	// the sound devices, up to the storage controllers: xstate_diff_parts() can
 	// leave them out

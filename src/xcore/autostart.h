@@ -25,6 +25,6 @@ int autostart_busy();
 // the ZX Spectrum Next: NextZXOS boots off the SD card, and on its command line
 // .cd goes into a folder of the card's root and NEXLOAD (snx: SPECTRUM) starts a file
 // there; 0 if a name cannot be typed. welcome: the card starts NextZXOS's welcome pages first
-int autostart_arm_nex(Computer*, const char* dir, const char* name, int welcome, int snx);
+int autostart_arm_nex(Computer*, const char* dir, const char* name, int welcome, int snx, int powered);
 // press or let go of keys named as a keymap names them ("E", "Sp"...)
 void autostart_key(Computer*, const char* keys, int press);

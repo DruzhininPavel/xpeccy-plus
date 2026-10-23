@@ -375,8 +375,8 @@ typedef struct {
 // DAC changes the mixer has still to reach (hardware/zxnext_snd.c), a power of two
 #define NX_DACQ		256
 
-// The ZX Spectrum Next's state (hardware/zxnext.c), all of it in the machine so a
-// rollback takes it back. Names follow the core's (zxnext.vhd).
+// The ZX Spectrum Next's state (hardware/zxnext.c), all of it in one block the snapshot
+// takes on the Next, so a rollback takes it back. Names follow the core's (zxnext.vhd).
 typedef struct {
 	unsigned char powered;		// set at the first reset: the power-on values are in
 	unsigned char firmware;		// that reset hands over as TBBLUE.FW does (the power came on)
@@ -427,6 +427,7 @@ typedef struct {
 	unsigned char ulapSel, ulapMode;	// ULA+ BF3B (b7:6 mode group, b5:0 index)
 	unsigned char resetType;	// nr_02_reset_type, 3 bits, never reset
 	unsigned char configMode;	// nr_03_config_mode (the firmware leaves it off)
+	unsigned char vmode;		// the video timing the board runs (NR 11): its CLK_28, 0 = 28 MHz
 	unsigned char lastSram;		// the byte of the last port A SRAM read (unmapped reads give it)
 	unsigned char busRomcs;		// the expansion bus ROMCS pin asks the internal ROM off
 	unsigned char palPhase;		// nr_44 first/second byte
@@ -643,8 +644,9 @@ typedef struct Computer {
 	unsigned char brkIOMap[MEM_64K];	// io brk
 	xHeatBank heatRam;			// ram read/write/exec hit counters, sized to mem->ramMask+1
 	xHeatBank heatRom;			// rom read/write/exec hit counters, sized to mem->romMask+1
-	xNextState next;			// the ZX Spectrum Next
-	DS1307 rtc;				// the Next's clock, on its I2C bus: on its own battery, not reset with it
+	// the ZX Spectrum Next's ~120K, apart from the struct: a snapshot takes them only on the Next
+	xNextState* next;			// the ZX Spectrum Next
+	DS1307* rtc;				// the Next's clock, on its I2C bus: on its own battery, not reset with it
 	// TODO: try to move this somewhere
 	struct {
 		unsigned char Page0;

@@ -715,12 +715,12 @@ static void xm_load_nvram() {
 	}
 	mac_nv_read(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE, NULL);
 	// the Next's clock: what it was set to and its RAM; without a file it keeps the host's time
-	ds_init(&conf.zx->rtc);
+	ds_init(conf.zx->rtc);
 	if (id == HW_ZXNEXT) {
 		unsigned char nv[DS_NV_SIZE];
 		memset(nv, 0x00, DS_NV_SIZE);
 		mac_nv_read(mac_nv_path(".rtc"), nv, DS_NV_SIZE, NULL);
-		ds_nv_set(&conf.zx->rtc, nv);
+		ds_nv_set(conf.zx->rtc, nv);
 	}
 	// a divMMC's EEPROM keeps what was written to it. One board goes from machine to
 	// machine, so its file is not any one machine's. It comes with the bundled
@@ -740,7 +740,7 @@ void xm_save_nvram() {
 		mac_nv_write(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE);
 	if (conf.zx->hw && (conf.zx->hw->id == HW_ZXNEXT)) {
 		unsigned char nv[DS_NV_SIZE];
-		ds_nv_get(&conf.zx->rtc, nv);
+		ds_nv_get(conf.zx->rtc, nv);
 		mac_nv_write(mac_nv_path(".rtc"), nv, DS_NV_SIZE);
 	}
 	if (conf.zx->div->eeDirty) {		// loaded in Options with the board off, too

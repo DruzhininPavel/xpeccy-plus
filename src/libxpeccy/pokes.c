@@ -207,6 +207,7 @@ static void pk_write(Computer* comp, xPoke* pk, int val) {
 	int v = pk_val(pk, val);
 	pk->saved = (*p == v && pk->org) ? pk->org : *p;
 	*p = v;
+	x_input_bump();		// the memory changed from outside: frames run ahead go
 }
 
 int pok_apply(Computer* comp, xTrainer* tr, int val) {
@@ -228,6 +229,7 @@ void pok_undo(Computer* comp, xTrainer* tr) {
 		if (p) *p = pk->saved;
 		pk->saved = -1;
 	}
+	x_input_bump();
 }
 
 static int pk_same_place(const xPoke* a, const xPoke* b) {

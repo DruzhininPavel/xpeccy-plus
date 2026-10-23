@@ -237,8 +237,16 @@ static void nx_ay_mix(Computer* comp, int* l, int* r) {
 	int ts = nr[0x08] & 2;
 	int acb = nr[0x08] & 0x20;
 	int al = 0, ar = 0;
+	// their clock comes off CLK_28 too: the machine's AY clock at VGA 0, faster with
+	// the video timing (Options set the first; the second only the board knows)
+	double want = ((comp->ts->frq > 0) ? comp->ts->frq : comp->cpuFrq / 2) / nx_clk_scale(comp);
 	for (int i = 0; i < 3; i++) {
 		aymChip* chip = nx_ay(comp, i);
+		double f = want * chip_frq_mul(chip->type);
+		if (chip->frq != f) {
+			chip->frq = f;
+			chip_set_type(chip, chip->type);
+		}
 		if ((!ts && (i != SND.sel)) || nx_ay_silent(chip)) continue;
 		ay_flush(chip);
 		int a = nx_chan(chip, &chip->chanA, 0, tab);
