@@ -29,17 +29,10 @@ static QString plural(int n, const char* one, const char* many) {
 }
 
 // the Means column in plain words, or in the names the docs and tsconfig.asm give the fields
+bool evo_field_names() {return conf.dbg.evonames;}
 static bool fieldNames() {return conf.dbg.evonames;}
 
-// A register's bits: the field name the docs give it, and the same in words (none: a
-// bit the words leave to the rest of the line)
-struct evoBit {
-	int mask;
-	const char* field;
-	const char* words;
-};
-
-static QStringList evo_bit_list(int v, const evoBit* t) {
+QStringList evo_bit_list(int v, const evoBit* t) {
 	bool nm = fieldNames();
 	QStringList s;
 	for (; t->mask; t++) {
@@ -50,13 +43,13 @@ static QStringList evo_bit_list(int v, const evoBit* t) {
 }
 
 // parts of a description, in words with commas, by field names with spaces
-static QString evo_join(const QStringList& s, const char* none) {
+QString evo_join(const QStringList& s, const char* none) {
 	bool nm = fieldNames();
 	if (s.isEmpty()) return nm ? "-" : none;
 	return s.join(nm ? " " : ", ");
 }
 
-static QString evo_bits(int v, const evoBit* t, const char* none) {
+QString evo_bits(int v, const evoBit* t, const char* none) {
 	return evo_join(evo_bit_list(v, t), none);
 }
 
@@ -72,7 +65,7 @@ static QRgb evo_rgb(Video* vid, int idx) {
 #define EVO_CHECK	8	// a checker square, in screen pixels whatever the zoom
 
 // the window's color and a faint tint of it; made again only when that color changes
-static QBrush evo_checker(const QWidget* w) {
+QBrush evo_checker(const QWidget* w) {
 	// an image, not a brush: a brush may hold a pixmap, which must not outlive the app
 	static QImage img;
 	QColor bg = w->palette().color(QPalette::Window);
@@ -88,7 +81,7 @@ static QBrush evo_checker(const QWidget* w) {
 }
 
 // the panel's tables: read-only, rows alternating as the dumps and the listing have them
-static void evo_tree_setup(QTreeWidget* t, const QStringList& head) {
+void evo_tree_setup(QTreeWidget* t, const QStringList& head) {
 	t->setColumnCount(head.size());
 	t->setHeaderLabels(head);
 	t->setRootIsDecorated(false);
@@ -104,18 +97,18 @@ static void evo_tree_setup(QTreeWidget* t, const QStringList& head) {
 // been: a value that grows for a step and shrinks back must not move the table.
 // A font change (the debugger hands its own out after the panel is made) starts
 // the widths over.
-static void evo_fit_column(QTreeWidget* view, int col, QStringList samples) {
+void evo_fit_column(QTreeWidget* view, int col, QStringList samples) {
 	QString fkey = QString("fitFont%0").arg(col);
 	if (view->property(fkey.toUtf8().constData()).toString() != view->font().toString()) {
 		view->setProperty(fkey.toUtf8().constData(), view->font().toString());
 		view->setColumnWidth(col, 0);
 	}
-	samples << view->headerItem()->text(col);
 	QTreeWidgetItemIterator it(view);
 	for (; *it; ++it)
 		if (!(*it)->isFirstColumnSpanned()) samples << (*it)->text(col);
 	QFontMetrics fm(view->font());
-	int w = 0;
+	// a header section has padding of its own round the text
+	int w = fm.horizontalAdvance(view->headerItem()->text(col)) + 3 * fm.averageCharWidth();
 	foreach (QString smp, samples)
 		w = qMax(w, fm.horizontalAdvance(smp) + fm.averageCharWidth());
 	if (w > view->columnWidth(col))
@@ -141,6 +134,7 @@ static void evo_style_menu(const std::function<void()>& done) {
 
 xEvoList::xEvoList(QStringList head, QWidget* p):QTreeWidget(p) {
 	grown = false;
+	named = true;
 	evo_tree_setup(this, head);
 	setItemsExpandable(false);
 	setIndentation(0);
@@ -177,12 +171,19 @@ QTreeWidgetItem* xEvoList::group(const QString& name) {
 	return it;
 }
 
+void xEvoList::wordsOnly() {
+	named = false;
+	setContextMenuPolicy(Qt::NoContextMenu);
+	header()->setContextMenuPolicy(Qt::NoContextMenu);
+	header()->setToolTip(QString());
+}
+
 void xEvoList::begin() {
 	chgBg = conf.pal.value(DBG_PAL_CHG_BG);
 	chgFg = conf.pal.value(DBG_PAL_CHG_TXT);
 	// the switch is made on any of the lists, the header follows it on each
 	QString last = conf.dbg.evonames ? "Fields" : "Means";
-	if ((columnCount() > 3) && (headerItem()->text(3) != last))
+	if (named && (columnCount() > 3) && (headerItem()->text(3) != last))
 		headerItem()->setText(3, last);
 }
 
@@ -1356,13 +1357,23 @@ void xTsDmaPage::draw(Computer* comp) {
 
 // PANEL
 
-xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
+// the tab each panel shows, and whether it is in a window of its own
+static int& panel_tab(int kind) {
+	return (kind == NEXT_PANEL) ? conf.dbg.nxtab : conf.dbg.evotab;
+}
+
+static bool panel_detached(int kind) {
+	return (kind == NEXT_PANEL) ? conf.dbg.nxdetach : conf.dbg.evodetach;
+}
+
+xEvoPanel::xEvoPanel(int kind, QWidget* p):QWidget(p), kind(kind) {
 	hw = -1;
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(0, 0, 0, 0);
 	QHBoxLayout* head = new QHBoxLayout;
 	head->setContentsMargins(0, 0, 0, 0);
 	tabs = new QTabBar;
+	tabs->setObjectName((kind == NEXT_PANEL) ? "nextTabs" : "evoTabs");
 	tabs->setDrawBase(false);
 	labHidden = new QLabel("Layers hidden");
 	labHidden->setToolTip("Some of the layers are kept out of the picture (Registers tab)");
@@ -1378,8 +1389,14 @@ xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 	lay->addLayout(head);
 
 	stack = new QStackedWidget;
-	xTsRegsPage* tsRegs = new xTsRegsPage;
-	pages << tsRegs << new xTsSprPage << new xTsTilePage << new xEvoPalPage << new xTsDmaPage << new xEvoPortsPage;
+	xTsRegsPage* tsRegs = nullptr;
+	if (kind == NEXT_PANEL) {
+		pages = next_panel_pages(&names);
+	} else {
+		tsRegs = new xTsRegsPage;
+		pages << tsRegs << new xTsSprPage << new xTsTilePage << new xEvoPalPage << new xTsDmaPage << new xEvoPortsPage;
+		names << "Registers" << "Sprites" << "Tiles" << "Palette" << "DMA" << "Ports";
+	}
 	foreach (xEvoPage* pg, pages)
 		stack->addWidget(pg);
 	noMachine = new QLabel("Nothing to show on this machine");
@@ -1389,14 +1406,13 @@ xEvoPanel::xEvoPanel(QWidget* p):QWidget(p) {
 
 	connect(tabs, &QTabBar::currentChanged, this, &xEvoPanel::tab_changed);
 	connect(tbDetach, &QToolButton::clicked, this, &xEvoPanel::s_detach);
-	connect(tsRegs, &xTsRegsPage::s_layers, this, [this]() {
+	if (tsRegs) connect(tsRegs, &xTsRegsPage::s_layers, this, [this]() {
 		draw();
 		emit s_picture();
 	});
 }
 
-// pages[] in the order the constructor makes them, and the tabs each machine has
-static const char* const pageNames[] = {"Registers", "Sprites", "Tiles", "Palette", "DMA", "Ports"};
+// the tabs each machine has, by their place in pages[]
 static const QList<int> tsTabs = {0, 1, 2, 3, 4};
 static const QList<int> evoTabs = {5, 3};
 
@@ -1406,12 +1422,19 @@ void xEvoPanel::build_tabs() {
 		tabs->removeTab(0);
 	tabPages.clear();
 	hw = conf.zx ? conf.zx->hw->id : -1;
-	foreach (int k, (hw == HW_TSLAB) ? tsTabs : (hw == HW_PENTEVO) ? evoTabs : QList<int>()) {
+	QList<int> list;
+	if (kind == NEXT_PANEL) {
+		if (hw == HW_ZXNEXT)
+			for (int k = 0; k < pages.size(); k++) list << k;
+	} else {
+		list = (hw == HW_TSLAB) ? tsTabs : (hw == HW_PENTEVO) ? evoTabs : QList<int>();
+	}
+	foreach (int k, list) {
 		tabPages << pages[k];
-		tabs->addTab(pageNames[k]);
+		tabs->addTab(names[k]);
 	}
 	tabs->setVisible(tabs->count() > 0);
-	int idx = qBound(0, conf.dbg.evotab, qMax(0, tabs->count() - 1));
+	int idx = qBound(0, panel_tab(kind), qMax(0, tabs->count() - 1));
 	tabs->setCurrentIndex(idx);
 	stack->setCurrentWidget(tabPages.isEmpty() ? (QWidget*)noMachine : tabPages[idx]);
 	// a switch to TSConf with the panel up: xm_set() disarmed the snapshots
@@ -1420,13 +1443,13 @@ void xEvoPanel::build_tabs() {
 
 void xEvoPanel::tab_changed(int idx) {
 	if ((idx < 0) || (idx >= tabPages.size())) return;
-	conf.dbg.evotab = idx;
+	panel_tab(kind) = idx;
 	stack->setCurrentWidget(tabPages[idx]);
 	draw();
 }
 
 void xEvoPanel::reload() {
-	tbDetach->setChecked(conf.dbg.evodetach);
+	tbDetach->setChecked(panel_detached(kind));
 	build_tabs();
 	restyle();
 	draw();
@@ -1452,19 +1475,20 @@ void xEvoPanel::draw() {
 
 // DOCK
 
-xEvoWidget::xEvoWidget(QString i, QString t, QWidget* p):xDockWidget(i,t,p) {
+xEvoWidget::xEvoWidget(int kind, QString i, QString t, QWidget* p):xDockWidget(i,t,p) {
 	QWidget* wid = new QWidget;
 	setWidget(wid);
-	setObjectName("EVOWIDGET");	// the name a saved dock layout knows it by
+	// the name a saved dock layout knows it by
+	setObjectName((kind == NEXT_PANEL) ? "NEXTWIDGET" : "EVOWIDGET");
 
 	QVBoxLayout* lay = new QVBoxLayout(wid);
 	lay->setContentsMargins(5, 5, 5, 5);
-	panel = new xEvoPanel;
+	panel = new xEvoPanel(kind);
 	lay->addWidget(panel);
 
 	gone = new QWidget;
 	QVBoxLayout* glay = new QVBoxLayout(gone);
-	QLabel* lab = new QLabel("The ZX Evolution panel is in a window of its own.");
+	QLabel* lab = new QLabel(QString("The %0 panel is in a window of its own.").arg((kind == NEXT_PANEL) ? "ZX Next" : "ZX Evolution"));
 	lab->setAlignment(Qt::AlignCenter);
 	lab->setWordWrap(true);
 	QPushButton* btn = new QPushButton("Bring it back");

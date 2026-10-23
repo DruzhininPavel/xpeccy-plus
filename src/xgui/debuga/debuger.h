@@ -70,6 +70,7 @@ class DebugWin : public QMainWindow {
 		void s_snd_upd();
 		void wannaEvoWin(bool);
 		void s_evo_upd();
+		void wannaNextWin(bool);
 		void wannaOptions();
 		void wannaOpen();
 		void wannaReload();
@@ -83,6 +84,7 @@ class DebugWin : public QMainWindow {
 		void sndSetDetached(bool);
 		void evoSetDetached(bool);
 		void evoPicture();
+		void nextSetDetached(bool);
 		void sndToggle();
 		void updateStyle();
 	private:
@@ -133,6 +135,7 @@ class DebugWin : public QMainWindow {
 		xBreakWidget* wid_brk;
 		xPalWidget* wid_pal;
 		xEvoWidget* wid_evo;
+		xEvoWidget* wid_next;
 		xHeatWidget* wid_heat;
 		QList<xDockWidget*> dockWidgets;
 

@@ -213,6 +213,7 @@ void DebugWin::updateStyle() {
 	//ui.dumpTable->update();
 	wid_disk_dump->draw();
 	wid_evo->restyle();
+	wid_next->restyle();
 }
 
 // The boxes come out wide at startup and only shrank once Options re-applied
@@ -374,6 +375,7 @@ void DebugWin::machinePanels() {
 	wid_disk_dump->setVisible(disk);
 	wid_fdd->setVisible(disk);
 	wid_evo->setVisible((hw == HW_TSLAB) || (hw == HW_PENTEVO));
+	wid_next->setVisible(hw == HW_ZXNEXT);
 	// the ZX Evo panel has a palette tab of its own there
 	wid_pal->setVisible((hw != HW_TSLAB) && (hw != HW_PENTEVO));
 	// MEMMAP says where FMAPS is: always a line on TSConf, so the panel keeps its height
@@ -479,13 +481,15 @@ DebugWin::DebugWin(QWidget* par):QMainWindow(par) {
 	wid_brk = new xBreakWidget(":/images/stop.png","Breakpoints");
 	wid_heat = new xHeatWidget(":/images/memory.png","Heat map");
 	wid_pal = new xPalWidget(":/images/palette.png", "Palette");
-	wid_evo = new xEvoWidget(":/images/nedoos.png", "ZX Evo");
+	wid_evo = new xEvoWidget(EVO_PANEL, ":/images/nedoos.png", "ZX Evo");
 	connect(wid_evo, &xEvoWidget::s_detach, this, &DebugWin::evoSetDetached);
 	connect(wid_evo, &xEvoWidget::s_picture, this, &DebugWin::evoPicture);
+	wid_next = new xEvoWidget(NEXT_PANEL, ":/images/next.png", "ZX Next");
+	connect(wid_next, &xEvoWidget::s_detach, this, &DebugWin::nextSetDetached);
 
 	dockWidgets << wid_dump << wid_rdump << wid_disk_dump << wid_cmos_dump;
 	dockWidgets << wid_brk << wid_zxscr << wid_ay << wid_tape;
-	dockWidgets << wid_fdd << wid_heat << wid_pal << wid_evo;
+	dockWidgets << wid_fdd << wid_heat << wid_pal << wid_evo << wid_next;
 
 	// misc used to be one monolithic MISCTOOLBAR pinned to the window edge.
 	// two docks instead, so they can be dragged and split like the rest
@@ -1295,6 +1299,12 @@ void DebugWin::evoSetDetached(bool on) {
 	emit wannaEvoWin(on);
 }
 
+void DebugWin::nextSetDetached(bool on) {
+	conf.dbg.nxdetach = on ? 1 : 0;
+	wid_next->setDetached(on);
+	emit wannaNextWin(on);
+}
+
 // a layer switch drew the picture again: the screen views follow it
 void DebugWin::evoPicture() {
 	if (isVisible()) fillNotCPU();
@@ -1786,6 +1796,7 @@ void DebugWin::setDefaultLayout() {
 	tabifyDockWidget(wid_brk, wid_heat);
 	tabifyDockWidget(wid_brk, wid_pal);
 	tabifyDockWidget(wid_brk, wid_evo);
+	tabifyDockWidget(wid_brk, wid_next);
 	// A panel has no close button, so the only way one can be hidden is a
 	// debuga.layout that was written while it was - which a build with more
 	// machines in it could do. Reset is the way back. Here, not in the loop

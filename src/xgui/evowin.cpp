@@ -1,4 +1,4 @@
-// the ZX Evolution panel, detached
+// the ZX Evolution or ZX Next panel, detached
 
 #include <QApplication>
 #include <QCloseEvent>
@@ -10,18 +10,27 @@
 #include "evowin.h"
 #include "xgui.h"
 
-xEvoWin::xEvoWin(QWidget* p):QDialog(p) {
-	setWindowTitle("ZX Evolution");
-	setWindowIcon(QIcon(":/images/nedoos.png"));
+xEvoWin::xEvoWin(int kind, QWidget* p):QDialog(p) {
+	bool nx = (kind == NEXT_PANEL);
+	setWindowTitle(nx ? "ZX Next" : "ZX Evolution");
+	setWindowIcon(QIcon(nx ? ":/images/next.png" : ":/images/nedoos.png"));
 	setSizeGripEnabled(true);
 	lastfrm = 0;
 	QVBoxLayout* lay = new QVBoxLayout(this);
 	lay->setContentsMargins(5, 5, 5, 5);
-	panel = new xEvoPanel;
+	panel = new xEvoPanel(kind);
 	lay->addWidget(panel);
 	updateStyle();
 	connect(panel, &xEvoPanel::s_detach, this, &xEvoWin::s_detach);
 	connect(panel, &xEvoPanel::s_picture, this, &xEvoWin::s_picture);
+}
+
+QPoint& xEvoWin::place() {
+	return (panel->kind == NEXT_PANEL) ? conf.dbg.nxpos : conf.dbg.evopos;
+}
+
+QSize& xEvoWin::extent() {
+	return (panel->kind == NEXT_PANEL) ? conf.dbg.nxsiz : conf.dbg.evosiz;
 }
 
 // the debugger hands its own font out child by child; this window is not one
@@ -39,10 +48,10 @@ void xEvoWin::setDetached(bool on) {
 		// geometry(), not move/resize: the same rectangle both ways, where
 		// pos()/move() would walk the window down the screen by the height
 		// of its own title bar on every restore
-		if ((conf.dbg.evopos.x() >= 0) && (conf.dbg.evopos.y() >= 0)) {
-			setGeometry(QRect(conf.dbg.evopos, conf.dbg.evosiz));
+		if ((place().x() >= 0) && (place().y() >= 0)) {
+			setGeometry(QRect(place(), extent()));
 		} else {
-			resize(conf.dbg.evosiz);
+			resize(extent());
 		}
 		show();
 		raise();
@@ -68,13 +77,13 @@ void xEvoWin::upd() {
 void xEvoWin::moveEvent(QMoveEvent* ev) {
 	QDialog::moveEvent(ev);
 	if (!isVisible()) return;
-	conf.dbg.evopos = geometry().topLeft();
+	place() = geometry().topLeft();
 }
 
 void xEvoWin::resizeEvent(QResizeEvent* ev) {
 	QDialog::resizeEvent(ev);
 	if (!isVisible()) return;
-	conf.dbg.evosiz = geometry().size();
+	extent() = geometry().size();
 }
 
 // Escape on a dialog is reject(), which hides the window on its own without a
