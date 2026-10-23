@@ -1,5 +1,5 @@
 {
-  "canvas":   {"w": 777, "h": 290, "bg": "#b9b7b3", "ground": "#a9a7a3", "light":"pad"},
+  "canvas":   {"w": 800, "h": 290, "bg": "#b9b7b3", "ground": "#a9a7a3", "light":"pad"},
   "anchor":   "middle",
   "gradient": {"stops": [[0, "#eae8e4"], [1, "#dcdad7"]]},
   "dome":     {
@@ -13,6 +13,10 @@
     "edge": "#b4b4b8", "ew": 1.25},
   "contour":  {"inset": 1, "out_lr": 0.6, "out_tb": 0.6, "corner": 2.5},
   "rainbow":  {"bands": []},
+  "bars":     [{"x": 769, "y": 58.5, "w": 31, "h": 3, "corner": 0, "gradient": [[0, "#74726e"], [0.55, "#8c8a86"], [1, "#e2e0dc"]]},
+              {"x": 769, "y": 115.5, "w": 31, "h": 3, "corner": 0, "gradient": [[0, "#74726e"], [0.55, "#8c8a86"], [1, "#e2e0dc"]]},
+              {"x": 769, "y": 172.5, "w": 31, "h": 3, "corner": 0, "gradient": [[0, "#74726e"], [0.55, "#8c8a86"], [1, "#e2e0dc"]]},
+              {"x": 769, "y": 229.5, "w": 31, "h": 3, "corner": 0, "gradient": [[0, "#74726e"], [0.55, "#8c8a86"], [1, "#e2e0dc"]]}],
   "colors":   {
     "ink": "#4e4e4e",
     "in2": "#1e1e1e",

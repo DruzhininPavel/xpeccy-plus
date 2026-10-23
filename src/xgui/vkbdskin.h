@@ -107,6 +107,13 @@ class VkSkin {
 			double y, h;
 			QVector<Key> keys;
 		};
+		// a strip drawn on the ground, not a key: the case's steps
+		struct Bar {
+			QRectF r;
+			double corner = 0;
+			Grad grad;		// a gradient...
+			QColor fill;		// ...or one color
+		};
 		struct Icon {
 			QVector<QVector<QPointF>> polys;	// filled even-odd, or stroked with sw
 			QVector<QRectF> cuts;			// holes in box
@@ -127,6 +134,7 @@ class VkSkin {
 		double inset = 1, outLR = 0, outTB = 1, corner = 3;
 		double rbW = 11, rbSlope = -0.45, rbY0 = 0, rbY1 = 0;
 		QVector<Band> bands;
+		QVector<Bar> bars;
 		QMap<QString, QColor> colors;
 		QMap<QString, Icon> icons;
 		QVector<Row> rows;
