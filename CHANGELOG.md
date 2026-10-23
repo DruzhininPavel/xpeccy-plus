@@ -100,7 +100,7 @@ before that point is upstream's history and is not repeated here.
 
 ### Changed
 
-- **Fast forward** draws as many frames a second as normal speed does and skips the rest,
+- **Fast Forward** draws as many frames a second as normal speed does and skips the rest,
   so it runs faster. A flickering sprite still shows both of its phases, antiflicker mixes
   only the frames shown, and a video recorded meanwhile keeps its timing.
 
@@ -108,7 +108,11 @@ before that point is upstream's history and is not repeated here.
   while every button fits the window's width and 16 x 16 at a smaller zoom or border.
 
 - **The time controls** are drawn like the on-screen signs, white signs in a thin frame, and
-  read on light and dark styles alike. Slow Motion shows its speed: 1/2, 1/4 or 1/8.
+  read on light and dark styles alike. Slow Motion and Fast Forward show their speeds, 1/2 to
+  1/8 and x2 to x8, and Fast Mode has two arrows, as their signs on the picture do.
+
+- **The toolbar's Fast Forward, Slow Motion and Fast Mode buttons** work as their keys do:
+  Toggle, Hold or Tap or hold, as set in Options -> Emulation. The menu items still switch.
 
 - **Icons on dark styles**: NMI, Filter and Font get a light version on a dark one.
 
@@ -155,8 +159,8 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
-- **No old sound after Fast mode, a rewind or a load**: what plays next is the machine as it
-  is now. Each switch out of Fast mode used to leave a little more sound in the buffer, so
+- **No old sound after Fast Mode, a rewind or a load**: what plays next is the machine as it
+  is now. Each switch out of Fast Mode used to leave a little more sound in the buffer, so
   up to half a second of the music from before it came back, and a new game opened over a
   playing one began with bursts of the old one. *(reported by Volutar)*
 
@@ -182,7 +186,7 @@ before that point is upstream's history and is not repeated here.
   picture stretched sideways (or squeezed, on the way out) until Keep Aspect Ratio was
   switched off and on again. *(reported by Alf)*
 
-- **FLASH no longer strobes under fast loading** and in Fast mode: the picture blinks at its
+- **FLASH no longer strobes under fast loading** and in Fast Mode: the picture blinks at its
   usual rate. *(reported by Volutar)*
 
 - **Fast loading** no longer gives "R Tape loading error" on tapes whose headers are a byte
