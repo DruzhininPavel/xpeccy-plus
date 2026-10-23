@@ -370,7 +370,7 @@ static int as_nex_line(int n, const char* cmd, const char* arg, const char* tail
 	return n;
 }
 
-int autostart_arm_nex(Computer* comp, const char* dir, const char* name, int welcome, int snx) {
+int autostart_arm_nex(Computer* comp, const char* dir, const char* name, int welcome, int snx, int powered) {
 	autostart_stop();
 	if (!comp || (comp->hw->id != HW_ZXNEXT)) return 0;
 	int n = 0;
@@ -381,7 +381,7 @@ int autostart_arm_nex(Computer* comp, const char* dir, const char* name, int wel
 	else if (n >= 0) n = as_nex_line(n, "cls:.nexload ", name, "", 0);
 	if (n < 0) return 0;
 	as_nex[n] = {NULL, 0};
-	x_user_reset(comp, RES_DEFAULT);
+	if (!powered) x_user_reset(comp, RES_DEFAULT);	// else the caller has just power-cycled it
 	comp->keyb->scanmask = 0;
 	as_comp = comp;
 	as_kind = AS_NONE;

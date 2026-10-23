@@ -124,16 +124,16 @@ static int vf_child(vFat* vf, int dir, const char* name) {
 
 // started from dir (a node of the card, cd the path NextZXOS goes there by): by its
 // name, else by the card's 8.3 name for it, which any name has and the keyboard can type
-static int nex_arm(Computer* comp, int dir, const QByteArray& cd, const QFileInfo& inf, int welcome, int snx) {
+static int nex_arm(Computer* comp, int dir, const QByteArray& cd, const QFileInfo& inf, int welcome, int snx, int powered) {
 	vFat* vf = comp->sdc->vfat;
-	if (autostart_arm_nex(comp, cd.constData(), inf.fileName().toLocal8Bit().constData(), welcome, snx)) return ERR_OK;
+	if (autostart_arm_nex(comp, cd.constData(), inf.fileName().toLocal8Bit().constData(), welcome, snx, powered)) return ERR_OK;
 	QByteArray want = inf.fileName().toUtf8();
 	for (int i = (dir >= 0) ? vf->node[dir].child : -1; i >= 0; i = vf->node[i].next) {
 		if (vf->node[i].isdir || (want != vf->node[i].name)) continue;
 		QString sn = QString::fromLatin1(vf->node[i].sname, 8).trimmed();
 		QString ext = QString::fromLatin1(vf->node[i].sname + 8, 3).trimmed();
 		if (!ext.isEmpty()) sn += "." + ext;
-		return autostart_arm_nex(comp, cd.constData(), sn.toLatin1().constData(), welcome, snx) ? ERR_OK : ERR_NEX_NAME;
+		return autostart_arm_nex(comp, cd.constData(), sn.toLatin1().constData(), welcome, snx, powered) ? ERR_OK : ERR_NEX_NAME;
 	}
 	return ERR_NEX_NAME;
 }
@@ -158,7 +158,7 @@ static int load_next(Computer* comp, const char* name, int snx) {
 		foreach(QString part, rel.split('/', X_SkipEmptyParts))
 			node = vf_child(comp->sdc->vfat, node, part.toUtf8().constData());
 		if ((node >= 0) && (rel.toLatin1() == rel.toUtf8())) {
-			int res = nex_arm(comp, node, ("/" + rel).toLatin1(), inf, welcome(), snx);
+			int res = nex_arm(comp, node, ("/" + rel).toLatin1(), inf, welcome(), snx, 0);
 			if (res == ERR_OK) return res;
 		}
 		// a path the keyboard cannot type: as a file from elsewhere
@@ -174,8 +174,13 @@ static int load_next(Computer* comp, const char* name, int snx) {
 	QString dir = base;
 	for (int i = 2; taken.contains(dir, Qt::CaseInsensitive); i++)
 		dir = base + QString::number(i);
+	// The card changes under the machine, which a soft reset does not tell: NextZXOS's
+	// disk layer keeps in memory what it read of the old one, and the folder put on is
+	// not found ("No such file or dir"). So off and on first, the card read again (as
+	// Read-only or not, as the user said), then the folder put on.
+	xm_power_cycle();
 	if (!sdc_mount_over(comp->sdc, inf.absolutePath(), dir)) return ERR_NEX_CARD;
-	return nex_arm(comp, vf_child(comp->sdc->vfat, 0, dir.toUtf8().constData()), dir.toLatin1(), inf, welcome(), snx);
+	return nex_arm(comp, vf_child(comp->sdc->vfat, 0, dir.toUtf8().constData()), dir.toLatin1(), inf, welcome(), snx, 1);
 }
 
 static int load_nex(Computer* comp, const char* name, int drv) {
