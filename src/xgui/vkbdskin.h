@@ -107,7 +107,7 @@ class VkSkin {
 			double y, h;
 			QVector<Key> keys;
 		};
-		// a strip drawn on the ground, not a key: the case's steps
+		// a strip drawn on the ground, not a key: the case's steps, the Next's colors
 		struct Bar {
 			QRectF r;
 			double corner = 0;

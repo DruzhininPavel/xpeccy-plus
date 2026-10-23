@@ -8,8 +8,13 @@
   in white plastic with colored lettering, drawn by Volutar on the places and sizes measured
   off photos of the real one, with a strip on the right to right-click for the menu, the case's
   steps between the rows running out to its edge. Each key says what it presses.
-- In the menu: 48K (Classic), 48K (White), 128K (Classic), 128K (White) - black, white, 128,
-  128-white in the config.
+- `zx-next.json`, `zx-next-white.json`, `zx-next-magenta.json` - the ZX Spectrum Next: the
+  128K skins' keys on the Next's places (its membrane schematic and the user manual's
+  drawing), with its legends and its red, yellow, green and blue stripes on the right; black,
+  white, and Magenta - the black keys in that edition's translucent case.
+- In the menu: 48K (Classic), 48K (White), 128K (Classic), 128K (White), Next (Black), Next
+  (White), Next (Magenta) - black, white, 128, 128-white, next, next-white, next-magenta in
+  the config.
 - `keys-font.ttf` - the lettering, made by `tools/vkbd_font.py` from Liberation Sans Bold
   2.1.5; see LICENSE_ICONS and LICENSE_LIBERATION.
 
@@ -61,7 +66,7 @@ for all its corners or one each; `"more"` lists more such shapes (inset or outli
 cut), joined to it - the 128K's Enter: a wide key's round end and a channel up its narrow
 part.
 
-`"bars"` - strips on the ground that are not keys (the case's steps):
+`"bars"` - strips on the ground that are not keys (the case's steps, the Next's colors):
 `[{"x", "y", "w", "h", "corner", "gradient" or "fill"}, ...]` in canvas units.
 
 In `rainbow`: `"bands"` - `[[color, x], ...]`, each band's x at `"y0"`; the bands run from
