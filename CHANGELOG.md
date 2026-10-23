@@ -203,6 +203,11 @@ before that point is upstream's history and is not repeated here.
   short press could run the cursor to the end of the list, and F1 opened and closed its
   window again. Keys repeated far too fast with antiflicker's look ahead or run-ahead on.
 
+- **PC keys that type a Spectrum pair** - `.`, `,`, Delete, the arrows and the like - keep
+  their Symbol or Caps Shift in programs that read the keyboard themselves, such as
+  NEXTplorer: the shift goes down just before the key and up just after it, as the ZX
+  Spectrum Next and the ZX Evo do it.
+
 - **HALT on the last byte of contended memory**: a halted CPU runs its idle cycles at the
   byte after the HALT, as a real Z80 does. HALT2INT (Mark Woodmass) now tells early and late
   timings apart on the 48K, 128K and +2.
