@@ -11,6 +11,19 @@ before that point is upstream's history and is not repeated here.
 
 ### Added
 
+- **The ZX Spectrum Next**, a new machine in the Sinclair family, emulated from its FPGA core
+  3.02.03:
+  - the Z80N, layer 2, sprites, the tilemap, LoRes, the copper, the zxnDMA, hardware IM2 and
+    the CTC, three AYs with the DACs, the real-time clock;
+  - it boots NextZXOS from an SD card of its own, made from the official System/Next release
+    (downloaded when you ask) or one you have;
+  - `.nex` programs start from the card, and `.snx`, `.sna` and `.z80` open through
+    NextZXOS as on the machine;
+  - Wi-Fi: an emulated ESP-01 on its UART reaches the network through the computer, or the
+    UARTs go to the computer's serial ports;
+  - the Debugger has a ZX Next panel: the registers decoded, sprites, the copper, the layers,
+    the tilemap, the palettes and the DMA.
+
 - **A folder that takes writes**: a folder mounted as an SD card or a hard disk takes what the
   machine saves. Files and folders the machine makes, changes, renames or deletes there change
   in the folder itself, and a deleted file goes to the trash. The first write asks before the
@@ -105,7 +118,8 @@ before that point is upstream's history and is not repeated here.
 - **The virtual keyboard** is drawn anew for the size of its window, sharp at every zoom
   and screen scaling, and has classic and white skins of the 48K and the 128K keyboards
   (**Skin** in its right-click menu, and in **View > Virtual Keyboard**); **By machine**
-  shows the 128K's on a 128K, +2, +2A and +3. A pressed key lights up (on the 128K skins on
+  shows the 128K's on a 128K, +2, +2A and +3, and a Next skin, black, white or Magenta, on
+  the ZX Spectrum Next. A pressed key lights up (on the 128K skins on
   the key itself, evenly at any size), and the one under the pointer dimly; a right click
   between the rows opens the menu, Caps Shift and Symbol Shift lock with a click, and the
   window opens where it was left. *(48K and 128K skins drawn by Volutar)*
