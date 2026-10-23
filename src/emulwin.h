@@ -423,6 +423,9 @@ typedef struct {
 		QAction* ffAct;
 		QAction* slowAct;
 		int slowShown = 0;		// the slow speed its icon shows
+		int ffShown = 0;		// the fast forward speed its icon shows
+		int tbHeld = 0;			// the time key a toolbar button holds down
+		bool tbDown = false;		// a time button is down: its click is not a switch
 		QAction* rewAct;
 		QAction* diskAct;
 		QAction* divAct;		// the divMMC on or off: hotkey and toolbar
@@ -447,7 +450,8 @@ typedef struct {
 		void tbMenu(const QPoint&, int);
 		void showBars();
 		void syncActions();
-		void slowIcon();
+		void speedIcons();
+		void tbLetGo();
 		QMenu* volumeMenu();
 		class xVolBox* volPop;
 		QTimer volTimer;
