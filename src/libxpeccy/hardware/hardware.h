@@ -185,7 +185,9 @@ void nx_uart_far(Computer*, int uart, long long bit16, int frame);	// the far en
 double nx_clk28_hz(Computer*);
 extern int next_esp_fitted;		// an ESP-01 is in its socket (none: its GPIO pins read 0)
 int nx_esp_reset(Computer*);		// NR 02 b7: the ESP held in reset
+extern int next_esp_pins;		// what the ESP drives: b0 GPIO0 out, b1 its level, b2 GPIO2 out, b3 its level
 int nx_esp_gpio0(Computer*);		// the level on the ESP's GPIO0
+int nx_esp_gpio2(Computer*);		// the level on the ESP's GPIO2
 long long nx_uart_sync(Computer*);	// the UARTs run up to now, the CLK_28 edge returned
 void nx_uart_line(Computer*, int uart, long long edge, int level);	// a level change after a CLK_28 edge
 void nx_uart_cts(Computer*, int uart, int cts_n);
