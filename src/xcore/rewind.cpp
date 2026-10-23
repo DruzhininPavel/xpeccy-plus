@@ -293,6 +293,7 @@ static void rw_let_go(Computer* comp, long long* phase) {
 		xlog(XLG_CORE, XLL_INFO, "rewind: played on from frame %i, key let go at %i", rw_clock, from);
 		cheats_rollback(comp);
 	}
+	snd_drop();		// the history's sound, played backwards
 	rw_play_stop();
 }
 
@@ -327,6 +328,7 @@ void rewind_frame(Computer* comp, long long* phase) {
 		rw_tenths = 0;
 		rw_smp = 0;
 		rw_mode = RW_PLAY;
+		snd_drop();		// the machine's sound from before the key
 		return;
 	}
 	if (++rw_wait < conf.emu.rewind.step) return;

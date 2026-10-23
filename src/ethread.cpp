@@ -756,6 +756,10 @@ void xThread::emuCycle(Computer* comp) {
 		}
 		// exec 1 opcode (or handle INT, NMI)
 		int hooks = 1;		// the tape hooks below are still to look at the last step
+		// read once for the step: the gui can switch fast mode off while the run
+		// on below is still going to its frame end, and that frame's time must be
+		// thrown away as fast mode's, not made into sound all at once
+		bool fast = conf.emu.fast;
 		if (conf.emu.pause) {
 			sndNsFixed += NS_TO_FIXED(1000);
 		} else {
@@ -765,7 +769,7 @@ void xThread::emuCycle(Computer* comp) {
 				tm = compExec(comp);
 				comp->flgDBG = brkskip;
 				brkskip = 0;
-			} else if (conf.emu.fast && !comp->gs->enable && !brk_cond_n && comp_unwatched(comp)
+			} else if (fast && !comp->gs->enable && !brk_cond_n && comp_unwatched(comp)
 					&& !vrecWatch.load(std::memory_order_relaxed)) {
 				// Fast mode with nothing to look at between the steps: run them on
 				// until one ends a frame, breaks, or leaves the cpu where a tape hook
@@ -840,10 +844,12 @@ void xThread::emuCycle(Computer* comp) {
 		}
 		// sound buffer update. In fast mode there is nothing to mix - the
 		// only thing sndSync() still does there is run the GS, so a machine
-		// without one skips the call and keeps the count
-		if (conf.emu.fast && !comp->gs->enable) {
+		// without one skips the call and keeps the count. What is queued to play
+		// is then from before the time that went by unheard.
+		if (fast && !comp->gs->enable) {
 			while (sndNsFixed > nsPerSampleFixed)
 				sndNsFixed -= nsPerSampleFixed;
+			snd_drop();
 		} else {
 			while (sndNsFixed > nsPerSampleFixed) {
 				comp->sndAgo = sndNsFixed - nsPerSampleFixed;

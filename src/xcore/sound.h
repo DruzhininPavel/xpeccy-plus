@@ -88,6 +88,9 @@ void setOutput(const char*);
 void sndClose();
 int sndSync(Computer*);
 void snd_put(sndPair);
+// what is queued to play is not what comes next: the machine's time ran on
+// unheard, or it was loaded or reset. Emulation thread, or under emu_lock.
+void snd_drop();
 int sndGetRingDistance();
 int snd_ring_fill_pos();
 int snd_ring_byte(int);
