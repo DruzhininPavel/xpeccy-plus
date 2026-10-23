@@ -152,7 +152,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 	set(CPACK_GENERATOR "ZIP")
-	set(LIBRARIES ${LIBRARIES} winmm.dll dwmapi.dll)
+	set(LIBRARIES ${LIBRARIES} winmm.dll dwmapi.dll ws2_32)
 	set(INC_PATHS $ENV{INCLUDE} $ENV{PATH})
 	set(LIB_PATHS $ENV{LIBPATH} $ENV{PATH})
 
@@ -245,6 +245,7 @@ set(MOCFILES
 	./src/xgui/debuga/dbg_sndchip.h
 	./src/xgui/evowin.h
 	./src/xgui/debuga/dbg_evo.h
+	./src/xgui/debuga/dbg_next.h
 	./src/xgui/options/setupwin.h
 	./src/xgui/options/opt_romset.h
 	./src/xgui/options/opt_diskcat.h
@@ -465,6 +466,7 @@ add_dependencies(${PROJECT_NAME} version_header)
 # MainWin::openManual() looks for it.
 
 set(MANUAL_DIR "" CACHE PATH "a built user manual to install (tools/manual.py)")
+set(SYSNEXT_DIR "" CACHE PATH "System/Next to install beside the program, for tests: a release has none (packaging/make-dist.ps1 -SysNext)")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
@@ -488,6 +490,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	)
 	if(MANUAL_DIR)
 		install(DIRECTORY ${MANUAL_DIR}/ DESTINATION ${BUNDLE_RES}/doc/manual)
+	endif()
+	if(SYSNEXT_DIR)
+		install(DIRECTORY ${SYSNEXT_DIR}/ DESTINATION ${BUNDLE_RES}/sysnext)
 	endif()
 
 	# Everything the bundle needs but the build does not produce: Qt, SDL3 and a
@@ -543,6 +548,9 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	if(MANUAL_DIR)
 		install(DIRECTORY ${MANUAL_DIR}/ DESTINATION share/doc/${PROJECT_NAME}/manual)
 	endif()
+	if(SYSNEXT_DIR)
+		install(DIRECTORY ${SYSNEXT_DIR}/ DESTINATION share/${PROJECT_NAME}/sysnext)
+	endif()
 
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
@@ -562,6 +570,9 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	)
 	if(MANUAL_DIR)
 		install(DIRECTORY ${MANUAL_DIR}/ DESTINATION manual)
+	endif()
+	if(SYSNEXT_DIR)
+		install(DIRECTORY ${SYSNEXT_DIR}/ DESTINATION sysnext)
 	endif()
 
 	# FindSDL2 only reports the import library, so locate the runtime dll too
