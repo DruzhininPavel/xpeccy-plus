@@ -39,9 +39,9 @@ at its start is how many frames a second are shown, from 1 to 100 (30 by default
 frames between are not drawn. Fast loading of a tape shows the same number of frames a
 second. The list after the number says how a frame is drawn:
 
-- **Raster (normal)** - line by line as the machine runs, as at normal speed;
-- **Video memory dump (simplified)** - the video memory as it is at the end of the frame,
-  all at once. A multicolor picture does not show as it should.
+- **Raster** - the normal picture: line by line as the machine runs, as at normal speed;
+- **Memory dump** - a simplified picture: the video memory as it is at the end of the
+  frame, all at once. A multicolor picture does not show as it should.
 
 Any pause ends fast mode; **Machine > Pause** first lets the machine finish the frame, so
 the picture is whole. Fast mode cannot be started while the machine is paused.

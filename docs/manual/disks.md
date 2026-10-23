@@ -432,8 +432,8 @@ The first time the machine writes to a folder, it stops and **Writing to a folde
 It asks once: the answer becomes the **Folders** setting. Both settings are in the
 **Folder as a disk** group on the [Emulation](options.md#emulation) page of **Options**:
 
-- **Folders** - **Read/write** (the default) or **Read-only**. The machine cannot write to
-  a read-only folder: esxDOS reports `I/O ERROR`, a hard disk an error.
+- **Folders** - **R/W**, read/write (the default), or **R/O**, read-only. The machine cannot
+  write to a read-only folder: esxDOS reports `I/O ERROR`, a hard disk an error.
 - **Deleted files** - **Move to trash** (the default) puts a file the machine deletes in
   your system's trash; **Delete permanently** removes it. A file the trash will not take
   stays in the folder.
