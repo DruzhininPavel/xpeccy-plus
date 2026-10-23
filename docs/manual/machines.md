@@ -207,6 +207,8 @@ Esc) puts back what it showed when it opened.
 | | **General Sound** | **Off** or **On**; its ROM in its window |
 | | **SAA1099** | **Off** or **On** |
 | **Board** | **Turbo** | the turbo steps: **x1 (no turbo)**, **x1, x2** or **x1, x2, x4** |
+| | **ESP UART** | ZX Spectrum Next only: **Not connected**, **ESP-01 (emulated)** - the Wi-Fi module with Espressif's AT firmware 1.7.6, on this computer's network - or a serial port of this computer with a real module on it. In its window, **Server on the network** lets other computers reach a server the module opens; off, only this computer can, at 127.0.0.1 |
+| | **Pi UART** | ZX Spectrum Next only: a serial port of this computer for the Pi's UART |
 
 Changes take effect when you press **Apply** or {icon}`ok-apply` **OK**.
 
