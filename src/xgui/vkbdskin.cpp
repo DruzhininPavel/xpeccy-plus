@@ -297,6 +297,16 @@ bool VkSkin::load(const QByteArray& json, QString* err) {
 		for (const auto& band : rainbow)
 			bands.append({QColor(band.col), band.x});
 	}
+	bars.clear();
+	foreach(QJsonValue bv, cfg.value("bars").toArray()) {
+		QJsonObject bo = bv.toObject();
+		Bar bar;
+		bar.r = QRectF(num(bo, "x", 0), num(bo, "y", 0), num(bo, "w", 0), num(bo, "h", 0));
+		bar.corner = num(bo, "corner", 0);
+		bar.fill = color(bo.value("fill").toString());
+		if (bo.contains("gradient")) readGrad(bo.value("gradient"), bar.grad);
+		bars.append(bar);
+	}
 	dome = Dome();
 	if (cfg.value("dome").isObject())
 		readDome(cfg.value("dome").toObject(), dome);
@@ -897,6 +907,15 @@ QImage VkSkin::render(double s, bool lcd, bool lit) const {
 		     << QPointF((band.x + run + rbW) * s, rbY1 * s) << QPointF((band.x + run) * s, rbY1 * s);
 		p.setBrush(band.col);
 		p.drawPolygon(poly);
+	}
+	foreach(const Bar& bar, bars) {
+		QRectF r(bar.r.x() * s, bar.r.y() * s, bar.r.width() * s, bar.r.height() * s);
+		if (bar.grad.stops.isEmpty()) {
+			p.setBrush(bar.fill.isValid() ? bar.fill : grnd);
+		} else {
+			p.setBrush(gradAt(bar.grad, r, s));
+		}
+		p.drawPath(rrect(r.x(), r.y(), r.width(), r.height(), bar.corner * s));
 	}
 	// the contours, cut out of the ground and the rainbow alike
 	p.setCompositionMode(QPainter::CompositionMode_DestinationOut);

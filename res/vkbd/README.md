@@ -6,8 +6,8 @@
   the keys' places in the rows say which Spectrum key each one is.
 - `zx-128.json`, `zx-128-white.json` - the Spectrum 128 (the Spectrum+ keyboard), classic and
   in white plastic with colored lettering, drawn by Volutar on the places and sizes measured
-  off photos of the real one, with a strip on the right to right-click for the menu. Each key
-  says what it presses.
+  off photos of the real one, with a strip on the right to right-click for the menu, the case's
+  steps between the rows running out to its edge. Each key says what it presses.
 - In the menu: 48K (Classic), 48K (White), 128K (Classic), 128K (White) - black, white, 128,
   128-white in the config.
 - `keys-font.ttf` - the lettering, made by `tools/vkbd_font.py` from Liberation Sans Bold
@@ -60,6 +60,9 @@ its rim and under its cut. It never leaves the cap. Instead of the box it may ha
 for all its corners or one each; `"more"` lists more such shapes (inset or outline, corner,
 cut), joined to it - the 128K's Enter: a wide key's round end and a channel up its narrow
 part.
+
+`"bars"` - strips on the ground that are not keys (the case's steps):
+`[{"x", "y", "w", "h", "corner", "gradient" or "fill"}, ...]` in canvas units.
 
 In `rainbow`: `"bands"` - `[[color, x], ...]`, each band's x at `"y0"`; the bands run from
 `"y0"` to `"y1"` (by default the four of the 48K, over the whole height); `"bands": []` for
