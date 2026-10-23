@@ -155,6 +155,11 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **No old sound after Fast mode, a rewind or a load**: what plays next is the machine as it
+  is now. Each switch out of Fast mode used to leave a little more sound in the buffer, so
+  up to half a second of the music from before it came back, and a new game opened over a
+  playing one began with bursts of the old one. *(reported by Volutar)*
+
 - **The docked virtual keyboard** takes the new width as soon as the emulator window changes
   size, not on the next move of the window.
 
