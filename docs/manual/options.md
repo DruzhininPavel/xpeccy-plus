@@ -83,8 +83,8 @@ opens on. See [Which machine opens a file](files.md#which-machine-opens-a-file).
 ![The Emulation page](images/options-emulation.png)
 
 - **Input lag** - **Low latency** and **Run ahead**. See [Input lag](time.md#input-lag).
-- **Speed and rewind** - how far back rewind goes, how the keys of slow motion, fast
-  forward and fast mode work, and what fast mode shows. See [Speed and time](time.md).
+- **Speed and rewind** - how far back rewind goes, how the keys of Slow Motion, Fast
+  Forward and Fast Mode work, and what Fast Mode shows. See [Speed and time](time.md).
 - **Folder as a disk** - whether a folder used as a card or a disk takes what the machine
   writes, and where a file it deletes there goes. See
   [Writing to a folder](disks.md#writing-to-a-folder).
