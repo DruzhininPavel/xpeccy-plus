@@ -361,7 +361,7 @@ int xspeed_get(void) {
 QString xspeed_name(int pos, bool ascii) {
 	pos = toLimits(pos, 0, XSPD_MAX);
 	if (pos < XSPD_CENTER)
-		return QString("Slow motion 1/%0").arg(1 << (XSPD_CENTER - pos));
+		return QString("Slow Motion 1/%0").arg(1 << (XSPD_CENTER - pos));
 	if (pos > XSPD_CENTER)
 		return QString("Overclock %0%1")
 			.arg(ascii ? QString("x") : QString::fromUtf8("×"))

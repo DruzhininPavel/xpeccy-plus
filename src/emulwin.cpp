@@ -710,6 +710,7 @@ void MainWin::focusOutEvent(QFocusEvent*) {
 	rewind_want(0);		// their keys will not be seen going up
 	xspeed_key(XTM_SLOW, 0);
 	xspeed_key(XTM_FFWD, 0);
+	tbLetGo();		// nor a toolbar button's
 }
 
 void MainWin::focusInEvent(QFocusEvent*) {
@@ -2345,6 +2346,7 @@ void MainWin::fsReveal(int y) {
 void MainWin::fsHide() {
 	fsShow.stop();
 	if (fsBar && fsBar->isVisible()) {
+		tbLetGo();		// hidden, its button lets go of the mode
 		fsBar->hide();
 		fsTool->hide();
 		setFocus();
@@ -2556,6 +2558,8 @@ void MainWin::initMachineMenus() {
 	mac->addAction(fastAct);
 	mac->addAction(slowAct);
 	mac->addAction(ffAct);
+	// open, no toolbar button is down: its items switch even if one never saw its release
+	connect(mac, &QMenu::aboutToShow, this, [this]() {tbDown = false;});
 	// the rewind itself is a key held down, which a menu cannot do; this is whether it may
 	QAction* rewOnAct = mac->addAction("Allow Rewind", this, [](bool on) {
 		conf.emu.rewind.on = on ? 1 : 0;

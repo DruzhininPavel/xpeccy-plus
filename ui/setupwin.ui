@@ -2592,7 +2592,7 @@ the way a snapshot starts itself</string>
                 <item row="0" column="0">
                  <widget class="QCheckBox" name="cbRewind">
                   <property name="toolTip">
-                   <string>Hold the rewind key to go back in time</string>
+                   <string>Hold the Rewind key to go back in time</string>
                   </property>
                   <property name="text">
                    <string/>
@@ -2612,7 +2612,7 @@ the way a snapshot starts itself</string>
                 <item row="0" column="1">
                  <widget class="QLabel" name="labRewind">
                   <property name="toolTip">
-                   <string>Hold the rewind key to go back in time</string>
+                   <string>Hold the Rewind key to go back in time</string>
                   </property>
                   <property name="text">
                    <string>Rewind</string>
@@ -2707,17 +2707,17 @@ change, and when Step or History is changed</string>
                 <item row="1" column="0">
                  <widget class="QComboBox" name="cbSlowmo">
                   <property name="toolTip">
-                   <string>Speed while slow motion is on</string>
+                   <string>Speed while Slow Motion is on</string>
                   </property>
                  </widget>
                 </item>
                 <item row="1" column="1">
                  <widget class="QLabel" name="labSlowmo">
                   <property name="toolTip">
-                   <string>Speed while slow motion is on</string>
+                   <string>Speed while Slow Motion is on</string>
                   </property>
                   <property name="text">
-                   <string>Slow motion</string>
+                   <string>Slow Motion</string>
                   </property>
                   <property name="buddy">
                    <cstring>cbSlowmo</cstring>
@@ -2750,7 +2750,7 @@ Tap or hold: a tap switches it, a longer press holds it</string>
                 <item row="2" column="0">
                  <widget class="QComboBox" name="cbFfwd">
                   <property name="toolTip">
-                   <string>Speed while fast forward is on.
+                   <string>Speed while Fast Forward is on.
 The sound plays sped up</string>
                   </property>
                  </widget>
@@ -2758,11 +2758,11 @@ The sound plays sped up</string>
                 <item row="2" column="1">
                  <widget class="QLabel" name="labFfwd">
                   <property name="toolTip">
-                   <string>Speed while fast forward is on.
+                   <string>Speed while Fast Forward is on.
 The sound plays sped up</string>
                   </property>
                   <property name="text">
-                   <string>Fast forward</string>
+                   <string>Fast Forward</string>
                   </property>
                   <property name="buddy">
                    <cstring>cbFfwd</cstring>
@@ -2795,7 +2795,7 @@ Tap or hold: a tap switches it, a longer press holds it</string>
                 <item row="3" column="1">
                  <widget class="QLabel" name="labFast">
                   <property name="toolTip">
-                   <string>Not Fast forward, which keeps its speed and sound</string>
+                   <string>Not Fast Forward, which keeps its speed and sound</string>
                   </property>
                   <property name="text">
                    <string>Fast Mode, no limit</string>

@@ -156,7 +156,7 @@ change the step you picked, and Xpeccy+ shows the new clock over the picture.
 
 **Speed** on the **Machine** page of **Options** is a slider for the whole emulation:
 
-- left of the middle, **Slow motion 1/2**, **1/4** and **1/8** slow everything down, and the
+- left of the middle, **Slow Motion 1/2**, **1/4** and **1/8** slow everything down, and the
   frame rate drops with it;
 - the middle is **Normal speed**;
 - right of the middle, **Overclock x2**, **x4** and **x8** speed the CPU up and keep the

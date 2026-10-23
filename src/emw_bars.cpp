@@ -359,11 +359,13 @@ void MainWin::initBars() {
 	auto add = [this](const char* id, const char* grp, QAction* act, int kind, QMenu* list = nullptr) {
 		tbCatalog.append({QString(id), QString(grp), act, kind, list});
 	};
-	// a speed mode switched by a click: the key may be one that has to be held
+	// a speed mode: the menu item switches it, the toolbar's button is held as the key
+	// is (see tbFill), and the click Qt makes of its release is not one more switch
 	auto speed = [this](const char* name, int xcut, int mode, const char* icon) {
 		QAction* act = new QAction(QIcon(QString(":/images/%0.png").arg(icon)), name, this);
 		act->setCheckable(true);
-		connect(act, &QAction::triggered, this, [mode]() {
+		connect(act, &QAction::triggered, this, [this, mode]() {
+			if (tbDown) return;
 			xspeed_toggle(mode);
 		});
 		cutActs.append({act, QString(name), xcut});
@@ -390,12 +392,13 @@ void MainWin::initBars() {
 	pauseAct = cut("Pause", XCUT_PAUSE, "time-pause");
 	pauseAct->setCheckable(true);
 	add("key.pause", "Time", pauseAct, TB_PLAIN);
-	// a click switches it whatever the key's hold mode: a press and release of
-	// a key that has to be held would undo itself
+	// the menu item switches it whatever the key's hold mode: a press and release
+	// of a key that has to be held would undo itself. The button is held, as speed's
 	fastAct = cut("Fast Mode", XCUT_FAST, "time-fast");
 	fastAct->setCheckable(true);
 	fastAct->disconnect(SIGNAL(triggered(bool)));		// the key's press and release
 	connect(fastAct, &QAction::triggered, this, [this]() {
+		if (tbDown) return;
 		if (!conf.emu.pause) fast_toggle();		// as the key: not while paused
 		syncActions();
 	});
@@ -403,9 +406,9 @@ void MainWin::initBars() {
 	ffAct = speed("Fast Forward", XCUT_FFWD, XTM_FFWD, "time-ffwd");
 	add("key.ffwd", "Time", ffAct, TB_PLAIN);
 	slowAct = speed("Slow Motion", XCUT_SLOWMO, XTM_SLOW, "time-slow");
-	slowIcon();
+	speedIcons();
 	add("key.slowmo", "Time", slowAct, TB_PLAIN);
-	// held like its key: the button's press and release drive it, see tbBuild
+	// held like its key: the button's press and release drive it, see tbFill
 	rewAct = new QAction(QIcon(":/images/time-rewind.png"), "Rewind", this);
 	cutActs.append({rewAct, QString("Rewind"), XCUT_REWIND});
 	cutById[XCUT_REWIND] = rewAct;
@@ -579,6 +582,7 @@ static QString tb_name(QAction* act) {
 
 // both bars hold the same actions, so a switch shows the same on either
 void MainWin::tbBuild() {
+	tbLetGo();		// the button held down goes with the old bar
 	tbFill(toolBar);
 	if (fsTool) tbFill(fsTool);
 }
@@ -612,9 +616,21 @@ void MainWin::tbFill(QToolBar* bar) {
 			btn->setPopupMode((it->kind == TB_LIST) ? QToolButton::InstantPopup : QToolButton::MenuButtonPopup);
 		if (it->act->menu())
 			btn->setToolTip(tb_name(it->act));
-		if (it->act == rewAct) {
-			connect(btn, &QToolButton::pressed, this, [this]() {xkey_press(XCUT_REWIND, true);});
-			connect(btn, &QToolButton::released, this, [this]() {xcut_release(XCUT_REWIND);});
+		// the time buttons are their keys: pressed and released, so they work as the
+		// key's Toggle, Hold or Tap or hold says
+		int held = (it->act == rewAct) ? XCUT_REWIND : (it->act == fastAct) ? XCUT_FAST
+			: (it->act == ffAct) ? XCUT_FFWD : (it->act == slowAct) ? XCUT_SLOWMO : 0;
+		if (held) {
+			connect(btn, &QToolButton::pressed, this, [this, held]() {
+				tbDown = true;
+				tbHeld = held;
+				xkey_press(held, true);
+				syncActions();
+			});
+			connect(btn, &QToolButton::released, this, [this, held]() {
+				tbDown = false;
+				if (tbHeld == held) tbLetGo();
+			});
 		}
 	}
 	bar->setAcceptDrops(!conf.win.tbLocked);
@@ -744,6 +760,7 @@ void MainWin::showBars() {
 	// hidden, not just covered: a widget off screen costs the frame nothing
 	if (!frame->menuBar()->isNativeMenuBar())
 		frame->menuBar()->setVisible(!full);
+	if (full || !conf.win.toolbar) tbLetGo();	// hidden, its button lets go of the mode
 	toolBar->setVisible(conf.win.toolbar && !full);
 	statusBar->setVisible(conf.win.statusbar && !full);
 	if (!full) fsHide();
@@ -778,12 +795,27 @@ void MainWin::volumeChanged() {
 	volTimer.start();	// and the file is written once the wheel stops
 }
 
-// Slow Motion's icon shows its speed, 1/2, 1/4 or 1/8; time-slow is the default's, 1/4
-void MainWin::slowIcon() {
-	int div = conf.emu.slowDiv;
-	if (div == slowShown) return;
-	slowShown = div;
-	slowAct->setIcon(QIcon((div == 4) ? QString(":/images/time-slow.png") : QString(":/images/time-slow%0.png").arg(div)));
+// Slow Motion's and Fast Forward's icons show their speeds, 1/2 1/4 1/8 and x2 x4 x8;
+// time-slow and time-ffwd are the defaults', 1/4 and x4
+void MainWin::speedIcons() {
+	auto set = [](QAction* act, const char* name, int n, int& shown) {
+		if (n == shown) return;
+		shown = n;
+		act->setIcon(QIcon((n == 4) ? QString(":/images/%0.png").arg(name) : QString(":/images/%0%1.png").arg(name).arg(n)));
+	};
+	set(slowAct, "time-slow", conf.emu.slowDiv, slowShown);
+	set(ffAct, "time-ffwd", conf.emu.ffMul, ffShown);
+}
+
+// a time button held down lets go of its mode: released, or hidden or gone. tbDown
+// stays: a hidden button still gets its release, and the click Qt makes of it must
+// not switch the mode back on (the Machine menu clears it, should none come)
+void MainWin::tbLetGo() {
+	if (!tbHeld) return;
+	int id = tbHeld;
+	tbHeld = 0;
+	xcut_release(id);
+	syncActions();
 }
 
 // the buttons that are switches, read from what they switch
@@ -793,7 +825,7 @@ void MainWin::syncActions() {
 	fastAct->setChecked(conf.emu.fast);
 	ffAct->setChecked(conf.emu.tmode == XTM_FFWD);
 	slowAct->setChecked(conf.emu.tmode == XTM_SLOW);
-	slowIcon();		// Options may have changed the speed
+	speedIcons();		// Options may have changed the speeds
 	rewAct->setEnabled(conf.emu.rewind.on);
 	diskAct->setEnabled(!dskMenu->isEmpty());
 	// on a machine that takes no board the switch stays, off, and says why

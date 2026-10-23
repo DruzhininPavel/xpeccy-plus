@@ -34,7 +34,7 @@ when you come back to the window.
 it to get through a long wait - a slow loader, a long calculation. The title bar says
 **fast** while it is on, and anti-flicker is not applied.
 
-The **Fast Mode render** row of the **Emulation** page sets what fast mode shows. The number
+The **Fast Mode render** row of the **Emulation** page sets what Fast Mode shows. The number
 at its start is how many frames a second are shown, from 1 to 100 (30 by default); the
 frames between are not drawn. Fast loading of a tape shows the same number of frames a
 second. The list after the number says how a frame is drawn:
@@ -43,8 +43,8 @@ second. The list after the number says how a frame is drawn:
 - **Memory dump** - a simplified picture: the video memory as it is at the end of the
   frame, all at once. A multicolor picture does not show as it should.
 
-Any pause ends fast mode; **Machine > Pause** first lets the machine finish the frame, so
-the picture is whole. Fast mode cannot be started while the machine is paused.
+Any pause ends Fast Mode; **Machine > Pause** first lets the machine finish the frame, so
+the picture is whole. Fast Mode cannot be started while the machine is paused.
 
 ## Slow Motion and Fast Forward
 
@@ -54,7 +54,7 @@ the picture is whole. Fast mode cannot be started while the machine is paused.
 **Machine > Slow Motion** runs the whole machine slower, picture and sound alike:
 **1/2**, **1/4** (the default) or **1/8** of the normal speed. **Machine > Fast Forward**
 runs it faster, **x2**, **x4** (the default) or **x8**, and the sound plays sped up. The
-speeds are set in the **Slow motion** and **Fast forward** rows of the **Emulation**
+speeds are set in the **Slow Motion** and **Fast Forward** rows of the **Emulation**
 page of **Options**.
 
 Both always start from normal speed: switching one on switches the other off, and
@@ -68,7 +68,7 @@ A sign in the top right corner of the picture shows which mode is on.
 ```{index} hotkeys; Toggle or Hold, Tap or hold
 ```
 
-The **Slow motion**, **Fast forward** and **Fast Mode, no limit** rows of the
+The **Slow Motion**, **Fast Forward** and **Fast Mode, no limit** rows of the
 **Emulation** page each end in a list that says how the key of that mode works:
 
 - **Toggle** - a press switches the mode on, the next press switches it off;
@@ -76,9 +76,11 @@ The **Slow motion**, **Fast forward** and **Fast Mode, no limit** rows of the
 - **Tap or hold** (the default) - a short tap switches it on or off, a longer press
   keeps it on only while the key is held.
 
-A click on {icon}`time-slow` **Slow Motion**, {icon}`time-ffwd` **Fast Forward** or
-{icon}`time-fast` **Fast Mode** in the menu or on the toolbar switches the mode on or off,
-whatever the key setting.
+The {icon}`time-slow` **Slow Motion**, {icon}`time-ffwd` **Fast Forward** and
+{icon}`time-fast` **Fast Mode** buttons on the toolbar work as their keys do: a press is the
+key's press, letting go is the key's release. In the **Machine** menu a click switches the
+mode on or off, whatever the key setting. The Slow Motion and Fast Forward icons show the
+speed set for them.
 
 ## Rewind
 
@@ -158,7 +160,7 @@ emulates that many frames further, shows the picture from there, and goes back. 
 see the result of a key press a frame or two earlier than the machine itself would show
 it. The cost is CPU time - the frames are emulated more than once - and the sound stays
 a frame behind the picture. **Off** is the default. Run ahead does nothing while an RZX
-recording plays, in fast mode and fast forward, while the machine is paused, and while
+recording plays, in Fast Mode and Fast Forward, while the machine is paused, and while
 you rewind.
 
 ## Frames per second
