@@ -1,6 +1,7 @@
 // The emulated ESP-01. Its replies are those of the AT 1.x firmware, byte for byte where the
 // Next's programs parse them (.HTTP, NXTP, NXtel, .UART, .ESPBAUD, .TCPPING, NBNGET,
-// ESPAT/WIFI.BAS): the echo, the status line after it, +IPD,<link>,<length>: before data.
+// ESPAT/WIFI.BAS, NEXTplorer): the echo, the status line after it, +IPD,<link>,<length>:
+// before data.
 // It talks at its own rate - a guest at another one reads garbage, as on the board - and
 // a reply goes onto the line whole, back to back. Its flash (the AP, the default rate,
 // the addresses) is nvram/esp01.conf. Time is the guest's: CLK_28 edges.
@@ -76,6 +77,7 @@ static struct {
 	bool echo = true;
 	int mux = 0;
 	int cipmode = 0;
+	bool dinfo = false;		// +IPD names the far end
 	bool joined = false;
 	bool dhcp = true;
 	std::string ip, gw, mask, dns1, dns2;
@@ -241,6 +243,13 @@ static std::string lid(int id) {
 	return E.mux ? (std::to_string(id) + ",") : std::string();
 }
 
+// what goes before the data: +IPD,[<link>,]<length>[,<ip>,<port>]:
+static std::string ipd_head(int id, size_t n) {
+	std::string h = "\r\n+IPD," + lid(id) + std::to_string(n);
+	if (E.dinfo) h += "," + E.link[id].sock.peerIp() + "," + std::to_string(E.link[id].sock.peerPort());
+	return h + ":";
+}
+
 static void link_drop(int id) {
 	espLink& l = E.link[id];
 	if (l.used) xlog(XLG_NET, XLL_INFO, "esp: link %i to %s:%i closed", id, l.host.c_str(), l.port);
@@ -275,6 +284,7 @@ static void esp_boot(Computer* comp, long long now) {
 	E.echo = true;
 	E.mux = 0;
 	E.cipmode = 0;
+	E.dinfo = false;
 	E.mode = MD_CMD;
 	E.pend = PD_NONE;
 	E.cmd.clear();
@@ -680,6 +690,14 @@ static void esp_exec(Computer* comp, const std::string& line) {
 		esp_put(r + "\r\nOK\r\n");
 		return;
 	}
+	if ((name == "CIPDINFO") && set) {
+		long m;
+		if (esp_num(arg, &m) && ((m == 0) || (m == 1))) {
+			E.dinfo = (m != 0);
+			ok();
+		} else err();
+		return;
+	}
 	if (name == "CIPSTO") {
 		if (query) esp_put("\r\n+CIPSTO:180\r\n\r\nOK\r\n");
 		else err();			// refused with no server running
@@ -825,9 +843,7 @@ static void esp_net(Computer* comp, long long now) {
 				if (n < 0) {l.peerGone = true; break;}
 				if (n == 0) break;
 				if (l.udp) {		// a datagram is a packet of its own
-					char h[32];
-					snprintf(h, sizeof(h), "\r\n+IPD,%s%i:", lid(i).c_str(), n);
-					esp_put_at(h + std::string((const char*)buf, n), 0);
+					esp_put_at(ipd_head(i, n) + std::string((const char*)buf, n), 0);
 					continue;
 				}
 				l.rx.append((const char*)buf, n);
@@ -839,8 +855,7 @@ static void esp_net(Computer* comp, long long now) {
 			if (pass) {
 				esp_put_at(l.rx.substr(0, n), 0);
 			} else {
-				char h[32];
-				snprintf(h, sizeof(h), "\r\n+IPD,%s%i:", lid(i).c_str(), (int)n);
+				std::string h = ipd_head(i, n);
 				esp_trace(">", h);
 				esp_put_at(h + l.rx.substr(0, n), 0);
 			}

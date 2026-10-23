@@ -18,6 +18,8 @@ class xEspSock {
 		int poll();			// moves the state on; returns it
 		int state() const {return st;}
 		int failure() const {return why;}
+		std::string peerIp() const {return ip;}		// the far end, once it is looked up
+		int peerPort() const {return port;}
 		int send(const unsigned char* b, int n);	// bytes taken, -1 the link is gone
 		int recv(unsigned char* b, int n);		// bytes read, 0 none yet, -1 closed
 		void close();
@@ -27,6 +29,7 @@ class xEspSock {
 		int why = F_NONE;
 		long long fd = -1;
 		int port = 0;
+		std::string ip;
 		std::shared_ptr<xEspLookup> look;
 		void connectTo();
 };

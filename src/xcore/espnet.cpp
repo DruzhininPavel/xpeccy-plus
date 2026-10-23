@@ -88,6 +88,7 @@ void xEspSock::open(bool u, const std::string& host, int p) {
 	esp_net_init();
 	udp = u;
 	port = p;
+	ip.clear();
 	why = F_NONE;
 	look = std::make_shared<xEspLookup>();
 	st = S_RESOLVING;
@@ -101,6 +102,8 @@ void xEspSock::connectTo() {
 		memcpy(&sa, &look->addr, sizeof(sa));
 	}
 	sa.sin_port = htons((unsigned short)port);
+	const unsigned char* a = (const unsigned char*)&sa.sin_addr;
+	ip = std::to_string(a[0]) + "." + std::to_string(a[1]) + "." + std::to_string(a[2]) + "." + std::to_string(a[3]);
 	sock_t s = socket(AF_INET, udp ? SOCK_DGRAM : SOCK_STREAM, udp ? IPPROTO_UDP : IPPROTO_TCP);
 	if (s == SOCK_BAD) {
 		st = S_FAILED;
