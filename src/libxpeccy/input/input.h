@@ -165,6 +165,14 @@ struct Keyboard {
 	unsigned char nxCaps, nxSym;	// CAPS / SYM SHIFT presses counted, 3 bits each
 	unsigned short nxLast;		// the last code taken, b9 release, b8 E0: the typematic filter
 	unsigned char nxDown[64];	// the codes down now, b8 E0: a host's make twice, or a break of a key up, is no key
+	unsigned short nxW[4];		// the extended keys at the membrane scan's last 4 commits, newest first: row r's columns 6, 5 at bits 2r+1, 2r
+	int nxScan;			// ns to the scan's next commit while they settle, 0 when settled
+	// a host key's Spectrum combination, its shift and its key apart (kbd_seq_press)
+	int cbLead;			// ns from the shift going down to its key
+	int cbLag;			// ns from the key going up to its shift, 0: both at once
+	int cbWait;			// ns left before cbKeys go, 0: nothing waits
+	int cbRel;			// cbKeys go up (the shift), else down (the key)
+	unsigned char cbKeys[KEYSEQ_MAXLEN];
 	// pc keyboard
 	unsigned lock:1;	// ps/2 keyboard disabled
 	int pcmode;		// xt/at/ps2 (self)
@@ -201,6 +209,13 @@ void kbdTrigger(Keyboard*, keyEntry*);
 void kbdReleaseAll(Keyboard*);
 void kbd_reset(Keyboard*);
 void kbd_sync(Keyboard*, int);
+void kbd_combo_sync(Keyboard*, int);
+void kbd_set_combo(Keyboard*, int, int);
+// The Next's membrane scan: 4608 clocks of 28 MHz (membrane.vhd, zxnext_top 1179)
+#define KBD_SCAN_NS	164571
+// The Evo's avr holds a key SHIFT_PAUSE (8) ticks of its 2.951 ms timer after the
+// CS/SS of its pair, 20.7 to 23.6 ms by the timer's phase; both go up at once (zx.c)
+#define KBD_EVO_LEAD	22135417
 void kbd_set_repeat(Keyboard*, int);
 int kbd_rd(Keyboard*, int);
 int xt_read(Keyboard*);

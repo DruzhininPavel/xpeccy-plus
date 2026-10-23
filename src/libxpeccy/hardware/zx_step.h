@@ -67,8 +67,11 @@ static inline int comp_devs_summable(Computer* comp) {
 	bitChan* bc = comp->beep;
 	if ((bc->val != (bc->lev ? bc->hi : bc->lo)) || (bc->perH && bc->perL)) return 0;
 	if (comp->keyb->per) return 0;				// kbd_sync: ps/2 repeat per step
+	// kbd_combo_sync, nx_inp_sync: they count the time, and only an IN sees what they do
 	return 1;
 }
+
+void nx_inp_sync(Computer*, int);
 
 static inline void zx_devs_sync_in(Computer* comp, int ns) {
 	// devices. This runs once per instruction, so the ones that are idle or
@@ -83,6 +86,8 @@ static inline void zx_devs_sync_in(Computer* comp, int ns) {
 	tapSync(comp->tape, ns);
 	bcSync(comp->beep, ns);
 	if (comp->keyb->per) kbd_sync(comp->keyb, ns);		// a key is held: ps/2 auto-repeat
+	if (comp->keyb->cbWait) kbd_combo_sync(comp->keyb, ns);	// a host key's combination: its key or shift to come
+	if (comp->keyb->nxScan) nx_inp_sync(comp, ns);		// the Next's scan settling an extended key
 }
 
 // what alf_sync() hands the time to: the beeper and the chips (comp_devs_summable's)

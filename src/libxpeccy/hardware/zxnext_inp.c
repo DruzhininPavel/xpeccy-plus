@@ -6,9 +6,10 @@
 // the membrane is the Keyboard's matrix, the ps/2 keyboard its nx* fields, the
 // joysticks comp->joy (left) and comp->joyb (right), the mouse comp->mouse.
 //
-// The scan is not modelled: the matrix is read as it stands. On the board a key
-// shows up to one scan (164.6 us) later, and an extended key's CAPS/SYM SHIFT one
-// scan before its key and two after it; host keys come at no finer a time.
+// The scan is modelled for the extended keys alone: their CAPS/SYM SHIFT comes one
+// scan (164.6 us) before the key and goes two after it (nx_inp_sync). The rest is
+// read as it stands; on the board a key shows up to one scan later, and host keys
+// come at no finer a time.
 
 #include <math.h>
 #include <string.h>
@@ -128,6 +129,8 @@ static void nx_ps2_code(Computer* comp, int code, int ext, int rel) {
 			kbd->nxKeys[row] &= ~(1 << (d & 7));
 		else
 			kbd->nxKeys[row] |= 1 << (d & 7);
+		if (((d & 7) >= 5) && !kbd->nxScan)
+			kbd->nxScan = 1;		// an extended key: the scan commits it at the next step
 	}
 }
 
@@ -216,35 +219,86 @@ static int nx_matrix(Computer* comp, unsigned char* m) {
 	return any;
 }
 
-// The extra columns as 8x5 entries (membrane.vhd 177-240), 1 pressed, per row: CAPS
+// The extra columns of a matrix, row r's columns 6, 5 at bits 2r+1, 2r
+static int nx_ext_cols(const unsigned char* m) {
+	int w = 0;
+	for (int r = 0; r < 8; r++)
+		w |= ((m[r] >> 5) & 3) << (2 * r);
+	return w;
+}
+
+// The extra columns as 8x5 entries (membrane.vhd 193-226), 1 pressed, per row: CAPS
 // SHIFT for UP, EXTEND, GRAPH, CAPS LOCK, the VIDEOs, EDIT, BREAK and the arrows and
-// DELETE, SYM SHIFT for EXTEND and the four punctuation keys, and the key of each
-static void nx_ext_entries(const unsigned char* m, unsigned char* e) {
+// DELETE, SYM SHIFT for EXTEND and the four punctuation keys - those from sh - and
+// the key of each, from k
+static void nx_ext_entries(int k, int sh, unsigned char* e) {
 	int c6[8], c5[8];
+	int cs = 0, ss = 0;
 	for (int r = 0; r < 8; r++) {
-		c6[r] = (m[r] >> 6) & 1;
-		c5[r] = (m[r] >> 5) & 1;
+		c6[r] = (k >> (2 * r + 1)) & 1;
+		c5[r] = (k >> (2 * r)) & 1;
+		int s = (sh >> (2 * r)) & 3;
+		if ((r != 4) && (r != 5)) cs |= s;
+		if (r == 0) ss |= s & 1;
+		if ((r == 4) || (r == 5)) ss |= s;
 	}
 	memset(e, 0, 8);
-	int cs = 0;
-	for (int r = 0; r < 8; r++)
-		if ((r != 4) && (r != 5)) cs |= c6[r] | c5[r];
-	int ss = c5[0] | c6[4] | c5[4] | c6[5] | c5[5];
-	e[0] = cs;							// A8: CAPS SHIFT
+	e[0] = cs ? 1 : 0;						// A8: CAPS SHIFT
 	e[3] = c6[3] | (c5[1] << 1) | (c5[2] << 2) | (c6[2] << 3) | (c5[7] << 4);	// 1 2 3 4 5
 	e[4] = c5[6] | (c6[1] << 1) | (c6[6] << 2) | (c6[0] << 3) | (c6[7] << 4);	// 0 9 8 7 6
 	e[5] = c6[4] | (c5[4] << 1);					// P O
-	e[7] = c5[3] | (ss << 1) | (c6[5] << 2) | (c5[5] << 3);		// SPACE, SYM SHIFT, M, N
+	e[7] = c5[3] | ((ss ? 1 : 0) << 1) | (c6[5] << 2) | (c5[5] << 3);	// SPACE, SYM SHIFT, M, N
+}
+
+// == the scan of the extended keys ==
+// membrane.vhd 177-232: at each commit of the scan the extra columns W(n) move on a
+// stage; their 8x5 entries come out of W(n-1), the CAPS/SYM SHIFT they make out of
+// W(n) | W(n-1) | W(n-2) | W(n-3): the shift one scan before the key and two after
+// it, "to make it harder for naive software to incorrectly read composite keys".
+// A change commits at once - a ps/2 key at the step after it, anything else (the
+// virtual keyboard, a key joystick) when a read finds it - and the scan then steps
+// every 164.6 us (KBD_SCAN_NS) until it settles.
+
+static void nx_scan_commit(Keyboard* kbd, int w) {
+	memmove(kbd->nxW + 1, kbd->nxW, 3 * sizeof(kbd->nxW[0]));
+	kbd->nxW[0] = w;
+}
+
+static int nx_scan_settled(Keyboard* kbd) {
+	return (kbd->nxW[1] == kbd->nxW[0]) && (kbd->nxW[2] == kbd->nxW[0]) && (kbd->nxW[3] == kbd->nxW[0]);
+}
+
+void nx_inp_sync(Computer* comp, int ns) {
+	Keyboard* kbd = comp->keyb;
+	unsigned char m[8];
+	kbd->nxScan -= ns;
+	while (kbd->nxScan <= 0) {
+		nx_matrix(comp, m);
+		nx_scan_commit(kbd, nx_ext_cols(m));
+		if (nx_scan_settled(kbd)) {
+			kbd->nxScan = 0;
+			break;
+		}
+		kbd->nxScan += KBD_SCAN_NS;
+	}
 }
 
 // Port FE bits 4:0 the ps/2 keyboard and the key joysticks pull low on the rows
-// the address selects, the extended keys' entries with them unless nr_68 b4 cancels
-// them (the membrane's own part is ANDed in by xInFE)
+// the address selects, the extended keys' entries with them through the scan unless
+// nr_68 b4 cancels them (the membrane's own part is ANDed in by xInFE)
 int nx_inp_fe(Computer* comp, int port) {
+	Keyboard* kbd = comp->keyb;
 	unsigned char m[8], e[8];
-	if (!nx_matrix(comp, m)) return 0x1f;
+	int any = nx_matrix(comp, m);
+	int w = nx_ext_cols(m);
+	if (!kbd->nxScan && (w != kbd->nxW[0])) {
+		nx_scan_commit(kbd, w);
+		kbd->nxScan = KBD_SCAN_NS;
+	}
+	int sh = kbd->nxW[0] | kbd->nxW[1] | kbd->nxW[2] | kbd->nxW[3];
+	if (!any && !sh) return 0x1f;
 	if (NX.nr[0x68] & 0x10) memset(e, 0, 8);
-	else nx_ext_entries(m, e);
+	else nx_ext_entries(kbd->nxW[1], sh, e);
 	int res = 0x1f;
 	for (int r = 0; r < 8; r++) {
 		if (!((port >> (8 + r)) & 1))

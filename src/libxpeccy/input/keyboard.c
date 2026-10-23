@@ -92,12 +92,82 @@ keyScan keyTab[] = {
 	{0,0,0}
 };
 
+// A host key that is a Spectrum combination (. is SS+M, Delete CS+0) goes down shift
+// first and up shift last, cbLead / cbLag apart in emulated time: a program that reads
+// the key and its shift by separate INs, or takes the shift from its previous scan,
+// never sees the key alone. The Next's membrane scan does the same for its extended
+// keys (164.6 us before, two scans after), the Evo's avr holds the key ~22 ms after
+// its shift. Keys of our own (autostart, the virtual keyboard, a gamepad's) have no
+// ps/2 code and go whole.
+
+static int kbd_is_shift(unsigned char ch) {
+	return (ch == 'C') || (ch == 'S');
+}
+
+// xk's shifts and its other keys; 0 when it is not both
+static int kbd_combo_split(const unsigned char* xk, unsigned char* sh, unsigned char* rest) {
+	int ns = 0, nr = 0;
+	for (; *xk && (ns + nr < KEYSEQ_MAXLEN - 1); xk++) {
+		if (kbd_is_shift(*xk)) sh[ns++] = *xk;
+		else rest[nr++] = *xk;
+	}
+	sh[ns] = rest[nr] = 0;
+	return ns && nr;
+}
+
+static void kbd_combo_go(Keyboard* kbd) {
+	kbd->cbWait = 0;
+	if (kbd->cbRel) key_release_seq(kbd, keyTab, kbd->map, kbd->cbKeys);
+	else key_press_seq(kbd, keyTab, kbd->map, kbd->cbKeys);
+}
+
+// what still waits goes before any other key, so the order holds
+static void kbd_combo_flush(Keyboard* kbd) {
+	if (kbd->cbWait) kbd_combo_go(kbd);
+}
+
+void kbd_combo_sync(Keyboard* kbd, int ns) {
+	kbd->cbWait -= ns;
+	if (kbd->cbWait <= 0) kbd_combo_go(kbd);
+}
+
+// lead, lag in ns; a lag of 0 lets the key and its shift up at once
+void kbd_set_combo(Keyboard* kbd, int lead, int lag) {
+	kbd_combo_flush(kbd);
+	kbd->cbLead = lead;
+	kbd->cbLag = lag;
+}
+
+static void kbd_seq_press(Keyboard* kbd, keyEntry* ent, unsigned char* xk) {
+	unsigned char sh[KEYSEQ_MAXLEN], rest[KEYSEQ_MAXLEN];
+	if (ent->atCode && (kbd->cbLead > 0) && kbd_combo_split(xk, sh, rest)) {
+		key_press_seq(kbd, keyTab, kbd->map, sh);
+		memcpy(kbd->cbKeys, rest, sizeof(kbd->cbKeys));
+		kbd->cbRel = 0;
+		kbd->cbWait = kbd->cbLead;
+	} else {
+		key_press_seq(kbd, keyTab, kbd->map, xk);
+	}
+}
+
+static void kbd_seq_release(Keyboard* kbd, keyEntry* ent, unsigned char* xk) {
+	unsigned char sh[KEYSEQ_MAXLEN], rest[KEYSEQ_MAXLEN];
+	if (ent->atCode && (kbd->cbLag > 0) && kbd_combo_split(xk, sh, rest)) {
+		key_release_seq(kbd, keyTab, kbd->map, rest);
+		memcpy(kbd->cbKeys, sh, sizeof(kbd->cbKeys));
+		kbd->cbRel = 1;
+		kbd->cbWait = kbd->cbLag;
+	} else {
+		key_release_seq(kbd, keyTab, kbd->map, xk);
+	}
+}
+
 void kbd_zx_press(Keyboard* kbd, keyEntry* ent) {
-	key_press_seq(kbd, keyTab, kbd->map, ent->zxKey);
+	kbd_seq_press(kbd, ent, ent->zxKey);
 }
 
 void kbd_zx_release(Keyboard* kbd, keyEntry* ent) {
-	key_release_seq(kbd, keyTab, kbd->map, ent->zxKey);
+	kbd_seq_release(kbd, ent, ent->zxKey);
 }
 
 // Note which half-row the rom asked for. Only a single-row read counts: the rom
@@ -141,26 +211,26 @@ void kbd_prf_press(Keyboard* kbd, keyEntry* ent) {
 		for (i = 0; (i < 8) && kbd->prfsh[i]; i++);
 		if (i < 8) {
 			kbd->prfsh[i] = ent->key;
-			key_press_seq(kbd, keyTab, kbd->map, ent->extShKey);
+			kbd_seq_press(kbd, ent, ent->extShKey);
 			return;
 		}
 	}
 	if (kbd->grab && prf_is_shift(ent))
 		kbd->prfshift++;
-	key_press_seq(kbd, keyTab, kbd->map, prf_keys(kbd, ent));
+	kbd_seq_press(kbd, ent, prf_keys(kbd, ent));
 }
 
 void kbd_prf_release(Keyboard* kbd, keyEntry* ent) {
 	for (int i = 0; i < 8; i++) {
 		if (kbd->prfsh[i] && (kbd->prfsh[i] == ent->key)) {
 			kbd->prfsh[i] = 0;
-			key_release_seq(kbd, keyTab, kbd->map, ent->extShKey);
+			kbd_seq_release(kbd, ent, ent->extShKey);
 			return;
 		}
 	}
 	if (prf_is_shift(ent) && (kbd->prfshift > 0))
 		kbd->prfshift--;
-	key_release_seq(kbd, keyTab, kbd->map, prf_keys(kbd, ent));
+	kbd_seq_release(kbd, ent, prf_keys(kbd, ent));
 }
 
 int kbdScanProfi(Keyboard* kbd, int port) {
@@ -305,6 +375,7 @@ unsigned int x_input_gen = 0;
 
 void kbd_press(Keyboard* kbd, keyEntry* ent) {
 	x_input_bump();
+	kbd_combo_flush(kbd);
 	if (kbd->core) {
 		if (kbd->core->press) {
 			kbd->core->press(kbd, ent);
@@ -314,6 +385,7 @@ void kbd_press(Keyboard* kbd, keyEntry* ent) {
 
 void kbd_release(Keyboard* kbd, keyEntry* ent) {
 	x_input_bump();
+	kbd_combo_flush(kbd);
 	if (kbd->core) {
 		if (kbd->core->release) {
 			kbd->core->release(kbd, ent);
@@ -337,6 +409,9 @@ void kbdReleaseAll(Keyboard* kbd) {
 	kbd->nxCaps = kbd->nxSym = 0;
 	kbd->nxLast = 0x3ff;
 	memset(kbd->nxDown, 0, sizeof(kbd->nxDown));
+	memset(kbd->nxW, 0, sizeof(kbd->nxW));
+	kbd->nxScan = 0;
+	kbd->cbWait = 0;
 	kbd->keycode = 0;
 	kbd->lastkey = 0;
 	if (kbd->per > 0) {
@@ -349,6 +424,7 @@ void kbdReleaseAll(Keyboard* kbd) {
 
 void kbdTrigger(Keyboard* kbd, keyEntry* ent) {
 	x_input_bump();
+	kbd_combo_flush(kbd);
 	if (!kbd->core) return;
 	switch(kbd->core->id) {
 		case KBD_SPECTRUM:

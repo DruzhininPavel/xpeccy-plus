@@ -11,6 +11,7 @@ text cut into `== <case>` sections, and a case passes when its section is the sa
   pok       pok-bench: the .pok reader over core/pok/files, pokes in and out of 16/48/128K
   vfat      vfat-bench: a folder volume taking writes, FatFs as the guest, on a scratch folder
   zxnext    zxnext-bench --switch: a Next then a 48K in one machine, the Next's cpu hooks gone
+  kbd       kbd-bench over core/kbd/bin (cases.txt): host keys that are combinations, shift first
 
 The programs are committed assembled; core/mkbins.py rebuilds them with sjasmplus.
 """
@@ -29,7 +30,7 @@ from pathlib import Path
 CORE = Path(__file__).resolve().parent
 ROOT = CORE.parent.parent
 BUILD = ROOT / "build" / "out" / "tests"
-BENCHES = ("z80", "tsconf", "baseconf", "divmmc", "tape", "pok", "vfat", "zxnext")
+BENCHES = ("z80", "tsconf", "baseconf", "divmmc", "tape", "pok", "vfat", "zxnext", "kbd")
 EXE = ".exe" if os.name == "nt" else ""
 # the qt6-x64 toolchain of packaging/make-dist.ps1, used when nothing else is given
 WIN_MINGW = Path(r"C:\Qt\Tools\mingw1120_64")
