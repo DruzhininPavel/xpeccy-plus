@@ -1352,6 +1352,19 @@ int nxv_run(Video* vid, int k) {
 	return k;
 }
 
+// Where the picture stops in the buffer: the mixer's next dot, placed as nxv_render
+// places it (raw line V.ry, dot V.rx at column V.rx - 1 - hblank)
+unsigned char* nxv_drawn(Video* vid) {
+	Computer* comp = (Computer*)vid->xptr;
+	if (!V.live) return vid->ray.ptr;
+	const nxTiming* t = nx_tim(comp);
+	int row = V.ry - t->vblank;
+	int col = V.rx - 1 - t->hblank;
+	if (row < 0) return scrimg;		// still in the blanking: the whole picture to come
+	if (col < 0) col = 0;
+	return scrimg + row * bytesPerLine + col * 8;
+}
+
 // The raster changes at raw (0, 0), the absolute dot d0: first draw the old one up
 // to there, then take the drawing up at raw (0, 0) of the new one
 void nxv_retime(Computer* comp, long long d0, int after) {
