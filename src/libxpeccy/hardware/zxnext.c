@@ -1826,7 +1826,7 @@ static int nx_in_dev(Computer* comp, int port, int cpu) {
 		res |= nx_uart_in(comp, hi & 3, nx_now(comp) - (8 >> NX.speed));
 		any = 1;
 	}
-	if ((lo == 0x3b) && (hi == 0x11) && (nr[0x83] & 4)) {res |= 0xfe | (NX.i2cSda & ds_sda(&comp->rtc)); any = 1;}
+	if ((lo == 0x3b) && (hi == 0x11) && (nr[0x83] & 4)) {res |= 0xfe | (NX.i2cSda & ds_sda(comp->rtc)); any = 1;}
 	if ((lo == 0xeb) && (nr[0x83] & 8)) {
 		// the byte of the last transfer; the read starts the next one, sending FF (for
 		// the DMA its transfers are begun by nx_dma_waits, the strobe being a level)
@@ -1973,7 +1973,7 @@ static void nx_out_dev(Computer* comp, int port, int val, long long w, int cpu) 
 		if (((hi == 0x10) || (hi == 0x11)) && (nr[0x83] & 4)) {
 			if (hi == 0x10) NX.i2cScl = val & 1;
 			else NX.i2cSda = val & 1;
-			ds_bus(&comp->rtc, NX.i2cScl, NX.i2cSda);
+			ds_bus(comp->rtc, NX.i2cScl, NX.i2cSda);
 		}
 		if ((hi == 0x12) && (nr[0x83] & 0x80)) {	// port_layer2_io_en = NR 83 b7 (zxnext.vhd 2424)
 			if (val & 0x10)
@@ -2443,7 +2443,7 @@ static void nx_reset(Computer* comp) {
 	// a reset lets the I2C lines go (zxnext.vhd 3231-3252); the clock chip sees that
 	NX.i2cScl = NX.i2cSda = 1;
 	nx_uart_reset(comp);
-	ds_bus(&comp->rtc, 1, 1);
+	ds_bus(comp->rtc, 1, 1);
 	comp->vid->inten |= 1;		// the ULA interrupt pixel is reported (nx_irq decides)
 	zx_set_pal(comp);
 	vid_set_mode(comp->vid, VID_NEXT);

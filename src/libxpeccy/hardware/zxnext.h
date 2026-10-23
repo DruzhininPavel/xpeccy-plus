@@ -6,7 +6,7 @@
 
 #include "hardware.h"
 
-#define NX (comp->next)
+#define NX (*comp->next)
 
 enum {NXT_48 = 0, NXT_128, NXT_P3, NXT_PENT};
 

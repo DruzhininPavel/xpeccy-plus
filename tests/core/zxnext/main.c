@@ -53,7 +53,7 @@ static void ray(Computer* comp, int* frame, int* hc, int* vc, int* cvc) {
 
 static long long cycles(Computer* comp) {
 	if (next_log_t >= 0) return next_log_cyc;
-	return comp->tickTotal + comp->cpu->t - comp->next.holds;
+	return comp->tickTotal + comp->cpu->t - comp->next->holds;
 }
 
 // the UART0 Rx line's schedule (NXUART: a file in the simulation's own format), from the OUT to 0004
@@ -117,12 +117,12 @@ static void log_nr(Computer* comp, int reg, int val, int late) {
 	if (next_log_t >= 0) {
 		next_counters_at(comp, next_log_t + 1, &hc, &vc, &cvc);
 		fprintf(fnr, "%d %d %d %lld %02X %02X\n", next_vsync_frame_at(comp, next_log_t + 2), hc, vc,
-			cycles(comp) + late + ((comp->next.speed == 3) ? 2 : 1), reg & 0xff, val & 0xff);
+			cycles(comp) + late + ((comp->next->speed == 3) ? 2 : 1), reg & 0xff, val & 0xff);
 		return;
 	}
 	next_counters_ahead(comp, 1, &hc, &vc, &cvc);
 	fprintf(fnr, "%d %d %d %lld %02X %02X\n", next_vsync_frame(comp, 2), hc, vc,
-		cycles(comp) + late + ((comp->next.speed == 3) ? 2 : 1), reg & 0xff, val & 0xff);
+		cycles(comp) + late + ((comp->next->speed == 3) ? 2 : 1), reg & 0xff, val & 0xff);
 }
 
 // The picture just finished, as the simulation writes it: the image buffer holds the
@@ -155,7 +155,7 @@ static void dump_state(Computer* comp, const char* out) {
 	CPU* c = comp->cpu;
 	fprintf(f, "pc %04X sp %04X af %04X bc %04X de %04X hl %04X ix %04X iy %04X\n", c->regPC, c->regSP, c->regAF, c->regBC, c->regDE, c->regHL, c->regIX, c->regIY);
 	fprintf(f, "af' %04X bc' %04X de' %04X hl' %04X i %02X im %d iff %d %d\n", c->regAFa, c->regBCa, c->regDEa, c->regHLa, c->regI, c->regIM, c->flgIFF1, c->flgIFF2);
-	xNextState* n = &comp->next;
+	xNextState* n = comp->next;
 	fprintf(f, "mmu %02X %02X %02X %02X %02X %02X %02X %02X\n", n->mmu[0], n->mmu[1], n->mmu[2], n->mmu[3], n->mmu[4], n->mmu[5], n->mmu[6], n->mmu[7]);
 	fprintf(f, "7ffd %02X dffd %02X 1ffd %02X eff7 %02X e3 %02X automap %d fe %02X ff %02X 123b %02X speed %d\n", n->p7ffd, n->pdffd, n->p1ffd, n->peff7, n->pe3, n->dmHeld, n->pfe, n->pff, n->p123b, n->speed);
 	for (int r = 0; r < 256; r += 16) {
@@ -310,7 +310,7 @@ int main(int argc, char** argv) {
 		sdcSetLock(comp->sdc, 1);
 	}
 	if (!fw) {
-		comp->next.busRomcs = 1;
+		comp->next->busRomcs = 1;
 		next_reset_open = 1;
 		next_ear_tied = 1;
 		f = fopen(argv[1], "rb");
@@ -325,7 +325,7 @@ int main(int argc, char** argv) {
 		static const int bram[3] = {0x0a, 0x0b, 0x0e};
 		for (int i = 0; i < 3; i++) {
 			int a = 0x040000 + (bram[i] << 13);
-			memcpy(comp->next.shadow + ((bram[i] == 0x0e) ? 0x4000 : ((bram[i] - 0x0a) << 13)), comp->mem->ramData + a, 0x2000);
+			memcpy(comp->next->shadow + ((bram[i] == 0x0e) ? 0x4000 : ((bram[i] - 0x0a) << 13)), comp->mem->ramData + a, 0x2000);
 			memset(comp->mem->ramData + a, 0, 0x2000);
 		}
 	}
@@ -374,23 +374,23 @@ int main(int argc, char** argv) {
 		dump_state(comp, out);
 		return 0;
 	}
-	while (!done && (comp->next.vsyncCount < frames)) {
-		if ((stoppc >= 0) && (cpu_get_pc(comp->cpu) == stoppc) && (comp->next.vsyncCount >= stopf)) {
+	while (!done && (comp->next->vsyncCount < frames)) {
+		if ((stoppc >= 0) && (cpu_get_pc(comp->cpu) == stoppc) && (comp->next->vsyncCount >= stopf)) {
 			dump_state(comp, out);
-			printf("stop at %04X, frame %d\n", stoppc, comp->next.vsyncCount);
+			printf("stop at %04X, frame %d\n", stoppc, comp->next->vsyncCount);
 			break;
 		}
 		// NXNMIAT=f: the NMI key (the M1 button) at frame f
-		if (nmiat >= 0 && comp->next.vsyncCount >= nmiat) {
+		if (nmiat >= 0 && comp->next->vsyncCount >= nmiat) {
 			comp->hw->irq(comp, IRQ_NMI);
 			nmiat = -1;
 		}
-		if ((kdown >= 0) && (comp->next.vsyncCount >= kdown + khold)) {
+		if ((kdown >= 0) && (comp->next->vsyncCount >= kdown + khold)) {
 			kbd_release(comp->keyb, &kent);
 			kdown = -1;
 		}
 		while (*kp == ' ') kp++;
-		if ((kdown < 0) && *kp && (comp->next.vsyncCount >= atoi(kp))) {
+		if ((kdown < 0) && *kp && (comp->next->vsyncCount >= atoi(kp))) {
 			char* c = strchr(kp, ':');
 			memset(&kent, 0, sizeof(kent));
 			int n = 0;
@@ -400,10 +400,10 @@ int main(int argc, char** argv) {
 				kent.zxKey[n++] = (ch == '_') ? ' ' : ch;	// _ is the space key
 			}
 			kbd_press(comp->keyb, &kent);
-			kdown = comp->next.vsyncCount;
+			kdown = comp->next->vsyncCount;
 			kp = c;
 		}
-		if ((trace > 0) && getenv("TRACEAT") && (comp->next.vsyncCount < atoi(getenv("TRACEAT")))) {
+		if ((trace > 0) && getenv("TRACEAT") && (comp->next->vsyncCount < atoi(getenv("TRACEAT")))) {
 			// TRACEAT=f: the n instructions from frame f on
 		} else if (trace > 0) {
 			int hc, vc, cvc;
@@ -416,8 +416,8 @@ int main(int argc, char** argv) {
 		// NXFRAMEFROM=n: only the frames from n on are written
 		if ((bufSwaps != swaps) && !getenv("NXNOFRAMES")) {
 			swaps = bufSwaps;
-			if (comp->next.vsyncCount > (getenv("NXFRAMEFROM") ? atoi(getenv("NXFRAMEFROM")) : 0))
-				dump_frame(comp, out, comp->next.vsyncCount - 1, rows, cols);
+			if (comp->next->vsyncCount > (getenv("NXFRAMEFROM") ? atoi(getenv("NXFRAMEFROM")) : 0))
+				dump_frame(comp, out, comp->next->vsyncCount - 1, rows, cols);
 			rows = comp->vid->vend.y;
 			cols = comp->vid->vend.x * 2;
 		}
@@ -433,12 +433,12 @@ int main(int argc, char** argv) {
 		int pg = (a - 0x040000) >> 13;
 		unsigned char b = comp->mem->ramData[a];
 		if ((a >= 0x040000) && ((pg == 0x0a) || (pg == 0x0b) || (pg == 0x0e)))
-			b = comp->next.shadow[((pg == 0x0e) ? 0x4000 : ((pg - 0x0a) << 13)) | (a & 0x1fff)];
+			b = comp->next->shadow[((pg == 0x0e) ? 0x4000 : ((pg - 0x0a) << 13)) | (a & 0x1fff)];
 		fputc(b, f);
 	}
 	fclose(f);
-	printf("%s: frame %d, %s\n", base_name(argv[1]), comp->next.vsyncCount, done ? "ended by the program" : "frame limit");
+	printf("%s: frame %d, %s\n", base_name(argv[1]), comp->next->vsyncCount, done ? "ended by the program" : "frame limit");
 	if (fw) printf("pc %04X\n", cpu_get_pc(comp->cpu));
-	if (comp->next.v.late) printf("register changes drawn late: %d\n", comp->next.v.late);
+	if (comp->next->v.late) printf("register changes drawn late: %d\n", comp->next->v.late);
 	return 0;
 }
