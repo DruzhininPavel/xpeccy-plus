@@ -82,6 +82,7 @@ static void comp_div_fetch(Computer* comp, int adr) {
 static void comp_m1x(void* ptr, int adr) {
 	Computer* comp = (Computer*)ptr;
 	if (comp->div->model) comp_div_fetch(comp, adr);
+	if (comp->hw->id == HW_ZXNEXT) next_nmi_m1(comp, adr);
 }
 
 // the board's time: its oscillators run whatever the CPU does
@@ -597,6 +598,7 @@ void comp_set_identity(Computer* comp, const char* name, int ymd, int release) {
 Computer* compCreate() {
 	Computer* comp = (Computer*)malloc(sizeof(Computer));
 	memset(comp, 0x00, sizeof(Computer));
+	ds_init(&comp->rtc);
 	comp->resbank = RES_48;
 	comp->earback = EAR_ISSUE3;
 	comp->flgFRN = 1;
@@ -622,6 +624,9 @@ Computer* compCreate() {
 	comp->ide = ideCreate(IDE_NONE, comp_irq, comp);
 	comp->ide->smuc.cmos = &comp->cmos;
 	comp->sdc = sdcCreate();
+	// the Next talks to it by the spec (sdc_xfer): over 2 GB an SDHC card, block addressed,
+	// or its 32-bit byte addresses stop at 4 GB; the Z-controller's path reads neither flag
+	comp->sdc->spec = 1;
 	comp->slot = sltCreate();
 	comp->div = div_create(comp->mem, comp, comp_div_ns);
 	comp->cpu->xm1x = comp_m1x;
@@ -811,6 +816,13 @@ void comp_set_frame_tick(Computer* comp, int tick) {
 	}
 }
 
+// A core with something of its own to do when the power comes on (the Next's
+// firmware loading its ROMs) does it at the reset that follows.
+void comp_power_on(Computer* comp) {
+	if (comp->hw && comp->hw->power)
+		comp->hw->power(comp);
+}
+
 // The ULA comes up at any point of its frame (Time to First INT on a real 48K);
 // a reset leaves it where it is.
 void comp_power_phase(Computer* comp) {
@@ -929,6 +941,7 @@ void compSetHwTurbo(Computer* comp, double mult) {
 }
 
 void comp_set_layout(Computer* comp, vLayout* lay) {
+	if (comp->hw->ownLay) return;
 	if (comp->hw->lay)
 		lay = comp->hw->lay;
 	vid_set_layout(comp->vid, lay);
@@ -964,7 +977,7 @@ static void comp_cont_hw(void* ptr, int mreq) {
 	comp->cpu->t += comp->waitDebt;
 	comp->waitPaid += comp->waitDebt;
 	comp->waitDebt = 0;
-	comp_vid_to_t(comp);
+	if (!comp->hw->contLazy) comp_vid_to_t(comp);
 	comp->hw->cont(comp, mreq);
 }
 
@@ -985,7 +998,7 @@ static void comp_cont_map(Computer* comp) {
 void comp_set_cont(Computer* comp, int on) {
 	comp->flgCNTM = on ? 1 : 0;
 	if (comp->cpu) {
-		int own = comp->hw && comp->hw->cont && (comp->hwMul > 1);
+		int own = comp->hw && comp->hw->cont && ((comp->hwMul > 1) || comp->hw->contAll);
 		comp->cpu->flgCONT = comp->flgCNTM || own;
 		comp->cpu->xcont = own ? comp_cont_hw : comp_cont;
 	}
@@ -1023,6 +1036,12 @@ int compSetHardware(Computer* comp, const char* name) {
 		hw = findHardware(name);
 	}
 	if (hw == NULL) return 0;
+	// the Z80N's hooks and what they ran up belong to the Next: no other machine keeps them
+	if (hw->id != HW_ZXNEXT) {
+		comp->cpu->xinta = NULL;
+		comp->cpu->xnextreg = NULL;
+		if (comp->hw && (comp->hw->id == HW_ZXNEXT)) comp->waitDebt = 0;
+	}
 	comp->hw = hw;
 //	comp->cpu->nod = 0;
 	comp->vid->mrd = vid_mrd_cb;
@@ -1059,7 +1078,15 @@ static int comp_step_end(Computer* comp, int unsynced, int t) {
 	return nsTime;
 }
 
+// The firmware's part of a power-on runs before the first instruction, not in the
+// reset: the media go in after the machine is built, and the firmware reads them.
+static void comp_boot(Computer* comp) {
+	comp->flgBOOT = 0;
+	if (comp->hw->boot) comp->hw->boot(comp);
+}
+
 int compExec(Computer* comp) {
+	if (comp->flgBOOT) comp_boot(comp);
 	comp->flgBRKPRE = 0;
 // breakpoints. A run-ahead frame is thrown away, so a break there would fire
 // twice: leave it to the pass that keeps its result
@@ -1116,15 +1143,22 @@ int compExec(Computer* comp) {
 // between the steps (no watch, breakpoint, debugger, run-ahead pass, recording); no
 // NMI or spoiled fetch waits; the devices take their time summed; and the machine's
 // own step end allows it (hwQuiet.ok). NULL: step one at a time.
-static const hwQuiet* comp_quiet_ok(Computer* comp) {
+static const hwQuiet* comp_quiet_in(Computer* comp, int ahead) {
 	const hwQuiet* q = comp->hw->quiet;
 	CPU* cpu = comp->cpu;
 	if (!q || !cpu->core || (cpu->core->exec != z80_exec) || (cpu->xend != comp_end)) return NULL;
-	if (!comp_unwatched(comp) || comp->flgMAP || comp->flgHEAT) return NULL;
+	// a run-ahead pass only keeps breakpoints and the heat map out (compExec)
+	int seen = ahead ? (comp->flgCOND || comp->flgDBG || comp->flgBRKMEM || comp->flgIBRK
+		|| comp->rzx.play || comp->rzx.rec.on) : !comp_unwatched(comp);
+	if (seen || comp->flgMAP || comp->flgHEAT) return NULL;
 	if (comp->flgNMIRQ || comp->snowBad) return NULL;
 	if (!comp_devs_summable(comp)) return NULL;
 	if (q->ok && !q->ok(comp)) return NULL;
 	return q;
+}
+
+static const hwQuiet* comp_quiet_ok(Computer* comp) {
+	return comp_quiet_in(comp, 0);
 }
 
 // An M1 at adr does nothing but fetch, on a machine reading through stdMRd/asicMRd
@@ -1145,31 +1179,67 @@ int zx_fetch_quiet(Computer* comp, int adr) {
 // given the time (comp_quiet_ok). Not where the fetch itself does anything
 // (hwQuiet.fetch: contention, TR-DOS paging, a cache it changes), nor with the
 // refresh snowing from a slow bank.
-// Fast mode only: in real time the sound takes samples between the steps.
+// Fast mode only, but on a machine with its own hwQuiet.halt: in real time the
+// sound takes samples between the steps, so the run ends with the step that takes
+// the time past room (fixed ns to the next sample, -1: no sound).
 // 1 when it went, *ns the time it took.
-int comp_halt_skip(Computer* comp, int* ns) {
+static int comp_halt_run(Computer* comp, int* ns, long long room, int rt) {
 	CPU* cpu = comp->cpu;
-	if (!cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
-	const hwQuiet* q = comp_quiet_ok(comp);
-	if (!q || !q->fetch) return 0;
+	if (!cpu->flgHALT || (cpu->intrq & cpu->inten) || comp->flgBOOT) return 0;
+	// a step before the sample at least, or the run does not pay: at 3.5 MHz the
+	// sound samples every step
+	if ((room >= 0) && (room < 4 * comp->nsPerTickFixed)) return 0;
+	const hwQuiet* q = comp_quiet_in(comp, rt);
+	if (!q || (rt && !q->halt)) return 0;
 	if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI])) return 0;	// zx_snow's banks
-	if (!q->fetch(comp, (cpu->regPC + 1) & 0xffff)) return 0;
+	int adr = (cpu->regPC + 1) & 0xffff;
+	int t = 4;
+	long long until = 0;
+	if (q->halt) {
+		t = q->halt(comp, adr, &until);
+		if (!t) return 0;
+	} else if (!q->fetch || !q->fetch(comp, adr)) {
+		return 0;
+	}
 	Video* vid = comp->vid;
 	vid_settle(vid);
 	if (vid->nsDrawFixed < 0) return 0;
 	long long d = vid_quiet_dots(vid, q->lineInt && (vid->inten & 2));
-	long long step = 4 * comp->nsPerTickFixed;
+	long long step = t * comp->nsPerTickFixed;
 	if (step <= 0) return 0;
 	long long n = (d * vid->nsPerDotFixed - vid->nsDrawFixed - 1) / step;
+	if (q->halt) {
+		// the steps starting short of until: at tickTotal, then every t
+		long long m = (until - comp->tickTotal + t - 1) / t;
+		if (until <= comp->tickTotal) m = 0;
+		if (m < n) n = m;
+	}
+	if ((room >= 0) && (n >= 2)) {
+		// up to the step after which the sound's next sample is due, that one
+		// included: the caller takes it with the machine where that step leaves it
+		int k = vid_clock_count(vid, step, room, (int)((n < 0x10000) ? n : 0x10000));
+		if (k < n) n = k;
+	}
 	if (n < 2) return 0;
 	if (n > 0x10000) n = 0x10000;
+	if (q->haltDone) q->haltDone(comp, adr, comp->tickTotal, n, t);
 	cpu->regR = (unsigned char)(cpu->regR + n);
 	cpu->flgQ = 0;			// what the steps before left: HALT writes no flags
 	cpu->flgFW = 0;
 	comp->flgBRKPRE = 0;
 	res4 = 0;
-	*ns = comp_step_end(comp, (int)(n * 4), (int)(n * 4));
+	*ns = comp_step_end(comp, (int)(n * t), (int)(n * t));
 	return 1;
+}
+
+int comp_halt_skip(Computer* comp, int* ns) {
+	return comp_halt_run(comp, ns, -1, 0);
+}
+
+// The same in real time or a run-ahead pass, for a machine with hwQuiet.halt; room:
+// the fixed ns to the sound's next sample, -1 when nothing samples
+int comp_halt_skip_rt(Computer* comp, int* ns, long long room) {
+	return comp_halt_run(comp, ns, room, 1);
 }
 
 // The core's straight way to memory for the step about to run (CPU.rdp/m1p/wrp):
@@ -1215,6 +1285,7 @@ static inline void comp_mem_direct(Computer* comp) {
 // compExec() for a machine nothing looks at between its steps: no breakpoint,
 // no debugger, no recording playing or being made (the caller makes sure)
 int comp_exec_quiet(Computer* comp) {
+	if (comp->flgBOOT) comp_boot(comp);
 	comp->flgBRKPRE = 0;
 	res4 = 0;
 	comp_mem_direct(comp);
@@ -1258,7 +1329,7 @@ void comp_run_io_slow(Computer* comp) {
 // 0 when the machine is not one to run on (the caller steps), else 1 and *ns.
 int comp_run_quiet(Computer* comp, int* ns, const int* stops, int nstops) {
 	CPU* cpu = comp->cpu;
-	if (cpu->flgHALT || (cpu->intrq & cpu->inten)) return 0;
+	if (cpu->flgHALT || (cpu->intrq & cpu->inten) || comp->flgBOOT) return 0;
 	const hwQuiet* q = comp_quiet_ok(comp);
 	if (!q) return 0;
 	// the machine's own part of a step end, done after every step but the last,

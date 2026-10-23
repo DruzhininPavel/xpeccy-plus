@@ -70,6 +70,7 @@
         <file>res/machines/zxplus2.conf</file>
         <file>res/machines/zxplus2a.conf</file>
         <file>res/machines/zxplus3.conf</file>
+        <file>res/machines/zxnext.conf</file>
         <file>res/nvram/evo-tsconf.cmos</file>
         <file>images/cd.png</file>
         <file>images/clock.png</file>
@@ -200,6 +201,7 @@
         <file>images/grp-board.png</file>
         <file>images/grp-board-16.png</file>
         <file>images/nedoos.png</file>
+        <file>images/next.png</file>
         <file>images/grp-cpu.png</file>
         <file>images/grp-cpu-16.png</file>
         <file>images/grp-ula.png</file>
@@ -254,6 +256,9 @@
         <file>res/vkbd/zx-white.json</file>
         <file>res/vkbd/zx-128.json</file>
         <file>res/vkbd/zx-128-white.json</file>
+        <file>res/vkbd/zx-next.json</file>
+        <file>res/vkbd/zx-next-white.json</file>
+        <file>res/vkbd/zx-next-magenta.json</file>
         <file>res/vkbd/keys-font.ttf</file>
     </qresource>
 </RCC>

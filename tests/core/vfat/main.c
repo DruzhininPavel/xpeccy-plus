@@ -1455,6 +1455,45 @@ static void sc_hold(void) {
 	fails = bad;
 }
 
+// a pinned folder (the Next's .nex overlay): what the guest does there stays in the
+// volume and is told once; the rest of the volume follows as ever
+static void sc_pin(void) {
+	char games[1200], full[1200];
+	int pass, i, t, gi, bad = 0;
+	snprintf(games, sizeof(games), "%s/games", sroot);
+	for (pass = 0; pass < 2; pass++) {
+		s_begin(116 + pass);
+		gi = -1;
+		for (i = 1; i < gvf->nodes; i++)
+			if ((gvf->node[i].parent == 0) && !strcmp(gvf->node[i].name, "games")) gi = i;
+		if (gi < 0) {
+			fail("pin: no games folder");
+		} else {
+			vfat_pin(gvf, gi, games);
+			s_write("docs/fine.txt", 3000);
+			for (t = 0; t < 100; t++) vfat_tick(gvf);
+			if (vfat_pin_news(gvf)) fail("pin: told with nothing changed there");
+			snprintf(full, sizeof(full), "%s/docs/fine.txt", sroot);
+			if (!file_eq(full, model[m_find("docs/fine.txt")].data, 3000)) fail("pin: the rest did not follow");
+			if (pass == 0) {
+				s_write("games/save.dat", 2000);
+				snprintf(full, sizeof(full), "%s/save.dat", games);
+			} else {
+				s_del("games/manic.tap");
+				snprintf(full, sizeof(full), "%s/manic.tap", games);
+			}
+			for (t = 0; t < 100; t++) vfat_tick(gvf);
+			if (h_kind(NULL, full) != pass) fail("pin: the host's folder changed");
+			if (!vfat_pin_news(gvf)) fail("pin: not told");
+			if (vfat_pin_news(gvf)) fail("pin: told twice");
+			check_guest("pin");
+		}
+		s_end();
+		bad += fails;
+	}
+	fails = bad;
+}
+
 // == the review's cases ==
 
 // a host name in the folder's top level holding our temporary mark
@@ -1751,7 +1790,7 @@ static int run_scenarios(const char* root) {
 		{"swap", sc_swap}, {"replace", sc_replace}, {"fragment", sc_fragment}, {"bigdir", sc_bigdir},
 		{"nested", sc_nested}, {"format", sc_format}, {"open", sc_open}, {"names", sc_names},
 		{"trash", sc_trash}, {"unknown", sc_unknown}, {"readonly", sc_readonly}, {"hostfail", sc_hostfail},
-		{"halfmove", sc_halfmove}, {"retype", sc_retype}, {"hold", sc_hold}, {"newdir", sc_newdir},
+		{"halfmove", sc_halfmove}, {"retype", sc_retype}, {"hold", sc_hold}, {"pin", sc_pin}, {"newdir", sc_newdir},
 		{"flush", sc_flush}, {"bigfile", sc_bigfile}, {"parked", sc_parked}, {"cap", sc_cap},
 		{"outside", sc_outside}, {"sameslot", sc_sameslot}
 	};

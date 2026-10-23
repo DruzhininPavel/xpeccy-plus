@@ -637,6 +637,7 @@ void MainWin::timerEvent(QTimerEvent* ev) {
 		bool mlive = padLive() && !conf.emu.pause;
 		pad_mouse_set(mlive ? mvx : 0, mlive ? mvy : 0);	// moved a frame at a time, by the emulation
 // process mouse auto move
+		if (comp->mouse->autox || comp->mouse->autoy) x_input_bump();
 		comp->mouse->xpos += comp->mouse->autox;
 		comp->mouse->ypos += comp->mouse->autoy;
 // if computer sends a message, show it
@@ -1507,9 +1508,9 @@ void MainWin::drawIcons(QPainter& pnt) {
 	}
 // put cpu clock, but only when it is not the one the machine ships with: it is
 // there to say a run was not on stock timings, and drops to the tick counter's
-// line when that is switched off
+// line when that is switched off. The status bar has it, when it is there
 	double clk = xspeed_clock();
-	if (conf.led.clock && (fabs(clk - comp->cpuFrq) > 1e-6)) {
+	if (conf.led.clock && osd && (fabs(clk - comp->cpuFrq) > 1e-6)) {
 		snprintf(numbuf, sizeof(numbuf), " %.6g MHz ", clk);
 		drawText(&pnt, width() - strlen(numbuf) * 12 - 8, height() - (conf.led.halt ? 40 : 20), numbuf);
 	}

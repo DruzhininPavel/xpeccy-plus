@@ -299,9 +299,12 @@ void kbd_destroy(Keyboard* keyb) {
 	free(keyb);
 }
 
+unsigned int x_input_gen = 0;
+
 // key press/release/trigger
 
 void kbd_press(Keyboard* kbd, keyEntry* ent) {
+	x_input_bump();
 	if (kbd->core) {
 		if (kbd->core->press) {
 			kbd->core->press(kbd, ent);
@@ -310,6 +313,7 @@ void kbd_press(Keyboard* kbd, keyEntry* ent) {
 }
 
 void kbd_release(Keyboard* kbd, keyEntry* ent) {
+	x_input_bump();
 	if (kbd->core) {
 		if (kbd->core->release) {
 			kbd->core->release(kbd, ent);
@@ -319,6 +323,7 @@ void kbd_release(Keyboard* kbd, keyEntry* ent) {
 
 void kbdReleaseAll(Keyboard* kbd) {
 	int i;
+	x_input_bump();
 	for (i = 0; i < 8; i++) {
 		kbd->map[i] = -1;
 	}
@@ -328,6 +333,10 @@ void kbdReleaseAll(Keyboard* kbd) {
 	kbd->extkey = 0;
 	kbd->prfshift = 0;
 	memset(kbd->prfsh, 0, sizeof(kbd->prfsh));
+	memset(kbd->nxKeys, 0, sizeof(kbd->nxKeys));
+	kbd->nxCaps = kbd->nxSym = 0;
+	kbd->nxLast = 0x3ff;
+	memset(kbd->nxDown, 0, sizeof(kbd->nxDown));
 	kbd->keycode = 0;
 	kbd->lastkey = 0;
 	if (kbd->per > 0) {
@@ -339,6 +348,7 @@ void kbdReleaseAll(Keyboard* kbd) {
 // trigger is using by kbd-window only
 
 void kbdTrigger(Keyboard* kbd, keyEntry* ent) {
+	x_input_bump();
 	if (!kbd->core) return;
 	switch(kbd->core->id) {
 		case KBD_SPECTRUM:

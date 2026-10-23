@@ -61,6 +61,7 @@
 #include "libxpeccy/filetypes/filetypes.h"
 #include "libxpeccy/input/input.h"
 #include "xcore/rzxrecord.h"
+#include "xcore/serial.h"
 
 // the turbo step lists the box offers before a machine of its own adds one
 #define CPU_TURBO_ROWS	3
@@ -930,6 +931,21 @@ static void fullscreenTip(QCheckBox* box) {
 void SetupWin::start() {
 	Computer* comp = conf.zx;
 	fillLogPage();
+	QStringList ports = serial_ports();
+	for (int i = 0; i < 2; i++) {
+		uartBox[i]->clear();
+		uartBox[i]->addItem(tr("Not connected"), QString());
+		if (i == 0) uartBox[i]->addItem(tr("ESP-01 (emulated)"), QString(SERIAL_ESP));
+		foreach(QString p, ports) uartBox[i]->addItem(p, p);
+		QString cur = serial_name(i);
+		int k = uartBox[i]->findData(cur);
+		if (k >= 0) {
+			uartBox[i]->setCurrentIndex(k);
+		} else {
+			uartBox[i]->addItem(cur, cur);		// a pipe, or a port unplugged since
+			uartBox[i]->setCurrentIndex(uartBox[i]->count() - 1);
+		}
+	}
 	ui.tvHotkeys->load();
 // machine
 	int idx;
@@ -1020,6 +1036,11 @@ void SetupWin::start() {
 	ui.sldNoflic->setValue(noflic); chaflc();
 	ui.cbNoflicMode->setCurrentIndex(noflicMode);
 	ui.cbNoflicAhead->setChecked(noflicAhead);
+	// the Next's frames cost too much to run more of them than the machine needs
+	bool next = (conf.zx->hw->id == HW_ZXNEXT);
+	ui.cbNoflicAhead->setEnabled(!next);
+	ui.cbNoflicAhead->setToolTip(next ? tr("Not on the ZX Spectrum Next: its frames cost too much to run ahead")
+		: tr("Adaptive modes: frames run ahead to catch a flicker as it starts"));
 	ui.sbNoflicGamma->setValue(noflicGamma);
 	ui.grayscale->setChecked(greyScale);
 //	ui.cbScanlines->setChecked(scanlines);
@@ -1352,6 +1373,12 @@ void SetupWin::applyMachine() {
 // onto whichever machine is in now.
 void SetupWin::applyGlobal() {
 	Computer* comp = conf.zx;
+	for (int i = 0; i < 2; i++) {
+		QString txt = uartBox[i]->currentText().trimmed();
+		int k = uartBox[i]->findText(txt);
+		QString port = (k >= 0) ? uartBox[i]->itemData(k).toString() : txt;
+		if (port != serial_name(i)) serial_set(i, port, true);		// else a --uart-* stays
+	}
 // emulation
 	conf.vid.lowLatency = ui.cbLowLat->isChecked() ? 1 : 0;
 	conf.emu.runahead = getRFIData(ui.cbRunAhead);
@@ -2048,6 +2075,16 @@ void SetupWin::buildDevices() {
 
 	grid = devGroup(right, ":/images/grp-board.png", tr("Board"));
 	devRow(grid, tr("Turbo"), cbCpuTurbo, NULL, NULL);
+	for (int i = 0; i < 2; i++) {
+		uartBox[i] = new QComboBox;
+		uartBox[i]->setObjectName(i ? "uartPi" : "uartEsp");
+		uartBox[i]->setEditable(true);
+		uartBox[i]->setInsertPolicy(QComboBox::NoInsert);
+		uartBox[i]->setToolTip(i ? tr("The serial port of this computer the Pi UART is wired to")
+			: tr("The Wi-Fi module: emulated, or a real one on a serial port of this computer"));
+		btn = devRow(grid, i ? tr("Pi UART") : tr("ESP UART"), uartBox[i], NULL, NULL);
+		uartRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << uartBox[i] << btn;
+	}
 	right->addStretch(1);
 
 	// one label width per column, so the choices line up from group to group
@@ -2243,7 +2280,7 @@ void SetupWin::showDriveRows() {
 // rows only some cores have
 void SetupWin::showDevRows() {
 	int hw = conf.zx->hw->id;
-	bool sd = (hw == HW_PENTEVO) || (hw == HW_TSLAB);
+	bool sd = (hw == HW_PENTEVO) || (hw == HW_TSLAB) || (hw == HW_ZXNEXT);
 	bool slot = (hw == HW_ZX48) || (hw == HW_ALF);
 	// only these read PC scancodes
 	bool kbd = (hw == HW_ATM2) || (hw == HW_PENTEVO) || (hw == HW_TSLAB);
@@ -2251,6 +2288,7 @@ void SetupWin::showDevRows() {
 	foreach(QWidget* w, divRow) w->setVisible(hw_takes_divmmc(conf.zx->hw));
 	foreach(QWidget* w, slotRow) w->setVisible(slot);
 	foreach(QWidget* w, kbdRow) w->setVisible(kbd);
+	foreach(QWidget* w, uartRow) w->setVisible(hw == HW_ZXNEXT);
 	showDriveRows();
 	showBoardStorage();
 	QString fixed = tr("Built into this board");
@@ -2741,7 +2779,9 @@ void SetupWin::chapsg() {
 	int psg = getRFIData(cbPsgCount);
 	int on = (psg != PSG_NONE);
 	int fm = (psg == PSG_TSFM);
-	int split = on && (getRFIData(cbPsgStereo) != AY_MONO);
+	// the Next mixes its chips itself, by its nextregs 08 and 09
+	bool own = (conf.zx->hw->id == HW_ZXNEXT);
+	int split = on && !own && (getRFIData(cbPsgStereo) != AY_MONO);
 	labPsgSep->setText(QString("%0%").arg(sldPsgSep->value()));
 	// TurboSound FM is two YM2203 and nothing else; the others never are
 	QStandardItemModel* types = qobject_cast<QStandardItemModel*>(cbPsgType->model());
@@ -2751,7 +2791,8 @@ void SetupWin::chapsg() {
 	else if (getRFIData(cbPsgType) == SND_YM2203) setRFIndex(cbPsgType, SND_YM);
 	cbPsgType->setEnabled(on && !fm);
 	cbPsgFrq->setEnabled(on);
-	cbPsgStereo->setEnabled(on);
+	cbPsgStereo->setEnabled(on && !own);
+	cbPsgStereo->setToolTip(own ? tr("Set by the machine itself") : QString());
 	// the clock is shown as the chip's own, and set as an AY's
 	int mul = chip_frq_mul(getRFIData(cbPsgType));
 	double ay = opt_get_psg_frq(cbPsgFrq) / psgFrqMul;	// 0: Auto

@@ -148,6 +148,7 @@ typedef struct {
 		void addDivCards(QMenu*);
 		bool drivesBack();		// asks to switch the divMMC off when it has the drives out
 		void folderAsk();		// the first write to a folder asks before the folder changes
+		void nextCard();		// the Next's own card: made from System/Next, or one the user has
 		void folderNews();		// says once when a folder could not take what the machine wrote
 		void esxCheck();		// says when card 1 and the EEPROM are different esxDOS releases
 		QString esxSeen;		// the power cycle and card it looked at last

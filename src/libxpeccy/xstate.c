@@ -320,8 +320,10 @@ int xstate_load(xState* st, Computer* comp) {
 int xstate_run_frame(Computer* comp) {
 	int guard = 200000;		// a frame is ~20000 opcodes
 	x_runahead = 1;
+	int ns;
 	while (!comp->flgFRM && (guard-- > 0))
-		compExec(comp);
+		if (!comp_halt_skip_rt(comp, &ns, -1))
+			compExec(comp);
 	comp->flgFRM = 0;
 	x_runahead = 0;
 	return guard > 0;

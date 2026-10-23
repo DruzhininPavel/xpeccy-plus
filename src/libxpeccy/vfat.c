@@ -244,6 +244,7 @@ void vfat_free(vFat* vf) {
 	for (i = 0; i < vf->nodes; i++) {
 		free(vf->node[i].name);
 		free(vf->node[i].hname);
+		free(vf->node[i].hroot);
 		free(vf->node[i].rname);
 	}
 	free(vf->node);
@@ -269,19 +270,32 @@ void vfat_set_root(vFat* vf, const char* root, const vfHost* host) {
 	else memset(&vf->host, 0x00, sizeof(vfHost));
 }
 
-// the root, then the host names down to the node, parted by '/'
+void vfat_pin(vFat* vf, int idx, const char* hostpath) {
+	if (!vf || (idx <= 0) || (idx >= vf->nodes)) return;
+	free(vf->node[idx].hroot);
+	vf->node[idx].hroot = vf_strdup(hostpath);
+	vf->node[idx].pinned = 1;
+}
+
+// the root - the volume's or a pinned folder's own - then the host names down to the
+// node, parted by '/'
 int vf_path(vFat* vf, int idx, char* buf, int max) {
 	int chain[256];
 	int depth = 0;
 	int len, n, i;
-	if (!vf->root) return 0;
+	const char* base = vf->root;
 	for (i = idx; i > 0; i = vf->node[i].parent) {
+		if (vf->node[i].hroot) {
+			base = vf->node[i].hroot;
+			break;
+		}
 		if (depth >= 256) return 0;
 		chain[depth++] = i;
 	}
-	len = strlen(vf->root);
+	if (!base) return 0;
+	len = strlen(base);
 	if (len >= max) return 0;
-	memcpy(buf, vf->root, len);
+	memcpy(buf, base, len);
 	while (depth > 0) {
 		const char* s = vf->node[chain[--depth]].hname;
 		if (!s) return 0;

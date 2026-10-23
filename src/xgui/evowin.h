@@ -4,12 +4,12 @@
 
 #include "debuga/dbg_evo.h"
 
-// The ZX Evolution panel in a window of its own, beside the main window: it
-// keeps up with the machine while it runs, which the debugger cannot.
+// The ZX Evolution or ZX Next panel in a window of its own, beside the main
+// window: it keeps up with the machine while it runs, which the debugger cannot.
 class xEvoWin : public QDialog {
 	Q_OBJECT
 	public:
-		xEvoWin(QWidget* = nullptr);
+		xEvoWin(int kind, QWidget* = nullptr);
 	signals:
 		void s_detach(bool);
 		void s_picture();
@@ -25,4 +25,6 @@ class xEvoWin : public QDialog {
 	private:
 		xEvoPanel* panel;
 		int lastfrm;
+		QPoint& place();		// where conf keeps this one's place and size
+		QSize& extent();
 };

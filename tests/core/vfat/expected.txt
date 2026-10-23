@@ -18,6 +18,7 @@ hostfail: ok
 halfmove: ok
 retype: ok
 hold: ok
+pin: ok
 newdir: ok
 flush: ok
 bigfile: ok

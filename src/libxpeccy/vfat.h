@@ -46,8 +46,10 @@ typedef struct {
 	unsigned isdir:1;
 	unsigned lfn:1;			// name doesn't fit 8.3, needs long name entries
 	unsigned dead:1;		// gone from the volume and the folder
+	unsigned pinned:1;		// from elsewhere (vfat_pin): the host side leaves it and all in it be
 	char* name;			// name shown to the guest, UTF-8
 	char* hname;			// name in the host folder, UTF-8 (NULL for the root)
+	char* hroot;			// a pinned folder's own host path, UTF-8
 	char sname[12];			// generated 8.3 name, space padded, no dot
 	unsigned int shash;		// hash of sname and parent, the key in vFat.stab
 	int parent;			// owning directory, -1 for root
@@ -107,6 +109,9 @@ void vfat_free(vFat*);
 // the host folder, and how to reach it (NULL: stdio); before vfat_build
 void vfat_set_root(vFat*, const char* root, const vfHost* host);
 
+// a folder of the tree that is somewhere else on the host: its files are read from there,
+// and what the guest does in it stays in the volume
+void vfat_pin(vFat*, int idx, const char* hostpath);
 // name: UTF-8, also the host name; returns node index, VF_FULL if the parent
 // directory has no room left, or -1 on failure
 int vfat_add(vFat*, int parent, const char* name, unsigned int size, unsigned int mtime, int isdir);
@@ -125,6 +130,8 @@ int vfat_sync(vFat*, int force);
 int vfat_pending(vFat*);
 // 1 once the folder stopped following the guest (a format, a mass delete): the volume lives on in memory
 int vfat_detached(vFat*);
+// 1 the first time a sync finds the guest changed something in a pinned folder
+int vfat_pin_news(vFat*);
 // carry over what the guest wrote, unless the volume is on hold or no longer follows:
 // before the folder is read again or let go
 void vfat_flush(vFat*);

@@ -10,6 +10,7 @@ text cut into `== <case>` sections, and a case passes when its section is the sa
   tape      tape-bench over the images core/tape/mktape.py writes
   pok       pok-bench: the .pok reader over core/pok/files, pokes in and out of 16/48/128K
   vfat      vfat-bench: a folder volume taking writes, FatFs as the guest, on a scratch folder
+  zxnext    zxnext-bench --switch: a Next then a 48K in one machine, the Next's cpu hooks gone
 
 The programs are committed assembled; core/mkbins.py rebuilds them with sjasmplus.
 """
@@ -28,7 +29,7 @@ from pathlib import Path
 CORE = Path(__file__).resolve().parent
 ROOT = CORE.parent.parent
 BUILD = ROOT / "build" / "out" / "tests"
-BENCHES = ("z80", "tsconf", "baseconf", "divmmc", "tape", "pok", "vfat")
+BENCHES = ("z80", "tsconf", "baseconf", "divmmc", "tape", "pok", "vfat", "zxnext")
 EXE = ".exe" if os.name == "nt" else ""
 # the qt6-x64 toolchain of packaging/make-dist.ps1, used when nothing else is given
 WIN_MINGW = Path(r"C:\Qt\Tools\mingw1120_64")
@@ -163,6 +164,14 @@ def bench_vfat():
     return res
 
 
+def bench_zxnext():
+    p = subprocess.run([str(BUILD / f"zxnext-bench{EXE}"), "--switch"], capture_output=True, text=True, errors="replace", timeout=120)
+    res = read_sections(p.stdout)
+    if p.returncode or not res:
+        res["zxnext-bench"] = f"exit {p.returncode}: {p.stderr.strip()}"
+    return res
+
+
 def bench_z80():
     """Fuse's tests: (passed, the summary line, the full report)"""
     z80 = ROOT / "tools" / "z80test"
@@ -205,7 +214,7 @@ def run(args, matches):
                 print(report)
             passed, failed = passed + ok, failed + (not ok)
             continue
-        got = {"tape": bench_tape, "pok": bench_pok, "vfat": bench_vfat}.get(bench, lambda: bench_prog(bench, args.jobs))()
+        got = {"tape": bench_tape, "pok": bench_pok, "vfat": bench_vfat, "zxnext": bench_zxnext}.get(bench, lambda: bench_prog(bench, args.jobs))()
         got = {k: v for k, v in got.items() if matches(k, f"{bench}/{k}", args.k)}
         exp_path = CORE / bench / "expected.txt"
         exp = read_sections(exp_path.read_text(encoding="utf-8")) if exp_path.exists() else {}

@@ -15,6 +15,7 @@
 #include "../xgui/xgui.h"
 #include "autostart.h"
 #include "rewind.h"
+#include "serial.h"
 #include "../libxpeccy/xreplay.h"
 #include "vfat_scan.h"
 #include "vscalers.h"
@@ -713,6 +714,14 @@ static void xm_load_nvram() {
 		if (i == 0x100) memcpy(nv + 0x80, nv, 0x80);
 	}
 	mac_nv_read(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE, NULL);
+	// the Next's clock: what it was set to and its RAM; without a file it keeps the host's time
+	ds_init(&conf.zx->rtc);
+	if (id == HW_ZXNEXT) {
+		unsigned char nv[DS_NV_SIZE];
+		memset(nv, 0x00, DS_NV_SIZE);
+		mac_nv_read(mac_nv_path(".rtc"), nv, DS_NV_SIZE, NULL);
+		ds_nv_set(&conf.zx->rtc, nv);
+	}
 	// a divMMC's EEPROM keeps what was written to it. One board goes from machine to
 	// machine, so its file is not any one machine's. It comes with the bundled
 	// esxDOS in it, copied once: a later bundle must not change the firmware under
@@ -729,6 +738,11 @@ void xm_save_nvram() {
 	mac_nv_write(mac_nv_path(".cmos"), conf.zx->cmos.data, 256);
 	if (conf.zx->ide->cfg == IDE_SMUC)		// kept while the board has it out
 		mac_nv_write(mac_nv_path(".nvram"), conf.zx->ide->smuc.nv->mem, NV_SIZE);
+	if (conf.zx->hw && (conf.zx->hw->id == HW_ZXNEXT)) {
+		unsigned char nv[DS_NV_SIZE];
+		ds_nv_get(&conf.zx->rtc, nv);
+		mac_nv_write(mac_nv_path(".rtc"), nv, DS_NV_SIZE);
+	}
 	if (conf.zx->div->eeDirty) {		// loaded in Options with the board off, too
 		mac_nv_write(div_nv_path(), conf.zx->div->data, DIV_EE_SIZE);
 		conf.zx->div->eeDirty = 0;
@@ -1077,6 +1091,7 @@ void xm_power_cycle() {
 	mac_reread_folders(comp);
 	mac_cold_ram(comp, mac->ramCold, mac->ramNoise);
 	div_power_on(comp->div);
+	comp_power_on(comp);
 	x_user_reset(comp, RES_DEFAULT);
 	comp_power_phase(comp);
 }
@@ -1142,6 +1157,66 @@ int xm_ram_size(std::string id, int* mask) {
 	return mac_ram_size(mac->memory, hw->mask);
 }
 
+// The ZX Spectrum Next's firmware loads its ROMs and NextZXOS boots from the SD
+// card, so the Next starts only from a card with System/Next on it. One in the slot
+// is used as it is. With none there, or one without it (an esxDOS card another
+// machine uses), the Next's own card goes in for as long as the Next runs - the one
+// made or picked in the Next SD Card window (conf.next), else a System/Next folder
+// beside the program - and the user's card is kept aside, put back for the next
+// machine and written to the config in its place. With neither, the window asks.
+// The firmware runs before the first instruction, after this.
+static std::string nextAside;		// the card the Next's own stands in for ("" none)
+static std::string nextIn;		// the Next's own card, while it is in the slot
+static bool nextWants = false;		// nothing to start from: the window asks for a card
+
+static bool xm_next_own_in() {
+	Computer* comp = conf.zx;
+	return !nextIn.empty() && comp->sdc->image && (nextIn == comp->sdc->image);
+}
+
+// the card the Next takes when the slot has none it can start from, empty if none
+static QString xm_next_own() {
+	QString own = QString::fromLocal8Bit(conf.next.card.c_str());
+	if (!own.isEmpty() && QFileInfo::exists(own)) return own;
+	QString dir = QString::fromLocal8Bit(conf.path.sysnextDir.c_str());
+	return QFileInfo(dir + "/machines/next").isDir() ? dir : QString();
+}
+
+// the card the user put in, the Next's own taken out again
+static void xm_next_card_back() {
+	if (!xm_next_own_in()) return;
+	sdc_mount(conf.zx->sdc, QString::fromLocal8Bit(nextAside.c_str()));
+	nextAside.clear();
+	nextIn.clear();
+}
+
+// force: the Next's own card goes in whatever the slot has, as when the user has just
+// made or picked it
+void xm_next_card(bool force) {
+	Computer* comp = conf.zx;
+	nextWants = false;
+	if (!comp->hw || (comp->hw->id != HW_ZXNEXT)) return;
+	if (force) xm_next_card_back();
+	if (xm_next_own_in()) return;
+	if (!force && comp->sdc->image && sdc_has_file(comp->sdc, "machines/next/enNextZX.rom")) return;
+	QString own = xm_next_own();
+	if (own.isEmpty()) {
+		nextWants = true;
+		return;
+	}
+	nextAside = comp->sdc->image ? comp->sdc->image : "";
+	if (!nextAside.empty() && !force)
+		comp->msg = (char*)" no System/Next: the Next's card in ";
+	sdc_mount(comp->sdc, own);
+	nextIn = own.toLocal8Bit().constData();
+}
+
+bool xm_next_wants_card() {
+	bool want = nextWants;
+	nextWants = false;
+	return want;
+}
+
 bool xm_set(std::string id) {
 	// before anything: what the user has done to the machine that is running
 	// goes into its own file, so coming back finds it there
@@ -1159,6 +1234,7 @@ bool xm_set(std::string id) {
 	// the start and a machine put back to its defaults are not a change of machine
 	bool another = !conf.macId.empty() && (conf.macId != id);
 	if (!conf.macId.empty()) {			// what the machine we leave keeps
+		xm_next_card_back();
 		xm_save_nvram();
 		ideCloseFiles(conf.zx->ide);
 		sdcCloseFile(conf.zx->sdc);
@@ -1175,6 +1251,7 @@ bool xm_set(std::string id) {
 	comp_kbd_release(conf.zx);
 	loadKeys();		// a machine with no keyboard puts the joystick on the keys
 	mouseReleaseAll(conf.zx->mouse);
+	comp_power_on(conf.zx);
 	compReset(conf.zx, RES_DEFAULT);
 	comp_power_phase(conf.zx);
 	tapStop(conf.zx->tape);		// the tape starts over with the machine
@@ -1187,6 +1264,7 @@ bool xm_set(std::string id) {
 	sdc_remount(conf.zx->sdc);
 	sdc_remount(conf.zx->div->card[0]);
 	sdc_remount(conf.zx->div->card[1]);
+	xm_next_card();
 	if (another) {		// says so in the window, whoever asked for it
 		static std::string msg;
 		msg = " " + mac->name + " ";
@@ -1501,6 +1579,8 @@ static void mac_set_defer_key(const std::string& nam, const std::string& val) {
 	else if (nam == "hdd.slave") ide_mount(comp->ide, IDE_SLAVE, QString::fromLocal8Bit(arg.s));
 	else if (nam == "sdcard") sdc_mount(comp->sdc, QString::fromLocal8Bit(arg.s));
 	else if (nam == "sdcard.lock") sdcSetLock(comp->sdc, arg.b);
+	else if (nam == "next.card") conf.next.card = val;
+	else if (nam == "next.card.own") conf.next.own = arg.b;
 	else if (nam == "divmmc.card1") sdc_mount(comp->div->card[0], QString::fromLocal8Bit(arg.s));
 	else if (nam == "divmmc.card1.lock") sdcSetLock(comp->div->card[0], arg.b);
 	else if (nam == "divmmc.card2") sdc_mount(comp->div->card[1], QString::fromLocal8Bit(arg.s));
@@ -1538,6 +1618,7 @@ void xm_finish_load() {
 	foreach(xMacOver::value_type kv, macDefer)
 		mac_set_defer_key(kv.first, kv.second);
 	macDefer.clear();
+	xm_next_card();
 	if (!conf.storePaths) return;
 	Computer* comp = conf.zx;
 	if (comp->tape->path)
@@ -1566,8 +1647,12 @@ void xm_save_media(FILE* file) {
 	fprintf(file, "hdd.slave.type = %i\n", comp->ide->slave->type);
 	fprintf(file, "hdd.slave.lba = %s\n", YESNO(comp->ide->slave->hasLBA));
 	fprintf(file, "hdd.slave = %s\n", comp->ide->slave->image ? comp->ide->slave->image : "");
-	fprintf(file, "sdcard = %s\n", comp->sdc->image ? comp->sdc->image : "");
+	fprintf(file, "sdcard = %s\n", xm_next_own_in() ? nextAside.c_str() : comp->sdc->image ? comp->sdc->image : "");
 	fprintf(file, "sdcard.lock = %s\n", YESNO(comp->sdc->lock));
+	fprintf(file, "next.card = %s\n", conf.next.card.c_str());
+	fprintf(file, "next.card.own = %s\n", YESNO(conf.next.own));
+	fprintf(file, "next.esp = %s\n", serial_conf(0).toLocal8Bit().constData());
+	fprintf(file, "next.pi = %s\n", serial_conf(1).toLocal8Bit().constData());
 	for (int i = 0; i < 2; i++) {
 		SDCard* card = comp->div->card[i];
 		fprintf(file, "divmmc.card%d = %s\n", i + 1, card->image ? card->image : "");

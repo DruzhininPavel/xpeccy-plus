@@ -51,7 +51,8 @@ enum {
 	VID_TSL_NORMAL,	// TSConf common screen
 	VID_TSL_TEXT,
 	VID_PRF_MC,	// Profi 512x240, v5: in color
-	VID_PRF_MONO	// Profi 512x240, v3: in the border colors
+	VID_PRF_MONO,	// Profi 512x240, v3: in the border colors
+	VID_NEXT	// ZX Spectrum Next: the core's own ULA, layers and mixer (hardware/zxnext_vid.c)
 };
 
 extern int bufSize;
@@ -143,6 +144,8 @@ struct Video {
 	long long nsDrawFixed;	// time handed in but not yet drawn, 16.16
 	long long nsOwedFixed;	// fraction of a ns owed to vid->time, carried not dropped
 	long long nsCalmFixed;	// nsDrawFixed may grow up to this with no dot drawn (vid_sync_lazy)
+	int lazyDraw;		// dots a drawn frame may count unwalked too: a mode whose drawer keeps
+				// what it reads with its time (VID_NEXT); 0 none
 	long long clkFixed;	// time handed in short of a whole dot (vid_clock)
 	long long stepFixed;	// time handed in since the step began, made into ns at its end
 	int tickWhole;		// every time handed in is a whole number of dots (comp_update_timings)
@@ -291,6 +294,33 @@ static inline int vid_clock(Video* vid, long long nsFixed) {
 	long long whole = FIXED_TO_NS(vid->nsOwedFixed);
 	vid->nsOwedFixed -= NS_TO_FIXED(whole);
 	return (int)whole;
+}
+// Steps of nsFixed each, the step's ns of each worked out as vid_step_ns() would
+// (vid->stepFixed with the first): the first one whose ns take the sum past room,
+// max if none does, -1 when the clock is not in a state to say. Nothing moves.
+static inline int vid_clock_count(const Video* vid, long long nsFixed, long long room, int max) {
+	long long p = vid->nsPerDotFixed;
+	long long c = vid->clkFixed;
+	long long owed = vid->nsOwedFixed;
+	long long add = vid->stepFixed + nsFixed;
+	long long sum = 0;
+	if ((nsFixed < 0) || (add < 0) || (c < 0) || (c >= p)) return -1;
+	for (int k = 1; k <= max; k++) {
+		if (vid->tickWhole) {
+			owed += add;
+		} else {
+			long long f = c + add;
+			long long d = f / p;
+			owed += d * p;
+			c = f - d * p;
+		}
+		long long whole = FIXED_TO_NS(owed);
+		owed -= NS_TO_FIXED(whole);
+		sum += NS_TO_FIXED(whole);
+		if (sum > room) return k;
+		add = nsFixed;
+	}
+	return max;
 }
 // the step's ns, and the next step starts from nothing; vid->time keeps them for
 // the snapshot, which has always had the field

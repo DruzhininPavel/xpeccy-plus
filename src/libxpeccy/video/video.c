@@ -1657,6 +1657,8 @@ static void vidProfiMono(Video* vid) {vid_profi(vid, 1);}
 // tsconf
 
 void vts_hblk(Video*);
+void nxv_dot(Video*);
+int nxv_run(Video*, int);
 void vts_line(Video*);
 void vts_frame(Video*);
 void vidDrawTSLNormal(Video*);
@@ -1685,6 +1687,7 @@ static xVideoMode vidModeTab[] = {
 	{VID_TSL_TEXT, NULL, vidDrawTSLText, vts_hblk, vts_line, NULL, vts_frame, NULL, VL_NONE},
 	{VID_PRF_MC, NULL, vidProfiScr, NULL, NULL, NULL, NULL, NULL, VL_NONE},
 	{VID_PRF_MONO, NULL, vidProfiMono, NULL, NULL, NULL, NULL, NULL, VL_NONE},
+	{VID_NEXT, NULL, nxv_dot, NULL, NULL, NULL, NULL, nxv_run, VL_NONE},
 
 
 	{VID_UNKNOWN, NULL, vidDrawBorder, NULL, NULL, NULL, NULL, NULL, VL_NONE}
@@ -1705,6 +1708,7 @@ void vid_set_mode(Video* vid, int mode) {
 		i++;
 	}
 	vid_set_core(vid, &vidModeTab[i]);
+	vid->lazyDraw = (mode == VID_NEXT) ? 32 : 0;	// its queues hold what 32 dots can write
 	vid_latch_mark(vid);		// the new one reads back what was kept until its dots move it
 }
 
@@ -1894,6 +1898,8 @@ void vid_unlazy_slow(Video* vid) {
 static inline void vid_calm(Video* vid) {
 	if (vid_skips(vid))
 		vid->nsCalmFixed = (vid_run_len(vid, 1 << 20) + 1) * vid->nsPerDotFixed;
+	else if (vid->lazyDraw && !vid->debug)	// the debugger draws up to the ray each step
+		vid->nsCalmFixed = (vid_run_len(vid, vid->lazyDraw) + 1) * vid->nsPerDotFixed;
 }
 
 void vid_sync_fixed(Video* vid, long long nsFixed) {

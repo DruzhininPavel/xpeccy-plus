@@ -19,6 +19,7 @@
 #include "xcore/vidrec.h"
 #include "xcore/tapetrap.h"
 #include "xcore/vfilters.h"
+#include "xcore/serial.h"
 #include "libxpeccy/cpu/Z80/z80.h"
 #include "libxpeccy/xstate.h"
 #include "libxpeccy/xreplay.h"
@@ -535,50 +536,182 @@ static int ra_run_frame(Computer* comp) {
 	return 0;
 }
 
-// 1 when the machine has been run on and has to be wound back afterwards.
-int xThread::runAhead(Computer* comp) {
+// The frames run ahead at a frame end: run-ahead shows the last of conf.emu.runahead
+// of them, the adaptive antiflicker's look ahead mixes with the AF_AHEAD after it.
+// *shown: how many run-ahead takes.
+static int ra_frames(Computer* comp, int* shown) {
 	// a recording takes no input to win time on, and fast forward shows a frame in so many
-	if ((conf.emu.runahead < 1) || comp->rzx.play || (conf.emu.tmode == XTM_FFWD)) return 0;
-	if (!ra_snapshot(comp, finish)) return 0;
-	for (int i = 0; (i < conf.emu.runahead) && ra_run_frame(comp); i++);
-	return 1;
+	if (conf.emu.tmode == XTM_FFWD) return *shown = 0;
+	int r = comp->rzx.play ? 0 : conf.emu.runahead;
+	int l = 0;
+	if (!conf.emu.fast && (noflic > 0) && noflicAhead
+			&& ((noflicMode == AF_2C_ADAPTIVE) || (noflicMode == AF_3C_ADAPTIVE))
+			&& (comp->hw->id != HW_ZXNEXT))		// too dear there
+		l = AF_AHEAD;
+	*shown = (r > 0) ? r : 0;
+	return *shown + l;
 }
 
-// The adaptive antiflicker's look ahead: the next frames are run on the same
-// snapshot and handed over as pictures, then the machine and the picture shown go
-// back as they were. On top of run-ahead it carries on from the frame shown.
-static std::vector<uint32_t> afShown;
+// They are kept from one frame end to the next. A frame run ahead from the machine as
+// it stood at the last frame end is its own next frame too, unless something reached it
+// from outside meanwhile (x_input_gen) - so when the frame it has just made is the one
+// run ahead for it (registers, T, picture), only the frames past the last one kept are
+// run. The machine itself still runs every frame: input lands where it always did.
+#define RA_KEEP		(2 + AF_AHEAD)		// run-ahead's most and the look ahead
+static struct raKeptT {
+	Computer* owner;
+	unsigned int gen;
+	int k, w, h, cx, cy, cw, ch;	// how many, of a raster this size and this crop
+	int first, count;		// the frames kept, by the comp->frmCount each one stands for
+	std::vector<unsigned char> pic[RA_KEEP];	// whole rasters, as bufimg holds one
+	unsigned long long print[RA_KEEP];
+	xState* state;			// the machine at the end of the last one
+	Keyboard kbd;
+} raKept;
+static std::vector<unsigned char> raShown;	// the frame made, while the ones ahead draw over it
+
+static unsigned long long ra_mix(unsigned long long h, const unsigned char* ptr, size_t len) {
+	while (len >= 8) {
+		unsigned long long v;
+		memcpy(&v, ptr, 8);
+		h = (h ^ v) * 0x100000001b3ULL;
+		h ^= h >> 29;
+		ptr += 8;
+		len -= 8;
+	}
+	while (len-- > 0)
+		h = (h ^ *ptr++) * 0x100000001b3ULL;
+	return h;
+}
+
+// a frame as the machine stands at its end: the registers, T, the picture shown -
+// the rest of the raster is not drawn on every machine, and keeps what the buffer held
+static unsigned long long ra_print(Computer* comp) {
+	Video* vid = comp->vid;
+	unsigned long long h = 0xcbf29ce484222325ULL;
+	h = ra_mix(h, (const unsigned char*)comp->cpu->regs, sizeof(comp->cpu->regs));
+	h = ra_mix(h, (const unsigned char*)comp->cpu->flags, sizeof(comp->cpu->flags));
+	h = ra_mix(h, (const unsigned char*)&comp->tickTotal, sizeof(comp->tickTotal));
+	for (int y = 0; y < vid->vsze.y; y++)
+		h = ra_mix(h, bufimg + (vid->lcut.y + y) * bytesPerLine + vid->lcut.x * 8, vid->vsze.x * 8);
+	return h;
+}
+
+static void ra_raster_get(std::vector<unsigned char>& to, Video* vid) {
+	size_t row = vid->full.x * 8;
+	to.resize(row * vid->full.y);
+	for (int y = 0; y < vid->full.y; y++)
+		memcpy(to.data() + y * row, bufimg + y * bytesPerLine, row);
+}
+
+static void ra_raster_put(const std::vector<unsigned char>& from, Video* vid) {
+	size_t row = vid->full.x * 8;
+	for (int y = 0; y < vid->full.y; y++)
+		memcpy(bufimg + y * bytesPerLine, from.data() + y * row, row);
+}
+
+static void ra_kept_drop() {
+	raKept.owner = NULL;
+	raKept.count = 0;
+}
+
+// Frames n + 1 .. n + k of the machine that has just made frame n, kept or run now,
+// the machine left as it was. 0 when they cannot be run; 2 when bufimg holds frame
+// n + shown already - the last one run when nothing is looked at past it - else 1,
+// bufimg as it was.
+static int ra_kept_frames(Computer* comp, int k, int shown, int finish) {
+	Video* vid = comp->vid;
+	int n = comp->frmCount;
+	int last = (shown == k);
+	unsigned int gen = __atomic_load_n(&x_input_gen, __ATOMIC_RELAXED);
+	bool keep = (k > 1) && (raKept.owner == comp) && (raKept.gen == gen) && (raKept.k == k)
+		&& (raKept.w == vid->full.x) && (raKept.h == vid->full.y) && (raKept.cx == vid->lcut.x)
+		&& (raKept.cy == vid->lcut.y) && (raKept.cw == vid->vsze.x) && (raKept.ch == vid->vsze.y)
+		&& (raKept.count > 0) && (raKept.first == n) && (raKept.print[n % RA_KEEP] == ra_print(comp));
+	if (keep) {
+		raKept.first++;
+		raKept.count--;
+	} else {
+		raKept.first = n + 1;
+		raKept.count = 0;
+	}
+	if (raKept.count < k) {
+		if (!ra_snapshot(comp, finish)) {
+			ra_kept_drop();
+			return 0;
+		}
+		if (!last) ra_raster_get(raShown, vid);
+		if (raKept.count > 0) {
+			xstate_load(raKept.state, comp);
+			*comp->keyb = raKept.kbd;
+		}
+		while (raKept.count < k) {
+			if (!ra_run_frame(comp)) {
+				ra_wind_back(comp);
+				if (!last) ra_raster_put(raShown, vid);
+				ra_kept_drop();
+				return 0;
+			}
+			int f = (raKept.first + raKept.count) % RA_KEEP;
+			if (k > 1) {		// one frame ahead is run again at the next frame end anyway
+				ra_raster_get(raKept.pic[f], vid);
+				raKept.print[f] = ra_print(comp);
+			}
+			raKept.count++;
+		}
+		// where the next frame end goes on from, when it keeps any of these: with one
+		// frame ahead it runs from the machine as it stands then
+		if (k > 1) {
+			if (!raKept.state) raKept.state = xstate_create();
+			if (!raKept.state || !xstate_save(raKept.state, comp)) {
+				ra_wind_back(comp);
+				if (!last) ra_raster_put(raShown, vid);
+				ra_kept_drop();
+				return 0;
+			}
+			raKept.kbd = *comp->keyb;
+		}
+		ra_wind_back(comp);
+		if (!last) ra_raster_put(raShown, vid);
+	}
+	raKept.owner = comp;
+	raKept.gen = gen;
+	raKept.k = k;
+	raKept.w = vid->full.x;
+	raKept.h = vid->full.y;
+	raKept.cx = vid->lcut.x;
+	raKept.cy = vid->lcut.y;
+	raKept.cw = vid->vsze.x;
+	raKept.ch = vid->vsze.y;
+	return last ? 2 : 1;
+}
+
+// the raster of frame n + j (j from 1)
+static const std::vector<unsigned char>& ra_kept_pic(Computer* comp, int j) {
+	return raKept.pic[(comp->frmCount + j) % RA_KEEP];
+}
+
+// The adaptive antiflicker's look ahead: the frames after the one shown, as crops
 static std::vector<uint32_t> afFrames;
 
 static uint32_t* af_crop(Video* vid) {
 	return (uint32_t*)(bufimg + vid->lcut.y * bytesPerLine + vid->lcut.x * 8);
 }
 
-static void af_copy(uint32_t* dst, int dstride, const uint32_t* src, int sstride, int wid, int hei) {
-	for (int y = 0; y < hei; y++)
-		memcpy(dst + y * dstride, src + y * sstride, wid * 4);
-}
-
-// AF_AHEAD frames after the one shown, or NULL
-static const uint32_t* af_look_ahead(Computer* comp, int wound, int finish) {
-	if (!noflicAhead || (noflic < 1) || (conf.emu.tmode == XTM_FFWD)) return NULL;
-	if ((noflicMode != AF_2C_ADAPTIVE) && (noflicMode != AF_3C_ADAPTIVE)) return NULL;
-	if (!wound && !ra_snapshot(comp, finish)) return NULL;
+static const uint32_t* af_look_ahead(Computer* comp, int from, int l) {
+	if (l < AF_AHEAD) return NULL;
 	Video* vid = comp->vid;
 	int wid = vid->vsze.x * 2;
 	int hei = vid->vsze.y;
-	int line = bytesPerLine / 4;
-	afShown.resize(wid * hei);
+	size_t row = vid->full.x * 8;
 	afFrames.resize(AF_AHEAD * wid * hei);
-	af_copy(afShown.data(), wid, af_crop(vid), line, wid, hei);
-	int got = 0;
-	while ((got < AF_AHEAD) && ra_run_frame(comp)) {
-		af_copy(afFrames.data() + got * wid * hei, wid, af_crop(vid), line, wid, hei);
-		got++;
+	for (int i = 0; i < AF_AHEAD; i++) {
+		const unsigned char* src = ra_kept_pic(comp, from + i).data() + vid->lcut.y * row + vid->lcut.x * 8;
+		uint32_t* dst = afFrames.data() + i * wid * hei;
+		for (int y = 0; y < hei; y++)
+			memcpy(dst + y * wid, src + y * row, wid * 4);
 	}
-	if (!wound) ra_wind_back(comp);
-	af_copy(af_crop(vid), line, afShown.data(), wid, wid, hei);	// the frames run on drew over it
-	return (got == AF_AHEAD) ? afFrames.data() : NULL;
+	return afFrames.data();
 }
 
 // The rom's tape entry points the hooks act on, with the rom in: LD-BYTES from its
@@ -665,6 +798,13 @@ void xThread::emuCycle(Computer* comp) {
 						}
 					}
 				}
+			} else if (comp->cpu->flgHALT
+					&& (nsPerSampleFixed - sndNsFixed >= 4 * comp->nsPerTickFixed)
+					&& comp->hw->quiet && comp->hw->quiet->halt && !conf.emu.fast && !brk_cond_n
+					&& !fastload_on && !vrecWatch.load(std::memory_order_relaxed) && (tape_hook_at(comp) < 0)
+					&& !(tape_flash() && (comp->tape->ldBase >= 0))
+					&& comp_halt_skip_rt(comp, &tm, nsPerSampleFixed - sndNsFixed)) {
+				// a HALT run on to the step the next sample follows, taken below as ever
 			} else {
 				tm = compExec(comp);			// TODO: it exits when fetch-brk is occured, pc doesn't changed
 			}
@@ -706,9 +846,11 @@ void xThread::emuCycle(Computer* comp) {
 				sndNsFixed -= nsPerSampleFixed;
 		} else {
 			while (sndNsFixed > nsPerSampleFixed) {
+				comp->sndAgo = sndNsFixed - nsPerSampleFixed;
 				sndSync(comp);
 				sndNsFixed -= nsPerSampleFixed;
 			}
+			comp->sndAgo = 0;
 		}
 		if (comp->flgFRM) {
 			comp->flgFRM = 0;
@@ -720,6 +862,7 @@ void xThread::emuCycle(Computer* comp) {
 			comp->frmCount++;
 			int mdx, mdy;
 			pad_mouse_frame(comp->vid->nsPerFrame, &mdx, &mdy);
+			if (mdx || mdy) x_input_bump();
 			comp->mouse->xpos += mdx;
 			comp->mouse->ypos += mdy;
 			ldc_frame();
@@ -732,18 +875,27 @@ void xThread::emuCycle(Computer* comp) {
 			rewinding = rewind_active();
 			fast_picture_frame(comp);
 			brk_trace_flush();
+			serial_frame(comp);
 			// before run-ahead: the debugger's screen view wants the machine as
 			// it really stands, not the frame it is about to guess at
 			vid_scr_snap(comp->vid);
 			// the frame just made is not the one to show: run on to the one
 			// the player's last key press is already in
-			int wound = runAhead(comp);
+			int shown;
+			int k = ra_frames(comp, &shown);
+			int ahead_ok = 0;
+			if (k > 0) {
+				ahead_ok = ra_kept_frames(comp, k, shown, finish);
+				if ((ahead_ok == 1) && shown) ra_raster_put(ra_kept_pic(comp, shown), comp->vid);
+			} else {
+				ra_kept_drop();
+			}
 // process noflic/scanlines (if !fast ???)
 // buffers is already switches, bufimg - just painted (greyscale, if flag is set), scrimg - new
 			// fast forward's undrawn frames are not mixed, and its drawn ones follow on
 			int ffwd = fast_ffwd_frame();
 			if (!conf.emu.fast && (noflic > 0) && (ffwd >= 0)) {
-				const uint32_t* ahead = af_look_ahead(comp, wound, finish);
+				const uint32_t* ahead = ahead_ok ? af_look_ahead(comp, shown + 1, k - shown) : NULL;
 				scrMix(pscr, (unsigned char*)af_crop(comp->vid),
 					comp->vid->vsze.x * 2, comp->vid->vsze.y, bytesPerLine,
 					noflic / 100.0, noflicGamma, noflicMode, !ffwd && (conf.vid.fcount != mixFrame + 1), ahead);
@@ -752,7 +904,9 @@ void xThread::emuCycle(Computer* comp) {
 
 			vrec_frame(comp);
 			if (frame_hand_over()) emit s_frame();
-			if (wound) ra_wind_back(comp);
+			// a machine slower than real time never pays its sound debt off: let
+			// whoever waits for the lock in at a frame end, or the window hangs
+			if (emuWaiters.load(std::memory_order_relaxed)) conf.snd.fill = 0;
 		}
 #if LOG_OUTPUT
 // ...
@@ -918,7 +1072,7 @@ static unsigned long long bench_mix(unsigned long long h, const unsigned char* p
 // '_' for space; "joy:" or "joyb:" and joystick rows as a .pad names them (up,
 // fire2...) joined by '+' are the two joysticks, "nmi" is the NMI button, and
 // "pc:" and a keymap name (UP, F1) is a PC key, scancodes and all.
-enum {BK_KEYS = 0, BK_JOY, BK_JOYB, BK_NMI, BK_PC};
+enum {BK_KEYS = 0, BK_JOY, BK_JOYB, BK_NMI, BK_PC, BK_POWER};
 
 typedef struct benchKey {
 	int at = 0;
@@ -953,6 +1107,8 @@ static void bench_keys_parse(const char* spec) {
 		}
 		if (key == "nmi") {
 			k.kind = BK_NMI;
+		} else if (key == "power") {
+			k.kind = BK_POWER;
 		} else if (!key.compare(0, 3, "pc:")) {
 			k.kind = BK_PC;
 			k.id = getKeyIdByName(key.substr(3).c_str());
@@ -984,6 +1140,9 @@ static void bench_key_set(Computer* comp, benchKey& k, int press) {
 		}
 		case BK_NMI:
 			if (press) comp_irq(IRQ_NMI, comp);
+			break;
+		case BK_POWER:
+			if (press) xm_power_cycle();	// the Hard Reset: this thread is the emulation's
 			break;
 		case BK_PC: {
 			keyEntry ent = getKeyEntry(k.id);

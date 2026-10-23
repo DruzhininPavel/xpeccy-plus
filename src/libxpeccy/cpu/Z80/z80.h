@@ -40,6 +40,7 @@
 #define regAa regs[10].h
 #define regFa regs[10].l
 #define regIM regs[11].l
+#define regIMN regs[12].l	// Z80N: the mode the Next's interrupt controller snooped (ED 46/56/5E, not after DD/FD)
 
 #define flgC	flags[0]
 #define flgN	flags[1]
@@ -89,12 +90,20 @@ enum {
 #define Z80_INT	1
 #define Z80_NMI	(1<<1)
 
+extern const opTabSet z80_tabs;
+
+void z80_init(CPU*);
 void z80_reset(CPU*);
 int z80_exec(CPU*);
 // z80_exec() short of the end-of-instruction signal: *end is 1 when an instruction
 // ran and wants xend, which the caller sends with cpu->t one tick back
 int z80_exec_open(CPU*, int* end);
 xAsmScan z80_asm(int, const char*, char*);
+xAsmScan z80_asm_tabs(const opTabSet*, int, const char*, char*);
+// the Next's Z80N (z80n.c): the Z80 core on tables of its own
+void z80n_init(CPU*);
+void z80n_reset(CPU*);
+xAsmScan z80n_asm(int, const char*, char*);
 xMnem z80_mnem(CPU*, int, cbdmr, void*);
 
 /*

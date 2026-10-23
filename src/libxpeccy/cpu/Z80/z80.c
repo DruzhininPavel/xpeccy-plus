@@ -13,6 +13,8 @@ extern opCode edTab[256];
 extern opCode ddcbTab[256];
 extern opCode fdcbTab[256];
 
+const opTabSet z80_tabs = {npTab, cbTab, edTab, ddTab, fdTab, ddcbTab, fdcbTab};
+
 void z80_set_flag(CPU* cpu, int v) {
 	cpu->flgC = (v & 1);
 	cpu->flgN = !!(v & 2);
@@ -32,7 +34,12 @@ void z80_call(CPU*, unsigned short);
 int z80_get_ir(CPU*);
 //void lr_push(CPU*, unsigned short);
 
+void z80_init(CPU* cpu) {
+	cpu->tabs = &z80_tabs;
+}
+
 void z80_reset(CPU* cpu) {
+	if (!cpu->tabs) cpu->tabs = &z80_tabs;	// a cpu made by hand (the core test) gets the Z80's
 	cpu->regPC = 0;
 	cpu->flgIFF1 = 0;
 	cpu->flgIFF2 = 0;
@@ -79,6 +86,7 @@ int z80_mrdx(CPU* cpu, int adr, int m1) {
 // Ferranti ULA contends it just the same. One call per tick, as in fuse.
 void z80_wait(CPU* cpu, int adr, int n) {
 	cpu->adr = adr;
+	cpu->flgMSTART = (n >= 3);		// 1-2 T stretch the cycle before, 3-5 T are a cycle of their own
 	if (!cpu->flgCONT || (cpu->contp && (!cpu->contInt || !cpu->contp[(adr >> 8) & 0xff]))) {	// see z80_mrdx
 		cpu->t += n;
 		return;
@@ -149,7 +157,9 @@ int z80_int(CPU* cpu) {
 			} else if (cpu->flgResPV) {
 				cpu->flgPV = 0;
 			}
-			cpu->opTab = npTab;
+			cpu->opTab = cpu->tabs->np;
+			if (cpu->xinta)
+				cpu->xinta(cpu->xptr);
 			if (cpu->flgRetBRK) {
 				cpu->regCallCnt++;
 			}
@@ -201,7 +211,7 @@ static inline __attribute__((always_inline)) int z80_exec_in(CPU* cpu, int* end)
 	cpu->flgNOINT = 0;
 	if (!res) {
 		cpu->t = 0;
-		cpu->opTab = npTab;
+		cpu->opTab = cpu->tabs->np;
 		cpu->flgQ = cpu->flgFW;		// what the instruction before did
 		cpu->flgFW = 0;
 		if (cpu->flgHALT) {
@@ -212,7 +222,7 @@ static inline __attribute__((always_inline)) int z80_exec_in(CPU* cpu, int* end)
 			// (Woodmass's HALT2INT, against a real 48K and 128K).
 			z80_mrdx(cpu, (cpu->regPC + 1) & 0xffff, 1);
 			cpu->com = 0x76;
-			cpu->op = &npTab[0x76];
+			cpu->op = &cpu->tabs->np[0x76];
 			cpu->regR++;
 			if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI]))
 				cpu->xirq(IRQ_CPU_RFSH, cpu->xptr);
@@ -234,8 +244,12 @@ static inline __attribute__((always_inline)) int z80_exec_in(CPU* cpu, int* end)
 			if (cpu->flgRFSH && (!cpu->rfshp || cpu->rfshp[cpu->regI]))
 				cpu->xirq(IRQ_CPU_RFSH, cpu->xptr);
 			cpu->t++;				// T4
-			if (cpu->op->t > 4)
+			if (cpu->op->t > 6) {		// add/adc/sbc hl,rr: internal cycles of 4 and 3 T
+				z80_wait(cpu, z80_get_ir(cpu), 4);
+				z80_wait(cpu, z80_get_ir(cpu), cpu->op->t - 8);
+			} else if (cpu->op->t > 4) {
 				z80_wait(cpu, z80_get_ir(cpu), cpu->op->t - 4);
+			}
 			cpu->op->exec(cpu);
 		} while (cpu->op->flag & OF_PREFIX);
 		res = cpu->t;
@@ -255,6 +269,7 @@ int z80_exec(CPU* cpu) {
 		cpu->t--;
 		cpu->xend(cpu);
 		cpu->t++;
+		res = cpu->t;		// what xend added: the Next's DMA holding the bus there
 	}
 	return res;
 }
@@ -266,7 +281,8 @@ int z80_exec(CPU* cpu) {
 xMnem z80_mnem(CPU* cpu, int qadr, cbdmr mrd, void* data) {
 	xMnem mn;
 	mn.oadr = -1;
-	opCode* opt = npTab;
+	const opTabSet* tabs = cpu->tabs ? cpu->tabs : &z80_tabs;
+	opCode* opt = tabs->np;
 	opCode* opc;
 	unsigned char op;
 	unsigned char e = 0;
@@ -279,7 +295,7 @@ xMnem z80_mnem(CPU* cpu, int qadr, cbdmr mrd, void* data) {
 		opc = &opt[op];
 		if (opc->flag & OF_PREFIX) {
 			opt = opc->tab;
-			if ((opt == ddcbTab) || (opt == fdcbTab)) {
+			if ((opt == tabs->ddcb) || (opt == tabs->fdcb)) {
 				e = mrd(adr, data);
 				adr++;
 				mn.len++;
@@ -304,11 +320,11 @@ xMnem z80_mnem(CPU* cpu, int qadr, cbdmr mrd, void* data) {
 		madr = cpu->regBC;
 	} else if (strstr(opc->mnem, "(ix")) {
 		mn.mem = 1;
-		if (opt != ddcbTab) e = mrd(adr, data);
+		if (opt != tabs->ddcb) e = mrd(adr, data);
 		madr = cpu->regIX + (signed char)e;
 	} else if (strstr(opc->mnem, "(iy")) {
 		mn.mem = 1;
-		if (opt != fdcbTab) e = mrd(adr, data);
+		if (opt != tabs->fdcb) e = mrd(adr, data);
 		madr = cpu->regIY + (signed char)e;
 	} else if (strstr(opc->mnem, "(:2)")) {
 		mn.mem = 1;
@@ -330,7 +346,7 @@ xMnem z80_mnem(CPU* cpu, int qadr, cbdmr mrd, void* data) {
 	if (strstr(opc->mnem, "djnz")) {
 		mn.cond = 1;
 		mn.met = (cpu->regB == 1) ? 0 : 1;
-	} else if (opt == npTab) {
+	} else if (opt == tabs->np) {
 		int retcc = (op & 0xc7) == 0xc0;
 		if (((op & 0xc7) == 0xc2) || ((op & 0xc7) == 0xc4) || retcc) {		// call cc, jp cc, ret cc
 			mn.cond = 1;
@@ -402,41 +418,41 @@ static void z80_expand_half_regs(const char* src, char* dst) {
 	*dst = 0;
 }
 
-xAsmScan z80_asm(int adr, const char* cbuf, char* buf) {
+xAsmScan z80_asm_tabs(const opTabSet* tabs, int adr, const char* cbuf, char* buf) {
 	// cpuAsm caps its input at 255 chars (cbuf[256] there); each 2-char alias
 	// token can grow to 3 chars, so 256 * 3/2 = 384 is the worst case expansion
 	char ebuf[512];
 	z80_expand_half_regs(cbuf, ebuf);
-	xAsmScan res = scanAsmTab(ebuf, npTab);
+	xAsmScan res = scanAsmTab(ebuf, tabs->np);
 	res.ptr = buf;
 	if (!res.match) {
-		res = scanAsmTab(ebuf, ddTab);
+		res = scanAsmTab(ebuf, tabs->dd);
 		res.ptr = buf;
 		*res.ptr++ = 0xdd;
 	}
 	if (!res.match) {
-		res = scanAsmTab(ebuf, fdTab);
+		res = scanAsmTab(ebuf, tabs->fd);
 		res.ptr = buf;
 		*res.ptr++ = 0xfd;
 	}
 	if (!res.match) {
-		res = scanAsmTab(ebuf, cbTab);
+		res = scanAsmTab(ebuf, tabs->cb);
 		res.ptr = buf;
 		*res.ptr++ = 0xcb;
 	}
 	if (!res.match) {
-		res = scanAsmTab(ebuf, edTab);
+		res = scanAsmTab(ebuf, tabs->ed);
 		res.ptr = buf;
 		*res.ptr++ = 0xed;
 	}
 	if (!res.match) {
-		res = scanAsmTab(ebuf, ddcbTab);
+		res = scanAsmTab(ebuf, tabs->ddcb);
 		res.ptr = buf;
 		*res.ptr++ = 0xdd;
 		*res.ptr++ = 0xcb;
 	}
 	if (!res.match) {
-		res = scanAsmTab(ebuf, fdcbTab);
+		res = scanAsmTab(ebuf, tabs->fdcb);
 		res.ptr = buf;
 		*res.ptr++ = 0xfd;
 		*res.ptr++ = 0xcb;
@@ -445,6 +461,10 @@ xAsmScan z80_asm(int adr, const char* cbuf, char* buf) {
 		*res.ptr++ = res.idx;
 	}
 	return res;
+}
+
+xAsmScan z80_asm(int adr, const char* cbuf, char* buf) {
+	return z80_asm_tabs(&z80_tabs, adr, cbuf, buf);
 }
 
 // registers

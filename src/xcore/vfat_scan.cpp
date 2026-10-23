@@ -134,6 +134,16 @@ struct vfsDir {
 	int depth;
 };
 
+// A file of the System/Next folder beside the program that is not shown on a card that takes no
+// writes: its autoexec.1st runs the welcome pages, which such a card can never switch
+// off, so it boots to the menu
+static bool vfs_hidden(const QFileInfo& inf) {
+	if (conf.path.sysnextDir.empty()) return false;
+	static const QString rel = "nextzxos/autoexec.1st";
+	QString hide = QDir(QString::fromLocal8Bit(conf.path.sysnextDir.c_str())).absoluteFilePath(rel);
+	return QFileInfo(hide) == inf;
+}
+
 // where a folder really is, junctions followed, in one spelling to compare: Qt's
 // canonical path does not see through a junction
 static QString real_dir(const QString& path) {
@@ -162,12 +172,21 @@ static QString real_dir(const QString& path) {
 // the loader in the root. A folder reached a second time - a junction back up the tree,
 // two to one place - is taken once, and a junction into the tree itself not at all:
 // deleting one copy would take the file from the other.
-static void vfat_scan_tree(vFat* vf, const QString& root, bool writable, vfsDrop& drop) {
+static void vfat_scan_tree(vFat* vf, const QString& root, const QString& sub, const QString& subName, bool writable, vfsDrop& drop) {
 	QList<vfsDir> queue;
 	QSet<QString> seen;
 	QString top = real_dir(root);
 	seen.insert(top);
 	queue.append({0, root, 0});
+	if (!sub.isEmpty()) {
+		// a folder from elsewhere: the guest sees it in the root, the host side leaves it be
+		QByteArray name = subName.toUtf8();
+		int idx = vfat_add(vf, 0, name.constData(), 0, QFileInfo(sub).lastModified().toMSecsSinceEpoch() / 1000, 1);
+		if (idx >= 0) {
+			vfat_pin(vf, idx, QDir::cleanPath(QFileInfo(sub).absoluteFilePath()).toUtf8().constData());
+			queue.append({idx, sub, 1});
+		}
+	}
 	for (int q = 0; q < queue.size(); q++) {
 		vfsDir cur = queue[q];			// a copy: appending moves the list
 		QString curReal = real_dir(cur.path);
@@ -203,6 +222,7 @@ static void vfat_scan_tree(vFat* vf, const QString& root, bool writable, vfsDrop
 				idx = vfat_add(vf, cur.idx, name.constData(), 0, mtime, 1);
 				if (idx >= 0) queue.append({idx, inf.absoluteFilePath(), cur.depth + 1});
 			} else if (inf.isFile()) {
+				if ((cur.depth == 1) && !writable && vfs_hidden(inf)) continue;
 				if (inf.size() > VF_MAXFILE) {
 					drop.big++;
 					continue;
@@ -218,7 +238,9 @@ static void vfat_scan_tree(vFat* vf, const QString& root, bool writable, vfsDrop
 	}
 }
 
-vFat* vfat_scan(const QString& path, bool writable) {
+// sub: one more folder, put in the root as subName (a name the root does not have);
+// sectors: the volume's size, 0 for what it holds plus room to write in when writable
+static vFat* vfat_scan_in(const QString& path, bool writable, const QString& sub, const QString& subName, unsigned int sectors) {
 	QFileInfo inf(path);
 	if (!inf.isDir() || !inf.isReadable()) return NULL;
 	vFat* vf = vfat_create();
@@ -228,7 +250,7 @@ vFat* vfat_scan(const QString& path, bool writable) {
 	unsigned int mtime = inf.lastModified().toMSecsSinceEpoch() / 1000;
 	vfsDrop drop;
 	vfat_add(vf, -1, "", 0, mtime, 1);		// root
-	vfat_scan_tree(vf, path, writable, drop);
+	vfat_scan_tree(vf, path, sub, subName, writable, drop);
 	QStringList why;
 	if (drop.count) why << QString("everything past %0 entries").arg(VFS_MAXNODES);
 	if (drop.deep) why << QString("%0 folders deeper than %1").arg(drop.deep).arg(VFS_MAXDEPTH);
@@ -239,8 +261,8 @@ vFat* vfat_scan(const QString& path, bool writable) {
 		if (conf.zx) conf.zx->msg = (char*)" folder: not all of it fits ";
 	}
 	// room to write in: as much again as it holds, and VFS_ROOM at least
-	unsigned long long minsec = 0;
-	if (writable) {
+	unsigned long long minsec = sectors;
+	if (!sectors && writable) {
 		minsec = (drop.bytes / VF_SECSIZE) * 2 + VFS_ROOM;
 		if (minsec > 0x7fffffffull) minsec = 0x7fffffffull;
 	}
@@ -254,6 +276,21 @@ vFat* vfat_scan(const QString& path, bool writable) {
 	vf->hold = (writable && !conf.fold.asked) ? 1 : 0;	// the first write asks first (MainWin::folderAsk)
 	xlog(XLG_DISK, XLL_DEBUG, "folder %s: %i entries, %s", lpath.constData(), vf->nodes - 1, writable ? "read/write" : "read only");
 	return vf;
+}
+
+vFat* vfat_scan(const QString& path, bool writable, const QString& sub, const QString& subName) {
+	return vfat_scan_in(path, writable, sub, subName, 0);
+}
+
+// for an image made of the folder: laid out as a volume that takes writes
+vFat* vfat_scan_sized(const QString& path, unsigned int sectors) {
+	return vfat_scan_in(path, true, QString(), QString(), sectors);
+}
+
+// the Next's own card, made in the Next SD Card window: it takes writes and asks nothing
+static bool vfs_own(const QString& path) {
+	if (!conf.next.own || conf.next.card.empty()) return false;
+	return QFileInfo(path) == QFileInfo(QString::fromLocal8Bit(conf.next.card.c_str()));
 }
 
 // every volume a folder serves, NULL where there is none
@@ -309,7 +346,10 @@ void sdc_mount(SDCard* sdc, const QString& path) {
 	if (path.isEmpty()) {
 		sdcSetImage(sdc, "");
 	} else if (QFileInfo(path).isDir()) {
-		sdcSetFolder(sdc, path.toLocal8Bit().constData(), vfat_scan(path, conf.fold.rw));
+		bool own = vfs_own(path);
+		vFat* vf = vfat_scan(path, own || conf.fold.rw);
+		if (vf && own) vf->hold = 0;
+		sdcSetFolder(sdc, path.toLocal8Bit().constData(), vf);
 	} else {
 		sdcSetImage(sdc, path.toLocal8Bit().constData());
 	}
@@ -319,6 +359,16 @@ void sdc_remount(SDCard* sdc) {
 	if (!sdc || !sdc->image) return;
 	QString path = QString::fromLocal8Bit(sdc->image);	// own the path: mounting frees it
 	sdc_mount(sdc, path);
+}
+
+bool sdc_mount_over(SDCard* sdc, const QString& sub, const QString& subName) {
+	if (!sdc || !sdc->image || !sdc->vfat) return false;
+	QString path = QString::fromLocal8Bit(sdc->image);
+	vFat* vf = vfat_scan(path, sdc->vfat->writable, sub, subName);
+	if (!vf) return false;
+	vf->hold = sdc->vfat->hold;		// read again, not mounted anew: asked or not, as it was
+	sdcSetFolder(sdc, path.toLocal8Bit().constData(), vf);
+	return true;
 }
 
 void ide_mount(IDE* ide, int dev, const QString& path) {

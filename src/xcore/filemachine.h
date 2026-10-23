@@ -16,6 +16,7 @@
 enum {
 	FMN_ANY = 0,
 	FMN_TSCONF,
+	FMN_NEXT,
 	FMN_TRDOS,		// to start a TR-DOS disk
 	FMN_PLUS3DOS,		// to start a +3 disk
 	FMN_SNAPSHOT,		// what the file was taken on, see probe

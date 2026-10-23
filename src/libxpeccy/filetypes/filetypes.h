@@ -72,7 +72,11 @@ enum {
 
 	ERR_CANT_SAVE,		// the format has no writer
 	ERR_FILE_TYPE,		// the extension is none the machine knows
-	ERR_SNAP_SHORT		// a snapshot shorter than its own header says it is
+	ERR_SNAP_SHORT,		// a snapshot shorter than its own header says it is
+	ERR_NEX_HW,		// a .nex on a machine that is not a ZX Spectrum Next
+	ERR_NEX_CARD,		// a .nex with no folder in the SD card slot to boot NextZXOS from
+	ERR_NEX_NAME,		// a .nex whose name cannot be typed
+	ERR_SNAP_NEXT		// a snapshot of the Next: no format here keeps its state yet
 };
 
 // spg

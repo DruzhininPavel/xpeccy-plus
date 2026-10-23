@@ -14,6 +14,7 @@
 #include "log.h"
 #include "filemachine.h"
 #include "vidrec.h"
+#include "serial.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -69,6 +70,18 @@ static int autorun_of(const std::string& val) {
 }
 xConfig conf;
 
+// a System/Next folder beside the program (SYSNEXT_DIR in CMake, for tests): the ZX
+// Spectrum Next's SD card when none was made
+static QString sysNextDir() {
+#if defined(__APPLE__)
+	return QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../Resources/sysnext");
+#elif defined(__linux) || defined(__BSD)
+	return QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../share/" XPKGNAME "/sysnext");
+#else
+	return QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/sysnext");
+#endif
+}
+
 void conf_init(char* confdir) {
 	conf.scrShot.dir = QDir::toNativeSeparators(QDir::homePath()).toStdString();	// with its drive
 	conf.port = 30000;
@@ -122,6 +135,7 @@ void conf_init(char* confdir) {
 	mkdir(conf.path.palDir.c_str());
 	mkdir((conf.path.confDir + "\\styles").c_str());
 #endif
+	conf.path.sysnextDir = sysNextDir().toLocal8Bit().constData();
 	conf.scrShot.format = "png";
 	conf.rec.source = VREC_SRC_PICTURE;
 	conf.rec.scale = 4;
@@ -168,7 +182,7 @@ void conf_init(char* confdir) {
 	conf.emu.rewind.on = 1;
 	conf.emu.rewind.step = 3;
 	conf.emu.rewind.secs = 30;
-	conf.led.clock = 1;
+	conf.led.clock = 0;		// the status bar has it, and a machine that switches its clock flashes it
 	conf.led.fade = 1;
 	conf.gpctrl = new xGamepadController;
 }
@@ -411,6 +425,9 @@ void saveConfig() {
 	fprintf(cfile, "evo.detached = %s\n", YESNO(conf.dbg.evodetach));
 	fprintf(cfile, "evo.fieldnames = %s\n", YESNO(conf.dbg.evonames));
 	fprintf(cfile, "evo.window = %i:%i:%i:%i\n",conf.dbg.evopos.x(),conf.dbg.evopos.y(),conf.dbg.evosiz.width(),conf.dbg.evosiz.height());
+	fprintf(cfile, "next.tab = %i\n", conf.dbg.nxtab);
+	fprintf(cfile, "next.detached = %s\n", YESNO(conf.dbg.nxdetach));
+	fprintf(cfile, "next.window = %i:%i:%i:%i\n",conf.dbg.nxpos.x(),conf.dbg.nxpos.y(),conf.dbg.nxsiz.width(),conf.dbg.nxsiz.height());
 	fprintf(cfile, "cheats.window = %i:%i:%i:%i\n",conf.dbg.cheatpos.x(),conf.dbg.cheatpos.y(),conf.dbg.cheatsiz.width(),conf.dbg.cheatsiz.height());
 	fprintf(cfile, "regs.layout = %i\n", conf.dbg.reglayout);
 	fprintf(cfile, "regs.split = %s\n", YESNO(conf.dbg.regsplit));
@@ -863,6 +880,10 @@ void loadConfig() {
 	conf.dbg.evonames = 0;
 	conf.dbg.evopos = QPoint(-1, -1);
 	conf.dbg.evosiz = QSize(560, 480);
+	conf.dbg.nxtab = 0;
+	conf.dbg.nxdetach = 0;
+	conf.dbg.nxpos = QPoint(-1, -1);
+	conf.dbg.nxsiz = QSize(560, 480);
 	conf.dbg.reglayout = DBG_REGS_AUTO;
 	conf.dbg.regsplit = 1;
 	conf.dbg.imglabels = 1;
@@ -1014,6 +1035,17 @@ void loadConfig() {
 							fprt = atoi(vect[3].c_str()); if (fprt > 0) conf.dbg.evosiz.setHeight(fprt);
 						}
 					}
+					if ((pnam == "next.tab") && (arg.i >= 0)) conf.dbg.nxtab = arg.i;
+					if (pnam == "next.detached") conf.dbg.nxdetach = arg.b;
+					if (pnam == "next.window") {
+						vect = splitstr(pval,":");
+						if (vect.size() > 3) {
+							conf.dbg.nxpos.setX(atoi(vect[0].c_str()));
+							conf.dbg.nxpos.setY(atoi(vect[1].c_str()));
+							fprt = atoi(vect[2].c_str()); if (fprt > 0) conf.dbg.nxsiz.setWidth(fprt);
+							fprt = atoi(vect[3].c_str()); if (fprt > 0) conf.dbg.nxsiz.setHeight(fprt);
+						}
+					}
 					if (pnam == "ports") xm_defer(pnam, pval);
 					if ((pnam == "regs.layout") && ((arg.i == DBG_REGS_AUTO) || (arg.i == DBG_REGS_1COL)
 							|| (arg.i == DBG_REGS_2COL) || (arg.i == DBG_REGS_WIDE)))
@@ -1050,7 +1082,10 @@ void loadConfig() {
 					xm_over_add(macover, pnam, pval);
 					break;
 				case SECT_MEDIA:
-					xm_defer(pnam, pval);
+					// a host's port, not the machine's: it goes to whatever Next runs
+					if (pnam == "next.esp") serial_set(0, QString::fromLocal8Bit(pval.c_str()));
+					else if (pnam == "next.pi") serial_set(1, QString::fromLocal8Bit(pval.c_str()));
+					else xm_defer(pnam, pval);
 					break;
 				case SECT_INPUT:
 					if (pnam=="keymap") conf.kmapName = pval;

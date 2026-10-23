@@ -20,6 +20,7 @@
 #include "xcore/autostart.h"
 #include "xcore/fastload.h"
 #include "xcore/vfat_scan.h"
+#include "xcore/serial.h"
 #include "xgui/xgui.h"
 #include "libxpeccy/spectrum.h"
 #include "libxpeccy/cpu/Z80/z80.h"
@@ -79,6 +80,10 @@ void help() {
 	printf("\t\t\tby default a file beside the log, in logs/<date>/\n");
 	printf("--disk X\t\tselect drive to loading file (0..3 | a..d | A..D)\n");
 	printf("--sdcard PATH\t\tset SD card image, or a folder served as one\n");
+	printf("--uart-esp PORT\t\tZX Next: the ESP UART to a serial port of the host (COM3,\n");
+	printf("\t\t\t/dev/ttyUSB0, \\\\.\\pipe\\NAME on Windows), esp for the emulated\n");
+	printf("\t\t\tESP-01, - for none; this run only\n");
+	printf("--uart-pi PORT\t\tthe same for the Pi UART\n");
 	printf("--wav-out FILE\t\trecord the sound to a WAV file from the start\n");
 	printf("--video-out FILE\trecord a video from the start (.mp4 or .mkv)\n");
 	printf("--video-auto\t\tauto start and stop, as the options set them, whatever they say about being on\n");
@@ -107,7 +112,7 @@ void help() {
 	printf("--bench-full\t\tmix the sound, as real play does\n");
 	printf("--bench-keys SPEC\t\"F:KEYS[/N],...\": press at frame F, hold N frames (4). KEYS are\n");
 	printf("\t\t\tdigits and small letters, E Enter, C Caps, S Symbol, _ Space;\n");
-	printf("\t\t\tjoy:up+fire or joyb:... a joystick, nmi the NMI button,\n");
+	printf("\t\t\tjoy:up+fire or joyb:... a joystick, nmi the NMI button, power a Hard Reset,\n");
 	printf("\t\t\tpc:NAME a PC key by its keymap name (UP, F1, ENT)\n");
 	printf("--bench-hash\t\tprint hashes of the frames, sound, RAM and registers, PC and T\n");
 	printf("--bench-shot FILE\tthe last frame, whole raster, as a PPM picture\n");
@@ -468,8 +473,9 @@ int main(int ac,char** av) {
 	keyWindow keyw(&mwin);
 	xScrWin scrw(&mwin);
 	xSndWin sndw(&mwin);
-	xEvoWin evow(&mwin);
-	for (QWidget* win : std::initializer_list<QWidget*>{&tapw, &wutw, &scrw, &sndw, &evow})
+	xEvoWin evow(EVO_PANEL, &mwin);
+	xEvoWin nextw(NEXT_PANEL, &mwin);
+	for (QWidget* win : std::initializer_list<QWidget*>{&tapw, &wutw, &scrw, &sndw, &evow, &nextw})
 		mwin.addSatellite(win);
 	mwin.addSatellite(&rzxw, true);		// a recording takes no input: Delete, Home, End go on too
 
@@ -558,6 +564,13 @@ int main(int ac,char** av) {
 	app.connect(&optw, SIGNAL(s_apply()), &evow, SLOT(updateStyle()));
 	dbgw.evoSetDetached(conf.dbg.evodetach);
 
+	app.connect(&dbgw, SIGNAL(wannaNextWin(bool)), &nextw, SLOT(setDetached(bool)));
+	app.connect(&nextw, SIGNAL(s_detach(bool)), &dbgw, SLOT(nextSetDetached(bool)));
+	app.connect(&app, SIGNAL(s_frame()), &nextw, SLOT(upd()));
+	app.connect(&dbgw, SIGNAL(s_evo_upd()), &nextw, SLOT(upd()));
+	app.connect(&optw, SIGNAL(s_apply()), &nextw, SLOT(updateStyle()));
+	dbgw.nextSetDetached(conf.dbg.nxdetach);
+
 	app.connect(&mwin, SIGNAL(s_keywin_shide()), &keyw, SLOT(switcher()));
 	app.connect(&mwin, SIGNAL(s_keywin_upd(Keyboard*)), &keyw, SLOT(upd(Keyboard*)));
 	app.connect(&mwin, SIGNAL(s_keywin_close()), &keyw, SLOT(close()));
@@ -588,6 +601,7 @@ int main(int ac,char** av) {
 	int bnHash = 0;
 	const char* bnProf = NULL;
 	const char* bnShot = NULL;
+	const char* bnWav = NULL;
 	const char* bnSave = NULL;	// a snapshot of the machine at the end, by its extension
 	int bnSteps = 0;		// instructions run after the skip, to stop mid-frame
 	int bnSplit = 0;		// hash so that a run cut by a snapshot and one that is not compare
@@ -669,6 +683,8 @@ int main(int ac,char** av) {
 				bnProf = av[i++];
 			} else if (!strcmp(parg,"--bench-shot")) {
 				bnShot = av[i++];
+			} else if (!strcmp(parg,"--bench-wav")) {
+				bnWav = av[i++];
 			} else if (!strcmp(parg,"--bench-save")) {
 				bnSave = av[i++];
 			} else if (!strcmp(parg,"--bench-steps")) {
@@ -743,6 +759,9 @@ int main(int ac,char** av) {
 			} else if (!strcmp(parg,"--fullscreen")) {
 				conf.vid.fullScreen = atoi(av[i]) ? 1 : 0;
 				i++;
+			} else if (!strcmp(parg, "--uart-esp") || !strcmp(parg, "--uart-pi")) {
+				QString nam = QString::fromLocal8Bit(av[i++]);
+				serial_cli(parg[7] == 'p', (nam == "-") ? QString() : nam);
 			} else if (!strcmp(parg, "--sdcard")) {
 				sdc_mount(conf.zx->sdc, QString::fromLocal8Bit(av[i]));
 				given = true;
@@ -826,8 +845,10 @@ int main(int ac,char** av) {
 		int ret = XEXIT_ARGS;
 		// a script cannot see the warnings: run nothing on a command line not understood
 		if (cliWarns.isEmpty()) {
+			if (bnWav) snd_wav_open(bnWav);		// what the run sounds like (with --bench-full)
 			if ((bnFrames > 0) || (bnSkip > 0) || (bnSteps > 0) || (ethread.benchRzx > 0) || ethread.benchRec)
 				ethread.bench(bnFrames, bnSkip, bnFull, bnHash, bnProf, bnShot, bnNodraw, bnHeat, bnRewind, bnSteps, bnSplit);
+			if (bnWav) snd_wav_close();
 			ret = (conf.emu.pause & PR_DEBUG) ? XEXIT_BRK : XEXIT_OK;
 			if (bnSave)
 				save_file(conf.zx, bnSave, FG_ALL, 0);

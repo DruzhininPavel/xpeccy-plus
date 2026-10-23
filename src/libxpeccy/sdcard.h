@@ -92,6 +92,8 @@ void sdcSetImage(SDCard*,const char*);
 void sdcSetFolder(SDCard*,const char*,vFat*);
 int sdc_protected(SDCard*);
 void sdcSetLock(SDCard*,int);
+int sdc_read_lba(SDCard*, unsigned int lba, unsigned char* buf);	// a sector outside any transfer: 1 if the card has it
+int sdc_has_file(SDCard*, const char* path);	// a FAT volume on the card holds this file ("dir/name.ext")
 
 void sdcOpenFile(SDCard*);
 void sdcCloseFile(SDCard*);

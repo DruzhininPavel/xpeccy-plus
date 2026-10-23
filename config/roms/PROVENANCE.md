@@ -102,6 +102,15 @@ The General Sound firmware sources are published at
 <https://github.com/psbhlw/gs-firmware> (sources only, no built images); the binaries
 bundled here are the original firmware releases.
 
+## ZX Spectrum Next - the System/Next distribution
+
+No Next ROMs are kept here: the machine's firmware loads them from `machines/next/` on its
+SD card, as the real one does. The program does not ship that card: it makes one from the
+official System/Next release, downloaded from its GitLab repository when the user asks
+(`src/xgui/nextcard.cpp`), or takes a card the user has. System/Next is under the Next
+License (SpecNext Ltd, `LICENSE.md` in it). A test build may stage the release pinned in
+`packaging/deps.json` beside the program (`make-dist.ps1 -SysNext`), whole and unchanged.
+
 ## esxDOS - permission of the rights holder
 
 `../esxdos/` holds esxDOS 0.8.5, 0.8.6, 0.8.7, 0.8.8 and 0.8.9 by Papaya Dezign, each release

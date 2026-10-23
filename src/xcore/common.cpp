@@ -51,6 +51,7 @@ std::atomic<int> xUserResets(0);
 void x_key(Computer* comp, keyEntry* ent, int press) {
 	cbHwKey cb = press ? comp->hw->keyp : comp->hw->keyr;
 	if (!cb) return;
+	x_input_bump();
 	emu_lock();
 	cb(comp, ent);
 	emu_unlock();
@@ -74,6 +75,7 @@ void x_user_reset(Computer* comp, int res) {
 // were on are gone with the memory they were in. autostart_arm()
 // resets through x_user_reset() too, before it arms, so it does not cancel itself.
 void x_state_replaced() {
+	x_input_bump();
 	autostart_cancel();
 	fastload_forget();
 	cheats_forget();

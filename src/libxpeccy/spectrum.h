@@ -16,6 +16,7 @@ extern "C" {
 #include "sdcard.h"
 #include "divmmc.h"
 #include "cartridge.h"
+#include "ds1307.h"
 
 #include "sound/ayym.h"
 #include "sound/gs.h"
@@ -117,6 +118,7 @@ typedef struct {
 #define flgSNOWX sysflag[19]		// ...and this machine's ram cannot take it
 #define flgBRKPRE sysflag[20]		// the break was raised before the instruction ran
 #define flgBRKMEM sysflag[21]		// a memory breakpoint may be set: 0 lets the core skip the maps
+#define flgBOOT	sysflag[22]		// hw->boot is due before the next instruction
 
 #define PWATCH_MAX	16		// ports the debugger can watch at once
 
@@ -134,6 +136,349 @@ typedef struct {
 	int inLen;		// their IN bytes
 	int snaps;		// the start and the joins
 } rzxRecPos;
+
+// The Next's picture (hardware/zxnext_vid.c): the ULA's fetch as it runs with the
+// ray, and the mixer a few dots behind it, with every register change queued for
+// the pixel the core shows it on
+#define NXV_ULA		64		// dots of ULA output kept
+#define NXV_EVQ		256		// register changes waiting for their pixel
+#define NXV_WRQ		1024		// memory writes kept, for a read the core made before them
+#define NXV_HIST	128		// changes kept of each value the ULA fetch samples (a power of 2)
+#define NXV_FIELDS	56
+
+typedef struct {
+	long long t;		// the first half-pixel it shows on
+	unsigned short f;	// NXF_*
+	unsigned short x;	// a palette write's palette and index
+	unsigned short v;
+} nxvEvent;
+
+typedef struct {
+	long long t[NXV_HIST];	// when each change is seen (clk28: by a flop clocked after it)
+	unsigned short v[NXV_HIST];
+	unsigned short v0;	// the value before the oldest kept
+	unsigned char n, head;
+} nxvHist;
+
+typedef struct {
+	long long w;		// clk28 of the write
+	int key;		// the byte: ramData offset, or NXV_SHADOW + offset in shadow[]
+	unsigned char old;	// what it held before
+} nxvWrite;
+
+typedef struct {
+	unsigned short vramA;	// vram_a, and the bank it reads (1: bank 7)
+	unsigned char vramSh;
+	unsigned char pb00, pb01, pb10, pb11, ab00, ab01, ab10, ab11;
+	unsigned short px;	// the sample of n = 3 / B: px, py, screen_mode, ula_shadow
+	unsigned char py, smode, sshadow;
+	unsigned char mode0, mode1, scroll0, scroll1;
+	unsigned char fbR, fbEn;	// floating_bus_r / _en
+} nxvFetch;
+
+// what the mixer works out of the fields at the render cursor, again only when one moves
+typedef struct {
+	unsigned char ulaOnly;	// no layer 2, tilemap, LoRes, ULANext, ULA+ or blend
+	unsigned char plain;	// no tilemap, LoRes, ULA+ or blend: ULA (ULANext too), layer 2, sprites
+	unsigned char flashOn;	// FLASH inverts (not under ULANext or ULA+)
+	unsigned char upal, spal, tmpal, l2pal;	// the palettes each layer takes
+	unsigned short fb9, ucx1, ucx2, ucy1, ucy2;
+	short sxs, sxe, sys, sye;	// the sprite window in whc/wvc
+	short l2cx1, l2cx2;		// layer 2's clip in its own column units
+} nxvDerived;
+
+typedef struct {
+	nxvFetch fe;
+	unsigned char flash;	// flash_cnt
+	struct {
+		unsigned char attr[2];
+		unsigned char bits;	// b0, b1: shift_reg(15) per half; b2, b3: screen_mode_r(2)
+	} ula[NXV_ULA];
+	nxvHist hBrd, hPff, hShadow, hSx, hSy, hFine;
+	nxvHist hTmSx, hTmSy, hTmMap, hTmTile, hTmCtl, hTmAttr;	// what the tilemap's fetch latches
+	long long tmKey;		// the 8-pixel group in tmPix: its fetch's clk28
+	unsigned short tmPix[8];	// b7:0 pixel, b8 below, b9 text mode
+	unsigned short q[NXV_FIELDS];	// the values queued last (what the registers hold)
+	unsigned short f[NXV_FIELDS];	// the values at the render cursor
+	unsigned short pal[8][256];	// the palettes at the render cursor
+	nxvEvent ev[NXV_EVQ];
+	int evHead, evN;		// ev[evHead..evN-1], in the order they show
+	int late;			// changes that came after their pixel was drawn (should stay 0)
+	nxvWrite wr[NXV_WRQ];
+	int wrHead;
+	long long lastDot;	// the dot the fetch did last
+	long long cur;		// the next dot to draw
+	int rx, ry;		// its raw counters
+	unsigned char live;	// set once the state is in step with the machine
+	unsigned char dirty;	// f[] moved since dv was worked out
+	nxvDerived dv;
+} nxVideo;
+
+// The Next's sprites (hardware/zxnext_spr.c, video/sprites.vhd)
+typedef struct {
+	unsigned char attr[128][5];
+	unsigned char pat[16384];
+	unsigned short buf[2][320];	// the line buffers: b8 a pixel there, b7:0 its index
+	unsigned short attrIdx;		// attr_index: sprite << 3 | byte (port 0x57)
+	unsigned short patIdx;		// pattern_index, 14 bits (port 0x5B)
+	unsigned char mirror;		// mirror_sprite_q, b7 kept
+	long long tieW;			// the edge the mirror last moved the tied port pointer on
+	unsigned short tieOld;		// ...and where the pointer was before
+	long long flagT0[2], flagT1[2];	// collision (0) and overtime (1): the first and the last event
+					// a read of 0x303B has not taken yet (half CLK_28), -1 none
+	// the line pass
+	long long passR;		// whc became 511 on this CLK_28 edge, the pass started two later
+	long long passSw;		// passR + 2
+	int k;				// the next state's number (START is 1)
+	int lastK;			// the last state run that was not IDLE
+	long long f2;			// the falling edge of the state being run (half CLK_28)
+	unsigned char st;		// the next state: IDLE, START, QUALIFY, PROCESS
+	unsigned char passBuf;		// the buffer the pass draws into
+	unsigned char dispOld, dispNew;	// the buffer the display reads up to the swap dot, and after
+	long long dispSwap;		// the swap dot (whc 511)
+	long long swPass, swBase, swVal;	// nxs_swap_after(passSw) as worked out for passSw and frameBase
+	long long idleTo;		// the pass is idle and starts nothing before this half CLK_28 (0: ask)
+	int swGeo;			// ...and the raster (L, hact) it was worked out on
+	unsigned short vcount;		// the line the pass draws
+	// the sprite being drawn (spr_cur_*)
+	unsigned char idx;
+	unsigned short hcount, addr, adelta;
+	unsigned char width, wdelta, paloff, visible, yoff, xwrap, bits4;
+	// the last anchor
+	unsigned char aType, aH, aVis, aPal, aRot, aXm, aYm, aXs, aYs, aPat;
+	unsigned short aX, aY;
+} nxSprites;
+
+// one of the Next's UARTs (hardware/zxnext_uart.c, serial/uart.vhd, uart_rx.vhd)
+typedef struct {
+	unsigned char frame;		// uart_framing_r: reset, break/pause, flow control, bits, parity, stop
+	long presc;			// the 17-bit prescaler, msb_r & lsb_r
+	// Tx
+	unsigned char txq[64];		// the Tx FIFO
+	unsigned char fifo, txHead;	// bytes in it, the first
+	unsigned char busy;		// the transmitter is sending one
+	unsigned char txWait;		// one waits for the host's CTS (S_RTR)
+	unsigned char ctsN;		// the host's CTS, 0 = go on
+	long long end;			// the CLK_28 edge it is back in IDLE
+	long long emptyT;		// the edge o_Tx_empty rises on, -1 none to come
+	char line[96];			// what was sent, for the event log
+	int len;
+	// Rx: the line, the debounce, the receiver, uart.vhd's FIFO side
+	unsigned char lin, b0, b1, dcnt, dbo, rxd;
+	unsigned char rst, upd, bitc, rpar, shift, fbits, fpar, fstop;
+	long timer, fpresc;
+	unsigned char oav, avd, wrD, ovf, ferr, oavReg, onfReg, rtrN;
+	unsigned short byteD;
+	unsigned short rxf[512];	// the Rx FIFO, 9 bits: the error flag and the byte
+	int rxRd, rxWr, rxStored;
+	long long rt;			// the receiver run up to here, -1 not yet
+	struct {
+		long long e;		// the line takes lv after this edge
+		unsigned char lv;
+	} sch[256];
+	int schHead, schN;
+	long long lineFree;		// the edge the bytes put on the line so far end on
+	long long feedAt;		// the next byte from the far end starts no sooner
+	long long farBit;		// the far end's bit in CLK_28 edges, 16.16; 0: the guest's own rate
+	unsigned char farFrame;		// and its frame, as uart_framing_r (with farBit)
+	unsigned char hq[8192];		// bytes from the far end still to go onto the line
+	int hqHead, hqN;
+} nxUart;
+
+// The Next's interrupt controller (device/im2_*.vhd), its NMI (zxnext.vhd 2087-2170)
+// and the Multiface (device/multiface.vhd)
+#define NX_IRQ_DEVS	14		// line, UART0/1 Rx, CTC 0-7, ULA, UART0/1 Tx: index = priority
+#define NX_HOLDS	16		// contention holds remembered for the INT pulse (a power of 2)
+typedef struct {
+	unsigned short stat;		// int_status, the sticky part (NR 20, C8-CA)
+	unsigned short pend;		// im2_int_req: one request per source, cleared by its RETI
+	unsigned char st[NX_IRQ_DEVS];	// im2_device: 0 S_0, 1 S_REQ, 2 S_ISR (S_ACK folded in)
+	long long pendT[NX_IRQ_DEVS];	// CLK_28 edge the request was taken on
+	struct {
+		long long t;		// T1 of an M1 cycle, in tickTotal units...
+		int len;		// ...and the rising edges M1 is seen low on after it
+	} m1[8];			// the last ones: a request moves to S_REQ on an edge with M1 high
+	int m1Head;
+	unsigned char dec;		// im2_control's opcode decoder: 0, 1 after ED, 2 after CB, 3 after DD/FD
+	// NMI
+	unsigned char nmiState;		// 0 idle, 1 fetch, 2 hold (end is folded into idle)
+	unsigned char nmiMf, nmiDiv;	// nmi_mf, nmi_divmmc: who raised the one under way
+	unsigned char nmiPush;		// the acknowledge's push still to come, high byte first
+	unsigned char retnC2;		// z80_stackless_retn_en: the first RETN pops NR C2/C3
+	unsigned char retnPop;		// ...its reads still to come
+	// Multiface
+	unsigned char mfNmi;		// nmi_active
+	unsigned char mfInvisible;
+	unsigned char mfEnable;		// its memory paged over 0000-3FFF
+	unsigned char trapCause;	// nr_da_iotrap_cause: 1 2FFD read, 2 3FFD read, 3 3FFD write
+	// the DMA's hold-off held through a RETI/RETN decode (im2_control's dma_delay)
+	unsigned char dmaHold;
+	long long retiT;		// T4 of the 4D/45 fetch, a cpu clock edge (nx_edge)
+} nxIrq;
+
+// one CTC channel (device/ctc_chan.vhd), every flip-flop on CLK_28
+typedef struct {
+	unsigned char state;		// S_RESET, S_RESET_TC, S_TRIGGER, S_RUN, S_RUN_TC
+	unsigned char cr;		// control_reg: D7..D3
+	unsigned char tc, cnt, pre;	// time constant, t_count, p_count
+	unsigned char trgD, zcD;	// clk_trg_d, zc_to_d
+	unsigned char reqD;		// im2_peripheral's int_req_d for its ZC/TO
+} nxCtcChan;
+
+typedef struct {
+	nxCtcChan ch[4];
+	long long t;			// the next CLK_28 edge to run: every one before it is done
+} nxCtc;
+
+// The Next's zxnDMA (hardware/zxnext_dma.c, device/dma.vhd); time in cpu clock edges
+typedef struct {
+	unsigned char seq;		// dma_seq_s, NXD_*
+	unsigned char wrSeq;		// the register write sequence (follow bytes), NXDW_*
+	unsigned char temp;		// reg_temp: the base byte whose follow bytes are coming
+	unsigned char rdPtr;		// the read-back pointer: 0 status, 1-6 counter lo/hi, A lo/hi, B lo/hi
+	unsigned char mask;		// R6 read mask
+	unsigned char dirAB;		// R0: 1 A->B
+	unsigned char ioA, ioB;		// R1/R2: the port is i/o
+	unsigned char modeA, modeB;	// address modes: 0 dec, 1 inc, 2/3 fixed
+	unsigned char lenA, lenB;	// cycle length bits
+	unsigned char presc;		// R2 prescaler
+	unsigned char r4mode;		// 2 = burst
+	unsigned char restart;		// R5 auto restart
+	unsigned char ceWait;		// R5 CE/WAIT (stored only)
+	unsigned char zmode;		// dma_mode: the last port used was 0x0B
+	unsigned char T, E;		// status: at least one byte, end of block not reached
+	unsigned char busrq;		// BUSRQ asserted after the last edge...
+	unsigned char busrqOld;		// ...and after the one before (what the Z80 registers)
+	unsigned char busak;		// BUSAK low: the DMA holds the bus
+	unsigned char wait;		// READ_4/WRITE_4 clocks still to repeat
+	unsigned char data;		// the byte read
+	unsigned short a;		// dma_a_s: the address of the cycle under way...
+	unsigned char io;		// ...an i/o one
+	unsigned char wpend;		// the byte is to be written in this WRITE_1
+	unsigned short startA, startB, blen;
+	unsigned short src, dst, counter;
+	unsigned short timer;		// 14 bits, 28 MHz periods
+	long long edge;			// the last edge the engine has done
+	long long rel;			// with the bus held: the edge BUSRQ was let go, -1 still held
+} nxDma;
+
+// The Next's keyboard maps (hardware/zxnext_inp.c): block RAMs, set at power-on only
+typedef struct {
+	unsigned char keymap[512];	// ps/2 set 2 code (b8 E0): b7 SYM, b6 CAPS, b5:3 row, b2:0 column (7 none)
+	unsigned char joymap[64];	// key joysticks, 32 a joystick: b5:3 row, b2:0 column (7 none)
+	unsigned char sel;		// nr_28 b7: NR 2B writes the joystick map
+	unsigned short adr;		// nr_28 b0, nr_29: 9 bits
+	double mx, my;			// the ps/2 mouse's counters, a fraction kept
+	int hx, hy;			// the host's position they last took the moves up to
+} nxInput;
+
+// DAC changes the mixer has still to reach (hardware/zxnext_snd.c), a power of two
+#define NX_DACQ		256
+
+// The ZX Spectrum Next's state (hardware/zxnext.c), all of it in the machine so a
+// rollback takes it back. Names follow the core's (zxnext.vhd).
+typedef struct {
+	unsigned char powered;		// set at the first reset: the power-on values are in
+	unsigned char firmware;		// that reset hands over as TBBLUE.FW does (the power came on)
+	unsigned char nr[256];		// nextreg values as written (nr_xx)
+	// what every bus cycle and every instruction end looks at, kept together
+	// effective copies the core latches at a moment of its own
+	unsigned char timing;		// eff_nr_03_machine_timing: 0 48K, 1 128K, 2 +3, 3 Pentagon
+	unsigned char hz60;		// eff_nr_05_5060
+	unsigned char speed;		// cpu_speed in effect: 0 3.5, 1 7, 2 14, 3 28 MHz
+	unsigned char contDis;		// eff_nr_08_contention_disable
+	unsigned char speedPend;	// a nr_07 write waiting for the next idle bus edge
+	long long speedT;		// ...made at this time (CLK_28): nr_07 holds it 2 CLK_28 later
+	unsigned char powerFrame;	// the first line after power-on: hc_ula still counts from its configuration value
+	long long frameBase;		// dots before the current video frame (an absolute time base)
+	long long pulseE;		// INT pulse: where it started (clk28 units), -1 none
+	long long irqDead;		// INT stays off until this T (tickTotal + cpu->t): 0 look every time
+	long long dmaIntDead;		// nx_dma_int() finds nothing before this CLK_28 edge: 0 look every time
+	long long refT, refC;		// a T (tickTotal + cpu->t) and its CLK_28 edge: the clock at another T (-1: none)
+	long long copWake;		// the copper does nothing before this CLK_28 edge (0: may at once)
+	// the copper (device/copper.vhd)
+	unsigned short copPc;		// its execution address, 10 bits
+	unsigned char copDout;		// a MOVE went out on the last edge: this one is idle
+	unsigned char copLast;		// last_state: the mode it ran on the last edge
+	long long copT;			// the CLK_28 edges done so far
+	struct {
+		long long w;		// the edge its nextreg write is latched on
+		unsigned char reg, val;
+	} copQ[4];
+	int copN;
+	nxDma dma;
+	unsigned char nrsel;		// port 243B
+	unsigned char mmu[8];
+	unsigned char p7ffd, pdffd, p1ffd, peff7;
+	unsigned char p1ffdMtr;		// the +3 disk motor latch, 1FFD b3 (zxnext.vhd 3743-3757)
+	unsigned char p123b, l2ofs;	// layer 2 mapping port and its bank offset
+	unsigned char pe3;		// divMMC control
+	unsigned char dmHeld;		// divMMC automap_held
+	unsigned char dmNext;		// automap_hold, worked out at the fetch under way
+	unsigned char dmMap;		// the automap output: held, or an instant entry during its fetch
+	unsigned char dmButton;		// button_nmi (the divMMC NMI is not raised yet)
+	unsigned char pff;		// Timex port FF
+	unsigned char pfe;		// last OUT FE
+	unsigned char pe7;		// SPI slave select (b0 SD0, b1 SD1, b2/b3 Pi, b7 flash; 0 = selected)
+	unsigned char spiMiso;		// the byte the last SPI transfer brings in...
+	unsigned char spiOld;		// ...and miso_dat until that transfer ends
+	long long spiT;			// CLK_28 time the last transfer began (-1: idle long since)
+	unsigned char spiDma;		// the byte a DMA write to EB puts on the bus
+	unsigned char ulapSel, ulapMode;	// ULA+ BF3B (b7:6 mode group, b5:0 index)
+	unsigned char resetType;	// nr_02_reset_type, 3 bits, never reset
+	unsigned char configMode;	// nr_03_config_mode (the firmware leaves it off)
+	unsigned char lastSram;		// the byte of the last port A SRAM read (unmapped reads give it)
+	unsigned char busRomcs;		// the expansion bus ROMCS pin asks the internal ROM off
+	unsigned char palPhase;		// nr_44 first/second byte
+	unsigned char pal44;		// nr_44's first byte, kept for the second (NR 28 reads it)
+	unsigned char clipIdx[4];	// L2, sprites, ULA, tilemap clip window indices
+	unsigned char clip[4][4];
+	unsigned short coppAdr;		// copper upload address, 11 bits
+	unsigned char coppStored;	// nr_63's first byte
+	unsigned char coppMem[2048];
+	unsigned short pal[8][256];	// palettes: 9-bit colour + 2 priority bits (b10:9)
+	unsigned char eff05, eff09;	// eff_nr_05 scandoubler (b0), eff_nr_09 scanlines (b1:0)
+	long long holds;		// cpu clocks held by 48K/128K contention: T counted, no clock edge
+	long long holdC[NX_HOLDS];	// the last holds: no cpu edge at holdC + 8, ..., holdC + 8 * holdD (CLK_28)
+	unsigned char holdD[NX_HOLDS];
+	unsigned char holdHead;
+	unsigned char cuOffset;		// nr_64 as cvc took it at the start of the paper
+	unsigned short vcLine0, cvcLine0;	// vc_ula and cvc on the last line of the frame before (they count on)
+	unsigned short wvcLast;			// wvc there, likewise
+	int vsyncCount;			// frames as the simulation counts them (vsync edges)
+	int pulseN;			// ...and how many cpu edges it lasts (0: one CLK_28, the count at its end)
+	long long lineChk;		// the line interrupt compare is done up to here (clk28 units)
+	unsigned char expbusEff;	// expbus_eff_en: the expansion bus as the cpu side has taken it
+	nxIrq irq;
+	nxCtc ctc;
+	struct {
+		unsigned char sel;		// the AY the TurboSound select points at (0..2)
+		unsigned char pan[3];		// its L (b1) and R (b0) enables
+		unsigned char dac[4];		// DAC channels A..D
+		unsigned char out[4];		// ...as the mixer plays them, the changes below still to come
+		struct {
+			long long e;		// the CLK_28 edge a DAC write landed on
+			unsigned char v[4];
+		} q[NX_DACQ];
+		int qHead, qN;
+	} snd;
+	unsigned char shadow[0x6000];	// the SRAM copies of pages 0A, 0B, 0E (layer 2 sees these)
+	unsigned char p3fb;		// p3_floating_bus_dat: the last byte of a contended cycle in +3 timing
+	long long nrLastW;		// the edge of the last nextreg write, whoever made it
+	long long memChg0, memChg1;	// port_memory_change_dly is high on these edges: an MMU write is dropped
+	int inVid;			// a nextreg write made from inside the video tick (the copper's)
+	struct {
+		long long w;		// a copper write's edge, and what its register read before it:
+		unsigned char reg, old;	// the copper runs to the end of the dot, a 253B read samples earlier
+	} copLog[8];
+	int copLogHead;
+	nxSprites spr;
+	nxVideo v;
+	nxInput inp;
+	unsigned char i2cScl, i2cSda;	// the bit-banged I2C master's lines, 1 released (ports 103B, 113B)
+	nxUart uart[2];			// ESP, Pi
+	unsigned char uartSel;		// uart_select_r: which one the ports reach
+} xNextState;
 
 typedef struct Computer {
 	struct HardWare *hw;	// computer core - misc params, callbacks
@@ -217,6 +562,10 @@ typedef struct Computer {
 	// every memory access, and llround() is an out-of-line CRT call with gcc
 	// at -O2. Derived by comp_update_timings(), never set by hand.
 	long long nsPerTickFixed;
+	// fixed ns: how long before now the sound sample being taken was due - a step can
+	// run past several (a DMA holding the bus), and a machine that keeps the times of
+	// its level changes plays them where they were
+	long long sndAgo;
 	// time as the machine lived it (comp_ns): ns at nsBaseTick, where the rate last
 	// changed; a turbo switch moves only what follows it
 	long long nsBase;
@@ -294,6 +643,8 @@ typedef struct Computer {
 	unsigned char brkIOMap[MEM_64K];	// io brk
 	xHeatBank heatRam;			// ram read/write/exec hit counters, sized to mem->ramMask+1
 	xHeatBank heatRom;			// rom read/write/exec hit counters, sized to mem->romMask+1
+	xNextState next;			// the ZX Spectrum Next
+	DS1307 rtc;				// the Next's clock, on its I2C bus: on its own battery, not reset with it
 	// TODO: try to move this somewhere
 	struct {
 		unsigned char Page0;
@@ -388,6 +739,7 @@ void compUserReset(Computer*,int);
 int compExec(Computer*);
 int comp_skip_ticks(Computer*, int);
 int comp_halt_skip(Computer*, int* ns);		// HALT steps up to the next event at once, fast mode
+int comp_halt_skip_rt(Computer*, int* ns, long long room);	// the same in real time, a machine with hwQuiet.halt
 int comp_exec_quiet(Computer*);			// compExec() with no breakpoint, debugger or recording
 int comp_run_quiet(Computer*, int* ns, const int* stops, int nstops);	// steps run on in one go, fast mode
 void comp_run_io_slow(Computer*);
@@ -417,6 +769,7 @@ double comp_fps(Computer*);		// frames a second of emulated time
 void comp_set_frame_tick(Computer*, int);
 void comp_power_phase(Computer*);	// the frame position a machine is switched on at
 void comp_board_storage(Computer*);	// disks and hard disks out while a divMMC is on
+void comp_power_on(Computer*);		// the power comes on: before the reset that follows
 int comp_get_frame_tick(Computer*);
 
 void rzxStop(Computer*);

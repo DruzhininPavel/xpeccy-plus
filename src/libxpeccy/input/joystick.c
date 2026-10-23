@@ -17,10 +17,12 @@ void joyDestroy(Joystick* joy) {
 }
 
 void joyPress(Joystick* joy, int mask) {
+	if ((joy->state | mask) != joy->state) x_input_bump();
 	joy->state |= mask;
 }
 
 void joyRelease(Joystick* joy, int mask) {
+	if (joy->state & mask) x_input_bump();
 	joy->state &= ~mask;
 }
 

@@ -515,8 +515,10 @@ static int ext_own_palette(Computer* comp) {
 	return 0;
 }
 
+// the Next's state (nextregs, palettes, copper, sprites, its 2 MB layout) has no
+// record yet: a file without it would not bring the machine back
 int szx_ext_can_save(Computer* comp) {
-	return comp && comp->hw && (comp->hw->id != HW_NULL) && (comp->hw->id != HW_DUMMY);
+	return comp && comp->hw && (comp->hw->id != HW_NULL) && (comp->hw->id != HW_DUMMY) && (comp->hw->id != HW_ZXNEXT);
 }
 
 static void ext_put_string(szxBuf* d, const char* s) {

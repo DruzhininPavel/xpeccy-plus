@@ -4,6 +4,7 @@
 #   .\make-dist.ps1 -Preset qt6-x64     # Qt6 build in its own folder
 #   .\make-dist.ps1 -Clean -Zip         # from scratch + archive
 #   .\make-dist.ps1 -Manual             # with the user manual (docs/manual/README.md)
+#   .\make-dist.ps1 -SysNext            # with System/Next beside the program, for tests
 #
 # What goes into the folder is defined by the install() rules in CMakeLists.txt and
 # cmake/windeploy.cmake.in; this script only picks a toolchain and drives cmake.
@@ -19,6 +20,7 @@ param(
 	[switch]$Release,
 	[switch]$Full,		# keep everything windeployqt copied, skip the trim step
 	[switch]$Manual,	# build the user manual (tools/manual.py) and put it in the folder
+	[switch]$SysNext,	# put System/Next beside the program: the Next's card with none made
 	[int]$Jobs = 16,
 	# a build agent installs Qt and MinGW wherever it likes, and has cmake in
 	# PATH already; locally the table below is right and none of this is needed
@@ -126,6 +128,19 @@ if ($Manual) {
 	$manualDir = (Join-Path $buildRoot 'manual') -replace '\\', '/'
 }
 $cmakeArgs += "-DMANUAL_DIR=$manualDir"
+
+# System/Next is not shipped: the Next makes its card from the official release
+# (src/xgui/nextcard.cpp). -SysNext puts the copy fetch-deps.ps1 got beside the
+# program, which the Next takes when no card was made - what the tests start from.
+# A folder staged before keeps one until -Clean.
+$sn = (Get-Content (Join-Path $PSScriptRoot 'deps.json') -Raw | ConvertFrom-Json).sysnext
+$sysnextDir = Join-Path $buildRoot "deps\sysnext-$($sn.release)"
+if ($SysNext -and (Test-Path $sysnextDir)) {
+	$cmakeArgs += "-DSYSNEXT_DIR=$($sysnextDir -replace '\\', '/')"
+} else {
+	if ($SysNext) { Write-Host "System/Next $($sn.release) is missing (packaging\fetch-deps.ps1 -SysNext)" -ForegroundColor Yellow }
+	$cmakeArgs += '-DSYSNEXT_DIR='
+}
 
 & cmake @cmakeArgs
 if ($LASTEXITCODE -ne 0) { throw 'configure failed' }

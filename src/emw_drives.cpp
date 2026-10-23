@@ -52,8 +52,13 @@ void MainWin::fillCardMenu(QMenu* m, int card) {
 	m->addAction(QIcon(":/images/fileopen.png"), "Open Folder...", this, [this, card]() {sdcOpen(card, true);});
 	if (card >= 0)		// a divMMC's: esxDOS is its firmware
 		m->addAction(QIcon(":/images/doc-new.png"), "New esxDOS Folder...", this, [this, card]() {sdcNewEsx(card);});
+	else if (conf.zx->hw && (conf.zx->hw->id == HW_ZXNEXT))
+		m->addAction(QIcon(":/images/doc-new.png"), "System/Next Card...", this, [this]() {nextCard();});
 	act = m->addAction(QIcon(":/images/tape-eject.png"), "Eject", this, [this, card]() {
-		driveOp([card]() {sdc_mount(sd_card(conf.zx, card), QString());});
+		driveOp([card]() {
+			sdc_mount(sd_card(conf.zx, card), QString());
+			xm_next_card();		// the Next takes its own card back
+		});
 	});
 	act->setEnabled(sdc->image != NULL);
 	m->addSeparator();
@@ -139,7 +144,7 @@ void MainWin::fillDrivesMenu() {
 	}
 
 	int hw = comp->hw->id;
-	if ((hw == HW_PENTEVO) || (hw == HW_TSLAB))
+	if ((hw == HW_PENTEVO) || (hw == HW_TSLAB) || (hw == HW_ZXNEXT))
 		fillCardMenu(sdcMenu, -1);
 	fillDivMenu();
 
@@ -270,6 +275,9 @@ void MainWin::esxCheck() {
 void MainWin::folderAsk() {
 	static bool asking = false;
 	if (asking) return;
+	if (vfat_pin_news(conf.zx->sdc->vfat))
+		setMessage(" saves lost on reset: put the game on the card ", 8.0);
+	if (xm_next_wants_card()) nextCard();
 	vFat* vf = fold_waiting(conf.zx);
 	if (!vf) return;
 	asking = true;
@@ -297,6 +305,29 @@ void MainWin::folderAsk() {
 	saveConfig();
 	pause(false, PR_EXTRA);
 	asking = false;
+}
+
+// The Next's own card, which it takes whenever the slot has none it can start from.
+// Asked for when the Next has nothing to start from, or from the SD Card menu; a card
+// chosen goes in at once, with the power off and on.
+void MainWin::nextCard() {
+	static bool open = false;
+	if (open) return;
+	open = true;
+	QString path;
+	bool own = false;
+	pause(true, PR_FILE);
+	bool ok = next_card_dialog(this, &path, &own);
+	pause(false, PR_FILE);
+	open = false;
+	if (!ok) return;
+	conf.next.card = path.toLocal8Bit().constData();
+	conf.next.own = own ? 1 : 0;
+	saveConfig();
+	driveOp([]() {
+		xm_next_card(true);
+		xm_power_cycle();
+	});
 }
 
 // A folder that stopped following the machine, or could not take some of what it wrote,
@@ -407,7 +438,10 @@ void MainWin::sdcOpen(int card, bool dir) {
 		? QFileDialog::getExistingDirectory(this, "Folder to serve as the card", "", QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly)
 		: QFileDialog::getOpenFileName(this, "SD card image", "", "All files (*)", NULL, QFileDialog::DontUseNativeDialog);
 	pause(false, PR_FILE);
-	if (!path.isEmpty()) driveOp([card, path]() {sdc_mount(sd_card(conf.zx, card), path);});
+	if (!path.isEmpty()) driveOp([card, path]() {
+		sdc_mount(sd_card(conf.zx, card), path);
+		xm_next_card();		// one the Next cannot boot from is set aside
+	});
 }
 
 static bool copy_tree(const QString& src, const QString& dst) {

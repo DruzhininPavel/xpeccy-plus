@@ -26,7 +26,8 @@ enum {
 	HW_PHOENIX,	// ZXM Phoenix
 	HW_ALF,		// ALF TV Game (a ZX48 clone console)
 	HW_SCORPTP,	// Scorpion ZS 256 Turbo+
-	HW_PROFI3	// Profi v3.x (HW_PROFI is v5)
+	HW_PROFI3,	// Profi v3.x (HW_PROFI is v5)
+	HW_ZXNEXT	// ZX Spectrum Next
 };
 
 // Hardware callbacks
@@ -69,7 +70,8 @@ typedef struct {
 enum {
 	HWQ_ACK_NONE = 0,	// no INT sample at the end of an instruction
 	HWQ_ACK_ZX,		// zx_irq_ack_in() - zx_irq and the handlers that ack as it does
-	HWQ_ACK_TS		// ts_irq_ack_in() - the line and dma INTs held until acked
+	HWQ_ACK_TS,		// ts_irq_ack_in() - the line and dma INTs held until acked
+	HWQ_ACK_NEXT		// next_irq_ack() - the Next's pulse of its own (zxnext.c)
 };
 typedef struct {
 	int ack;			// HWQ_ACK_*, also what comp_end() does for the core
@@ -78,6 +80,11 @@ typedef struct {
 	void (*devs)(Computer*, int);	// the sync's devices, given the summed time (comp_run_io)
 	int (*fetch)(Computer*, int);	// an M1 at adr changes nothing (the HALT run-on); NULL: no run-on
 	int lineInt;			// a line INT bounds the HALT run-on as the frame INT does (TSConf)
+	// The HALT run-on its own way, in real time and run-ahead passes too: the T of one
+	// M1 at adr when a run of them changes nothing but the time, R and what haltDone
+	// puts back (0: step), and the step start the last one has to stay short of
+	int (*halt)(Computer*, int adr, long long* until);
+	void (*haltDone)(Computer*, int adr, long long t0, long long n, int t);
 } hwQuiet;
 
 struct HardWare {
@@ -106,6 +113,11 @@ struct HardWare {
 	cbhwcomp snapmap;	// stand where a snapshot expects the machine (NULL: nothing to do)
 	cbHwIrq cont;		// a bus cycle starts in turbo, the ray synced to it (NULL: the ULA's contention)
 	const hwQuiet* quiet;	// its step end, for fast mode's run on (NULL: none)
+	int contAll;		// cont is asked at every speed, not only in turbo (the Next contends by itself)
+	cbhwcomp power;		// the power comes on, before the reset that follows (NULL: the reset is all)
+	cbhwcomp boot;		// the firmware's work, before the first instruction after flgBOOT is set
+	int ownLay;		// the machine lays its raster out itself (the Next's follows its timing): a layout asked for is not taken
+	int contLazy;		// cont walks the ray itself, when it needs it (comp_cont_hw leaves it)
 };
 typedef struct HardWare HardWare;
 
@@ -153,6 +165,58 @@ int stdMRd(Computer*, int, int);
 void stdMWr(Computer*, int, int);
 int asicMRd(Computer*, int, int);	// stdMRd/stdMWr plus the +2A/+3 bus latch
 void asicMWr(Computer*, int, int);
+
+// the ZX Spectrum Next (zxnext.c): a test bench's hooks on every i/o and nextreg write
+extern void (*next_log_out)(Computer*, int, int);
+extern void (*next_log_nr)(Computer*, int, int, int);	// reg, value, cpu ticks the request is past cpu->t
+void next_counters(Computer*, int* hc, int* vc, int* cvc);	// hc_ula, vc_ula, cvc where the ray stands
+void next_counters_ahead(Computer*, int clk28, int* hc, int* vc, int* cvc);	// ...that many CLK_28 later
+int next_vsync_frame(Computer*, int clk28);	// frames by the VS_n output edge, that many CLK_28 later
+extern int next_reset_open;	// the core's reset outputs lead nowhere (the simulation's testbench)
+extern int next_ear_tied;	// the EAR input held at 0, no board around the core (the same)
+// the Next's UARTs from outside (hardware/zxnext_uart.c): 0 ESP, 1 Pi
+// a byte the guest sends, as it goes: its start bit begins at CLK_28 edge start
+extern void (*next_uart_host_tx)(Computer*, int uart, int byte, long long start);
+void nx_uart_feed(Computer*, int uart, const unsigned char*, int);	// bytes arriving on its line
+void nx_uart_feed_at(Computer*, int uart, const unsigned char*, int, long long edge);
+int nx_uart_feed_room(Computer*, int uart);
+int nx_uart_feed_left(Computer*, int uart);
+void nx_uart_far(Computer*, int uart, long long bit16, int frame);	// the far end's rate and frame
+double nx_clk28_hz(Computer*);
+extern int next_esp_fitted;		// an ESP-01 is in its socket (none: its GPIO pins read 0)
+int nx_esp_reset(Computer*);		// NR 02 b7: the ESP held in reset
+int nx_esp_gpio0(Computer*);		// the level on the ESP's GPIO0
+long long nx_uart_sync(Computer*);	// the UARTs run up to now, the CLK_28 edge returned
+void nx_uart_line(Computer*, int uart, long long edge, int level);	// a level change after a CLK_28 edge
+void nx_uart_cts(Computer*, int uart, int cts_n);
+void nx_uart_cfg(Computer*, int uart, long* presc, int* frame, int* rtr_n);
+long long nx_now(Computer*);
+extern long long next_log_at;	// a copper write being logged: its CLK_28 edge (-1: the cpu's)
+extern long long next_log_t;	// a DMA i/o write being logged: the CLK_28 time standing for the ray (-1: none)...
+extern long long next_log_cyc;	// ...and its cpu clock count
+void next_counters_at(Computer*, long long clk28, int* hc, int* vc, int* cvc);	// ...at that CLK_28 time
+int next_vsync_frame_at(Computer*, long long clk28);
+void next_audio(Computer*, int* l, int* r, int* env);	// the mixer's pcm_L/R (13 bits), psg0's env_vol
+// the Next for a viewer (the debugger's panel): nothing here moves the machine
+int next_nr_peek(Computer*, int reg);		// a nextreg as a read gives it, nothing run up to now first
+int next_ram(Computer*, int page, int ofs);	// a byte of 8K RAM page as the cpu reads it
+int next_l2ram(Computer*, int page, int ofs);	// ...as layer 2 reads it: the SRAM behind the BRAM pages
+int next_rom(Computer*);			// the ROM slots 0 and 1 show with MMU FF
+unsigned int next_rgb(int rgb9);		// RGB333 as R | G << 8 | B << 16
+typedef struct {
+	int x, y;		// 9 bits, a relative sprite's resolved
+	int pat;		// in 128-byte halves: an 8-bit pattern is pat >> 1
+	int bits4;		// a 4-bit pattern
+	int pal;		// palette offset
+	int xm, ym, rot;
+	int xs, ys;		// scale 1, 2, 4, 8 as 0..3
+	int vis;		// visible, the anchor's visibility applied
+	int rel;		// a relative sprite...
+	int anchor;		// ...of this anchor; -1 for an anchor
+	int unified;		// the anchor's relatives are unified, not composite
+	int ext;		// attribute byte 4 is in use
+} nxSpriteView;
+void next_sprites(Computer*, nxSpriteView* out);	// all 128, as the sprite pass decodes them
 
 // common IO
 

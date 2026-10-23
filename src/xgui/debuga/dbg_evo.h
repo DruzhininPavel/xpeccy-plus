@@ -1,7 +1,8 @@
 #pragma once
 
 // The ZX Evolution panel: what the TSConf and BaseConf hardware is set to, in
-// the debugger's dock or in a window of its own.
+// the debugger's dock or in a window of its own. The ZX Next panel is the same
+// panel with tabs of its own (dbg_next.cpp).
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -17,6 +18,9 @@
 #include "../classes.h"
 #include "../../xcore/xcore.h"
 
+// which of the two panels: each has its tabs, its dock and window, and its settings
+enum {EVO_PANEL = 0, NEXT_PANEL};
+
 // A read-only list of named values in groups, the way the panel shows registers:
 // a value that changed since the last look is lit like a changed register.
 class xEvoList : public QTreeWidget {
@@ -28,6 +32,7 @@ class xEvoList : public QTreeWidget {
 		bool finish();			// rows not put since begin() go; true when rows came
 		void restyle();			// header colors and column widths
 		void fitHeight();
+		void wordsOnly();		// no field names to switch to: no menu, the header stays
 		std::function<void()> onStyle;	// words or field names was picked
 	protected:
 		void changeEvent(QEvent*);
@@ -37,6 +42,7 @@ class xEvoList : public QTreeWidget {
 		QSet<QString> seen;
 		QColor chgBg, chgFg;		// a changed value, as conf.pal has it this draw
 		bool grown;
+		bool named;			// the last column follows the words/field names switch
 		QTreeWidgetItem* group(const QString&);
 };
 
@@ -223,7 +229,8 @@ class xTsDmaPage : public xEvoPage {
 class xEvoPanel : public QWidget {
 	Q_OBJECT
 	public:
-		xEvoPanel(QWidget* = nullptr);
+		xEvoPanel(int kind, QWidget* = nullptr);
+		const int kind;			// EVO_PANEL, NEXT_PANEL
 		void reload();			// take the settings back from conf
 		void restyle();
 	signals:
@@ -239,6 +246,7 @@ class xEvoPanel : public QWidget {
 		QToolButton* tbDetach;
 		QLabel* labHidden;		// says a layer is kept out of the picture
 		QList<xEvoPage*> pages;		// all of them, in the order of their tabs
+		QStringList names;		// and their tab names
 		QList<xEvoPage*> tabPages;	// the ones in the tab row now
 		QLabel* noMachine;
 		int hw;				// the machine the tab row was built for
@@ -248,7 +256,7 @@ class xEvoPanel : public QWidget {
 class xEvoWidget : public xDockWidget {
 	Q_OBJECT
 	public:
-		xEvoWidget(QString, QString, QWidget* = nullptr);
+		xEvoWidget(int kind, QString, QString, QWidget* = nullptr);
 		void setDetached(bool);
 		void restyle();
 	signals:
@@ -266,3 +274,21 @@ int evo_set_layers(int hide);		// 1 when the picture shows it already
 QString evo_layers_note();		// why it does not, after a 0
 // start the frame snapshots a redraw needs, on TSConf: the debugger or the panel is shown
 void evo_arm_replay();
+
+// what the pages of both panels share
+QBrush evo_checker(const QWidget*);
+void evo_tree_setup(QTreeWidget*, const QStringList& head);
+void evo_fit_column(QTreeWidget*, int col, QStringList samples);
+bool evo_field_names();
+// A register's bits: the field name the docs give it, and the same in words (none: a
+// bit the words leave to the rest of the line)
+struct evoBit {
+	int mask;
+	const char* field;
+	const char* words;
+};
+QStringList evo_bit_list(int v, const evoBit*);
+QString evo_join(const QStringList&, const char* none);
+QString evo_bits(int v, const evoBit*, const char* none);
+// the Next panel's pages and their tab names (dbg_next.cpp)
+QList<xEvoPage*> next_panel_pages(QStringList* names);

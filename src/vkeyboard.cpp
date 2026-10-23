@@ -29,11 +29,13 @@
 static const struct {
 	const char* name;
 	const char* title;
-} vkSkins[] = {{"black", "48K (Classic)"}, {"white", "48K (White)"}, {"128", "128K (Classic)"}, {"128-white", "128K (White)"}};
+} vkSkins[] = {{"black", "48K (Classic)"}, {"white", "48K (White)"}, {"128", "128K (Classic)"}, {"128-white", "128K (White)"},
+	{"next", "Next (Black)"}, {"next-white", "Next (White)"}, {"next-magenta", "Next (Magenta)"}};
 
-// a skin's tone: white, or black for the classic ones
+// a skin's tone: white, magenta (the Next's), or black for the classic ones
 static std::string skinTone(const std::string& name) {
-	return (name.find("white") != std::string::npos) ? "white" : "black";
+	if (name.find("white") != std::string::npos) return "white";
+	return (name.find("magenta") != std::string::npos) ? "magenta" : "black";
 }
 
 // where a layout of the user's own is looked for
@@ -46,13 +48,15 @@ static bool skinThere(const QString& name) {
 	return QFile::exists(":/res/vkbd/zx-" + name + ".json") || QFile::exists(ownSkinDir() + "/zx-" + name + ".json");
 }
 
-// The skin to show: the one picked by hand, or by the machine - the 128's on a
-// Sinclair 128K, +2, +2A or +3, the 48K's on the rest, in the tone picked last
+// The skin to show: the one picked by hand, or by the machine - the Next's on the
+// Next, the 128's on a Sinclair 128K, +2, +2A or +3, the 48K's on the rest, in the
+// tone picked last (magenta only the Next has: black elsewhere)
 static QString wantedSkin() {
 	if (!conf.keywin.bymac) return QString::fromStdString(conf.keywin.skin);
 	int hw = (conf.zx && conf.zx->hw) ? conf.zx->hw->id : HW_NULL;
 	bool is128 = (hw == HW_ZX128) || (hw == HW_PLUS2A) || (hw == HW_PLUS3);
 	bool white = (conf.keywin.plain == "white");
+	if (hw == HW_ZXNEXT) return white ? QString("next-white") : (conf.keywin.plain == "magenta") ? QString("next-magenta") : QString("next");
 	if (is128) return white ? QString("128-white") : QString("128");
 	return white ? QString("white") : QString("black");
 }
@@ -501,14 +505,47 @@ void keyWindow::rall(Keyboard* k) {
 	}
 }
 
+// The Next's extended keys (membrane.vhd): what the 48K has as a combination - EDIT,
+// the arrows, ; and the rest - is a key of its own on the Next, at columns 5 and 6 of
+// its 8x7 matrix. Pressed there, the machine makes the combination itself, unless NR 68
+// b4 says not, and NR B0/B1 see it. 0 for a key that is none of them, or another machine.
+static unsigned char* nextExtKey(Keyboard* kb, const QByteArray& zx, int* bit) {
+	static const struct {const char* zx; int row, col;} tab[] = {
+		{"CS", 0, 5}, {"C7", 0, 6}, {"C2", 1, 5}, {"C9", 1, 6}, {"C3", 2, 5}, {"C4", 2, 6},
+		{"C ", 3, 5}, {"C1", 3, 6}, {"So", 4, 5}, {"Sp", 4, 6}, {"Sn", 5, 5}, {"Sm", 5, 6},
+		{"C0", 6, 5}, {"C8", 6, 6}, {"C5", 7, 5}, {"C6", 7, 6}
+	};
+	if (!kb || !conf.zx || !conf.zx->hw || (conf.zx->hw->id != HW_ZXNEXT) || (zx.size() != 2)) return NULL;
+	// the shift first, CAPS SHIFT before SYMBOL SHIFT
+	int s = zx.contains('C') ? zx.indexOf('C') : zx.indexOf('S');
+	if (s < 0) return NULL;
+	QByteArray k = QByteArray(1, zx[s]) + zx[1 - s];
+	for (const auto& e : tab) {
+		if (k == e.zx) {
+			*bit = 1 << e.col;
+			return &kb->nxKeys[e.row];
+		}
+	}
+	return NULL;
+}
+
 // the Spectrum keys down in the machine's matrix now, as keyEntry::zxKey names them
 QByteArray keyWindow::keysDown() {
 	QByteArray res;
 	if (!kb) return res;
+	// the Next takes the host's keys on its ps/2 matrix, a row per address line where
+	// the map runs from A15 down (CAPS and SYM SHIFT counted apart), and the membrane's
+	// on the map
+	bool next = conf.zx && conf.zx->hw && (conf.zx->hw->id == HW_ZXNEXT);
 	for (int i = 0; i < 8; i++) {
 		int pos = (i & 4) ? 0 : 9;
 		int row = (i & 4) ? (i & 3) : (~i & 3);
 		unsigned char val = ~kb->map[i] & 0x1f;
+		if (next) {
+			val |= kb->nxKeys[7 - i] & 0x1f;
+			if ((i == 7) && kb->nxCaps) val |= 1;
+			if ((i == 0) && kb->nxSym) val |= 2;
+		}
 		while (val) {
 			if (val & 1) res.append((char)VkSkin::zxKeyAt(row, pos));
 			val >>= 1;
@@ -521,6 +558,14 @@ QByteArray keyWindow::keysDown() {
 // a key's string pressed or let go of all at once, as one entry
 void keyWindow::pressKeys(const QByteArray& zx, bool down) {
 	if (!kb || zx.isEmpty()) return;
+	int bit;
+	if (unsigned char* row = nextExtKey(kb, zx, &bit)) {
+		emu_lock();
+		if (down) *row |= bit;
+		else *row &= ~bit;
+		emu_unlock();
+		return;
+	}
 	memset(xent.zxKey, 0, sizeof(xent.zxKey));
 	memcpy(xent.zxKey, zx.constData(), std::min((int)zx.size(), KEYSEQ_MAXLEN - 1));
 	emu_lock();		// see x_key()
@@ -566,7 +611,11 @@ void keyWindow::paintEvent(QPaintEvent*) {
 	QByteArray down = keysDown();
 	QVector<bool> lit(keys.size(), false);
 	for (int n = 0; n < keys.size(); n++) {
-		if (keys[n].ch) {
+		int bit;
+		unsigned char* ext = nextExtKey(kb, keys[n].zx, &bit);
+		if (ext) {
+			lit[n] = (*ext & bit) != 0;		// the Next's own key, from wherever it was pressed
+		} else if (keys[n].ch) {
 			lit[n] = down.contains((char)keys[n].ch);
 		} else if (!keys[n].zx.isEmpty()) {
 			lit[n] = (n == held) || ((n < latched.size()) && latched[n] && allIn(keys[n].zx, down));
@@ -698,7 +747,9 @@ void keyWindow::mousePressEvent(QMouseEvent* ev) {
 // Down for good, or up again if all its keys are down: a combination as one
 // key, so a CAPS SHIFT down by itself stays down when EDIT is let go
 void keyWindow::latchKey(int n, const QByteArray& zx) {
-	bool all = allIn(zx, keysDown());
+	int bit;
+	unsigned char* ext = nextExtKey(kb, zx, &bit);
+	bool all = ext ? ((*ext & bit) != 0) : allIn(zx, keysDown());
 	pressKeys(zx, !all);
 	if (n < latched.size()) latched[n] = !all && (zx.size() > 1);
 	update();

@@ -713,7 +713,7 @@ void nprCA(CPU* cpu) {
 
 // cb	prefix		4
 void nprCB(CPU* cpu) {
-	cpu->opTab = cbTab;
+	cpu->opTab = cpu->op->tab;		// the core's cb table (opTabSet)
 }
 
 // cc	call z,nn	4 3rd 3rd[+1] [3wr 3wr]		wz = nn
@@ -844,7 +844,7 @@ void nprDC(CPU* cpu) {
 void nprDD(CPU* cpu) {
 	// fetched as an instruction of its own, which zeroes Q
 	cpu->flgQ = 0;
-	cpu->opTab = ddTab;
+	cpu->opTab = cpu->op->tab;
 }
 
 // de	sbc a,n		4 3rd
@@ -947,7 +947,7 @@ void nprEC(CPU* cpu) {
 
 // ed	prefix		4
 void nprED(CPU* cpu) {
-	cpu->opTab = edTab;
+	cpu->opTab = cpu->op->tab;
 }
 
 // ee	xor n		4 3rd
@@ -1057,7 +1057,7 @@ void nprFC(CPU* cpu) {
 // fd	prefix IY	4
 void nprFD(CPU* cpu) {
 	cpu->flgQ = 0;
-	cpu->opTab = fdTab;
+	cpu->opTab = cpu->op->tab;
 }
 
 // fe	cp n		4 3rd

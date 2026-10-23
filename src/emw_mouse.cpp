@@ -200,6 +200,7 @@ void MainWin::mouseMoveEvent(QMouseEvent *ev) {
 	comp->mouse->ydelta = (int)fy;
 	mouseRemX = fx - comp->mouse->xdelta;
 	mouseRemY = fy - comp->mouse->ydelta;
+	if (comp->mouse->xdelta || comp->mouse->ydelta) x_input_bump();
 	comp->mouse->xpos += comp->mouse->xdelta;
 	comp->mouse->ypos -= comp->mouse->ydelta;	// axis is reverted
 	// far enough from the middle to be worth putting back, on a host that

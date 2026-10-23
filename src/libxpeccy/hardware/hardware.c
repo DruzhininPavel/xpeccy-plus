@@ -18,6 +18,7 @@ extern HardWare evo_hw_core;
 extern HardWare tsl_hw_core;
 extern HardWare pl2_hw_core;
 extern HardWare pl3_hw_core;
+extern HardWare nxt_hw_core;
 
 // Order is the lineage: the Sinclair machines, then the clones that came from
 // them. A NULL core is a separator in the machine list.
@@ -27,6 +28,7 @@ tabHwItem tabHwPtr[] = {
 	{HW_ZX128, &z128_hw_core},
 	{HW_PLUS2A, &pl2_hw_core},
 	{HW_PLUS3, &pl3_hw_core},
+	{HW_ZXNEXT, &nxt_hw_core},	// the official heir: after the Sinclair/Amstrad line
 	{HW_DUMMY, NULL},
 	{HW_PENT, &pnt_hw_core},
 	{HW_P1024, &p1m_hw_core},
@@ -66,6 +68,7 @@ static const struct {
 	{HW_PENTEVO, {{-1, "Firmware"}, {-1, NULL}, {-1, NULL}, {-1, NULL}}},
 	{HW_TSLAB, {{-1, "Firmware"}, {-1, NULL}, {-1, NULL}, {-1, NULL}}},
 	{HW_ALF, {{-1, "Menu"}, {-1, "Basic 48"}, {-1, NULL}, {-1, NULL}}},
+	{HW_ZXNEXT, {{-1, "Firmware"}, {-1, NULL}, {-1, NULL}, {-1, NULL}}},
 	{HW_NULL, {{-1, NULL}, {-1, NULL}, {-1, NULL}, {-1, NULL}}}
 };
 

@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QTabBar>
 #include <QMenu>
 #include <QMenuBar>
 #include <QKeyEvent>
@@ -120,7 +121,8 @@ void MainWin::socketRead() {
 		xRegister reg;
 		for (cnt = 0; cnt < 32; cnt++) {
 			reg = rb.regs[cnt];
-			if ((reg.id != REG_EOT) && (reg.id != REG_EMPTY)) {
+			if (reg.id == REG_EOT) break;		// past it the bunch is not filled
+			if (reg.id != REG_EMPTY) {
 				sock->write(reg.name);
 				sock->write(" : ");
 				switch(reg.size) {
@@ -505,7 +507,8 @@ void MainWin::socketRead() {
 	} else if (com == "set-value") {
 		// set-value NAME VALUE: a field filled in, by object name - the one in the window
 		// in front first. A hex field takes hex, a spin box a number, a list the text of
-		// an item, a box to tick 1 or 0, a line the rest of the command, spaces and all
+		// an item (an editable one any text), a tab bar the text of a tab, a box to tick 1 or 0,
+		// a line the rest of the command, spaces and all
 		QWidget* hit = NULL;
 		foreach(QWidget* w, QApplication::allWidgets()) {
 			if (!w->isVisible() || (w->objectName() != prm.value(1))) continue;
@@ -519,8 +522,15 @@ void MainWin::socketRead() {
 			sb->setValue(val.toInt(&ok));
 		} else if (QComboBox* cb = qobject_cast<QComboBox*>(hit)) {
 			int idx = cb->findText(val);
+			ok = (idx >= 0) || cb->isEditable();
+			if (idx >= 0) cb->setCurrentIndex(idx);
+			else if (ok) cb->setEditText(val);		// an editable list takes any text
+		} else if (QTabBar* tb = qobject_cast<QTabBar*>(hit)) {
+			int idx = -1;
+			for (int i = 0; i < tb->count(); i++)
+				if (tb->tabText(i) == val) idx = i;
 			ok = (idx >= 0);
-			if (ok) cb->setCurrentIndex(idx);
+			if (ok) tb->setCurrentIndex(idx);
 		} else if (QAbstractButton* ab = qobject_cast<QAbstractButton*>(hit)) {
 			ab->setChecked(val == "1");
 		} else if (QLineEdit* le = qobject_cast<QLineEdit*>(hit)) {

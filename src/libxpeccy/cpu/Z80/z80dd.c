@@ -194,10 +194,11 @@ void ddBE(CPU* cpu) {RDSHIFT(cpu->regIX); cpu->tmpb = z80_mrd(cpu, cpu->regWZ); 
 
 // cb	ddcb prefix	4 3rd
 void ddCB(CPU* cpu) {
-	cpu->opTab = ddcbTab;
+	opCode* tab = cpu->op->tab;		// the core's ddcb table
+	cpu->opTab = tab;
 	cpu->tmp = z80_mrd(cpu, cpu->regPC++);		// shift
 	cpu->com = z80_mrd(cpu, cpu->regPC++);	// not M1, reading opcode & adding ix+e in parallel?
-	cpu->op = &ddcbTab[cpu->com];
+	cpu->op = &tab[cpu->com];
 	cpu->op->exec(cpu);
 }
 
