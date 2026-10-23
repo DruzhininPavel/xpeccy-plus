@@ -230,8 +230,24 @@ static int nx_ay_silent(aymChip* chip) {
 	return !((chip->reg[8] | chip->reg[9] | chip->reg[10]) & 0x1f);
 }
 
-// The AYs' sum on each side (turbosound.vhd 186-205, 323-337), in the mixer's units
-static void nx_ay_mix(Computer* comp, int* l, int* r) {
+// The chip counted up to late ns before the time handed to it so far; the rest stays
+// for the next look. Their clock runs off CLK_28 whatever holds the bus (zxnext_top:
+// CLK_28_PSG_EN), so a sample inside a DMA transfer, which is one step here, hears
+// them where they were at its own time, not at the transfer's end.
+static void nx_ay_flush(aymChip* chip, int late) {
+	int keep = (late < chip->pendNs) ? late : chip->pendNs;
+	if (keep <= 0) {
+		ay_flush(chip);
+		return;
+	}
+	chip->pendNs -= keep;
+	ay_flush(chip);
+	chip->pendNs = keep;
+}
+
+// The AYs' sum on each side (turbosound.vhd 186-205, 323-337), in the mixer's units,
+// late ns before the time the chips have been handed
+static void nx_ay_mix(Computer* comp, int late, int* l, int* r) {
 	unsigned char* nr = NX.nr;
 	const int* tab = (nr[0x06] & 1) ? nxAyTab : nxYmTab;
 	int ts = nr[0x08] & 2;
@@ -248,7 +264,7 @@ static void nx_ay_mix(Computer* comp, int* l, int* r) {
 			chip_set_type(chip, chip->type);
 		}
 		if ((!ts && (i != SND.sel)) || nx_ay_silent(chip)) continue;
-		ay_flush(chip);
+		nx_ay_flush(chip, late);
 		int a = nx_chan(chip, &chip->chanA, 0, tab);
 		int b = nx_chan(chip, &chip->chanB, 1, tab);
 		int c = nx_chan(chip, &chip->chanC, 2, tab);
@@ -268,7 +284,7 @@ void next_audio(Computer* comp, int* l, int* r, int* env) {
 	bitChan* bc = comp->beep;
 	int beep = (bc->lev ? bc->hi : bc->lo) * 640 / 255;
 	int al, ar;
-	nx_ay_mix(comp, &al, &ar);
+	nx_ay_mix(comp, 0, &al, &ar);
 	*l = beep + al + (SND.dac[0] + SND.dac[1]) * 4 + 512;
 	*r = beep + ar + (SND.dac[2] + SND.dac[3]) * 4 + 512;
 	*env = comp->ts->chipA->chanE.vol;
@@ -300,9 +316,9 @@ sndPair nx_vol(Computer* comp, sndVolume* sv) {
 	lev += comp->beep->val * 640 * NX_GAIN / 255 * sv->beep / 100;
 	part.left = part.right = lev;
 	res = snd_dc(&dcBeep, part, dc);
-	// the AYs
+	// the AYs, at the time the sample was due (comp->sndAgo)
 	int al, ar;
-	nx_ay_mix(comp, &al, &ar);
+	nx_ay_mix(comp, (comp->sndAgo > 0) ? (int)FIXED_TO_NS(comp->sndAgo) : 0, &al, &ar);
 	part.left = al * NX_GAIN * sv->ay / 100;
 	part.right = ar * NX_GAIN * sv->ay / 100;
 	part = snd_dc(&dcAy, part, dc);
