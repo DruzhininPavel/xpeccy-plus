@@ -1047,6 +1047,12 @@ int compSetHardware(Computer* comp, const char* name) {
 		if (comp->hw && (comp->hw->id == HW_ZXNEXT)) comp->waitDebt = 0;
 	}
 	comp->hw = hw;
+	// a host key's combination as the machine's keyboard makes it: the Evo's avr, or
+	// for the rest (none has a pc keyboard of its own) the Next's scan
+	if ((hw->id == HW_PENTEVO) || (hw->id == HW_TSLAB))
+		kbd_set_combo(comp->keyb, KBD_EVO_LEAD, 0);
+	else
+		kbd_set_combo(comp->keyb, KBD_SCAN_NS, 2 * KBD_SCAN_NS);
 //	comp->cpu->nod = 0;
 	comp->vid->mrd = vid_mrd_cb;
 	comp->tape->xen = 0;
