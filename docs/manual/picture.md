@@ -196,10 +196,9 @@ over the picture. Tick the ones you want:
 | **Messages** | what Xpeccy+ has just done, bottom left: "size x3", "quick save" and so on |
 | **Fade out** | signs and messages fade away instead of vanishing at once |
 
-**Joystick**, **Mouse**, **Tape**, **Disk** and **FPS** are drawn on the picture only
-while the status bar is hidden; with the status bar shown, they are in the status bar
-instead (see
-[Status bar](main-window.md#status-bar)).
+**Joystick**, **Mouse**, **Tape**, **Disk**, **FPS** and **CPU clock** are drawn on the
+picture only while the status bar is hidden; with the status bar shown, they are in the
+status bar instead (see [Status bar](main-window.md#status-bar)).
 
 In the top right corner a sign also shows the speed mode, in the manner of a video
 recorder: pause, rewind with how many seconds back, fast mode, fast forward or slow
