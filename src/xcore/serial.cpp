@@ -305,6 +305,7 @@ static void ser_port_frame(Computer* comp, int i) {
 			esp_flash_file((conf.path.nvDir + SLASH + "esp01.conf").c_str());
 			esp_attach(comp);
 		}
+		esp_set_lan(conf.next.espLan);		// for the servers it opens from now on
 		serEsp = true;
 		esp_frame(comp);
 		return;

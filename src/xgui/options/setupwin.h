@@ -131,6 +131,7 @@ class SetupWin : public QDialog {
 		QList<QWidget*> slotRow;
 		QList<QWidget*> kbdRow;
 		QComboBox* uartBox[2];		// the Next's UARTs: a serial port of the host each
+		QCheckBox* cbEspLan;		// the emulated ESP's server reachable from the network
 		QList<QWidget*> uartRow;
 		QList<QWidget*> drvRow[4];
 		QComboBox* drvCountBox;

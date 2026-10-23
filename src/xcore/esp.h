@@ -6,6 +6,7 @@
 struct Computer;
 
 void esp_flash_file(const char* path);		// what its flash is kept in; before esp_attach
+void esp_set_lan(bool on);			// its server listens on every interface (else 127.0.0.1)
 void esp_attach(Computer* comp);		// plugged in: it boots
 void esp_detach(Computer* comp);		// taken out; comp may be NULL
 void esp_byte(Computer* comp, int byte, long long start);	// a byte the guest sends
