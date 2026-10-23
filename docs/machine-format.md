@@ -47,7 +47,7 @@ is skipped without a word.
 | `family` | text | groups the list; a change of family draws a separator |
 | `inherit` | machine id | see above |
 | `hw` | `HardWare.name` | the emulation core, looked up by `findHardware()` |
-| `cpu` | `cpuCore.name` | `Z80`, or `name@library` for a core from a library |
+| `cpu` | `cpuCore.name` | `Z80`, `Z80N` (the Next's), or `name@library` for a core from a library |
 | `cpu.frq` | Hz | the board's crystal; the dot clock comes off it too, so it sets the frame rate |
 | `cpu.turbo` | list, `1,2,4` | the turbo steps this board has, x1 first. A board that switches turbo from a port sets it itself; on one whose turbo is a switch on the case, Alt+T is the switch |
 | `memory` | KB | fitted to what the core can page |
