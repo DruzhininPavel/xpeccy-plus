@@ -3,5 +3,11 @@
 		"version": "2.32.10",
 		"sha256": "F15CFF5FCA62EC9381A016EF1D42A95C638CD72D2F226BA5781C76FE43DBD1AC",
 		"source": "SDL2-devel-<version>-mingw.zip from https://github.com/libsdl-org/SDL/releases"
+	},
+	"sysnext": {
+		"release": "24.11",
+		"tag": "system/next_24.11",
+		"commit": "1418f779d406d73f3d22398e242f8ccabc712edf",
+		"source": "https://gitlab.com/thesmog358/tbblue.git"
 	}
 }

@@ -1,7 +1,9 @@
-# Downloads the build dependencies that aren't expected to be installed system-wide.
-# Right now that is SDL2 only: Qt, MinGW and zlib come from a Qt installation.
+# Downloads the build dependencies that aren't expected to be installed system-wide:
+# SDL2, and on request the System/Next distribution the ZX Spectrum Next's tests boot
+# from. Qt, MinGW and zlib come from a Qt installation.
 #
 #   .\fetch-deps.ps1            # get what deps.json pins, skip what is already there
+#   .\fetch-deps.ps1 -SysNext   # System/Next too, for make-dist.ps1 -SysNext
 #   .\fetch-deps.ps1 -Force     # re-download and re-extract
 #   .\fetch-deps.ps1 -Update    # move the pin to the newest upstream release
 #
@@ -11,7 +13,8 @@
 
 param(
 	[switch]$Update,
-	[switch]$Force
+	[switch]$Force,
+	[switch]$SysNext
 )
 
 $ErrorActionPreference = 'Stop'
@@ -64,6 +67,33 @@ if ($Update) {
 		Write-Host "SDL2 pin: $old -> $newVer (commit packaging\deps.json)" -ForegroundColor Yellow
 	}
 }
+
+# System/Next for the tests (make-dist.ps1 -SysNext), passed on whole as its license
+# asks: a clone of the pinned tag, checked against its commit, without the git metadata
+# and with no line endings changed. The program itself never ships it.
+function Get-SysNext {
+	$sn = (Get-Content $manifest -Raw | ConvertFrom-Json).sysnext
+	$dir = Join-Path $depsDir "sysnext-$($sn.release)"
+	if ((Test-Path $dir) -and -not $Force) {
+		Write-Host "System/Next $($sn.release): already in build\deps"
+		return
+	}
+	$tmp = "$dir.tmp"
+	foreach ($d in @($dir, $tmp)) { if (Test-Path $d) { Remove-Item $d -Recurse -Force } }
+	Write-Host "cloning $($sn.source) $($sn.tag)"
+	& git -c core.autocrlf=false -c core.eol=lf -c advice.detachedHead=false clone --quiet --depth 1 --branch $sn.tag $sn.source $tmp
+	if ($LASTEXITCODE -ne 0) { throw 'System/Next: clone failed' }
+	$head = (& git -C $tmp rev-parse HEAD).Trim()
+	if ($head -ne $sn.commit) {
+		Remove-Item $tmp -Recurse -Force
+		throw "System/Next $($sn.release): the tag has moved`n  expected $($sn.commit)`n  got      $head"
+	}
+	Remove-Item (Join-Path $tmp '.git') -Recurse -Force
+	Rename-Item $tmp (Split-Path $dir -Leaf)
+	Write-Host "System/Next $($sn.release): ready in build\deps" -ForegroundColor Green
+}
+
+if ($SysNext) { Get-SysNext }
 
 $pin = Get-Pin
 $target = Join-Path $depsDir "SDL2-$($pin.version)-mingw"
