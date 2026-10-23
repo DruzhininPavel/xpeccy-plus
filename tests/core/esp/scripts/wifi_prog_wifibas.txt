@@ -11,7 +11,7 @@ send AT+CWJAP?
 wait OK\r\n 10000
 send AT+CIPSTA?
 wait OK\r\n 10000
-send AT+CWJAP="Xpeccy","pw"
+send AT+CWJAP="Xpeccy+","pw"
 wait OK\r\n 10000
 send AT+CWDHCP=0,1
 wait OK\r\n 10000

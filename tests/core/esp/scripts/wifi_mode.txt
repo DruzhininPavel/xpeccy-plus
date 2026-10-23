@@ -41,7 +41,7 @@ send AT+CWMODE_CUR?
 wait OK\r\n 10000
 send AT+CWJAP?
 wait OK\r\n 10000
-send AT+CWJAP_CUR="Xpeccy","x"
+send AT+CWJAP_CUR="Xpeccy+","x"
 wait ERROR\r\n 10000
 send AT+CWLAP
 wait ERROR\r\n 10000

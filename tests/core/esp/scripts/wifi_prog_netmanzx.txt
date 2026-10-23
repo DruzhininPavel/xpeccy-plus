@@ -21,7 +21,7 @@ send
 wait ERROR\r\n 10000
 send AT
 wait OK\r\n 10000
-send AT+CWJAP="Xpeccy","pw","5C:CF:7F:00:00:01"
+send AT+CWJAP="Xpeccy+","pw","5C:CF:7F:00:00:01"
 wait OK\r\n 10000
 send AT+CWJAP?
 wait OK\r\n 10000

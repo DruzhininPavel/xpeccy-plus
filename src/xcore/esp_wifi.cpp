@@ -1,11 +1,11 @@
 // The emulated ESP-01's Wi-Fi commands (NONOS AT 1.7.6), byte for byte, and its Wi-Fi status
-// lines. The radio is synthetic: one AP, named as the station's SSID ("Xpeccy" when it has
+// lines. The radio is synthetic: one AP, named as the station's SSID ("Xpeccy+" when it has
 // none), that takes any password; nothing is ever seen of the host's own Wi-Fi. A SoftAP is
 // kept as settings only - no station can join it - and smartconfig, WeChat discovery, WPS
 // and mDNS start and never find anyone.
 //
 // Flash keys (nvram/esp01.conf), an absent key reads as the factory value after it:
-//   ssid ("Xpeccy": the old default, RESTORE writes ""), pass, pci (0), cwmode (1),
+//   ssid ("Xpeccy+": the old default, RESTORE writes ""), pass, pci (0), cwmode (1),
 //   autoconn (1), dhcp (yes: station client), dhcps (yes: SoftAP server),
 //   ip gw mask (the static station address; none when absent),
 //   lease_ip lease_gw lease_mask (what the synthetic AP's DHCP hands out: 192.168.1.70/.1/24),
@@ -194,7 +194,7 @@ static bool sta_on() {return W.mode != 2;}
 static bool ap_on() {return W.mode != 1;}
 
 static std::string ap_name() {
-	return W.ssid.empty() ? std::string("Xpeccy") : W.ssid;
+	return W.ssid.empty() ? std::string("Xpeccy+") : W.ssid;
 }
 
 // the station leaves the AP: the SDK's disconnect event, printed once per connection
@@ -312,7 +312,7 @@ static void jap_print(espCmdCall& c, const std::string& ssid, int pci) {
 }
 
 static void jap_query(espCmdCall& c) {jap_print(c, W.ssid, W.pci);}
-static void jap_query_def(espCmdCall& c) {jap_print(c, esp_fl_get("ssid", "Xpeccy"), (int)esp_fl_num("pci", 0));}
+static void jap_query_def(espCmdCall& c) {jap_print(c, esp_fl_get("ssid", "Xpeccy+"), (int)esp_fl_num("pci", 0));}
 
 static void jap_setx(espCmdCall& c, bool def) {
 	if (!sta_on()) {esp_err(); return;}
@@ -1013,7 +1013,7 @@ void esp_wifi_boot(Computer* comp) {
 	W.mode = (int)esp_fl_num("cwmode", 1);
 	if ((W.mode < 1) || (W.mode > 3)) W.mode = 1;
 	W.autoconn = (esp_fl_num("autoconn", 1) != 0);
-	W.ssid = esp_fl_get("ssid", "Xpeccy");
+	W.ssid = esp_fl_get("ssid", "Xpeccy+");
 	W.pass = esp_fl_get("pass");
 	W.pci = (int)esp_fl_num("pci", 0);
 	W.assoc = W.joined = false;

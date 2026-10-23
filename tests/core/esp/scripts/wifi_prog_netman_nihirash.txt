@@ -20,7 +20,7 @@ wait OK\r\n 10000
 quiet 2000
 send AT+CWLAP
 wait OK\r\n 10000
-send AT+CWJAP_DEF="Xpeccy","pw"
+send AT+CWJAP_DEF="Xpeccy+","pw"
 wait OK\r\n 10000
 send AT+CWJAP_DEF?
 wait OK\r\n 10000

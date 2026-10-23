@@ -9,7 +9,7 @@ send AT+CWLAP?
 wait ERROR\r\n 10000
 send AT+CWLAP=?
 wait ERROR\r\n 10000
-send AT+CWLAP="Xpeccy"
+send AT+CWLAP="Xpeccy+"
 wait OK\r\n 10000
 send AT+CWLAP="Other"
 wait OK\r\n 10000
@@ -29,9 +29,9 @@ send AT+CWLAP=,,,2
 wait ERROR\r\n 10000
 send AT+CWLAP=,,,0,0,1501
 wait ERROR\r\n 10000
-send AT+CWLAP="Xpeccy","5c:cf:7f:00:00:01",6,0,0,1500
+send AT+CWLAP="Xpeccy+","5c:cf:7f:00:00:01",6,0,0,1500
 wait OK\r\n 10000
-send AT+CWLAP=Xpeccy
+send AT+CWLAP=Xpeccy+
 wait ERROR\r\n 10000
 send AT+CWLAPOPT=?
 wait ERROR\r\n 10000
@@ -61,7 +61,7 @@ send AT+CWLAP
 wait OK\r\n 10000
 send AT+CWLAPOPT=1,2047
 wait OK\r\n 10000
-send AT+CWJAP_CUR="Xpeccy","password1"
+send AT+CWJAP_CUR="Xpeccy+","password1"
 wait OK\r\n 10000
 send AT+CWLAP
 wait OK\r\n 10000
@@ -69,7 +69,7 @@ send AT+CWMODE_CUR=2
 wait WIFI DISCONNECT\r\n 10000
 send AT+CWLAP
 wait ERROR\r\n 10000
-send AT+CWLAP="Xpeccy"
+send AT+CWLAP="Xpeccy+"
 wait ERROR\r\n 10000
 send AT+CWMODE_CUR=3
 wait WIFI GOT IP\r\n 10000

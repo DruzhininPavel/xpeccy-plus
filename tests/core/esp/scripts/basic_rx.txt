@@ -73,13 +73,13 @@ quiet 300
 send ATE0 
 quiet 300
 print -- busy while CWJAP runs
-send AT+CWJAP_CUR="Xpeccy","pw"
+send AT+CWJAP_CUR="Xpeccy+","pw"
 pause 300
 send AT
 quiet 300
 wait OK\r\n 5000
 print -- AT+RST while busy
-send AT+CWJAP_CUR="Xpeccy","pw"
+send AT+CWJAP_CUR="Xpeccy+","pw"
 pause 300
 send AT+RST
 wait WIFI GOT IP\r\n 5000
