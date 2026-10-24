@@ -7,6 +7,14 @@ Notable changes in Xpeccy+, newest first. The format follows
 Xpeccy+ starts from [Xpeccy](https://github.com/samstyle/Xpeccy) build `20260807`. Anything
 before that point is upstream's history and is not repeated here.
 
+## Unreleased
+
+### Fixed
+
+- **macOS windows close on the first click**: SDL no longer starts a second native video
+  event pump just to read gamepads. Qt alone handles the title-bar mouse events; gamepad
+  input and hotplug continue to work.
+
 ## 2026.8 - 2026-10-24
 
 ### Added
