@@ -56,9 +56,10 @@ machine pixels:
 **View > Border** has the same sizes, taken at once, with the machine running or paused.
 
 The setting is the same for every machine, but some machines need more of their frame
-than others: ATM Turbo 2+ and ZX Evolution (BaseConf) show at least **medium**, and ZX
-Evolution (TSConf) always shows its whole frame - the slider and **View > Border** are
-grayed out there.
+than others: ATM Turbo 2+ and ZX Evolution (BaseConf) show at least **medium**, the ZX
+Spectrum Next at least **full**, and ZX Evolution (TSConf) always shows its whole frame -
+the slider and **View > Border** are grayed out there. On the others, **View > Border**
+grays out the sizes smaller than the machine shows.
 
 ## Palette
 

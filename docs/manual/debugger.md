@@ -88,17 +88,19 @@ the panel in front is in its title bar.
 | **FDD** | the bytes on a track of a floppy disk | [Device panels](debugger-devices.md) |
 | **Palette** | the colors of the machine's palette | [Device panels](debugger-devices.md) |
 | **ZX Evo** | the video and memory hardware of a ZX Evolution | [Device panels](debugger-devices.md#zx-evo) |
+| **ZX Next** | the registers, sprites, copper, layers and DMA of a ZX Spectrum Next | [Device panels](debugger-devices.md#zx-next) |
 | **MEMMAP** | the memory banks, ports and signals | [The MEMMAP panel](#the-memmap-panel) |
 | **STACK** | the words on the stack | [The STACK panel](#the-stack-panel) |
 
 **CMOS** is there only on machines that have a clock chip: the ZX Evolution with BaseConf
 or TSConf, the Pentagon 1024, the Profi v5, and any machine with a SMUC. **FDC** and **FDD**
 are there only on a machine with a disk interface. **ZX Evo** is there only on a ZX
-Evolution, with TSConf or BaseConf, and **Palette** on every other machine.
+Evolution, with TSConf or BaseConf, and **Palette** on every other machine. **ZX Next** is
+there only on a ZX Spectrum Next.
 
 **Screen** and **Sound Chip** can also be windows of their own: **Tools > Screen** and
-**Tools > Sound Chips** open them, and they work while the machine runs. **ZX Evo** can be
-one too, from the {icon}`display` button at the top right of the panel. See
+**Tools > Sound Chips** open them, and they work while the machine runs. **ZX Evo** and
+**ZX Next** can be too, from the {icon}`display` button at the top right of the panel. See
 [Device panels](debugger-devices.md).
 
 ### Arranging the panels

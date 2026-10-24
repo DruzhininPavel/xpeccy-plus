@@ -12,10 +12,11 @@ how the machine a file runs on is chosen. Tapes and disks have chapters of their
 
 | Kind | Files | Open | Save |
 |---|---|---|---|
-| Snapshot | `.szx` | yes | yes, every machine |
+| Snapshot | `.szx` | yes | yes, every machine but the ZX Spectrum Next |
 | | `.z80` | yes | 48K, 128K, +2, +2A, +3, Pentagon, Scorpion |
-| | `.sna` | yes | yes |
+| | `.sna` | yes | yes, every machine but the ZX Spectrum Next |
 | | `.spg` (ZX Evolution TSConf) | yes | no |
+| | `.nex`, `.snx` (ZX Spectrum Next) | yes | no |
 | Tape | `.tap` | yes | yes |
 | | `.tzx` | yes | no |
 | | `.wav` | yes | yes |
@@ -53,6 +54,8 @@ To choose Run or Mount for one file only, hold Shift as you drop it, or as you c
 
 **File > Recent** lists the last 10 files opened, newest first. Hold the mouse over an item
 to see where the file is. A file that no longer exists is reported and taken off the list.
+A file of a type Xpeccy+ does not know is reported as **Unknown file type** and does not
+go on the list.
 **Clear** empties the list.
 
 **File > Reload** opens the last file again, the way it was opened: into the same drive,
@@ -150,6 +153,13 @@ snapshot runs anywhere, a 128K one on anything but a 48K, a +3 one on a +2A or +
 **SPG** is a ZX Evolution (TSConf) format. Xpeccy+ can open it but not save it, and only on
 that machine.
 
+```{index} NEX, SNX
+```
+
+**NEX** programs and **SNX** snapshots need the ZX Spectrum Next. It starts them, and `.z80`
+and `.sna` snapshots too, through NextZXOS, from its SD card: see
+[Starting programs](zx-next.md#starting-programs). A snapshot of the Next cannot be saved yet.
+
 ## Quick save and load
 
 ```{index} Quick Save, Quick Load, Undo Quick Load, snapshot; quick save
@@ -186,7 +196,7 @@ The **File types** group has a row per format:
 
 - **Format** - the kind of file.
 - **Needs** - what a machine must have to run it: **any machine**, **Beta Disk (TR-DOS)**,
-  **+3 disk drive**, **TSConf**, **read from the file** (a `.z80` or `.sna` names its
+  **+3 disk drive**, **TSConf**, **ZX Spectrum Next**, **read from the file** (a `.z80` or `.sna` names its
   model), **exactly the one it was taken on** (SZX) or **exactly the one it was recorded
   on** (RZX).
 - **Opened on** - **Auto**, **Ask**, **Keep current**, or one machine from the list.

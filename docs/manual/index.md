@@ -18,6 +18,7 @@ The {ref}`genindex` lists terms, commands and settings from A to Z.
 getting-started
 main-window
 machines
+zx-next
 files
 tapes
 disks

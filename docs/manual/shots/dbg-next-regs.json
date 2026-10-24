@@ -1,0 +1,13 @@
+{
+  "config": {
+    "GENERAL": {"machine": "zxnext", "start.machine": "zxnext", "folder.write": "no"},
+    "DEBUGA": {"next.tab": "0", "next.detached": "yes", "next.window": "120:80:640:560"}
+  },
+  "steps": [
+    ["wait", 15000],
+    ["run", "pause"],
+    ["run", "activate-window ZX Next"],
+    ["wait", 1000]
+  ],
+  "frames": []
+}

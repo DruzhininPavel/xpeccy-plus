@@ -1,0 +1,6 @@
+{
+  "config": {"GENERAL": {"machine": "zxnext", "start.machine": "zxnext", "folder.write": "no"}},
+  "args": ["-s", "2"],
+  "steps": [["wait", 15000]],
+  "frames": []
+}
