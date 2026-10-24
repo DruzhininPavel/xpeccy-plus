@@ -53,6 +53,8 @@ To choose Run or Mount for one file only, hold Shift as you drop it, or as you c
 
 **File > Recent** lists the last 10 files opened, newest first. Hold the mouse over an item
 to see where the file is. A file that no longer exists is reported and taken off the list.
+A file of a type Xpeccy+ does not know is reported as **Unknown file type** and does not
+go on the list.
 **Clear** empties the list.
 
 **File > Reload** opens the last file again, the way it was opened: into the same drive,

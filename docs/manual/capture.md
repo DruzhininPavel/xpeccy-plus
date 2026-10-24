@@ -12,7 +12,8 @@ and RZX recordings of a game as it is played.
 ```
 
 **Capture > Screenshot** (F7 in both hotkey presets) saves the picture as a file. The message
-**screenshot saved** appears in the corner of the picture.
+**screenshot saved** appears in the corner of the picture, or **can't save screenshot** when
+the file cannot be written.
 
 **Capture > Screenshot Series** takes several screenshots in a row, a set number of frames
 apart. Use
@@ -235,7 +236,7 @@ While you record:
 ```
 
 Ending the recording any other way - **Record...** again, {icon}`tape-stop` **Stop** in the
-player, opening another RZX file or switching machines - saves it with its bookmarks, so
+player, opening another RZX file, switching machines or quitting Xpeccy+ - saves it with its bookmarks, so
 you can go on with it later. **Open and Continue...** is how you go on:
 it opens a recording, runs it to its end at full speed, and records on from there; you are
 asked for the file to record into, with the same file offered.

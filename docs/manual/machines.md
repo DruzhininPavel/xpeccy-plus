@@ -70,8 +70,9 @@ status bar. The tape and the disks stay in: the tape is rewound to its start. An
 recording stops, and the rewind history starts over.
 
 In **Options**, pick the machine first and change its settings after: when **Apply**
-switches the machine, it applies nothing else, and the page then shows the new machine's
-settings.
+switches the machine, what you changed on the **Machine** page is dropped, as it was for
+the old machine. Changes on the other pages are applied to the new one. The page then
+shows the new machine's settings.
 
 Opening a file can switch the machine too, when the current one cannot run it. See
 [Run a program](getting-started.md#run-a-program).
