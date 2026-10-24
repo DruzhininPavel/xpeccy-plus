@@ -47,6 +47,8 @@ On top of upstream build `20260807`:
 - **Timing.** Memory contention on the 48K, 128K, +2 and +2A/+3 matches a real machine, the
   floating bus and ULA snow are there, timing tests come out as photographed on real machines,
   and frames are handed over at the machine's real rate rather than on a 20 ms timer.
+- **The ZX Spectrum Next** from its FPGA core: NextZXOS on a card of its own, Wi-Fi
+  included. And divMMC with esxDOS on the 48K to the +3 and the Pentagons.
 - **Input lag** measured with a photosensor and kept low, and run ahead for less still.
 - **Ready to use.** Every machine is built in, ROMs and all, so it runs straight out of the
   archive, and what you change is kept for that machine. macOS builds included.
@@ -55,7 +57,8 @@ On top of upstream build `20260807`:
   leave the machine its own keys, with your changes kept on top.
 - **Media that starts itself.** A tape or disk opens and runs, or asks first, from the menu, a
   drop or the command line, on a machine that can run it. A Disk manager lists and copies
-  what is on a TR-DOS disk, and a host folder can stand in for an SD card or a hard disk.
+  what is on a TR-DOS or +3DOS disk, and a host folder can stand in for an SD card or a hard
+  disk, keeping what the machine saves there.
 - **Tapes.** Fast loading that works whatever the loader, every TZX block, a WAV read back
   as the tape it records and a tape written out as one, and a player laid out like a deck.
 - **Speed.** Up to three times faster with nothing emulated differently - fast forward at
@@ -68,7 +71,8 @@ On top of upstream build `20260807`:
   recording with rewind and bookmarks.
 - **A debugger worth using.** Movable panels, conditional breakpoints that can log, a listing
   that reads like one with labels offered as you type, a memory heat map, register layouts to
-  choose from, and a screen and a sound chip panel that detach into windows of their own.
+  choose from, ZX Evo and Next panels, and a screen and a sound chip panel that detach into
+  windows of their own.
 - **Sound.** The FM half of TurboSound runs on ymfm, latency looks after itself, and the mix
   can be filtered.
 - **Snapshots.** SZX by default, on every machine, coming back exactly where it was saved;
