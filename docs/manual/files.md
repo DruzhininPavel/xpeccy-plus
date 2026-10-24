@@ -12,9 +12,9 @@ how the machine a file runs on is chosen. Tapes and disks have chapters of their
 
 | Kind | Files | Open | Save |
 |---|---|---|---|
-| Snapshot | `.szx` | yes | yes, every machine |
+| Snapshot | `.szx` | yes | yes, every machine but the ZX Spectrum Next |
 | | `.z80` | yes | 48K, 128K, +2, +2A, +3, Pentagon, Scorpion |
-| | `.sna` | yes | yes |
+| | `.sna` | yes | yes, every machine but the ZX Spectrum Next |
 | | `.spg` (ZX Evolution TSConf) | yes | no |
 | | `.nex`, `.snx` (ZX Spectrum Next) | yes | no |
 | Tape | `.tap` | yes | yes |
