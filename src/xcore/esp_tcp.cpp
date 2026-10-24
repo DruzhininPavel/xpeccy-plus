@@ -476,7 +476,7 @@ static void cipstart_set(espCmdCall& c) {
 	// in the SoftAP modes the module tries without a station IP; it gets nowhere
 	if (!esp_wifi_joined()) l.failNow = true;
 	else start_open(l);
-	xlog(XLG_NET, XLL_INFO, "esp: link %i %s to %s:%lli", id, type.c_str(), host.c_str(), port);
+	xlog(XLG_NET, XLL_INFO, "esp: link %i %s to %s:%i", id, type.c_str(), host.c_str(), (int)port);
 	// UDP to an address is only a socket made: the module answers at once, within the line's
 	// first byte time (penguin reads it with an 8 ms limit), not at the next frame
 	if ((kind == K_UDP) && !l.failNow && ip_numeric(host) && udp_settle(l)) {
@@ -919,9 +919,9 @@ static void cipserver_set(espCmdCall& c) {
 		T.serverPort = (int)port;
 		const char* where = esp_lan() ? "every interface" : "127.0.0.1";
 		if (!T.listen.open((int)port, esp_lan()))
-			xlog(XLG_NET, XLL_WARN, "esp: server port %lli cannot be had on %s; the module still answers OK", port, where);
+			xlog(XLG_NET, XLL_WARN, "esp: server port %i cannot be had on %s; the module still answers OK", (int)port, where);
 		else
-			xlog(XLG_NET, XLL_INFO, "esp: server on %s, port %lli", where, port);
+			xlog(XLG_NET, XLL_INFO, "esp: server on %s, port %i", where, (int)port);
 		esp_ok();
 	} else {
 		T.server = false;

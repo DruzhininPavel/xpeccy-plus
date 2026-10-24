@@ -419,7 +419,9 @@ static int ping_now(const std::string& host, int timeoutMs) {
 		fd_set rd;
 		FD_ZERO(&rd);
 		FD_SET(s, &rd);
-		timeval tv = {left / 1000, (left % 1000) * 1000};
+		timeval tv;
+		tv.tv_sec = left / 1000;
+		tv.tv_usec = (left % 1000) * 1000;
 		if (select(s + 1, &rd, nullptr, nullptr, &tv) <= 0) break;
 		unsigned char in[256];
 		int n = (int)recv(s, (char*)in, sizeof(in), 0);
