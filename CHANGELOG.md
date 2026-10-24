@@ -11,278 +11,141 @@ before that point is upstream's history and is not repeated here.
 
 ### Added
 
-- **The ZX Spectrum Next**, a new machine in the Sinclair family, emulated from its FPGA core
-  3.02.03:
-  - the Z80N, layer 2, sprites, the tilemap, LoRes, the copper, the zxnDMA, hardware IM2 and
-    the CTC, three AYs with the DACs, the real-time clock;
-  - it boots NextZXOS from an SD card of its own, made from the official System/Next release
-    (downloaded when you ask) or one you have;
-  - `.nex` programs start from the card, and `.snx`, `.sna` and `.z80` open through
-    NextZXOS as on the machine;
-  - Wi-Fi: an emulated ESP-01 on its UART reaches the network through the computer, or the
-    UARTs go to the computer's serial ports;
-  - the Debugger has a ZX Next panel: the registers decoded, sprites, the copper, the layers,
+- **The ZX Spectrum Next**, emulated from its FPGA core 3.02.03:
+  - the Z80N, layer 2, sprites, the tilemap, LoRes, the copper, the zxnDMA, the CTC, three
+    AYs with the DACs and the real-time clock;
+  - NextZXOS boots from an SD card of its own, made from the official System/Next release
+    (downloaded when you ask) or one you have, and `.nex`, `.snx`, `.sna` and `.z80` start
+    through it;
+  - Wi-Fi through an emulated ESP-01 that reaches the network through the computer, or the
+    UARTs on the computer's serial ports;
+  - a ZX Next panel in the Debugger: the registers decoded, sprites, the copper, the layers,
     the tilemap, the palettes and the DMA.
 
-- **A folder that takes writes**: a folder mounted as an SD card or a hard disk takes what the
-  machine saves. Files and folders the machine makes, changes, renames or deletes there change
-  in the folder itself, and a deleted file goes to the trash. The first write asks before the
-  folder changes; Read-only is in Options > Emulation, Folder as a disk, and a card's Write
-  Protect makes one folder read-only again.
+- **divMMC**, the SD card interface, on the 48K, 128K, +2, +2A, +3 and the Pentagons, with two
+  cards from images or folders. esxDOS 0.8.5 to 0.8.9 come with it, and New esxDOS Folder
+  makes a card ready to fill. Media > divMMC, a toolbar button or a hotkey switches the board
+  on and off with a Hard Reset; while it is on, the drives are out of the machine.
+  *(esxDOS bundled with the permission of Miguel Guerreiro / Papaya Dezign; thanks to Volutar)*
 
-- **A user manual** in English, Russian, Ukrainian and Spanish: Help > Manual opens it from
-  the package in the system's language, with search that works offline. Each release puts
-  it on GitHub Pages too.
+- **A folder that takes writes**: a folder mounted as an SD card or a hard disk keeps what the
+  machine saves, renames or deletes there, and a deleted file goes to the trash. The first
+  write asks first; Read-only is in Options > Emulation. Hard Reset reads the folder again.
 
-- **Debugging from a script**: `--bench N` runs a program with no window in every build, not
-  only in nightly ones. It ends on a breakpoint that stops, and the exit code says whether it
-  ran to the end, stopped or could not start. Results go to stdout, the log to stderr.
-  Breakpoint lists take labels, and `-l`, `--brk` and `--bp` work in any order.
+- **A user manual** in English, Russian, Ukrainian and Spanish: Help > Manual opens it in the
+  system's language, with search that works offline. Each release puts it on GitHub Pages too.
 
-- **Measuring code between two points**: a breakpoint can open or close a span. Each span
-  keeps its shortest, average and longest time in T and how many of them an interrupt went
-  into, `DT` in a condition stops on one that ran too long, and a run with no window prints
-  them at the end. *(thanks to Aleksey Pichugin and reddie)*
+- **A ZX Evo panel in the Debugger**: on TSConf the registers decoded, the sprites, the tiles,
+  the DMA transfers of the last frame and the palettes; on BaseConf the pager, the ports and
+  the palette. It detaches into a window of its own, and TSConf's sprite, tile and bitmap
+  layers can be hidden from the picture. *(thanks to Sergei Smirnov)*
 
-- **The breakpoint log** is a file of its own, written from the first hit of a breakpoint
-  with Log on, with no switch to find. It has no wall-clock time in it, so two runs compare
-  line by line, and a breakpoint can name what to write instead of every register.
-  `--brk-log` sends it elsewhere. *(thanks to Volutar)*
+- **Spans between two breakpoints**: each keeps its shortest, average and longest time in T,
+  and `DT` in a condition stops on one that ran too long. *(thanks to Aleksey Pichugin and
+  reddie)*
 
-- **The breakpoint editor** takes a label, page:offset or a CPU address for a memory cell,
-  shows how it read the address, and has Cancel and tooltips.
+- **Debugging from a script**: `--bench N` runs a program with no window in every build, ends
+  on a breakpoint, and its exit code says whether it ran to the end, stopped or failed.
 
-- **A ZX Evo panel in the debugger**: on TSConf, the registers decoded with what waits for
-  the next line, the sprites, the tiles and tile maps, the DMA transfers of the last frame and
-  the palette rows each layer uses; on BaseConf, the pager, the ports and the palette. Like
-  the Sound and Screen panels, it can be detached into a window of its own. The TSConf FMAPS
-  window is marked in the memory dump and the memory map. *(thanks to Sergei Smirnov)*
+- **Cheats**: Tools > Cheats turns a `.pok` file's trainers on and off while the game runs,
+  and off puts the bytes back. Custom POKEs take an address and a value. The Debug menu is
+  now Tools.
 
-- **TSConf layers can be hidden** from the picture - the three sprite layers, the two tile
-  layers and the bitmap - without changing the machine's timing. With the machine stopped in
-  the debugger, the picture is redrawn at once.
+- **The Disk Manager shows +3DOS disks**, with Copy to tape, Save as Hobeta and Save as RAW
+  as on TR-DOS.
 
-- **Gamepad presets in a click**: Load in the Gamepads window lists the `.pad` files used
-  last, the one in play checked, and the Gamepads menu switches between them mid-game or
-  resets the table to the defaults. *(thanks to Volutar)*
-
-- **Fast Mode render** in Options -> Emulation, Speed and rewind: how many frames a second
-  Fast Mode and fast loading show, and how they are drawn - a raster as at normal speed, or a
-  simplified dump of video memory at the end of a frame. A pause in Fast Mode stops on a whole
-  frame.
-
-- **The Disk Manager shows +3DOS disks**: each file's type, address, length and size, with
-  Copy to tape, Save as Hobeta and Save as RAW as on TR-DOS. CPC system and data disks,
-  which the +3 reads too, show as well.
-
-- **Cheats**: Tools > Cheats ticks a `.pok` file's trainers on and off while the game runs,
-  and unticking one puts the bytes back. A file in `POKES` or beside the image is found by
-  itself, and a trainer made for another release of the game asks first. Custom POKEs take
-  an address and a value in decimal or hex. The Debug menu is now Tools.
-
-- **divMMC**: the SD card interface for the ZX Spectrum 48K, 128K, +2, +2A and +3 and the
-  Pentagons, with a card from an image or a folder in each of its two slots. esxDOS 0.8.5 to
-  0.8.9 come with the emulator, 0.8.9 in its EEPROM from the start, and New esxDOS Folder in
-  a card's menu makes a card of the release the EEPROM holds, ready to fill with programs.
-  *(thanks to Miguel Guerreiro / Papaya Dezign for the permission to bundle esxDOS)*
-
-- **divMMC on and off without Options**: Media > divMMC, the right-click menu, a toolbar button
-  or a hotkey of your choice. It is a Hard Reset, so it asks first, and the machine keeps the
-  setting. While the board is on, the floppy drives and the hard disk are out of the machine
-  and come back with their disks when it goes; the status bar shows them struck through and
-  has a light for the board's cards. *(thanks to Volutar)*
-
-- **View > Border** sets the border size at once, with the machine running or paused.
+- **Gamepad presets in a click**: Load and the Gamepads menu list the `.pad` files used last.
   *(thanks to Volutar)*
 
-- **Lock Toolbar** in the toolbar's right-click menu, on by default: a slip of the mouse no
-  longer moves a button. Untick it to drag buttons around. *(thanks to Volutar)*
+- **View > Border** sets the border size at once, running or paused. *(thanks to Volutar)*
 
 ### Changed
 
-- **Fast Forward** draws as many frames a second as normal speed does and skips the rest,
-  so it runs faster. A flickering sprite still shows both of its phases, antiflicker mixes
-  only the frames shown, and a video recorded meanwhile keeps its timing.
+- **Faster emulation**: Fast Mode runs three to six times as fast, up to fourteen on TSConf,
+  and fast loading takes about a third of the time, with every machine running exactly as
+  before. Fast Forward and Fast Mode draw only as many frames as they show (Options >
+  Emulation, Speed and rewind), so a video recorded meanwhile keeps its timing.
 
-- **The toolbar fits the window**: Icon Size has **Auto**, the default, with 24 x 24 icons
-  while every button fits the window's width and 16 x 16 at a smaller zoom or border.
+- **The virtual keyboard** is drawn at the size of its window, sharp at any zoom, with classic
+  and white skins of the 48K and 128K keyboards and Next ones, picked by machine or by hand.
+  A pressed key lights up, Caps Shift and Symbol Shift lock with a click, and the window
+  opens where it was left. *(48K and 128K skins drawn by Volutar)*
 
-- **The time controls** are drawn like the on-screen signs, white signs in a thin frame, and
-  read on light and dark styles alike. Slow Motion and Fast Forward show their speeds, 1/2 to
-  1/8 and x2 to x8, and Fast Mode has two arrows, as their signs on the picture do.
+- **The toolbar** sizes its icons to the window (Icon Size Auto) and is locked against slips
+  of the mouse. Its Fast Forward, Slow Motion and Fast Mode buttons work as their keys do.
+  *(thanks to Volutar)*
 
-- **The toolbar's Fast Forward, Slow Motion and Fast Mode buttons** work as their keys do:
-  Toggle, Hold or Tap or hold, as set in Options -> Emulation. The menu items still switch.
+- **Clearer icons**: the time controls drawn like the on-screen signs, with their speeds, new
+  icons for Model, Virtual Keyboard, Keymap, Shaders and Size, light versions on dark styles,
+  and icons drawn for 16 px shown at that size. *(thanks to Volutar)*
 
-- **Icons on dark styles**: NMI, Filter and Font get a light version on a dark one.
+- **The status bar**: the tape and drive lights are one set, dim when empty, gray loaded,
+  green reading and red writing, and the machine name opens the Model menu.
+  *(thanks to Volutar)*
 
-- **Rewind at end** is on in a new configuration: a tape played to its end starts over on the
-  next Play or LOAD.
+- **The breakpoint log** is a file of its own with no clock time in it, so two runs compare
+  line by line. The breakpoint editor takes labels and page:offset addresses.
+  *(thanks to Volutar)*
 
-- **The virtual keyboard** is drawn anew for the size of its window, sharp at every zoom
-  and screen scaling, and has classic and white skins of the 48K and the 128K keyboards
-  (**Skin** in its right-click menu, and in **View > Virtual Keyboard**); **By machine**
-  shows the 128K's on a 128K, +2, +2A and +3, and a Next skin, black, white or Magenta, on
-  the ZX Spectrum Next. A pressed key lights up (on the 128K skins on
-  the key itself, evenly at any size), and the one under the pointer dimly; a right click
-  between the rows opens the menu, Caps Shift and Symbol Shift lock with a click, and the
-  window opens where it was left. *(48K and 128K skins drawn by Volutar)*
+- **OK and Cancel** in the windows Options opens: Cancel puts back what the window showed.
 
-- **Reset with a divMMC on** clears the board's MAPRAM setting, as the ZX Spectrum Next's
-  board does, so a program that crashes into setting it (BREAK held during a load from the
-  card, for one) no longer leaves a machine that only Hard Reset brings back: a reset gives
-  esxDOS's warm start into 48K BASIC. The original board keeps MAPRAM until the power goes.
-
-- **The tape and drive lights** in the status bar are one set: dim with nothing in, gray
-  loaded, green reading, red writing, and they blink while working. The tape's light stays
-  with no tape in, and beside it is the block's progress. *(thanks to Volutar)*
-
-- **OK and Cancel in the windows Options opens**: Cancel puts back what a window showed when
-  it opened.
-
-- **Hard Reset reads a folder used as a card or a disk again**, so files copied into it are
-  there.
-
-- **Faster emulation**: Fast Mode runs three to six times as fast on every machine, and on
-  TSConf up to fourteen times. Fast loading takes about a third of the time. Every machine
-  runs exactly as before.
-
-- **A tape plays at its real speed on the 128K, +2, +2A and +3**: their tape ran 1.3% fast,
-  as it was timed off their CPU clock rather than the 3.5 MHz of a ZX tape.
-
-- **The machine name in the status bar** opens the Model menu, with either button.
-
-- **Clearer icons**: a rubber 48K for Model, rubber keys for Virtual Keyboard and Keymap, a
-  CRT for Shaders and a new one for Size. The machine list is Machine > Model on the menu
-  bar. An icon drawn for 16 px is the one shown at that size everywhere, not the big one
-  scaled down. *(thanks to Volutar)*
+- **Rewind at end** is on in a new configuration.
 
 ### Fixed
 
-- **No old sound after Fast Mode, a rewind or a load**: what plays next is the machine as it
-  is now. Each switch out of Fast Mode used to leave a little more sound in the buffer, so
-  up to half a second of the music from before it came back, and a new game opened over a
-  playing one began with bursts of the old one. *(reported by Volutar)*
+- **Tapes load more reliably**: fast and flash loading take tapes they used to fail (The Eye
+  of Vartan, Chromatrons Attack, Action Force 2, Rick Dangerous, Loco-Motion), TZX pulse
+  blocks follow TZX 1.20 (Moonlighter), and auto stop ends where the load does. The tape no
+  longer starts or runs on by itself between loads. *(Loco-Motion reported by Volutar)*
 
-- **The docked virtual keyboard** takes the new width as soon as the emulator window changes
-  size, not on the next move of the window.
+- **Tapes play at their real speed** on the 128K, +2, +2A and +3; they ran 1.3% fast.
 
-- **Running a tape with a divMMC on** works on the 128K and the Pentagon too: esxDOS leaves
-  every machine in 48K BASIC, so those are the keys it gets, after a Hard Reset so that a
-  tape attached in esxDOS does not take the `LOAD` instead. Opening a disk while the board is
-  on offers to switch it off first. *(reported by Volutar)*
+- **No old sound after Fast Mode, a rewind or a load**. *(reported by Volutar)*
 
-- **The window title with a divMMC** names the card while esxDOS reads it, by its image or
-  folder, and no longer a tape left in the deck. *(reported by Volutar)*
+- **FLASH no longer strobes** under fast loading and in Fast Mode. *(reported by Volutar)*
 
-- **Options in fullscreen** stays in view after Apply: it used to vanish behind the picture
-  while still taking every key and click, so nothing in the emulator answered until it was
-  closed blind. Ticking Fullscreen and pressing OK no longer leaves the window deaf to the
-  mouse and the keyboard, and leaving fullscreen through that box puts the window back where
-  it was, title bar in view. *(reported by Alf)*
+- **Fullscreen**: Options stays in view after Apply and no longer leaves the window deaf to
+  the mouse and keys, and the picture no longer comes up stretched with Keep Aspect Ratio.
+  *(reported by Alf)*
 
-- **Wide dots in fullscreen** with Keep Aspect Ratio on: now and then a switch into or out
-  of fullscreen, with the adaptive antiflicker's look ahead or run-ahead on, came up with the
-  picture stretched sideways (or squeezed, on the way out) until Keep Aspect Ratio was
-  switched off and on again. *(reported by Alf)*
+- **The +3**: 720K disks load again, and a tape loads even with a disk in drive A.
 
-- **FLASH no longer strobes under fast loading** and in Fast Mode: the picture blinks at its
-  usual rate. *(reported by Volutar)*
+- **HALT on the last byte of contended memory** runs its idle cycles at the next byte, as a
+  real Z80 does; HALT2INT (Mark Woodmass) passes on the 48K, 128K and +2.
 
-- **Fast loading** no longer gives "R Tape loading error" on tapes whose headers are a byte
-  longer than usual (The Eye of Vartan), and no longer starts the tape by itself while a game
-  between two loads reads the keys (Dragon Breed played its later levels to nobody). Nor does
-  a game that has loaded run fast while the tape plays out its last pause (Havoc 128K).
+- **The PC keyboard on ZX Evo** no longer repeats keys by itself.
 
-- **Tape auto stop after a load** no longer misses a game that waits for a key, or a tape
-  that ends in a long pause: the tape stops and fast loading ends where the load did, so the
-  game starts from its beginning (Destiny Mission, Donald's Alphabet Chase, Joe Blade 2, Kat
-  Trap).
+- **PC keys that type a Spectrum pair** - `.`, `,`, Delete, the arrows - keep their shift in
+  programs that read the keyboard themselves, such as NEXTplorer.
 
-- **The PC keyboard on ZX Evo** no longer repeats keys by itself: in Wild Commander a
-  short press could run the cursor to the end of the list, and F1 opened and closed its
-  window again. Keys repeated far too fast with antiflicker's look ahead or run-ahead on.
+- **Changed disks and tapes are asked about** on exit, eject and replace, a format that
+  cannot be written asks where to save, and a save that fails says so.
 
-- **PC keys that type a Spectrum pair** - `.`, `,`, Delete, the arrows and the like - keep
-  their Symbol or Caps Shift in programs that read the keyboard themselves, such as
-  NEXTplorer: the shift goes down just before the key and up just after it, as the ZX
-  Spectrum Next and the ZX Evo do it.
+- **A broken or cut file** - a disk, a tape or a snapshot - is refused instead of crashing or
+  hanging the emulator.
 
-- **HALT on the last byte of contended memory**: a halted CPU runs its idle cycles at the
-  byte after the HALT, as a real Z80 does. HALT2INT (Mark Woodmass) now tells early and late
-  timings apart on the 48K, 128K and +2.
+- **A TR-DOS program copied to tape** keeps its variables and its autostart line.
 
-- **720K disks on the +3** load again: the second side of a double-sided disk read as an
-  error, and the +3 fell back to the tape loader.
-
-- **A tape opened on the +3** loads from the tape even with a disk in drive A, which stays
-  in the drive, and starts as quickly as on the +2A; fast mode is no longer slowed by an idle
-  disk controller. The disk motor now starts and stops both drives.
-
-- **A TR-DOS program copied to tape** keeps its variables and its autostart line, and one
-  whose last bytes run into another sector is no longer refused as joined. Saved as RAW, it
-  keeps its variables too.
-
-- **Starting from a folder of thousands of files** no longer freezes the window for seconds,
-  and the places list in the file dialog shows its names whole.
-
-- **Turbo tapes whose header is raw pulses**, such as Chromatrons Attack, load with fast
-  loading on and auto play off; so do tapes that start with a direct recording.
-
-- **Quitting while an RZX records** writes the whole recording; it used to keep only the last
-  autosave and could end in a crash.
-
-- **Changed disks and tapes are asked about** on exit, on eject and when another image
-  replaces them, each by its file name; saving one disk no longer cancels the exit. Save on
-  a format that cannot be written (TZX, TD0, FDI, IMA) asks where instead of losing the
-  changes.
-
-- **A save that fails says so**, such as a tape TAP cannot hold or a disk that is not
-  TR-DOS, and a file of an unknown type is reported and kept out of the recent list.
-
-- **A `.pad` file with a non-Latin name** loads and saves on Windows.
-
-- **Closing the question about a game's gamepad bindings** cancels the change: the title
-  bar's X, Esc and the new Cancel button leave the game's bindings as they were.
-
-- **TZX pulse levels** follow the TZX 1.20 rules, and a run of pulse blocks ended by a pause
-  block, a "stop if 48K" or the end of the tape loads too; Basil the Great Mouse Detective
-  and Moonlighter load.
-
-- **Flash loading** leaves the registers as the ROM's loader does and keeps the tape playing
-  through a short gap after the block, so Action Force 2, Rick Dangerous and Loco-Motion
-  load. A keyboard scan during a pause no longer stops the tape.
-  *(Loco-Motion reported by Volutar)*
-
-- **Apply with another model** in Options keeps what was changed on the other pages.
-
-- **The command line** warns about an unknown option or a missing value instead of opening
-  it as a file, keeps a snapshot named before `-m`, reads `#`, `$` and `0x` as hex and
-  anything else as decimal, and `-c` uses the console it was started from and leaves an
-  output sent to a file where it is. Started from a console by name alone, the emulator no
-  longer quits at once.
-
-- **Screenshots** go to the home folder whatever drive the emulator runs from, and one that
-  cannot be written says so.
-
-- **The palette editor** works only on a palette file and holds its changes until Apply;
-  Restore brings back a shipped palette, and palettes are listed without the extension.
-
-- **Shift or Ctrl held with a hotkey** that has no combination of its own does what the key
-  alone does and stays pressed for the machine: Ctrl+F12 on TSConf resets into the TS-BIOS
-  setup, Shift+F12 into its Caps Shift boot choice.
-
-- **Open in the Disk Manager** and on a drive in the Drives menu puts the disk into that drive
-  and no longer starts it, as Open in the Tape Player does.
+- **Quitting while an RZX records** keeps the whole recording.
 
 - **A machine switch, a reset or another file during fast loading** no longer freezes the
-  window for seconds, brings the old machine back or lets autostart type on into the new
-  one, and a paused machine no longer keeps a CPU core busy.
+  window or brings the old machine back.
 
-- **Smaller things**: Record in the tape player works on an empty deck, the Fast Mode button
-  switches it when the key is set to Hold, a keymap line with many keys no longer overruns,
-  the debugger's disk dump tab keeps its icon after a switch to another model, and a number
-  of messages, tooltips and labels are corrected.
+- **A folder of thousands of files** no longer freezes the window at start.
+
+- **The command line** warns about an unknown option, reads `#`, `$` and `0x` as hex, and
+  started from a console no longer quits at once.
+
+- **Shift or Ctrl with a hotkey** of no combination of its own does what the key alone does
+  and stays pressed for the machine: Ctrl+F12 on TSConf opens the TS-BIOS setup.
+
+- **Gamepads**: a `.pad` file with a non-Latin name loads on Windows, and the question about
+  a game's bindings can be cancelled.
+
+- **Smaller things**: the palette editor holds its changes until Apply, screenshots go where
+  they say, Apply with another model keeps the other pages, Open in the Disk Manager no
+  longer starts the disk, the docked virtual keyboard follows the window's width at once,
+  Record works on an empty deck, and many messages and tooltips are corrected.
 
 ## 2026.7 - 2026-10-10
 
