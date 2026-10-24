@@ -1,0 +1,56 @@
+# esp-bench cases: the Next with the emulated ESP-01 on UART 0 and a server on 127.0.0.1.
+#
+#   bin  <file in bin/>  <source in asm/>  [DEFINE=value ...]   how mkbins.py assembles it
+#   run  <case>  <file in bin/>  <frames>  [ENV=value ...]      one run of esp-bench
+#
+# A run with SCRIPT=<file in scripts/> is a script through bridge.bin (main.cpp says how).
+
+bin nxp_init.bin         nxp.asm            CASE=1
+bin nxp_fetch.bin        nxp.asm            CASE=2
+bin nxp_dinfo.bin        nxp.asm            CASE=3
+bin nxp_stall.bin        nxp.asm            CASE=4
+bin bridge.bin           bridge.asm
+
+run nxp_init             nxp_init.bin       400
+run nxp_fetch            nxp_fetch.bin      1500
+run nxp_dinfo            nxp_dinfo.bin      1500
+run nxp_stall            nxp_stall.bin      1500
+
+run basic_gmr                    bridge.bin         6000   SCRIPT=basic_gmr.txt FLASH=esp01.conf
+run basic_pins                   bridge.bin         6000   SCRIPT=basic_pins.txt FLASH=esp01.conf
+run basic_prog_bridgezx          bridge.bin         6000   SCRIPT=basic_prog_bridgezx.txt FLASH=esp01.conf
+run basic_prog_espbaud           bridge.bin         6000   SCRIPT=basic_prog_espbaud.txt FLASH=esp01.conf
+run basic_prog_netman            bridge.bin         6000   SCRIPT=basic_prog_netman.txt FLASH=esp01.conf
+run basic_prog_nextsync          bridge.bin         6000   SCRIPT=basic_prog_nextsync.txt FLASH=esp01.conf
+run basic_prog_unite             bridge.bin         6000   SCRIPT=basic_prog_unite.txt FLASH=esp01.conf
+run basic_rx                     bridge.bin         6000   SCRIPT=basic_rx.txt FLASH=esp01.conf
+run basic_sys                    bridge.bin         6000   SCRIPT=basic_sys.txt FLASH=esp01.conf
+run basic_uart                   bridge.bin         6000   SCRIPT=basic_uart.txt FLASH=esp01.conf
+run tcp_dns                      bridge.bin         6000   SCRIPT=tcp_dns.txt FLASH=esp01.conf
+run tcp_link0                    bridge.bin         6000   SCRIPT=tcp_link0.txt FLASH=esp01.conf
+run tcp_link1                    bridge.bin         6000   SCRIPT=tcp_link1.txt FLASH=esp01.conf
+run tcp_misc                     bridge.bin         6000   SCRIPT=tcp_misc.txt FLASH=esp01.conf
+run tcp_pass                     bridge.bin         6000   SCRIPT=tcp_pass.txt FLASH=esp01.conf
+run tcp_passive                  bridge.bin         6000   SCRIPT=tcp_passive.txt FLASH=esp01.conf
+run tcp_prog_bridgezx            bridge.bin         6000   SCRIPT=tcp_prog_bridgezx.txt FLASH=esp01.conf
+run tcp_prog_nextsync            bridge.bin         6000   SCRIPT=tcp_prog_nextsync.txt FLASH=esp01.conf
+run tcp_prog_nget                bridge.bin         6000   SCRIPT=tcp_prog_nget.txt FLASH=esp01.conf
+run tcp_prog_penguin             bridge.bin         6000   SCRIPT=tcp_prog_penguin.txt FLASH=esp01.conf
+run tcp_prog_termy               bridge.bin         6000   SCRIPT=tcp_prog_termy.txt FLASH=esp01.conf
+run tcp_prog_uploader            bridge.bin         6000   SCRIPT=tcp_prog_uploader.txt FLASH=esp01.conf
+run tcp_prog_wifiprn             bridge.bin         6000   SCRIPT=tcp_prog_wifiprn.txt FLASH=esp01.conf
+run tcp_prog_zxmit               bridge.bin         6000   SCRIPT=tcp_prog_zxmit.txt FLASH=esp01.conf
+run tcp_send                     bridge.bin         6000   SCRIPT=tcp_send.txt FLASH=esp01.conf
+run tcp_sendbuf                  bridge.bin         6000   SCRIPT=tcp_sendbuf.txt FLASH=esp01.conf
+run tcp_server                   bridge.bin         6000   SCRIPT=tcp_server.txt FLASH=esp01.conf
+run tcp_translink                bridge.bin         6000   SCRIPT=tcp_translink.txt FLASH=esp01.conf
+run tcp_udp                      bridge.bin         6000   SCRIPT=tcp_udp.txt FLASH=esp01.conf
+run wifi_ap                      bridge.bin         6000   SCRIPT=wifi_ap.txt FLASH=esp01.conf
+run wifi_dhcp                    bridge.bin         6000   SCRIPT=wifi_dhcp.txt FLASH=esp01.conf
+run wifi_join                    bridge.bin         6000   SCRIPT=wifi_join.txt FLASH=esp01.conf
+run wifi_lap                     bridge.bin         6000   SCRIPT=wifi_lap.txt FLASH=esp01.conf
+run wifi_misc                    bridge.bin         6000   SCRIPT=wifi_misc.txt FLASH=esp01.conf
+run wifi_mode                    bridge.bin         6000   SCRIPT=wifi_mode.txt FLASH=esp01.conf
+run wifi_prog_netman_nihirash    bridge.bin         6000   SCRIPT=wifi_prog_netman_nihirash.txt FLASH=esp01.conf
+run wifi_prog_netmanzx           bridge.bin         6000   SCRIPT=wifi_prog_netmanzx.txt FLASH=esp01.conf
+run wifi_prog_wifibas            bridge.bin         6000   SCRIPT=wifi_prog_wifibas.txt FLASH=esp01.conf

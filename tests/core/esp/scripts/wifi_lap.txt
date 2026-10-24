@@ -1,0 +1,77 @@
+# chapter 4 (at176-ch4.md): wifi_lap.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWLAP
+wait OK\r\n 10000
+send AT+CWLAP?
+wait ERROR\r\n 10000
+send AT+CWLAP=?
+wait ERROR\r\n 10000
+send AT+CWLAP="Xpeccy+"
+wait OK\r\n 10000
+send AT+CWLAP="Other"
+wait OK\r\n 10000
+send AT+CWLAP=,"5c:cf:7f:00:00:01"
+wait OK\r\n 10000
+send AT+CWLAP=,"5c:cf:7f:00:00:02"
+wait OK\r\n 10000
+send AT+CWLAP=,,6
+wait OK\r\n 10000
+send AT+CWLAP=,,1
+wait OK\r\n 10000
+send AT+CWLAP=,,15
+wait ERROR\r\n 10000
+send AT+CWLAP=,,,1,,
+wait OK\r\n 10000
+send AT+CWLAP=,,,2
+wait ERROR\r\n 10000
+send AT+CWLAP=,,,0,0,1501
+wait ERROR\r\n 10000
+send AT+CWLAP="Xpeccy+","5c:cf:7f:00:00:01",6,0,0,1500
+wait OK\r\n 10000
+send AT+CWLAP=Xpeccy+
+wait ERROR\r\n 10000
+send AT+CWLAPOPT=?
+wait ERROR\r\n 10000
+send AT+CWLAPOPT?
+wait ERROR\r\n 10000
+send AT+CWLAPOPT
+wait ERROR\r\n 10000
+send AT+CWLAPOPT=2,2047
+wait ERROR\r\n 10000
+send AT+CWLAPOPT=1
+wait ERROR\r\n 10000
+send AT+CWLAPOPT=1,x
+wait ERROR\r\n 10000
+send AT+CWLAPOPT=1,2047x
+wait ERROR\r\n 10000
+send AT+CWLAPOPT=0,2
+wait OK\r\n 10000
+send AT+CWLAP
+wait OK\r\n 10000
+send AT+CWLAPOPT=0,0
+wait OK\r\n 10000
+send AT+CWLAP
+wait OK\r\n 10000
+send AT+CWLAPOPT=1,1036
+wait OK\r\n 10000
+send AT+CWLAP
+wait OK\r\n 10000
+send AT+CWLAPOPT=1,2047
+wait OK\r\n 10000
+send AT+CWJAP_CUR="Xpeccy+","password1"
+wait OK\r\n 10000
+send AT+CWLAP
+wait OK\r\n 10000
+send AT+CWMODE_CUR=2
+wait WIFI DISCONNECT\r\n 10000
+send AT+CWLAP
+wait ERROR\r\n 10000
+send AT+CWLAP="Xpeccy+"
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR=3
+wait WIFI GOT IP\r\n 10000
+send AT+CWLAP
+wait OK\r\n 10000

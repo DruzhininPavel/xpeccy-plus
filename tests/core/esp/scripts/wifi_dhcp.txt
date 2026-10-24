@@ -1,0 +1,119 @@
+# chapter 4 (at176-ch4.md): wifi_dhcp.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWDHCP?
+wait OK\r\n 10000
+send AT+CWDHCP_CUR?
+wait OK\r\n 10000
+send AT+CWDHCP_DEF?
+wait OK\r\n 10000
+send AT+CWDHCP=?
+wait ERROR\r\n 10000
+send AT+CWDHCP_CUR
+wait ERROR\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CIPSTA_CUR?
+wait OK\r\n 10000
+send AT+CIPSTA_DEF?
+wait OK\r\n 10000
+send AT+CWDHCP_CUR=0,0
+wait OK\r\n 10000
+send AT+CWDHCP_CUR?
+wait OK\r\n 10000
+send AT+CWDHCP_DEF?
+wait OK\r\n 10000
+send AT+CWDHCP_CUR=1,0
+wait OK\r\n 10000
+send AT+CWDHCP_CUR?
+wait OK\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CWDHCP_CUR=2,1
+wait OK\r\n 10000
+send AT+CWDHCP_CUR?
+wait OK\r\n 10000
+send AT+CWDHCP_CUR=3,1
+wait ERROR\r\n 10000
+send AT+CWDHCP_CUR=1,2
+wait ERROR\r\n 10000
+send AT+CWDHCP_CUR=1
+wait ERROR\r\n 10000
+send AT+CWDHCP=17,1
+wait ERROR\r\n 10000
+send AT+CWDHCP_CUR=1,1x
+wait ERROR\r\n 10000
+send AT+CIPSTA_CUR="10.0.0.5"
+wait OK\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CWDHCP?
+wait OK\r\n 10000
+send AT+CIPSTA_CUR="10.0.0.6","10.0.0.254"
+wait OK\r\n 10000
+send AT+CIPSTA_CUR?
+wait OK\r\n 10000
+send AT+CIPSTA_CUR="10.0.0.7",,"255.255.0.0"
+wait OK\r\n 10000
+send AT+CIPSTA_CUR?
+wait OK\r\n 10000
+send AT+CIPSTA_CUR="10.0.0.300"
+wait ERROR\r\n 10000
+send AT+CIPSTA_CUR=10.0.0.5
+wait ERROR\r\n 10000
+send AT+CIPSTA_CUR="10.0.0.5"x
+wait ERROR\r\n 10000
+send AT+CIPSTA_CUR
+wait ERROR\r\n 10000
+send AT+CIPSTA_DEF?
+wait OK\r\n 10000
+send AT+CIPSTA="192.168.1.80"
+wait OK\r\n 10000
+send AT+CIPSTA_DEF?
+wait OK\r\n 10000
+send AT+CWDHCP_DEF?
+wait OK\r\n 10000
+send AT+CWDHCP=1,1
+wait OK\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CWDHCP_DEF?
+wait OK\r\n 10000
+send AT+CWDHCP_CUR=1,0
+wait OK\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CWDHCP_CUR=1,1
+wait OK\r\n 10000
+send AT+CWDHCP=0,1
+wait OK\r\n 10000
+send AT+CWDHCP?
+wait OK\r\n 10000
+send AT+CIPSTAMAC?
+wait OK\r\n 10000
+send AT+CIPSTAMAC_DEF?
+wait OK\r\n 10000
+send AT+CIPSTAMAC_CUR="18:fe:35:98:d3:7b"
+wait OK\r\n 10000
+send AT+CIPSTAMAC_CUR?
+wait OK\r\n 10000
+send AT+CIPSTAMAC_DEF?
+wait OK\r\n 10000
+send AT+CIPSTAMAC="1a:fe:35:98:d3:7c"
+wait OK\r\n 10000
+send AT+CIPSTAMAC_DEF?
+wait OK\r\n 10000
+send AT+CIPSTAMAC_CUR="19:fe:35:98:d3:7b"
+wait ERROR\r\n 10000
+send AT+CIPSTAMAC_CUR="18:fe:35:98:d3"
+wait ERROR\r\n 10000
+send AT+CIPSTAMAC_CUR="18-fe-35-98-d3-7b"
+wait ERROR\r\n 10000
+send AT+CIPSTAMAC_CUR=?
+wait ERROR\r\n 10000
+send AT+CIPSTAMAC
+wait ERROR\r\n 10000
+send AT+CWHOSTNAME?
+wait OK\r\n 10000

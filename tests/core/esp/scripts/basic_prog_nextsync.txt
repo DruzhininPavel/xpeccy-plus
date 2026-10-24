@@ -1,0 +1,22 @@
+# NextSync .SYNC (programs.md g0): the \r\n probe, AT+UART_CUR=1152000 not awaited, the Next to the fast
+# prescaler, \r\n probe again, ATE0; at the end AT+UART_CUR=115200 not awaited.
+# The program switches as soon as the first byte comes back and drains the rest as garbage; the bench waits
+# for the whole old-rate reply instead, so the transcript stays readable.
+mask ^.*\\x[89A-F][0-9A-F].* <garbage>
+wait WIFI GOT IP\r\n 5000
+raw \r\n
+quiet 300
+send AT+UART_CUR=1152000,8,1,0,0
+quiet 100
+presc 24
+raw \r\n
+quiet 300
+send ATE0
+quiet 300
+send AT+UART_CUR?
+quiet 300
+send AT+UART_CUR=115200,8,1,0,0
+quiet 100
+presc 243
+send AT
+quiet 300

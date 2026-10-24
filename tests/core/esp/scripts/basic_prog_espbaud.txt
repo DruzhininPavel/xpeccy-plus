@@ -1,0 +1,20 @@
+# .ESPBAUD (sys:src/c/DotCommands/espbaud): -s 1152000 (UART_CUR, temporary) then the detect at the new
+# rate, the fine tune by AT+UART_CUR?, -v (AT+GMR); then back to 115200. Its own byte sequences.
+mask ^.*\\x[89A-F][0-9A-F].* <garbage>
+wait WIFI GOT IP\r\n 5000
+raw \r\nAT\r\n
+quiet 300
+raw \r\nAT+UART_CUR=1152000,8,1,0,0\r\n
+quiet 300
+presc 24
+raw \r\nAT\r\n
+quiet 300
+raw AT+UART_CUR?\r\n
+quiet 300
+raw AT+GMR\r\n
+quiet 300
+raw \r\nAT+UART_CUR=115200,8,1,0,0\r\n
+quiet 300
+presc 243
+raw \r\nAT\r\n
+quiet 300

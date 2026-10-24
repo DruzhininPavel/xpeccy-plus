@@ -1,0 +1,177 @@
+# chapter 4 (at176-ch4.md): wifi_ap.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWSAP?
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR?
+wait ERROR\r\n 10000
+send AT+CWSAP_DEF?
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",1,3
+wait ERROR\r\n 10000
+send AT+CWLIF
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR?
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=0
+wait ERROR\r\n 10000
+send AT+CIPAP_CUR="192.168.5.1"
+wait ERROR\r\n 10000
+send AT+CIPAPMAC_CUR="1a:fe:36:97:d5:7b"
+wait ERROR\r\n 10000
+send AT+CIPAP?
+wait OK\r\n 10000
+send AT+CIPAPMAC?
+wait OK\r\n 10000
+send AT+CWMODE_CUR=3
+wait OK\r\n 10000
+send AT+CWSAP?
+wait OK\r\n 10000
+send AT+CWSAP=?
+wait ERROR\r\n 10000
+send AT+CWSAP
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="Xp\\,AP","12345678",5,3
+wait OK\r\n 10000
+send AT+CWSAP_CUR?
+wait OK\r\n 10000
+send AT+CWSAP_DEF?
+wait OK\r\n 10000
+send AT+CWSAP_CUR="a","12345678",14,3
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",0,3
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",1,1
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",1,5
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","1234567",1,3
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",1,3,9
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",1,3,0
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",1,3,8,2
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="","12345678",1,3
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",1,3x
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="a","12345678",1
+wait ERROR\r\n 10000
+send AT+CWSAP_CUR="open","",1,0
+wait OK\r\n 10000
+send AT+CWSAP_CUR?
+wait OK\r\n 10000
+send AT+CWSAP_CUR="max","12345678",2,4,8,1
+wait OK\r\n 10000
+send AT+CWSAP_CUR?
+wait OK\r\n 10000
+send AT+CWSAP_CUR="keep","abcdefgh",3,2
+wait OK\r\n 10000
+send AT+CWSAP?
+wait OK\r\n 10000
+send AT+CWSAP="Def","abcdefgh",11,4,2,0
+wait OK\r\n 10000
+send AT+CWSAP_DEF?
+wait OK\r\n 10000
+send AT+CWSAP_CUR?
+wait OK\r\n 10000
+send AT+CWLIF
+wait OK\r\n 10000
+send AT+CWLIF?
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR?
+wait OK\r\n 10000
+send AT+CWDHCPS_DEF?
+wait OK\r\n 10000
+send AT+CWDHCPS_CUR=1,3,"192.168.4.10","192.168.4.15"
+wait OK\r\n 10000
+send AT+CWDHCPS_CUR?
+wait OK\r\n 10000
+send AT+CWDHCPS_CUR=1,0,"192.168.4.10","192.168.4.15"
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=1,2881,"192.168.4.10","192.168.4.15"
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=1,3,"192.168.5.10","192.168.5.15"
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=1,3,"192.168.4.15","192.168.4.10"
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=1,3,192.168.4.10,192.168.4.15
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=1,3
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=2
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=0,1
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=0
+wait OK\r\n 10000
+send AT+CWDHCPS_CUR?
+wait OK\r\n 10000
+send AT+CWDHCPS_DEF=1,60,"192.168.4.20","192.168.4.30"
+wait OK\r\n 10000
+send AT+CWDHCPS_DEF?
+wait OK\r\n 10000
+send AT+CWDHCPS_CUR?
+wait OK\r\n 10000
+send AT+CWDHCPS?
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR
+wait ERROR\r\n 10000
+send AT+CWDHCPS_CUR=?
+wait ERROR\r\n 10000
+send AT+CIPAP_CUR="192.168.5.1"
+wait OK\r\n 10000
+send AT+CIPAP_CUR?
+wait OK\r\n 10000
+send AT+CIPAP_CUR="192.168.5.1","192.168.5.1","255.255.0.0"
+wait OK\r\n 10000
+send AT+CIPAP?
+wait OK\r\n 10000
+send AT+CIPAP_CUR="300.1.1.1"
+wait ERROR\r\n 10000
+send AT+CIPAP_CUR=192.168.5.1
+wait ERROR\r\n 10000
+send AT+CIPAP_CUR="192.168.5.1"x
+wait ERROR\r\n 10000
+send AT+CIPAP_DEF?
+wait OK\r\n 10000
+send AT+CIPAP="192.168.6.1","192.168.6.1"
+wait OK\r\n 10000
+send AT+CIPAP_DEF?
+wait OK\r\n 10000
+send AT+CIPAP=?
+wait ERROR\r\n 10000
+send AT+CIPAPMAC_CUR="1a:fe:36:97:d5:7b"
+wait OK\r\n 10000
+send AT+CIPAPMAC?
+wait OK\r\n 10000
+send AT+CIPAPMAC_DEF?
+wait OK\r\n 10000
+send AT+CIPAPMAC_CUR="1b:fe:36:97:d5:7b"
+wait ERROR\r\n 10000
+send AT+CIPAPMAC_CUR="ff:ff:ff:ff:ff:ff"
+wait ERROR\r\n 10000
+send AT+CIPAPMAC_CUR="00:00:00:00:00:00"
+wait ERROR\r\n 10000
+send AT+CIPAPMAC_CUR=1a:fe:36:97:d5:7b
+wait ERROR\r\n 10000
+send AT+CIPAPMAC_CUR="1a:fe:36:97:d5"
+wait ERROR\r\n 10000
+send AT+CIPAPMAC="1e:FE:36:97:D5:7B"
+wait OK\r\n 10000
+send AT+CIPAPMAC_DEF?
+wait OK\r\n 10000
+send AT+CIPAPMAC_CUR?
+wait OK\r\n 10000
+send AT+CWMODE_CUR=2
+wait WIFI DISCONNECT\r\n 10000
+send AT+CIPSTAMAC_CUR="18:fe:35:98:d3:7b"
+wait ERROR\r\n 10000
+send AT+CWLIF
+wait OK\r\n 10000
+send AT+CWSAP?
+wait OK\r\n 10000

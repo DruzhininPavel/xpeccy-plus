@@ -1,0 +1,52 @@
+# chapter 5: CIPDNS_CUR / CIPDNS_DEF - the default server, quoted addresses, the IP1/IP2 checks,
+# one line for two equal servers, the flash copy
+mask .*\\x[0-9A-F][0-9A-F].* <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR?
+wait \r\nOK\r\n
+send AT+CIPDNS_DEF?
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR=?
+wait \r\nERROR\r\n
+send AT+CIPDNS_CUR=1,"8.8.8.8","8.8.4.4"
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR?
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR=1,"8.8.8.8","8.8.8.8"
+wait \r\nERROR\r\n
+send AT+CIPDNS_CUR=1,8.8.8.8
+wait \r\nERROR\r\n
+send AT+CIPDNS_CUR=1,"0.0.0.0"
+wait \r\nERROR\r\n
+send AT+CIPDNS_CUR=1,"1.1.1.1",9.9.9.9
+wait \r\nERROR\r\n
+send AT+CIPDNS_CUR=1,"1.1.1.1","0.0.0.0"
+wait \r\nERROR\r\n
+send AT+CIPDNS_CUR=2
+wait \r\nERROR\r\n
+send AT+CIPDNS_CUR=1
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR?
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR=1,"1.2.3.4"
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR?
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR=0
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR?
+wait \r\nOK\r\n
+send AT+CIPDNS_DEF=1,"9.9.9.9","1.0.0.1"
+wait \r\nOK\r\n
+send AT+CIPDNS_DEF?
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR?
+wait \r\nOK\r\n
+send AT+CIPDNS_DEF=0
+wait \r\nOK\r\n
+send AT+CIPDNS_DEF?
+wait \r\nOK\r\n
+send AT+CIPDNS_CUR?
+wait \r\nOK\r\n

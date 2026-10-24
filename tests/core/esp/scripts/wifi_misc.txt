@@ -1,0 +1,135 @@
+# chapter 4 (at176-ch4.md): wifi_misc.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWHOSTNAME?
+wait OK\r\n 10000
+send AT+CWHOSTNAME=?
+wait ERROR\r\n 10000
+send AT+CWHOSTNAME
+wait ERROR\r\n 10000
+send AT+CWHOSTNAME="my_test"
+wait OK\r\n 10000
+send AT+CWHOSTNAME?
+wait OK\r\n 10000
+send AT+CWHOSTNAME=""
+wait ERROR\r\n 10000
+send AT+CWHOSTNAME=my
+wait ERROR\r\n 10000
+send AT+CWHOSTNAME="123456789012345678901234567890123"
+wait ERROR\r\n 10000
+send AT+CWCOUNTRY_CUR?
+wait OK\r\n 10000
+send AT+CWCOUNTRY_DEF?
+wait OK\r\n 10000
+send AT+CWCOUNTRY_CUR=1,"US",1,11
+wait OK\r\n 10000
+send AT+CWCOUNTRY_CUR?
+wait OK\r\n 10000
+send AT+CWCOUNTRY_DEF?
+wait OK\r\n 10000
+send AT+CWCOUNTRY_DEF=0,"JP",1,14
+wait OK\r\n 10000
+send AT+CWCOUNTRY_DEF?
+wait OK\r\n 10000
+send AT+CWCOUNTRY_CUR=2,"CN",1,13
+wait ERROR\r\n 10000
+send AT+CWCOUNTRY_CUR=1,"ABCD",1,13
+wait ERROR\r\n 10000
+send AT+CWCOUNTRY_CUR=1,"CN",0,13
+wait ERROR\r\n 10000
+send AT+CWCOUNTRY_CUR=1,"CN",5,11
+wait ERROR\r\n 10000
+send AT+CWCOUNTRY_CUR=1,CN,1,13
+wait ERROR\r\n 10000
+send AT+CWCOUNTRY_CUR=?
+wait ERROR\r\n 10000
+send AT+CWCOUNTRY?
+wait ERROR\r\n 10000
+send AT+WPS?
+wait ERROR\r\n 10000
+send AT+WPS=?
+wait ERROR\r\n 10000
+send AT+WPS=1
+wait OK\r\n 10000
+send AT+WPS=0
+wait OK\r\n 10000
+send AT+WPS=2
+wait ERROR\r\n 10000
+send AT+WPS
+wait OK\r\n 10000
+send AT+WPS=0
+wait OK\r\n 10000
+send AT+CWMODE_CUR=3
+wait OK\r\n 10000
+send AT+WPS=1
+wait ERROR\r\n 10000
+send AT+WPS
+wait ERROR\r\n 10000
+send AT+MDNS=1,"espressif","iot",8080
+wait OK\r\n 10000
+send AT+MDNS=0
+wait OK\r\n 10000
+send AT+MDNS=0,"x"
+wait ERROR\r\n 10000
+send AT+MDNS=2
+wait ERROR\r\n 10000
+send AT+MDNS=1,"","iot",8080
+wait ERROR\r\n 10000
+send AT+MDNS=1,"esp"
+wait ERROR\r\n 10000
+send AT+MDNS=1,"esp","",8080
+wait ERROR\r\n 10000
+send AT+MDNS=1,"esp","iot"
+wait ERROR\r\n 10000
+send AT+MDNS=1,"esp","iot",65535
+wait ERROR\r\n 10000
+send AT+MDNS?
+wait ERROR\r\n 10000
+send AT+MDNS
+wait ERROR\r\n 10000
+send AT+CWSTARTSMART
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR=1
+wait OK\r\n 10000
+send AT+CWSTARTSMART
+wait OK\r\n 10000
+send AT+CWSTARTSMART
+wait ERROR\r\n 10000
+send AT+CWJAP_CUR="a","b"
+wait ERROR\r\n 10000
+send AT+CWSTOPSMART
+wait OK\r\n 10000
+send AT+CWSTARTSMART=2
+wait OK\r\n 10000
+send AT+CWSTOPSMART
+wait OK\r\n 10000
+send AT+CWSTARTSMART=4
+wait ERROR\r\n 10000
+send AT+CWSTARTSMART?
+wait ERROR\r\n 10000
+send AT+CWSTOPSMART=1
+wait ERROR\r\n 10000
+send AT+CWSTARTDISCOVER="gh_9e2cff3dfa51","122475",10
+wait OK\r\n 10000
+send AT+CWSTARTDISCOVER="gh_9e2cff3dfa51","122475",86401
+wait ERROR\r\n 10000
+send AT+CWSTARTDISCOVER
+wait ERROR\r\n 10000
+send AT+CWSTOPDISCOVER
+wait OK\r\n 10000
+send AT+CWSTOPDISCOVER=?
+wait ERROR\r\n 10000
+send AT+CWQAP
+wait WIFI DISCONNECT\r\n 10000
+send AT+MDNS=1,"a","b",1
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR=2
+wait OK\r\n 10000
+send AT+MDNS=1,"a","b",1
+wait ERROR\r\n 10000
+send AT+CWHOSTNAME="x"
+wait ERROR\r\n 10000
+send AT+CWSTARTSMART
+wait ERROR\r\n 10000

@@ -182,15 +182,24 @@ int next_vsync_frame(Computer* comp, int clk28) {
 }
 
 int next_esp_fitted = 0;
+int next_esp_pins = 0;
 
-// the ESP's two lines: held in reset by NR 02 b7 (o_RESET_PERIPHERAL), and its GPIO0, low
-// only while NR A8 enables the driver and NR A9 drives 0
+// the ESP's lines: held in reset by NR 02 b7 (o_RESET_PERIPHERAL); GPIO0 driven by the Next
+// while NR A8 b0 is set (level NR A9 b0) and by the ESP when it makes it an output; GPIO2 by
+// the ESP alone. Undriven, both are pulled up on the ESP-01. Both driving: 0 wins (not measured)
 int nx_esp_reset(Computer* comp) {
 	return (NX.nr[0x02] & 0x80) ? 1 : 0;
 }
 
 int nx_esp_gpio0(Computer* comp) {
-	return !(NX.nr[0xa8] & 1) || (NX.nr[0xa9] & 1);
+	int lv = 1;
+	if (NX.nr[0xa8] & 1) lv &= NX.nr[0xa9] & 1;
+	if (next_esp_pins & 1) lv &= (next_esp_pins >> 1) & 1;
+	return lv;
+}
+
+int nx_esp_gpio2(Computer* comp) {
+	return (next_esp_pins & 4) ? (next_esp_pins >> 3) & 1 : 1;
 }
 
 // The time now in CLK_28 periods since power-on: the dot the ray is on, and the
@@ -1184,7 +1193,7 @@ static int nx_nr_read(Computer* comp, int r) {
 		case 0xa0: return nr[r] & 0x39;
 		case 0xa2: return (nr[r] & 0xdd) | 0x02;
 		case 0xa8: return nr[r] & 1;
-		case 0xa9: return !next_esp_fitted ? 0 : nx_esp_gpio0(comp) ? 0x05 : 0x04;	// GPIO2/0, pulled up on the ESP-01
+		case 0xa9: return !next_esp_fitted ? 0 : (nx_esp_gpio2(comp) << 2) | nx_esp_gpio0(comp);	// the pins GPIO2, GPIO0
 		case 0xc0: return (nr[0xc0] & 0xe9) | ((comp->cpu->regIMN & 3) << 1);
 		case 0xc4: return (nr[0xc4] & 0x82) | ((NX.pff & 0x40) ? 0 : 1);
 		case 0xc5: return nx_ctc_c5_read(comp);

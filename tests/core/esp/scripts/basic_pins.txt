@@ -1,0 +1,172 @@
+# chapter 3: SYSIO*, SYSGPIO* (GPIO0/GPIO2 seen from the Next, NR A8/A9), WAKEUPGPIO, GSLP
+mask ^.*\\x[89A-F][0-9A-F].* <garbage>
+wait WIFI GOT IP\r\n 5000
+print -- GPIO0 is a GPIO; the Next drives it
+send AT+SYSIOGETCFG=0
+quiet 300
+send AT+SYSGPIOREAD=0
+quiet 300
+nr A8 01
+nr A9 00
+send AT+SYSGPIOREAD=0
+quiet 300
+nr A8 00
+print -- GPIO2 is UART1 TX at boot
+send AT+SYSIOGETCFG=2
+quiet 300
+send AT+SYSGPIODIR=2,1
+quiet 300
+send AT+SYSGPIOREAD=2
+quiet 300
+send AT+SYSGPIOWRITE=2,1
+quiet 300
+send AT+SYSIOSETCFG=2,0,0
+quiet 300
+send AT+SYSGPIOWRITE=2,1
+quiet 300
+send AT+SYSGPIODIR=2,1
+quiet 300
+nrget A9
+send AT+SYSGPIOWRITE=2,1
+quiet 300
+nrget A9
+send AT+SYSGPIOREAD=2
+quiet 300
+send AT+SYSGPIOWRITE=2,0
+quiet 300
+nrget A9
+send AT+SYSGPIODIR=2,0
+quiet 300
+nrget A9
+send AT+SYSGPIOREAD=2
+quiet 300
+print -- pads that go nowhere
+send AT+SYSIOSETCFG=12,3,1
+quiet 300
+send AT+SYSIOGETCFG=12
+quiet 300
+send AT+SYSGPIOREAD=12
+quiet 300
+send AT+SYSGPIODIR=12,1
+quiet 300
+send AT+SYSGPIOWRITE=12,0
+quiet 300
+send AT+SYSGPIOREAD=12
+quiet 300
+send AT+SYSIOSETCFG=13;2;0
+quiet 300
+send AT+SYSIOGETCFG=13
+quiet 300
+send AT+SYSGPIOREAD=13
+quiet 300
+send AT+SYSIOSETCFG=14,4,0
+quiet 300
+send AT+SYSGPIOREAD=5
+quiet 300
+send AT+SYSGPIOWRITE=5,1
+quiet 300
+send AT+SYSIOSETCFG=16,0,0
+quiet 300
+send AT+SYSIOSETCFG=0,3,0
+quiet 300
+send AT+SYSIOSETCFG=3,2,0
+quiet 300
+send AT+SYSIOSETCFG=4,4,0
+quiet 300
+send AT+SYSIOSETCFG=12,5,0
+quiet 300
+send AT+SYSIOSETCFG=12,3,2
+quiet 300
+send AT+SYSIOSETCFG=12,3
+quiet 300
+send AT+SYSIOSETCFG?
+quiet 300
+send AT+SYSIOGETCFG=16
+quiet 300
+send AT+SYSIOGETCFG=12,1
+quiet 300
+send AT+SYSIOGETCFG
+quiet 300
+send AT+SYSGPIODIR=5,2
+quiet 300
+send AT+SYSGPIODIR=5
+quiet 300
+send AT+SYSGPIODIR=16,0
+quiet 300
+send AT+SYSGPIOWRITE=5,2
+quiet 300
+send AT+SYSGPIOREAD=16
+quiet 300
+send AT+SYSGPIOREAD=5,0
+quiet 300
+send AT+SYSGPIOREAD?
+quiet 300
+print -- light sleep: GPIO0 low wakes, GPIO2 shows awake
+send AT+SYSGPIODIR=2,0
+quiet 300
+send AT+SLEEP=1
+quiet 300
+send AT+WAKEUPGPIO=1,0,0,2,1
+quiet 300
+nrget A9
+nr A8 01
+nr A9 00
+pause 100
+nrget A9
+pause 300
+nrget A9
+nr A8 00
+pause 300
+nrget A9
+send AT+SLEEP=2
+quiet 300
+nrget A9
+send AT+WAKEUPGPIO=0
+quiet 300
+send AT+WAKEUPGPIO=2
+quiet 300
+send AT+WAKEUPGPIO=0,1
+quiet 300
+send AT+WAKEUPGPIO=1,16,0
+quiet 300
+send AT+WAKEUPGPIO=1,0,2
+quiet 300
+send AT+WAKEUPGPIO=1,0,0,4,1
+quiet 300
+send AT+WAKEUPGPIO=1,0,1,5,0
+quiet 300
+send AT+WAKEUPGPIO=1,0,0,2,2
+quiet 300
+send AT+WAKEUPGPIO=1,0
+quiet 300
+send AT+WAKEUPGPIO
+quiet 300
+send AT+WAKEUPGPIO?
+quiet 300
+send AT+WAKEUPGPIO=?
+quiet 300
+send AT+WAKEUPGPIO=1,0,1,0,1
+quiet 300
+send AT+WAKEUPGPIO=0
+quiet 300
+print -- GSLP: asleep till the Next resets it
+send AT+GSLP
+quiet 300
+send AT+GSLP?
+quiet 300
+send AT+GSLP=?
+quiet 300
+send AT+GSLP=-1
+quiet 300
+send AT+GSLP=1000,1
+quiet 300
+send AT+GSLP=1000
+quiet 300
+send AT
+quiet 2000
+nr 02 80
+pause 100
+nr 02 00
+wait WIFI GOT IP\r\n 5000
+send AT
+quiet 300

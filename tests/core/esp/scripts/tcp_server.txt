@@ -1,0 +1,83 @@
+# chapter 5: the ESP's server - CIPSERVER, CIPSERVERMAXCONN, CIPSTO (idle close), clients joining
+# and leaving, SYSMSG bit1's +LINK_CONN, a client over the limit
+mask .*\\x[0-9A-F][0-9A-F].* <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait \r\nOK\r\n
+send AT+CIPSERVER=1
+wait \r\nERROR\r\n
+send AT+CIPSERVER?
+wait \r\nERROR\r\n
+send AT+CIPMUX=1
+wait \r\nOK\r\n
+send AT+CIPSTO?
+wait \r\nOK\r\n
+send AT+CIPSTO=10
+wait \r\nERROR\r\n
+send AT+CIPSERVERMAXCONN?
+wait \r\nOK\r\n
+send AT+CIPSERVERMAXCONN=6
+wait \r\nERROR\r\n
+send AT+CIPSERVERMAXCONN=0
+wait \r\nERROR\r\n
+send AT+CIPSERVERMAXCONN=1
+wait \r\nOK\r\n
+send AT+CIPSERVERMAXCONN?
+wait \r\nOK\r\n
+send AT+CIPSERVER=2
+wait \r\nERROR\r\n
+send AT+CIPSERVER=0,80
+wait \r\nERROR\r\n
+send AT+CIPSERVER=0
+wait \r\nOK\r\n
+send AT+CIPSERVER=1,23456
+wait \r\nOK\r\n
+send AT+CIPSERVER=1,23457
+wait \r\nOK\r\n
+send AT+CIPSERVERMAXCONN=2
+wait \r\nERROR\r\n
+send AT+CIPMUX=0
+wait \r\nERROR\r\n
+send AT+CIPSTO=8000
+wait \r\nERROR\r\n
+send AT+CIPSTO=2
+wait \r\nOK\r\n
+send AT+CIPSTO?
+wait \r\nOK\r\n
+# a client: data both ways, then it is quiet for CIPSTO seconds
+dial 23456
+wait 0,CONNECT\r\n
+peer hi
+wait hi
+send AT+CIPSTATUS
+wait \r\nOK\r\n
+send AT+CIPSEND=0,3
+wait >\x20
+raw abc
+wait SEND OK\r\n
+peershow
+wait 0,CLOSED\r\n 5000
+send AT+CIPSTO=0
+wait \r\nOK\r\n
+# a client that leaves
+dial 23456
+wait 0,CONNECT\r\n
+peerclose
+wait 0,CLOSED\r\n
+# +LINK_CONN, then one over the limit: dropped, nothing said
+send AT+SYSMSG_CUR=2
+wait \r\nOK\r\n
+dial 23456
+wait 23456\r\n
+send AT+SYSMSG_CUR=0
+wait \r\nOK\r\n
+dial 23456
+quiet 500
+send AT+CIPSERVER=0
+wait 0,CLOSED\r\n
+send AT+CIPSTO=5
+wait \r\nERROR\r\n
+send AT+CIPSERVER=0
+wait \r\nOK\r\n
+send AT+CIPMUX=0
+wait \r\nOK\r\n

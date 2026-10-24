@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.dont_write_bytecode = True
 import quick  # noqa: E402
 
-PROG_BENCHES = ("tsconf", "baseconf", "divmmc", "kbd")
+PROG_BENCHES = ("tsconf", "baseconf", "divmmc", "kbd", "esp")
 
 
 def find_sjasmplus(arg):

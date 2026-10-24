@@ -946,6 +946,7 @@ void SetupWin::start() {
 			uartBox[i]->setCurrentIndex(uartBox[i]->count() - 1);
 		}
 	}
+	cbEspLan->setChecked(conf.next.espLan);
 	ui.tvHotkeys->load();
 // machine
 	int idx;
@@ -1383,6 +1384,7 @@ void SetupWin::applyGlobal() {
 		QString port = (k >= 0) ? uartBox[i]->itemData(k).toString() : txt;
 		if (port != serial_name(i)) serial_set(i, port, true);		// else a --uart-* stays
 	}
+	conf.next.espLan = cbEspLan->isChecked() ? 1 : 0;
 // emulation
 	conf.vid.lowLatency = ui.cbLowLat->isChecked() ? 1 : 0;
 	conf.emu.runahead = getRFIData(ui.cbRunAhead);
@@ -2079,6 +2081,10 @@ void SetupWin::buildDevices() {
 
 	grid = devGroup(right, ":/images/grp-board.png", tr("Board"));
 	devRow(grid, tr("Turbo"), cbCpuTurbo, NULL, NULL);
+	cbEspLan = new QCheckBox;
+	xOptSheet esp;
+	esp.check(cbEspLan, tr("Server on the network"),
+		tr("The emulated module's server (AT+CIPSERVER) takes clients from other computers too. Off: only from this one, at 127.0.0.1"), true);
 	for (int i = 0; i < 2; i++) {
 		uartBox[i] = new QComboBox;
 		uartBox[i]->setObjectName(i ? "uartPi" : "uartEsp");
@@ -2086,7 +2092,7 @@ void SetupWin::buildDevices() {
 		uartBox[i]->setInsertPolicy(QComboBox::NoInsert);
 		uartBox[i]->setToolTip(i ? tr("The serial port of this computer the Pi UART is wired to")
 			: tr("The Wi-Fi module: emulated, or a real one on a serial port of this computer"));
-		btn = devRow(grid, i ? tr("Pi UART") : tr("ESP UART"), uartBox[i], NULL, NULL);
+		btn = devRow(grid, i ? tr("Pi UART") : tr("ESP UART"), uartBox[i], i ? NULL : esp.body, i ? NULL : "Machine: ESP UART");
 		uartRow << grid->itemAtPosition(grid->rowCount() - 1, 0)->widget() << uartBox[i] << btn;
 	}
 	right->addStretch(1);

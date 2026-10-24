@@ -1,0 +1,19 @@
+# the bench's own check: boot lines, echo, a query, a connect and a page, the pins
+wait WIFI GOT IP\r\n 5000
+send AT
+wait OK\r\n
+send AT+GMR
+wait OK\r\n
+send ATE0
+wait OK\r\n
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait OK\r\n
+send AT+CIPSEND=7
+wait >
+raw hello\r\n
+wait CLOSED\r\n
+nr A8 01
+nr A9 00
+nrget A9
+nr A8 00
+nrget A9

@@ -1,0 +1,92 @@
+# chapter 5: CIPDOMAIN, PING, CIPSNTPCFG/CIPSNTPTIME (no server answers on 127.0.0.1), CIPSSLSIZE,
+# CIPSSLCCONF, an SSL connect (no TLS: the handshake fails), CIPDINFO's query; then with no station
+# IP: CIPSTART, CIUPDATE, PING, CIPDOMAIN, CIPSTATUS, CIFSR
+mask .*\\x[0-9A-F][0-9A-F].* <romlog>
+mask ^\+\d+\\r\\n$ +<ms>\r\n
+mask STAMAC,"[0-9a-f:]+" STAMAC,"<mac>"
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait \r\nOK\r\n
+send AT+CIPDOMAIN="127.0.0.1"
+wait \r\nOK\r\n
+send AT+CIPDOMAIN="localhost"
+wait \r\nOK\r\n
+send AT+CIPDOMAIN=localhost
+wait \r\nERROR\r\n
+send AT+CIPDOMAIN=""
+wait \r\nERROR\r\n
+send AT+CIPDOMAIN="nonexistent.invalid"
+wait \r\nERROR\r\n 15000
+send AT+CIPDOMAIN?
+wait \r\nERROR\r\n
+send AT+PING="127.0.0.1"
+wait \r\nOK\r\n
+send AT+PING=127.0.0.1
+wait \r\nERROR\r\n
+send AT+PING="nonexistent.invalid"
+wait \r\nERROR\r\n 15000
+send AT+CIPSNTPCFG?
+wait \r\nOK\r\n
+send AT+CIPSNTPCFG=1
+wait \r\nERROR\r\n
+send AT+CIPSNTPCFG=1,14
+wait \r\nERROR\r\n
+send AT+CIPSNTPCFG=0,8
+wait \r\nERROR\r\n
+send AT+CIPSNTPCFG=1,-5,"127.0.0.1"
+wait \r\nOK\r\n
+send AT+CIPSNTPCFG?
+wait \r\nOK\r\n
+send AT+CIPSNTPTIME?
+wait \r\nOK\r\n
+send AT+CIPSNTPCFG=0
+wait \r\nOK\r\n
+send AT+CIPSNTPCFG?
+wait \r\nOK\r\n
+send AT+CIPSSLSIZE?
+wait \r\nOK\r\n
+send AT+CIPSSLSIZE=4096
+wait \r\nOK\r\n
+send AT+CIPSSLSIZE=0
+wait \r\nERROR\r\n
+send AT+CIPSSLSIZE?
+wait \r\nOK\r\n
+send AT+CIPSSLCCONF?
+wait \r\nOK\r\n
+send AT+CIPSSLCCONF=4
+wait \r\nERROR\r\n
+send AT+CIPSSLCCONF=3
+wait \r\nOK\r\n
+send AT+CIPSSLCCONF?
+wait \r\nOK\r\n
+send AT+CIPDINFO?
+wait \r\nOK\r\n
+send AT+CIPDINFO=2
+wait \r\nERROR\r\n
+send AT+CIPDINFO=1
+wait \r\nOK\r\n
+send AT+CIPDINFO?
+wait \r\nOK\r\n
+send AT+CIPDINFO=0
+wait \r\nOK\r\n
+send AT+CIPSTART="SSL","127.0.0.1",<port>
+wait CLOSED\r\n
+send AT+CIPSTATUS
+wait \r\nOK\r\n
+# no station IP: an open link closes with the AP
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait \r\nOK\r\n
+send AT+CWQAP
+wait CLOSED\r\n
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait \r\nERROR\r\n
+send AT+CIUPDATE
+wait \r\nERROR\r\n
+send AT+PING="127.0.0.1"
+wait \r\nERROR\r\n
+send AT+CIPDOMAIN="localhost"
+wait \r\nERROR\r\n
+send AT+CIPSTATUS
+wait \r\nOK\r\n
+send AT+CIFSR
+wait \r\nOK\r\n

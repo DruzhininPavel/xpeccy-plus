@@ -1581,6 +1581,7 @@ static void mac_set_defer_key(const std::string& nam, const std::string& val) {
 	else if (nam == "sdcard.lock") sdcSetLock(comp->sdc, arg.b);
 	else if (nam == "next.card") conf.next.card = val;
 	else if (nam == "next.card.own") conf.next.own = arg.b;
+	else if (nam == "next.esp.lan") conf.next.espLan = arg.b;
 	else if (nam == "divmmc.card1") sdc_mount(comp->div->card[0], QString::fromLocal8Bit(arg.s));
 	else if (nam == "divmmc.card1.lock") sdcSetLock(comp->div->card[0], arg.b);
 	else if (nam == "divmmc.card2") sdc_mount(comp->div->card[1], QString::fromLocal8Bit(arg.s));
@@ -1652,6 +1653,7 @@ void xm_save_media(FILE* file) {
 	fprintf(file, "next.card = %s\n", conf.next.card.c_str());
 	fprintf(file, "next.card.own = %s\n", YESNO(conf.next.own));
 	fprintf(file, "next.esp = %s\n", serial_conf(0).toLocal8Bit().constData());
+	fprintf(file, "next.esp.lan = %s\n", YESNO(conf.next.espLan));
 	fprintf(file, "next.pi = %s\n", serial_conf(1).toLocal8Bit().constData());
 	for (int i = 0; i < 2; i++) {
 		SDCard* card = comp->div->card[i];

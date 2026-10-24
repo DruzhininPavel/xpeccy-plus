@@ -1,0 +1,23 @@
+# NextSync's sequence (at 115200): the empty-line probe, ATE0, CIPCLOSE till ERROR, CIPSTART,
+# CIPSENDEX=5 with "Sync3" after the prompt, the reply as +IPD,<n>: (MUX 0, CIPDINFO 0), Bye
+mask .*(\\x[0-9A-F][0-9A-F].*){8} <romlog>
+wait WIFI GOT IP\r\n 5000
+server echo
+raw \r\n
+wait \r\nERROR\r\n
+send ATE0
+wait \r\nOK\r\n
+send AT+CIPCLOSE
+wait \r\nERROR\r\n
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait \r\nOK\r\n
+send AT+CIPSENDEX=5
+wait >\x20
+raw Sync3
+wait +IPD,5:Sync3
+send AT+CIPSENDEX=3
+wait >\x20
+raw Bye
+wait +IPD,3:Bye
+send AT+CIPCLOSE
+wait \r\nOK\r\n

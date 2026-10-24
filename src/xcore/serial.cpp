@@ -18,6 +18,7 @@
 #include "serial.h"
 #include "esp.h"
 #include "pacing.h"
+#include "xcore.h"
 #include "../libxpeccy/spectrum.h"
 #include "../libxpeccy/hardware/hardware.h"
 #include "../libxpeccy/xlog.h"
@@ -300,7 +301,11 @@ static void ser_port_frame(Computer* comp, int i) {
 	std::string want = ser_wanted(i);
 	if ((i == 0) && (want == SERIAL_ESP)) {
 		if (ser_is_open(p)) ser_drop(comp, i, NULL);
-		if (!serEsp) esp_attach(comp);
+		if (!serEsp) {
+			esp_flash_file((conf.path.nvDir + SLASH + "esp01.conf").c_str());
+			esp_attach(comp);
+		}
+		esp_set_lan(conf.next.espLan);		// for the servers it opens from now on
 		serEsp = true;
 		esp_frame(comp);
 		return;

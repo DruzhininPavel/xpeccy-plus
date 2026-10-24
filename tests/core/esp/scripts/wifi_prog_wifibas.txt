@@ -1,0 +1,27 @@
+# chapter 4 (at176-ch4.md): wifi_prog_wifibas.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWMODE=1
+wait OK\r\n 10000
+send AT+GMR
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CWJAP="Xpeccy+","pw"
+wait OK\r\n 10000
+send AT+CWDHCP=0,1
+wait OK\r\n 10000
+send AT+CIPSTA="192.168.1.99"
+wait OK\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CWDHCP=1,1
+wait OK\r\n 10000
+send AT+CIPSTA?
+wait OK\r\n 10000
+send AT+CWLAP
+wait OK\r\n 10000

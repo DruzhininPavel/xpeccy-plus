@@ -1,0 +1,75 @@
+# chapter 4 (at176-ch4.md): wifi_mode.txt
+mask ^\\x00.*$ <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWMODE=?
+wait OK\r\n 10000
+send AT+CWMODE_CUR=?
+wait OK\r\n 10000
+send AT+CWMODE_DEF=?
+wait OK\r\n 10000
+send AT+CWMODE?
+wait OK\r\n 10000
+send AT+CWMODE_CUR?
+wait OK\r\n 10000
+send AT+CWMODE_DEF?
+wait OK\r\n 10000
+send AT+CWMODE
+wait ERROR\r\n 10000
+send AT+CWMODE_DEF
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR=4
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR=0
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR=1x
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR=
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR="1"
+wait ERROR\r\n 10000
+send AT+CWMODE_CUR=3
+wait OK\r\n 10000
+send AT+CWMODE?
+wait OK\r\n 10000
+send AT+CWMODE_DEF?
+wait OK\r\n 10000
+send AT+CWMODE_CUR=2
+wait WIFI DISCONNECT\r\n 10000
+send AT+CWMODE_CUR?
+wait OK\r\n 10000
+send AT+CWJAP?
+wait OK\r\n 10000
+send AT+CWJAP_CUR="Xpeccy+","x"
+wait ERROR\r\n 10000
+send AT+CWLAP
+wait ERROR\r\n 10000
+send AT+CWHOSTNAME?
+wait OK\r\n 10000
+send AT+CWMODE_CUR=1
+wait WIFI GOT IP\r\n 10000
+send AT+CWMODE_DEF=2
+wait WIFI DISCONNECT\r\n 10000
+send AT+CWMODE_CUR?
+wait OK\r\n 10000
+send AT+CWMODE_DEF?
+wait OK\r\n 10000
+send AT+CWMODE=1
+wait WIFI GOT IP\r\n 10000
+send AT+CWMODE_DEF?
+wait OK\r\n 10000
+send AT+CWMODE3
+wait OK\r\n 10000
+send AT+CWMODE_DEF?
+wait OK\r\n 10000
+send AT+CWMODE_CUR=1
+wait OK\r\n 10000
+send AT+RST
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait OK\r\n 10000
+send AT+CWMODE?
+wait OK\r\n 10000
+send AT+CWMODE_DEF=1
+wait OK\r\n 10000

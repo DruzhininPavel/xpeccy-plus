@@ -1,0 +1,25 @@
+# zxn-wifiprn's sequence: +++ glued to ATE0 (not in passthrough: the idle receiver skips to AT),
+# CIPSTART, CIPMODE=1, the bare CIPSEND, the text, +++ alone, CIPCLOSE; CIPMODE stays 1 afterwards
+mask .*(\\x[0-9A-F][0-9A-F].*){8} <romlog>
+wait WIFI GOT IP\r\n 5000
+server echo
+raw +++ATE0\r\n
+wait \r\nOK\r\n
+send AT+CIPCLOSE
+wait \r\nERROR\r\n
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait \r\nOK\r\n
+send AT+CIPMODE=1
+wait \r\nOK\r\n
+send AT+CIPSEND
+wait >
+pause 100
+raw Hello printer\r\n
+wait printer\r\n
+pause 2000
+raw +++
+pause 2000
+send AT+CIPCLOSE
+wait \r\nOK\r\n
+send AT+CIPSEND=5
+wait \r\nERROR\r\n

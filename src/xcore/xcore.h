@@ -868,6 +868,7 @@ struct xConfig {
 	struct {
 		std::string card;	// a folder or an image; empty: none made or picked yet
 		unsigned own:1;		// made here: it takes writes and asks nothing
+		unsigned espLan:1;	// the ESP's server takes clients from the network, not only 127.0.0.1
 	} next;
 	struct {
 		unsigned fullScreen:1;	// use fullscreen

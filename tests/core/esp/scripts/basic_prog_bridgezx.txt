@@ -1,0 +1,29 @@
+# BridgeZX .brzxn (programs.md g2): AT, AT+UART_CUR=2000000 and after 2 frames the Next to 2 Mbaud, AT;
+# the -safe rate 230400 (prescaler 122 as its VGA0 table); back to 115200 and AT before it exits.
+mask ^.*\\x[89A-F][0-9A-F].* <garbage>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+quiet 300
+send AT
+quiet 300
+send AT+UART_CUR=2000000,8,1,0,0
+pause 40
+presc 14
+send AT
+quiet 300
+send AT+UART_CUR?
+quiet 300
+send AT+UART_CUR=230400,8,1,0,0
+pause 40
+presc 122
+send AT
+quiet 300
+send AT+UART_CUR?
+quiet 300
+send AT+UART_CUR=115200,8,1,0,0
+pause 40
+presc 243
+send AT
+quiet 300
+send AT+UART_DEF?
+quiet 300

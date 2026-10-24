@@ -1,0 +1,23 @@
+# nget's sequence: AT+CIPSEND=2 and four bytes after the prompt; the server must get exactly two
+# (the CRLF meets busy s...), then the reply in one +IPD
+mask .*(\\x[0-9A-F][0-9A-F].*){8} <romlog>
+wait WIFI GOT IP\r\n 5000
+send ATE0
+wait \r\nOK\r\n
+send AT+CIPCLOSE
+wait \r\nERROR\r\n
+send AT+CIPMUX=0
+wait \r\nOK\r\n
+server hold
+send AT+CIPSTART="TCP","127.0.0.1",<port>
+wait \r\nOK\r\n
+send AT+CIPSEND=2
+wait >\x20
+raw \x01-\r\n
+wait SEND OK\r\n
+pause 100
+peershow
+peer package-list
+wait list
+peerclose
+wait CLOSED\r\n
