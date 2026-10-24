@@ -56,14 +56,19 @@ skips the **Start Machine** question (see [Machine at start](machines.md#machine
 - `-m ID`, `--machine ID` - start on this machine. ID is the machine's name as the
   list shows it, such as `"ZX Spectrum 128K"`, or its short id: the name of its file,
   such as `zx48`, `zx128`, `zxplus2`, `zxplus2a`, `zxplus3`, `pent`, `pent1024`, `scorp`,
-  `scorptp`, `atm2`, `profi3`, `profi`, `phoenix`, `evo-baseconf`, `evo-tsconf`, `alf`,
+  `scorptp`, `atm2`, `profi3`, `profi`, `phoenix`, `evo-baseconf`, `evo-tsconf`, `zxnext`, `alf`,
   `alf128`. `-p` is the older name of the same option. `-m` is acted on before anything
   else, wherever it stands, so a snapshot named before it is not lost; if it is given
   twice, the last one counts. It counts as if you had picked the machine in the
   **Machine** menu.
 - `--disk X` - the floppy drive for the disks named after it: `0` to `3`, `a` to `d` or
   `A` to `D`. Without it a disk goes into drive A.
-- `--sdcard PATH` - the SD card of the ZX Evolution: an image, or a folder served as a card.
+- `--sdcard PATH` - the SD card of the ZX Evolution or the ZX Spectrum Next: an image, or a
+  folder served as a card.
+- `--uart-esp PORT`, `--uart-pi PORT` - for this run only, what is on the ZX Spectrum
+  Next's ESP UART or Pi UART: a serial port of this computer (`COM3`, `/dev/ttyUSB0`,
+  `\\.\pipe\NAME` on Windows), `esp` for the emulated ESP-01, `-` for nothing (see
+  [Wi-Fi and serial ports](zx-next.md#wi-fi-and-serial-ports)).
 - `--confdir DIR` - take the settings from another folder instead of the usual one (see
   [Where the settings are](getting-started.md#where-the-settings-are)).
 

@@ -45,6 +45,10 @@ Some show a game that may be downloaded (Exolon and Cybernoid from Spectrum Comp
 'n Ice too, Uwol from the TS-Labs catalogue): the repository does not carry those, so `shots`
 downloads them once into `build/manual-files` with curl and checks their sha256. A shot runs
 with the master volume at 0, as the hidden desktop hides the window but not the sound.
+The ZX Spectrum Next's `next-menu` and `dbg-next-regs` need a build with System/Next beside
+the program (`packaging\fetch-deps.ps1 -SysNext`, then `make-dist.ps1 -SysNext`);
+`next-sd-card` needs one without it, as a release is, so that its window opens: point
+`XP_EXE` at a copy with the `sysnext` folder taken out.
 
 **Icons.** A button the reader sees as an icon gets its icon before its name:
 {icon}`stop` **Breakpoints** shows `images/stop.png` of the repository, the file the program

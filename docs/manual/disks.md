@@ -17,6 +17,7 @@ the hardware it copies. A divMMC can be added to the Sinclair models and the Pen
 | ZX Spectrum 48K | - | - | cartridge, divMMC |
 | ZX Spectrum 128K, +2, +2A | - | - | divMMC |
 | ZX Spectrum +3 | +3 drives | - | divMMC |
+| ZX Spectrum Next | - | - | SD card, divMMC built in |
 | Pentagon, Pentagon 1024 SL | Beta Disk | - | divMMC |
 | Scorpion ZS 256 | Beta Disk | - | |
 | Scorpion ZS 256 Turbo+ | Beta Disk | SMUC | |
@@ -214,7 +215,9 @@ header, or the whole file when it has none.
 ```{index} SD card, --sdcard
 ```
 
-The two ZX Evolution machines have an SD card slot. **Media > SD Card** shows the card in
+The two ZX Evolution machines and the ZX Spectrum Next have an SD card slot. The Next
+starts from a card with System/Next on it, and its menu has **System/Next Card...** too:
+see [The SD card](zx-next.md#the-sd-card). **Media > SD Card** shows the card in
 the slot, or **(no card)**, and has:
 
 - **Open Image...** - insert a card from an image file.

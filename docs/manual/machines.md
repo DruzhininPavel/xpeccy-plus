@@ -6,16 +6,16 @@
 ```{index} see: profile; machine
 ```
 
-Xpeccy+ comes with the Sinclair and Amstrad models of the ZX Spectrum, the best-known clones
-and the ZX Evolution board. Each one is a complete machine: memory, ROM images, disk
+Xpeccy+ comes with the Sinclair and Amstrad models of the ZX Spectrum, the ZX Spectrum Next,
+the best-known clones and the ZX Evolution board. Each one is a complete machine: memory, ROM images, disk
 interface, sound and timing are already set as on the real hardware.
 
 ## The built-in machines
 
-```{index} machine; built-in, ZX Spectrum 48K, ZX Spectrum 128K, ZX Spectrum +2, ZX Spectrum +2A, ZX Spectrum +3, Pentagon, Pentagon 1024 SL, Scorpion ZS 256, Scorpion ZS 256 Turbo+, ATM Turbo 2+, Profi v3, Profi v5, ZXM-Phoenix, ZX Evolution, ZX Evolution; BaseConf, ZX Evolution; TSConf, BaseConf, TSConf, ALF TV Game, ALF TV Game 128K
+```{index} machine; built-in, ZX Spectrum 48K, ZX Spectrum 128K, ZX Spectrum +2, ZX Spectrum +2A, ZX Spectrum +3, ZX Spectrum Next, Pentagon, Pentagon 1024 SL, Scorpion ZS 256, Scorpion ZS 256 Turbo+, ATM Turbo 2+, Profi v3, Profi v5, ZXM-Phoenix, ZX Evolution, ZX Evolution; BaseConf, ZX Evolution; TSConf, BaseConf, TSConf, ALF TV Game, ALF TV Game 128K
 ```
 
-The machine list shows them in this order, in four groups.
+The machine list shows them in this order, in five groups.
 
 | Machine | Memory | Disk | Notes |
 |---|---|---|---|
@@ -24,6 +24,7 @@ The machine list shows them in this order, in four groups.
 | **ZX Spectrum +2** | 128 KB | - | Amstrad's first model, the gray +2: the 128K with its own ROMs and late ULA timing; AY |
 | **ZX Spectrum +2A** | 128 KB | - | Amstrad's later model: Amstrad gate array, four +3 ROMs; AY |
 | **ZX Spectrum +3** | 128 KB | +3, two drives | the +2A with a 3-inch disk drive; AY |
+| **ZX Spectrum Next** | 2 MB | - | a group of its own: Z80N up to 28 MHz, three AYs and DACs, divMMC and SD card, Wi-Fi; see [ZX Spectrum Next](zx-next.md) |
 | **Pentagon** | 128 KB | Beta Disk | YM, Covox; Kempston mouse and joystick |
 | **Pentagon 1024 SL** | 1024 KB | Beta Disk | as the Pentagon; turbo x2 |
 | **Scorpion ZS 256** | 256 KB | Beta Disk | AY, Covox; Kempston mouse and joystick |
@@ -197,7 +198,7 @@ Esc) puts back what it showed when it opened.
 | **Storage** | **Tape** | loading settings; the row shows which are on (see [Tapes](tapes.md)) |
 | | **Disk** | **None**, **Beta Disk (WD1793)** or **+3 (uPD765)**; drives and the TR-DOS ROM in its window (see [Disks and drives](disks.md)) |
 | | **Hard disk** | the IDE interface; **Master** and **Slave** in its window |
-| | **SD card** | ZX Evolution only: the card in use |
+| | **SD card** | ZX Evolution and ZX Spectrum Next only: the card in use (for the Next, see [The SD card](zx-next.md#the-sd-card)) |
 | | **divMMC** | 48K, 128K, +2, +2A, +3 and the Pentagons: **None** or **divMMC**; RAM, EEPROM jumper and the firmware in its window (see [divMMC](disks.md#divmmc)) |
 | | **Cartridge** | 48K and ALF only: the cartridge in use |
 | **Input** | **Joystick** | **None**, **Kempston 5-bit**, **Kempston 8-bit** |

@@ -1,0 +1,9 @@
+{
+  "config": {"GENERAL": {"machine": "zxnext", "start.machine": "zxnext"}},
+  "steps": [
+    ["wait", 5000],
+    ["run", "set-value nextCardPath C:\\Xpeccy+\\config\\next-sd"],
+    ["wait", 500]
+  ],
+  "frames": []
+}
