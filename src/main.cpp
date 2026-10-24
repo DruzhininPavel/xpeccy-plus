@@ -372,13 +372,14 @@ int main(int ac,char** av) {
 	app.installEventFilter(&app);	// colours each window's titlebar on its first Show
 	installTitleBarClickFix();
 
-// SDL comes second on purpose. Its video init builds an NSApplication of its
-// own when there is none yet, installs its own delegate on it and calls
-// finishLaunching - all before Qt exists, so the document Finder sends at
-// launch has nobody to go to and the app finishes launching with no window.
-// With Qt first, SDL finds an application already there and leaves it alone.
-// NOTE:SDL_INIT_VIDEO is needed for SDL_Joystick event processing. Joystick doesn't work without video init
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_TIMER);
+	// On macOS Qt owns the native event queue. SDL video would also drain it
+	// from the gamepad timer's SDL_PollEvent(), including title-bar mouse events.
+	// SDL2 joystick events work without video; keep other backends as before.
+	Uint32 sdlFlags = SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_TIMER;
+#if !defined(__APPLE__) || !defined(HAVESDL2)
+	sdlFlags |= SDL_INIT_VIDEO;
+#endif
+	SDL_Init(sdlFlags);
 	atexit(SDL_Quit);
 
 	// fallback icon for every window that doesn't set its own (options, tape,
