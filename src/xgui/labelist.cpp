@@ -64,9 +64,12 @@ QVariant xLabelistModel::data(const QModelIndex& idx, int role) const {
 			str = list.at(row);
 			xadr = find_label(str);
 			if (cpuMode) {
-				zadr = memFindAdr(conf.zx->mem, xadr.type, xadr.abs);
+				zadr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
 				if (zadr < 0) {
-					adrstr = QString("%0:%1").arg(gethexbyte(xadr.abs >> 14), gethexword(xadr.abs & 0x3fff));
+					if ((conf.zx->hw->id == HW_ZXNEXT) && (xadr.type == MEM_RAM) && (xadr.abs >= 0x40000))
+						adrstr = QString("%0:%1").arg(gethexbyte((xadr.abs - 0x40000) >> 13), gethexword(xadr.abs & 0x1fff));
+					else
+						adrstr = QString("%0:%1").arg(gethexbyte(xadr.abs >> 14), gethexword(xadr.abs & 0x3fff));
 					pref = true;
 				} else {
 					adrstr = QString("CPU:%0").arg(gethexword(zadr));

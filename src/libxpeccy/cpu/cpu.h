@@ -89,6 +89,13 @@ typedef int(*cbiack)(void*);
 // memrd external
 typedef int(*cbdmr)(int, void*);
 
+// FETCH is also CODE; DATA is a memory operand or a stack read.
+enum {
+	CPU_DASM_DATA = 0,
+	CPU_DASM_CODE = 1,
+	CPU_DASM_FETCH = 3
+};
+
 #define OF_PREFIX	1
 #define OF_SKIPABLE	(1<<1)		// opcode is skipable by f8
 #define OF_RELJUMP	(1<<2)
@@ -216,7 +223,7 @@ struct cpuCore {
 	void (*reset)(CPU*);			// reset
 	int (*exec)(CPU*);			// exec opcode, return T
 	xAsmScan (*asmbl)(int,const char*, char*);	// compile mnemonic (adr,src.text,result.buf)
-	xMnem (*mnem)(CPU*, int, cbdmr, void*);
+	xMnem (*mnem)(CPU*, int, cbmr, void*);
 };
 typedef struct cpuCore cpuCore;
 
@@ -236,6 +243,7 @@ static inline int cpu_exec(CPU* cpu) {
 extern cpuCore cpuTab[];
 
 xMnem cpuDisasm(CPU*, int, char*, cbdmr, void*);
+xMnem cpuDisasmView(CPU*, int, char*, cbmr, void*);
 int cpuAsm(CPU*, const char*, char*, unsigned short);
 xAsmScan scanAsmTab(const char*, opCode*);
 unsigned short cpu_peek_word(cbdmr, void*, int);	// little-endian word at adr, wrapping at 0xffff

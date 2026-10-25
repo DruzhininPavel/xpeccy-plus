@@ -535,7 +535,13 @@ static unsigned xe_var_value(Computer* comp, unsigned id, int hits, unsigned dt)
 
 #define XE_STACK 64
 
-unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits, unsigned dt) {
+static int xe_memory(Computer* comp, unsigned adr, int type) {
+	if (type == MEM_RAM) return comp->mem->ramData[adr & comp->mem->ramMask];
+	if (type == MEM_ROM) return comp->mem->romData[adr & comp->mem->romMask];
+	return comp_peek(comp, adr, MEM_VIEW_READ, NULL);
+}
+
+unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits, unsigned dt, int memType) {
 	unsigned stk[XE_STACK];
 	int sp = 0;
 	bool err = false;
@@ -564,8 +570,13 @@ unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits, unsi
 					break;
 				case XE_LAB:
 					xadr = find_label(QString(it->name.c_str()));
-					if (xadr.type < 0) err = true;
-					stk[sp] = xadr.adr;
+					if (memType == MEM_RAM || memType == MEM_ROM) {
+						if (xadr.type != memType) err = true;
+						stk[sp] = xadr.abs;
+					} else {
+						if (xadr.type < 0 || xadr.adr < 0) err = true;
+						stk[sp] = xadr.adr;
+					}
 					break;
 				case XE_VAR:
 					stk[sp] = xe_var_value(comp, it->val, hits, dt);
@@ -585,11 +596,11 @@ unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits, unsi
 				case XE_INV: stk[sp-1] = ~stk[sp-1]; break;
 				case XE_NEG: stk[sp-1] = -(int)stk[sp-1]; break;
 				case XE_MRDB:
-					stk[sp-1] = memRd(comp->mem, stk[sp-1]) & 0xff;
+					stk[sp-1] = xe_memory(comp, stk[sp-1], memType);
 					break;
 				case XE_MRDW:
-					val = memRd(comp->mem, stk[sp-1]) & 0xff;
-					val |= (memRd(comp->mem, stk[sp-1] + 1) & 0xff) << 8;
+					val = xe_memory(comp, stk[sp-1], memType);
+					val |= xe_memory(comp, stk[sp-1] + 1, memType) << 8;
 					stk[sp-1] = val;
 					break;
 			}
@@ -651,7 +662,7 @@ unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits, unsi
 
 // compatibility wrapper for the old watcher evaluator
 
-xResult xEval(const char* ptr, int) {
+xResult xEval(const char* ptr, int memType) {
 	xResult res;
 	bool err = false;
 	xExpr exp = xexpr_compile(ptr);
@@ -660,7 +671,7 @@ xResult xEval(const char* ptr, int) {
 		res.err = 1;
 		res.value = 0;
 	} else {
-		res.value = xexpr_eval(exp, conf.zx, &err);
+		res.value = xexpr_eval(exp, conf.zx, &err, 0, 0, memType);
 		res.err = err ? 1 : 0;
 	}
 	return res;

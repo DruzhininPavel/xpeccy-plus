@@ -827,9 +827,13 @@ bool brk_list_adr(QString str, int* adr, int* bank) {
 	if (!str.at(0).isDigit()) {
 		xAdr xadr = find_label(str);
 		if (xadr.type >= 0) {
-			*adr = xadr.adr;
-			if (bank) *bank = xadr.bank;
-			return true;
+			if (bank && xadr.type == MEM_RAM) {
+				*bank = xadr.abs >> 14;
+				*adr = xadr.abs & 0x3fff;
+			} else {
+				*adr = xadr.adr;
+			}
+			return *adr >= 0;
 		}
 	}
 	*adr = str.toInt(&ok, 16);
@@ -842,7 +846,11 @@ static bool parseRange(QString str, xBrkPoint* p, int* bank = NULL) {
 	QStringList splt = str.split('-', X_SkipEmptyParts);
 	if (splt.isEmpty() || !brk_list_adr(splt.first(), &badr, bank)) return false;
 	eadr = badr;
-	if ((splt.size() > 1) && !brk_list_adr(splt.at(1), &eadr, NULL)) return false;
+	if (splt.size() > 1) {
+		int endBank;
+		if (!brk_list_adr(splt.at(1), &eadr, bank ? &endBank : NULL)) return false;
+		if (bank && (*bank >= 0) && (endBank >= 0) && (*bank != endBank)) return false;
+	}
 	if (eadr < badr) std::swap(badr, eadr);
 	p->adr = badr;
 	p->eadr = eadr;

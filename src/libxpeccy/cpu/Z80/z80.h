@@ -104,7 +104,7 @@ xAsmScan z80_asm_tabs(const opTabSet*, int, const char*, char*);
 void z80n_init(CPU*);
 void z80n_reset(CPU*);
 xAsmScan z80n_asm(int, const char*, char*);
-xMnem z80_mnem(CPU*, int, cbdmr, void*);
+xMnem z80_mnem(CPU*, int, cbmr, void*);
 
 /*
 void z80_get_regs(CPU*, xRegBunch*);

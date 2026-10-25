@@ -172,7 +172,7 @@ typedef struct {
 	const char* ptr;
 } xResult;
 
-xResult xEval(const char*, int = 0);
+xResult xEval(const char*, int = 0);	// 0: CPU addresses, MEM_RAM/MEM_ROM: physical memory
 
 typedef struct {
 	unsigned b:1;

@@ -192,8 +192,8 @@ another with the arrow keys or the mouse. The same list appears in the
 ```{index} label; file, SjASMPlus, LABELSLIST
 ```
 
-A labels file holds one label per line: the 16K RAM page, a colon, the address, and the
-name:
+A labels file holds one label per line: the RAM page, a colon, the address, and the name.
+On most ZX machines the pages are 16K:
 
 ```
 02:8010 print_score
@@ -204,6 +204,13 @@ SjASMPlus writes such a file with its `LABELSLIST` directive. Only the offset in
 page counts, so `02:0010` is the same label as `02:8010`. A line can also leave the page
 out, as in `:8010 print_score`: the page is then 5 for an address from 4000 to 7FFF, 2 from
 8000 to BFFF and 0 from C000 to FFFF.
+
+On a ZX Spectrum Next the pages are 8K, as in SjASMPlus's `DEVICE ZXSPECTRUMNEXT`.
+`04:0010` means offset 0010 in MMU page 04, and `05:0010` means the same offset in the next
+page. Labels in the listing and physical breakpoints belong to those pages. A label used
+as a CPU address follows the current MMU mapping; when its page is not mapped, that CPU
+address is unknown. A **RAM addr** watch can still read it. A line without a page, such as
+`:8010 print_score`, keeps its CPU address regardless of paging.
 
 ```{index} label; set
 ```

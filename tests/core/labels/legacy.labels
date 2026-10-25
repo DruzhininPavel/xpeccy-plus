@@ -1,0 +1,4 @@
+02:8010 print_score
+05:0010 screen_data
+00:DA00 level_data
+:8123 virtual_label

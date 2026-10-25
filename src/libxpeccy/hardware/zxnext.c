@@ -561,18 +561,45 @@ static void nx_mwr(Computer* comp, int adr, int val) {
 
 // The debugger looks through the same overlays as a cpu access, without moving
 // the automapper, the floating byte, the raster or any other machine state.
+typedef struct {
+	int held, next, map, button, last;
+	nxIrq irq;
+} nxMemViewState;
+
+static nxMemViewState nx_view_save(Computer* comp) {
+	nxMemViewState state = {NX.dmHeld, NX.dmNext, NX.dmMap, NX.dmButton, NX.lastSram, NX.irq};
+	return state;
+}
+
+static void nx_view_restore(Computer* comp, const nxMemViewState* state) {
+	NX.dmHeld = state->held;
+	NX.dmNext = state->next;
+	NX.dmMap = state->map;
+	NX.dmButton = state->button;
+	NX.lastSram = state->last;
+	NX.irq = state->irq;
+}
+
+// Only an instruction preview advances these latches; nx_disasm restores them.
+enum {NX_VIEW_STEP = 8};
+
 static void nx_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xadr) {
-	int held = NX.dmHeld;
-	int next = NX.dmNext;
-	int map = NX.dmMap;
-	int button = NX.dmButton;
-	if (mode & MEM_VIEW_FETCH) NX.dmMap = nx_dm_fetch(comp, adr);
+	nxMemViewState state;
+	if (mode & MEM_VIEW_FETCH) {
+		state = nx_view_save(comp);
+		nx_nmi_fetch(comp, adr);
+		NX.dmMap = nx_dm_fetch(comp, adr);
+	}
 	int wr = (mode & MEM_VIEW_WRITE) && !(mode & MEM_VIEW_ROM_WRITE);
 	nxAccess a = nx_decode(comp, adr, wr);
-	NX.dmHeld = held;
-	NX.dmNext = next;
-	NX.dmMap = map;
-	NX.dmButton = button;
+	if (mode & MEM_VIEW_FETCH) {
+		if (mode & NX_VIEW_STEP) {
+			NX.dmHeld = NX.dmMap = NX.dmNext;
+			if (NX.dmHeld) NX.dmButton = 0;
+		} else {
+			nx_view_restore(comp, &state);
+		}
+	}
 
 	if (xadr) {
 		xadr->type = MEM_EXT;
@@ -615,6 +642,57 @@ static void nx_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xad
 		case NXM_BUS: *value = 0xff; break;
 		default: *value = NX.lastSram; break;
 	}
+	if ((mode & NX_VIEW_STEP) && ((a.kind == NXM_SRAM) || (a.kind == NXM_ROM) || (a.kind == NXM_SHADOW)))
+		NX.lastSram = *value;
+}
+
+typedef struct {
+	Computer* comp;
+	int start;
+	unsigned char local[16];
+	unsigned char* bytes;
+	int count, capacity;
+} nxDasmView;
+
+static int nx_dasm_read(int adr, int access, void* ptr) {
+	nxDasmView* view = (nxDasmView*)ptr;
+	int off = (adr - view->start) & 0xffff;
+	int code = access & CPU_DASM_CODE;
+	// A delayed trap can change the page after the opcode has been fetched.
+	if (code && (off < view->count)) return view->bytes[off];
+	int mode = (access == CPU_DASM_FETCH) ? MEM_VIEW_FETCH : MEM_VIEW_READ;
+	int value;
+	nx_mem_view(view->comp, adr & 0xffff, mode | (code ? NX_VIEW_STEP : 0), &value, NULL);
+	if (code && (off == view->count)) {
+		if (view->count == view->capacity) {
+			int size = view->capacity * 2;
+			unsigned char* bytes = (unsigned char*)malloc(size);
+			if (!bytes) return value;
+			memcpy(bytes, view->bytes, view->count);
+			if (view->bytes != view->local) free(view->bytes);
+			view->bytes = bytes;
+			view->capacity = size;
+		}
+		view->bytes[view->count++] = value;
+	}
+	return value;
+}
+
+static xMnem nx_disasm(Computer* comp, int adr, char* buf, unsigned char* bytes, int size) {
+	nxMemViewState state = nx_view_save(comp);
+	nxDasmView view;
+	view.comp = comp;
+	view.start = adr & 0xffff;
+	view.bytes = view.local;
+	view.count = 0;
+	view.capacity = sizeof(view.local);
+	xMnem mn = cpuDisasmView(comp->cpu, adr, buf, nx_dasm_read, &view);
+	if (bytes) {
+		for (int i = 0; (i < size) && (i < mn.len); i++) bytes[i] = nx_dasm_read(adr + i, CPU_DASM_CODE, &view);
+	}
+	if (view.bytes != view.local) free(view.bytes);
+	nx_view_restore(comp, &state);
+	return mn;
 }
 
 // The generic map and snapshots read the MMU view, overlays left out
@@ -2704,4 +2782,4 @@ static const hwQuiet nx_quiet = {HWQ_ACK_NEXT, NULL, NULL, zx_devs_sync, NULL, 0
 HardWare nxt_hw_core = {HW_ZXNEXT, "ZXNext", "ZX Spectrum Next", MEM_2M, 1.0, NULL, NULL,
 			nx_init, nx_map_mem, nx_out, nx_in, nx_mrd, nx_mwr, nx_irq, nx_ack, nx_reset, nx_sync,
 			nx_keyp, nx_keyr, nx_vol, NULL, nx_cont, &nx_quiet, 1, nx_power_on, nx_firmware, 1, 1,
-			nx_mem_view};
+			nx_mem_view, nx_disasm};

@@ -613,7 +613,8 @@ Right-click the **MEMORY** list and choose **Add watcher** to add a watch, or
 
 The **Watcher Editor** has:
 
-- **Type** - **CPU addr**, **RAM addr** or **ROM addr**, shown before the watch in the list;
+- **Type** - **CPU addr** reads through the current CPU mapping; **RAM addr** and **ROM addr**
+  read physical memory. A label in a physical watch supplies its page as well as its offset;
 - **Expression** - an address, in the same syntax as a condition (see
   [Conditions](#conditions)): `HL`, `0x5C3A`, `IX + 5`, `[0x5C53]`, a label. The
   {icon}`label` button beside it opens the list of labels; a label picked there goes into
@@ -622,6 +623,9 @@ The **Watcher Editor** has:
 {icon}`checkbox` **OK** accepts the watch only when the expression is right. The first row
 of a watch shows its type and expression, and its value as an address; the second row the
 13 bytes that start at that address. `??` means the expression cannot be worked out at the moment.
+
+On the Next, a label in a **CPU addr** watch follows MMU paging. If its page is not mapped,
+the watch shows `??`; a **RAM addr** watch still reads the label's own RAM page.
 
 The watches are not kept when the program closes.
 

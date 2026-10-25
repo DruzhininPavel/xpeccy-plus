@@ -134,17 +134,20 @@ QString find_label(xAdr xadr) {
 				lab = conf.labmap[xadr.type][xadr.abs];
 			}
 		}
+		if (lab.isEmpty() && conf.labmap.contains(MEM_IO)) lab = conf.labmap[MEM_IO].value(xadr.adr);
 	}
 	return lab;
 }
 
 xAdr find_label(QString nm) {
-	xAdr xadr;
-	xadr.type = -1;
+	xAdr xadr = {-1, -1, -1, -1};
 	xLabelSet* set = conf.curlabset;
 	if (set) {
 		if (set->list.contains(nm)) {
 			xadr = set->list.value(nm);
+			if (conf.zx && (conf.zx->hw->id == HW_ZXNEXT) && (xadr.type == MEM_RAM)) {
+				xadr.adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
+			}
 		}
 	}
 	return xadr;
@@ -159,13 +162,14 @@ static int labels_read(const QString& path) {
 	xAdr xadr;
 	QFile file(path);
 	if (!file.open(QFile::ReadOnly)) return 0;
+	bool isNext = conf.zx && (conf.zx->hw->id == HW_ZXNEXT);
 	xLabelSet* set = newLabelSet(QFileInfo(path).fileName());
 	set->list.clear();		// before it is made current, or its old map is built for nothing
 	setLabelSet(set);
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-	static const QRegularExpression sep("[: \r\n]");
+	static const QRegularExpression sep("[: \t\r\n]");
 #else
-	static const QRegExp sep("[: \r\n]");
+	static const QRegExp sep("[: \t\r\n]");
 #endif
 	while(!file.atEnd()) {
 		line = file.readLine();
@@ -173,9 +177,26 @@ static int labels_read(const QString& path) {
 			line.prepend("FF");
 		arr = line.split(sep, X_SkipEmptyParts);
 		if (arr.size() > 2) {
+			bool pageOk, adrOk;
 			xadr.type = MEM_RAM;
-			xadr.bank = arr.at(0).toInt(NULL,16);
-			xadr.adr = arr.at(1).toInt(NULL,16);
+			xadr.bank = arr.at(0).toInt(&pageOk, 16);
+			xadr.adr = arr.at(1).toInt(&adrOk, 16);
+			if (!pageOk || !adrOk || (xadr.adr < 0) || (xadr.adr > 0xffff)) continue;
+			if (isNext) {
+				if (xadr.bank == 0xff) {
+					xadr.type = MEM_IO;
+					xadr.abs = xadr.adr;
+					xadr.bank = -1;
+				} else {
+					if ((xadr.bank < 0) || (xadr.bank >= 0xe0)) continue;
+					// SjASMPlus uses 8K Next RAM pages; ramData includes the ROM/SRAM area before them.
+					xadr.abs = 0x40000 + (xadr.bank << 13) + (xadr.adr & 0x1fff);
+					xadr.bank = xadr.abs >> 14;
+					xadr.adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
+				}
+				add_label(xadr, arr.at(2));
+				continue;
+			}
 			if (xadr.bank == 0xff) {
 				switch (xadr.adr & 0xc000) {
 					case 0x0000: xadr.bank = 0; break;
@@ -270,8 +291,19 @@ int saveLabels(const char* fn) {
 				keys = set->list.keys();
 				foreach(key, keys) {
 					xadr = set->list.value(key);
-					line = (xadr.type == MEM_RAM) ? gethexbyte(xadr.abs >> 14) : "FF";
-					line.append(QString(":%0 %1\n").arg(gethexword(xadr.abs & 0x3fff), key));
+					if (conf.zx && (conf.zx->hw->id == HW_ZXNEXT)) {
+						if ((xadr.type == MEM_RAM) && (xadr.abs >= 0x40000) && (xadr.abs < 0x200000)) {
+							line = gethexbyte((xadr.abs - 0x40000) >> 13);
+							line.append(QString(":%0 %1\n").arg(gethexword(xadr.abs & 0x1fff), key));
+						} else {
+							int adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
+							if (adr < 0) continue;
+							line = QString(":%0 %1\n").arg(gethexword(adr), key);
+						}
+					} else {
+						line = (xadr.type == MEM_RAM) ? gethexbyte(xadr.abs >> 14) : "FF";
+						line.append(QString(":%0 %1\n").arg(gethexword(xadr.abs & 0x3fff), key));
+					}
 					file.write(line.toUtf8());
 				}
 			}

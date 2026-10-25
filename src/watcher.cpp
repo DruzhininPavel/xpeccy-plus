@@ -140,7 +140,7 @@ void xWatcher::confirmNew() {
 	int type = nui.cbType->currentData().toInt();
 	QString str = nui.leExpression->text();
 	if (str.isEmpty()) return;
-	xResult res = xEval(str.toLocal8Bit().data());		// check syntax
+	xResult res = xEval(str.toLocal8Bit().data(), type);		// check syntax
 	if (res.err) return;
 	newWch->close();
 	if (curwch < 0) {
@@ -255,12 +255,17 @@ QVariant xWatchModel::data(const QModelIndex& idx, int role) const {
 	switch (role) {
 		case Qt::DisplayRole:
 			itm = explist.at(row >> 1);
-			xr = xEval(itm.exp.toLocal8Bit().data());
+			xr = xEval(itm.exp.toLocal8Bit().data(), itm.type);
 			if (row & 1) {
 				if (xr.err) {
 					res = "??";
 				} else {
-					res = gethexbyte(memRd(comp->mem, (xr.value + col) & comp->mem->busmask));
+					int adr = xr.value + col;
+					int byte;
+					if (itm.type == WUT_RAM) byte = comp->mem->ramData[adr & comp->mem->ramMask];
+					else if (itm.type == WUT_ROM) byte = comp->mem->romData[adr & comp->mem->romMask];
+					else byte = comp_peek(comp, adr, MEM_VIEW_READ, NULL);
+					res = gethexbyte(byte);
 				}
 			} else if (col == 0) {
 				switch(itm.type) {
@@ -273,7 +278,7 @@ QVariant xWatchModel::data(const QModelIndex& idx, int role) const {
 				if (xr.err) {
 					res = "????";
 				} else {
-					res = gethexword(xr.value);
+					res = (itm.type == WUT_CPU) ? gethexword(xr.value) : gethexint(xr.value);
 				}
 			}
 	}

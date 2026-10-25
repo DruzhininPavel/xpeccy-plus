@@ -229,8 +229,11 @@ static int switch_check(void) {
 	return 0;
 }
 
+int debugger_check(void);
+
 int main(int argc, char** argv) {
 	if ((argc == 2) && !strcmp(argv[1], "--switch")) return switch_check();
+	if ((argc == 2) && !strcmp(argv[1], "--debugger")) return debugger_check();
 	if (argc < 3) {
 		fprintf(stderr, "usage: zxnext-bench sram.bin frames [dump_addr dump_len] [outdir]\n");
 		return 2;

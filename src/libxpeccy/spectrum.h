@@ -751,6 +751,9 @@ int compExec(Computer*);
 int comp_peek(Computer*, int, int, xAdr*);
 void comp_poke(Computer*, int, int, int);
 xAdr comp_get_xadr(Computer*, int, int);
+int comp_find_xadr(Computer*, int, int, int);
+// Preview one instruction and up to size raw bytes without changing the machine.
+xMnem compDisasm(Computer*, int, char*, unsigned char*, int);
 int comp_skip_ticks(Computer*, int);
 int comp_halt_skip(Computer*, int* ns);		// HALT steps up to the next event at once, fast mode
 int comp_halt_skip_rt(Computer*, int* ns, long long room);	// the same in real time, a machine with hwQuiet.halt
@@ -807,6 +810,7 @@ int comp_pwatch_val(Computer*, int);
 
 unsigned char* getBrkPtr(Computer*, int);
 unsigned char getBrk(Computer*, int);
+unsigned char getBrkView(Computer*, int, int);
 void setBrk(Computer*, int, unsigned char);
 
 #ifdef __cplusplus
