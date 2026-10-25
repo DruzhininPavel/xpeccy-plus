@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QSize>
+
 #include "../libxpeccy/video/vidcommon.h"
 
 // One name per VID_BRD_* mode, in enum order, closed with a NULL
@@ -23,4 +25,5 @@ void vid_set_zoom(int);
 void vid_set_fullscreen(int);
 void vid_set_ratio(int);
 void vid_set_border_mode(int);
-void vid_upd_scale();
+// The GUI supplies the current monitor size in logical pixels; setters reuse it.
+void vid_upd_scale(const QSize& screenSize = QSize());

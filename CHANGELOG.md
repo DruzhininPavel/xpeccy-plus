@@ -11,6 +11,8 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **Fullscreen on a second monitor** fits the picture to that monitor, including when
+  its resolution differs from the main display.
 - **SjASMPlus labels on the Next** use the correct 8K pages in the listing, named
   breakpoints and watches. CPU watches follow the MMU; RAM and ROM watches read physical
   memory, even when it is not paged in.
