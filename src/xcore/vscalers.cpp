@@ -53,21 +53,25 @@ int brd_mode_pcnt(int pcnt) {
 // the screen instead, keeping its shape: at a screen's resolution, and through
 // a shader, a whole zoom is not worth the black bars it leaves. 'ignore aspect
 // ratio' stretches it to fill.
-void vid_upd_scale() {
-	QSize scrsz;
+void vid_upd_scale(const QSize& screenSize) {
+	static QSize fullscreenSize;
+	if (!screenSize.isEmpty()) fullscreenSize = screenSize;
 	Video* vid = conf.zx->vid;
 	double xscale = conf.zx->hw->xscale;		// pixel aspect, 1.0 on every zx
 	int dwid;
 	int dhei;
 	vid_upd_crop(vid);					// the frame the border size asks for
 	if (conf.vid.fullScreen) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,14,0)
-		scrsz = QApplication::screens().first()->size();
+		// Before the main window is shown, configuration has no monitor yet.
+		if (!fullscreenSize.isValid()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+			fullscreenSize = QGuiApplication::primaryScreen()->size();
 #else
-		scrsz = QApplication::desktop()->screenGeometry().size();
+			fullscreenSize = QApplication::desktop()->screenGeometry().size();
 #endif
-		dwid = scrsz.width();
-		dhei = scrsz.height();
+		}
+		dwid = fullscreenSize.width();
+		dhei = fullscreenSize.height();
 		if (conf.vid.keepRatio) {
 			// The height sets the scale on a screen wider than the picture.
 			// Rather than leave black beside it, show more border there, as

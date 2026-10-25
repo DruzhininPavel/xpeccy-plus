@@ -105,6 +105,17 @@ void MainWin::updateHead() {
 	frame->setWindowTitle(parts.join(" - "));
 }
 
+// Screen changes can arrive during a fullscreen transition; refit after Qt settles.
+void MainWin::updateScreen(QScreen* scr) {
+	disconnect(screenGeometryConnection);
+	if (scr) {
+		screenGeometryConnection = connect(scr, &QScreen::geometryChanged, this, [this]() {
+			if (conf.vid.fullScreen) updateWindow();
+		}, Qt::QueuedConnection);
+	}
+	if (conf.vid.fullScreen) QTimer::singleShot(0, this, &MainWin::updateWindow);
+}
+
 void MainWin::updateWindow() {
 	block = 1;
 	// the texture still holds the frame cut to the old bounds, and painting it
@@ -112,7 +123,8 @@ void MainWin::updateWindow() {
 	refit = 1;
 	QSize wsz;
 	Computer* comp = conf.zx;
-	vid_set_zoom(conf.vid.scale);		// where the picture goes, and how big
+	const QSize screenSize = SCREENSIZE;
+	vid_upd_scale(screenSize);		// the picture and window use the same monitor
 	// a size change can switch the shader off or bring it back (wantedShader)
 	if (conf.vid.shd_support && (wantedShader() != shdLoaded))
 		loadShader();
@@ -122,7 +134,7 @@ void MainWin::updateWindow() {
 #if defined(__WIN32)
 		fsTall = fsWantTall(fsHeld());
 #endif
-		wsz = SCREENSIZE + QSize(0, fsTall ? 1 : 0);
+		wsz = screenSize + QSize(0, fsTall ? 1 : 0);
 		// The state is asked for on the way in only. A window that covers the
 		// screen has been out of the state since its first resize (the line it
 		// grows for a menu, see fsCompose), and asking again puts it back to the
@@ -786,6 +798,12 @@ int MainWin::hotkeyOf(QKeyEvent* ev) {
 bool MainWin::eventFilter(QObject* obj, QEvent* ev) {
 	if (obj == frame) {
 		switch (ev->type()) {
+			case QEvent::Show:
+				if (QWindow* win = frame->windowHandle()) {
+					connect(win, &QWindow::screenChanged, this, &MainWin::updateScreen, Qt::UniqueConnection);
+					updateScreen(win->screen());
+				}
+				break;
 			case QEvent::Move:
 				// where the window goes back to: fullscreen moves it too
 				if (!conf.vid.fullScreen && !frame->isFullScreen()) {
