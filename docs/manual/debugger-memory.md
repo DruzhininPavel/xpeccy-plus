@@ -152,6 +152,10 @@ in the other six. The tooltip also gives the physical page the CPU reads after d
 Multiface, Layer 2 and ROMCS have been applied. The listing, the **CPU** dump, memory search
 and breakpoints follow that same effective view.
 
+The Next's listing previews the paging that an instruction's opcode fetches trigger,
+without changing the running machine. The **CPU** dump shows the current data-read view;
+just before a divMMC trap or a Multiface NMI entry, it can differ from the listing.
+
 Change a row to put another page in: pick **ROM** or **RAM** and type the page number. On a
 Next, typing a value writes its 8K MMU register; picking **ROM** writes FF and **OFF** writes
 FF to one of the six slots that can be unmapped. The **DUMP**, the listing and the CPU itself
