@@ -247,6 +247,28 @@ int dasmrd(int adr, void* ptr) {
 	return res;
 }
 
+static xMnem dasm_mnem(Computer* comp, int adr, char* buf, QByteArray* bytes = NULL) {
+	if (mode != XVIEW_CPU) {
+		xMnem mn = cpuDisasm(comp->cpu, adr, buf, dasmrd, comp);
+		if (bytes) {
+			bytes->resize(mn.len);
+			for (int i = 0; i < mn.len; i++) (*bytes)[i] = dasmrd(adr + i, comp);
+		}
+		return mn;
+	}
+	unsigned char code[16];
+	xMnem mn = compDisasm(comp, adr, buf, bytes ? code : NULL, sizeof(code));
+	if (bytes) {
+		bytes->resize(mn.len);
+		if (mn.len > (int)sizeof(code)) {
+			compDisasm(comp, adr, buf, (unsigned char*)bytes->data(), bytes->size());
+		} else {
+			memcpy(bytes->data(), code, mn.len);
+		}
+	}
+	return mn;
+}
+
 void dasmwr(Computer* comp, int adr, int bt) {
 	rzx_rec_touch();
 	adr &= comp->mem->busmask;
@@ -283,7 +305,7 @@ void placeLabel(Computer* comp, dasmData& drow) {
 		} else {
 			mn.len = 8;					// default seek range
 			if ((drow.flag & 0xf0) == DBG_VIEW_CODE) {	// for code - size of opcode only
-				mn = cpuDisasm(comp->cpu, (drow.oadr - shift), NULL, dasmrd, comp);
+				mn = dasm_mnem(comp, drow.oadr - shift, NULL);
 			}
 			if (shift < mn.len) {
 				num = gethexword(drow.oadr).prepend("#").toUpper();
@@ -369,7 +391,9 @@ int dasmText(Computer* comp, int adr, dasmData& drow) {
 
 int dasmCode(Computer* comp, int adr, dasmData& drow) {
 	char buf[1024];
-	xMnem mnm = cpuDisasm(comp->cpu, adr, buf, dasmrd, comp);
+	QByteArray bytes;
+	xMnem mnm = dasm_mnem(comp, adr, buf, &bytes);
+	for (unsigned char byte : bytes) drow.bytes.append(gethexbyte(byte));
 	drow.command = QString(buf).toUpper();
 	drow.oadr = mnm.oadr;
 	drow.oflag = mnm.flag;
@@ -399,8 +423,9 @@ int dasmCode(Computer* comp, int adr, dasmData& drow) {
 int dasmSome(Computer* comp, int adr, dasmData& drow) {
 	int clen = 0;
 	drow.label.clear();
+	drow.bytes.clear();
 	drow.adr = adr;
-	drow.flag = getBrk(comp, adr);
+	drow.flag = (mode == XVIEW_CPU) ? getBrkView(comp, adr, MEM_VIEW_FETCH) : getBrk(comp, adr);
 	drow.oflag = 0;
 	drow.oadr = -1;
 	switch(drow.flag & 0xf0) {
@@ -430,6 +455,7 @@ QList<dasmData> getDisasm(Computer* comp, int& adr) {
 	drow.issep = 0;
 	drow.info.clear();
 	drow.icon.clear();
+	drow.bytes.clear();
 	int clen = 0;
 //	int wid;
 	// 0:adr
@@ -455,8 +481,8 @@ QList<dasmData> getDisasm(Computer* comp, int& adr) {
 			drow.ispc = ((xadr.type == pct) && (abs == xadr.abs)) ? 1 : 0;
 			break;
 		default:
-			xadr = dasm_xadr(comp, adr);
-			drow.flag = getBrk(comp, xadr.adr);
+			xadr = dasm_xadr(comp, adr, MEM_VIEW_FETCH);
+			drow.flag = getBrkView(comp, xadr.adr, MEM_VIEW_FETCH);
 			drow.ispc = ((xadr.type == pct) && (abs == xadr.abs)) ? 1 : 0;
 			drow.issel = ((adr >= blockStart) && (adr <= blockEnd)) ? 1 : 0;
 			break;
@@ -500,12 +526,10 @@ QList<dasmData> getDisasm(Computer* comp, int& adr) {
 	// 2:command / 3:info
 	clen = dasmSome(comp, adr, drow);
 	// 1:bytes
-	drow.bytes.clear();
-	while(clen > 0) {
-		drow.bytes.append(gethexbyte(dasmrd(adr, comp)));
-		adr++;
-		clen--;
+	if (drow.bytes.isEmpty()) {
+		for (int i = 0; i < clen; i++) drow.bytes.append(gethexbyte(dasmrd(adr + i, comp)));
 	}
+	adr += clen;
 	list.append(drow);
 // add equ's
 	clen = adr - oadr;
@@ -557,7 +581,7 @@ int xDisasmModel::update_lst() {
 	int i;
 	Computer* comp = conf.zx;
 	int pc = cpu_get_pc(comp->cpu);
-	xMnem mnm = cpuDisasm(comp->cpu, pc, NULL, dasmrd, conf.zx);
+	xMnem mnm = dasm_mnem(comp, pc, NULL);
 	if (mnm.cond && mnm.met) {
 		for (i = 0; i < dasm.size(); i++) {
 			if ((dasm[i].adr == mnm.oadr) && (mnm.oadr != pc)) {
@@ -668,6 +692,7 @@ int asmAddr(Computer* comp, QVariant val, xAdr xadr) {
 		adr = str_to_adr(comp, str);
 	}
 	if (adr < 0) {
+		if (find_label(str).type >= 0) return -1;
 		if ((str.at(0).isLetter() || (str.at(0) == '_')) && !str.contains('$') && !str.contains(' ')) {
 			lab = find_label(xadr);
 			if (!lab.isEmpty()) {						// remove current label

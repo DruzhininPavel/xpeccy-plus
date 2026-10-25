@@ -36,7 +36,7 @@ void heatBankFree(xHeatBank*);
 void comp_heat_sync(struct Computer*);		// (re)allocate ram/rom banks to match current mem sizes
 void comp_heat_reset(struct Computer*);		// zero all counters, keep allocation
 void comp_heat_free(struct Computer*);		// release ram/rom banks (call on compDestroy)
-void comp_heat_hit(struct Computer*, int adr, int kind);
+void comp_heat_hit(struct Computer*, int adr, int kind, int access);
 int comp_heat_save(struct Computer*, const char* path);	// returns 0 on success
 
 xHeatCell comp_heat_cpu(struct Computer*, int adr);			// cell behind a cpu address, through the current paging

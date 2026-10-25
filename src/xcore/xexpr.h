@@ -64,7 +64,8 @@ typedef struct {
 } xExpr;
 
 xExpr xexpr_compile(const char*);
-unsigned xexpr_eval(const xExpr&, Computer*, bool* = nullptr, int = 0, unsigned = 0);
+// The last argument selects CPU addresses (0) or physical MEM_RAM/MEM_ROM for labels and reads.
+unsigned xexpr_eval(const xExpr&, Computer*, bool* = nullptr, int = 0, unsigned = 0, int = 0);
 bool xexpr_ok(const xExpr&);
 // the expression as it was understood: hex numbers, priorities as brackets
 std::string xexpr_text(const xExpr&);

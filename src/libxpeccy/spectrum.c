@@ -70,6 +70,36 @@ xAdr comp_get_xadr(Computer* comp, int adr, int access) {
 	return xadr;
 }
 
+int comp_find_xadr(Computer* comp, int type, int abs, int access) {
+	if (abs < 0) return -1;
+	if (type == MEM_IO) return abs & comp->mem->busmask;
+	int adr = memFindAdr(comp->mem, type, abs);
+	if (!comp->hw->memView) return adr;
+	if (adr >= 0) {
+		xAdr cell = comp_get_xadr(comp, adr, access);
+		if ((cell.type == type) && (cell.abs == abs)) return adr;
+	}
+	for (int i = 0; i < 256; i++) {
+		adr = (i << comp->mem->pgshift) | (abs & comp->mem->pgmask);
+		xAdr cell = comp_get_xadr(comp, adr, access);
+		if ((cell.type == type) && (cell.abs == abs)) return adr;
+	}
+	return -1;
+}
+
+static int comp_dasm_read(int adr, void* ptr) {
+	return comp_peek((Computer*)ptr, adr, MEM_VIEW_READ, NULL);
+}
+
+xMnem compDisasm(Computer* comp, int adr, char* buf, unsigned char* bytes, int size) {
+	if (comp->hw->disasm) return comp->hw->disasm(comp, adr, buf, bytes, size);
+	xMnem mn = cpuDisasm(comp->cpu, adr, buf, comp_dasm_read, comp);
+	if (bytes) {
+		for (int i = 0; (i < size) && (i < mn.len); i++) bytes[i] = comp_dasm_read(adr + i, comp);
+	}
+	return mn;
+}
+
 static unsigned char* comp_get_memcell_flag_ptr(Computer* comp, int adr, int access) {
 	unsigned char* res = NULL;
 	xAdr xadr = comp_get_xadr(comp, adr, access);
@@ -81,7 +111,7 @@ static unsigned char* comp_get_memcell_flag_ptr(Computer* comp, int adr, int acc
 	return res;
 }
 
-bpChecker comp_check_bp(Computer* comp, int adr, int mask) {
+static bpChecker comp_check_bp(Computer* comp, int adr, int mask, int access) {
 	bpChecker ch;
 	ch.t = -1;
 	ch.ptr = NULL;
@@ -93,8 +123,6 @@ bpChecker comp_check_bp(Computer* comp, int adr, int mask) {
 		}
 	}
 	if (ch.t < 0) {
-		int access = (mask & (MEM_BRK_FETCH | MEM_BRK_TFETCH)) ? MEM_VIEW_FETCH
-			: ((mask & MEM_BRK_WR) ? MEM_VIEW_WRITE : MEM_VIEW_READ);
 		xAdr xadr = comp_get_xadr(comp, adr, access);
 		switch (xadr.type) {
 			case MEM_RAM: xadr.abs &= comp->mem->ramMask; ch.ptr = comp->brkRamMap + xadr.abs; ch.t = BRK_MEMRAM; break;
@@ -179,7 +207,7 @@ static int memrd_watched(Computer* comp, int adr, int m1) {
 		isExecByte = (cpu_get_pc(comp->cpu) - 1) == adr;
 	if (comp->flgMAP) {
 		unsigned char* fptr = comp_get_memcell_flag_ptr(comp, adr,
-			isExecByte ? MEM_VIEW_FETCH : MEM_VIEW_READ);
+			m1 ? MEM_VIEW_FETCH : MEM_VIEW_READ);
 		if (fptr) {
 			unsigned char flag = *fptr;
 			if (isExecByte) {
@@ -196,10 +224,12 @@ static int memrd_watched(Computer* comp, int adr, int m1) {
 		// a byte is part of the instruction stream (opcode, prefix, immediate/displacement
 		// operand) whenever it lands right where PC just advanced past it; everything else
 		// is a real data read (memory operand, stack pop, etc)
-		comp_heat_hit(comp, adr, isExecByte ? HEAT_EX : HEAT_RD);
+		comp_heat_hit(comp, adr, isExecByte ? HEAT_EX : HEAT_RD,
+			m1 ? MEM_VIEW_FETCH : MEM_VIEW_READ);
 	}
 	if (comp->flgBRKMEM) {
-		bpChecker ch = comp_check_bp(comp, adr, MEM_BRK_RD);
+		bpChecker ch = comp_check_bp(comp, adr, MEM_BRK_RD,
+			m1 ? MEM_VIEW_FETCH : MEM_VIEW_READ);
 		if (ch.t >= 0) {
 			comp->flgBRK = 1;
 			comp->brkt = ch.t;
@@ -249,19 +279,19 @@ void memwr(int adr, int val, void* ptr) {
 static void memwr_watched(Computer* comp, int adr, int val) {
 	if (comp->flgHEAT && !x_runahead) {	// an ahead frame would count every access twice
 		// writes (incl. stack push/call) are always data traffic, never execution
-		comp_heat_hit(comp, adr, HEAT_WR);
+		comp_heat_hit(comp, adr, HEAT_WR, MEM_VIEW_WRITE);
 	}
-	unsigned char* fptr = (comp->flgMAP || comp->flgBRKMEM)
+	unsigned char* fptr = comp->flgMAP
 		? comp_get_memcell_flag_ptr(comp, adr, MEM_VIEW_WRITE) : NULL;
 	if (fptr) {
 		unsigned char flag = *fptr;
-		if (comp->flgMAP) {
-			if (!(flag & 0xf0)) {
-				flag |= DBG_VIEW_BYTE;
-				*fptr = flag;
-			}
+		if (!(flag & 0xf0)) {
+			flag |= DBG_VIEW_BYTE;
+			*fptr = flag;
 		}
-		bpChecker ch = comp_check_bp(comp, adr, MEM_BRK_WR);
+	}
+	if (comp->flgBRKMEM) {
+		bpChecker ch = comp_check_bp(comp, adr, MEM_BRK_WR, MEM_VIEW_WRITE);
 		if (ch.t >= 0) {
 			comp->flgBRK = 1;
 			comp->brkt = ch.t;
@@ -1163,7 +1193,7 @@ int compExec(Computer* comp) {
 		bpChecker ch;
 		ch.t = -1;
 		if (comp->flgBRKMEM)
-			ch = comp_check_bp(comp, cpu_get_pc(comp->cpu), MEM_BRK_FETCH | MEM_BRK_TFETCH);
+			ch = comp_check_bp(comp, cpu_get_pc(comp->cpu), MEM_BRK_FETCH | MEM_BRK_TFETCH, MEM_VIEW_FETCH);
 		if (ch.t >= 0) {
 			comp->flgBRK = 1;
 			comp->brkt = ch.t;
@@ -1508,7 +1538,11 @@ void setBrk(Computer* comp, int adr, unsigned char val) {
 }
 
 unsigned char getBrk(Computer* comp, int adr) {
-	unsigned char* ptr = getBrkPtr(comp, adr);
+	return getBrkView(comp, adr, MEM_VIEW_READ);
+}
+
+unsigned char getBrkView(Computer* comp, int adr, int access) {
+	unsigned char* ptr = comp_get_memcell_flag_ptr(comp, adr, access);
 	unsigned char res = ptr ? *ptr : 0x00;
 	if (comp->mem->busmask < 0x10000) {
 		res |= (comp->brkAdrMap[adr & comp->mem->busmask] & 0x0f);

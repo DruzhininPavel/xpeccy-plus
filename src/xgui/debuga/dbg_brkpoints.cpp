@@ -287,8 +287,8 @@ void xBreakTable::onDoubleClick(QModelIndex idx) {
 	int adr = -1;
 	switch(bp.type) {
 		case BRK_CPUADR: adr = bp.adr; break;
-		case BRK_MEMRAM: adr = memFindAdr(conf.zx->mem, MEM_RAM, bp.adr); break;
-		case BRK_MEMROM: adr = memFindAdr(conf.zx->mem, MEM_ROM, bp.adr); break;
+		case BRK_MEMRAM: adr = comp_find_xadr(conf.zx, MEM_RAM, bp.adr, MEM_VIEW_FETCH); break;
+		case BRK_MEMROM: adr = comp_find_xadr(conf.zx, MEM_ROM, bp.adr, MEM_VIEW_FETCH); break;
 	}
 	if (adr < 0) return;
 	emit rqDisasm(adr);
@@ -366,7 +366,7 @@ int xBrkManager::curType() {
 bool xBrkManager::readAdr(QString txt, int* adr, int* page) {
 	int type = curType();
 	int val;
-	int lbank;
+	int lbank = -1;
 	*page = -1;
 	txt = txt.trimmed();
 	if (txt.isEmpty()) return false;
@@ -381,7 +381,7 @@ bool xBrkManager::readAdr(QString txt, int* adr, int* page) {
 		*adr = off;
 		return true;
 	}
-	if (!brk_list_adr(txt, &val, &lbank) || (val < 0) || (val > 0xffff)) return false;
+	if (!brk_list_adr(txt, &val, brk_is_cell(type) ? &lbank : NULL) || (val < 0) || (val > 0xffff)) return false;
 	*adr = val;
 	if (!brk_is_cell(type)) return true;
 	if ((lbank >= 0) && (type == BRK_MEMRAM)) {		// a label carries its page
@@ -483,7 +483,7 @@ void xBrkManager::chaAdr() {
 		} else {
 			res = QString("%0 %1:%2").arg(brk_cell_name(brk.type)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff));
 			if (brk.eadr > brk.adr) res.append("-").append(gethexword(brk.eadr & 0x3fff));
-			int cpu = memFindAdr(conf.zx->mem, brk_mem_type(brk.type), brk.adr);
+			int cpu = comp_find_xadr(conf.zx, brk_mem_type(brk.type), brk.adr, MEM_VIEW_READ);
 			res.append((cpu < 0) ? QString(", not mapped now") : QString(", at %0 now").arg(gethexword(cpu)));
 		}
 		QString lab = brk_label(brk.type, brk.adr);

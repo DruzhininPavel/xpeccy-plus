@@ -26,7 +26,7 @@ xAsmScan nil_asm(int adr, const char* com, char* buf) {
 	res.match = 0;
 	return res;
 }
-xMnem nil_mnem(CPU* cpu, int adr, cbdmr mrd, void* data) {
+xMnem nil_mnem(CPU* cpu, int adr, cbmr mrd, void* data) {
 	xMnem res;
 	res.len = 1;
 	res.mnem = nomnem;
@@ -137,7 +137,22 @@ unsigned short cpu_peek_word(cbdmr mrd, void* data, int adr) {
 	return (mrd(adr & 0xffff, data) & 0xff) | ((mrd((adr + 1) & 0xffff, data) & 0xff) << 8);
 }
 
+typedef struct {
+	cbdmr read;
+	void* data;
+} cpuDasmReader;
+
+static int cpu_dasm_read(int adr, int access, void* ptr) {
+	cpuDasmReader* reader = (cpuDasmReader*)ptr;
+	return reader->read(adr, reader->data);
+}
+
 xMnem cpuDisasm(CPU* cpu, int adr, char* buf, cbdmr mrd, void* data) {
+	cpuDasmReader reader = {mrd, data};
+	return cpuDisasmView(cpu, adr, buf, cpu_dasm_read, &reader);
+}
+
+xMnem cpuDisasmView(CPU* cpu, int adr, char* buf, cbmr mrd, void* data) {
 	xMnem mn;
 //	opCode* opt = cpu->tab;
 	unsigned char op;
@@ -155,7 +170,7 @@ xMnem cpuDisasm(CPU* cpu, int adr, char* buf, cbdmr mrd, void* data) {
 		mn = cpu->core->mnem(cpu, adr, mrd, data);
 		// mn.oadr = -1;
 		adr += mn.len;
-		tmp = mrd((adr - 2) & 0xffff, data);
+		tmp = strstr(mn.mnem, ":5") ? mrd((adr - 2) & 0xffff, CPU_DASM_CODE, data) : 0;
 		const char* src = mn.mnem;
 
 		while (*src != 0) {
@@ -164,15 +179,15 @@ xMnem cpuDisasm(CPU* cpu, int adr, char* buf, cbdmr mrd, void* data) {
 				op = *(src++);
 				switch(op) {
 					case '1':		// byte = (adr)
-						dtl = mrd(adr++,data);
+						dtl = mrd(adr++, CPU_DASM_CODE, data);
 						mn.len++;
 						*buf++ = '#';
 						*buf++ = halfByte[dtl >> 4];
 						*buf++ = halfByte[dtl & 0x0f];
 						break;
 					case '2':		// word = (adr,adr+1)
-						dtl = mrd(adr++,data);
-						dth = mrd(adr++,data);
+						dtl = mrd(adr++, CPU_DASM_CODE, data);
+						dth = mrd(adr++, CPU_DASM_CODE, data);
 						mn.len += 2;
 						mn.oadr = dtl | (dth << 8);
 						*buf++ = '#';
@@ -182,7 +197,7 @@ xMnem cpuDisasm(CPU* cpu, int adr, char* buf, cbdmr mrd, void* data) {
 						*buf++ = halfByte[dtl & 0x0f];
 						break;
 					case '3':		// word = adr + [e = (adr)]
-						dtl = mrd(adr++,data);
+						dtl = mrd(adr++, CPU_DASM_CODE, data);
 						mn.len++;
 						dtw = (adr + (signed char)dtl) & 0xffff;
 						mn.oadr = dtw;
@@ -193,7 +208,7 @@ xMnem cpuDisasm(CPU* cpu, int adr, char* buf, cbdmr mrd, void* data) {
 						*buf++ = halfByte[dtw & 0x0f];
 						break;
 					case '4':		// signed byte e = (adr)
-						tmp = mrd(adr++,data);
+						tmp = mrd(adr++, CPU_DASM_CODE, data);
 						mn.len++;
 					case '5':		// signed byte e = tmp
 						if (tmp < 0x80) {
@@ -207,8 +222,8 @@ xMnem cpuDisasm(CPU* cpu, int adr, char* buf, cbdmr mrd, void* data) {
 						*buf++ = halfByte[tmp & 0x0f];
 						break;
 					case '6':		// word = (adr,adr+1), high byte first (Z80N push nn)
-						dth = mrd(adr++,data);
-						dtl = mrd(adr++,data);
+						dth = mrd(adr++, CPU_DASM_CODE, data);
+						dtl = mrd(adr++, CPU_DASM_CODE, data);
 						mn.len += 2;
 						*buf++ = '#';
 						*buf++ = halfByte[dth >> 4];

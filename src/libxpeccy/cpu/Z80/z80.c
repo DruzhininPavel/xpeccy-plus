@@ -278,7 +278,12 @@ int z80_exec(CPU* cpu) {
 
 //static unsigned char z80_cnd[4] = {Z80_FZ, Z80_FC, Z80_FP, Z80_FS};
 
-xMnem z80_mnem(CPU* cpu, int qadr, cbdmr mrd, void* data) {
+static unsigned short z80_dasm_word(cbmr mrd, void* data, int adr) {
+	return (mrd(adr & 0xffff, CPU_DASM_DATA, data) & 0xff)
+		| ((mrd((adr + 1) & 0xffff, CPU_DASM_DATA, data) & 0xff) << 8);
+}
+
+xMnem z80_mnem(CPU* cpu, int qadr, cbmr mrd, void* data) {
 	xMnem mn;
 	mn.oadr = -1;
 	const opTabSet* tabs = cpu->tabs ? cpu->tabs : &z80_tabs;
@@ -290,13 +295,14 @@ xMnem z80_mnem(CPU* cpu, int qadr, cbdmr mrd, void* data) {
 	unsigned short madr = 0;
 	mn.len = 0;
 	do {
-		op = mrd(adr++,data);
+		int access = ((opt == tabs->ddcb) || (opt == tabs->fdcb)) ? CPU_DASM_CODE : CPU_DASM_FETCH;
+		op = mrd(adr++, access, data);
 		mn.len++;
 		opc = &opt[op];
 		if (opc->flag & OF_PREFIX) {
 			opt = opc->tab;
 			if ((opt == tabs->ddcb) || (opt == tabs->fdcb)) {
-				e = mrd(adr, data);
+				e = mrd(adr, CPU_DASM_CODE, data);
 				adr++;
 				mn.len++;
 			}
@@ -320,21 +326,21 @@ xMnem z80_mnem(CPU* cpu, int qadr, cbdmr mrd, void* data) {
 		madr = cpu->regBC;
 	} else if (strstr(opc->mnem, "(ix")) {
 		mn.mem = 1;
-		if (opt != tabs->ddcb) e = mrd(adr, data);
+		if (opt != tabs->ddcb) e = mrd(adr, CPU_DASM_CODE, data);
 		madr = cpu->regIX + (signed char)e;
 	} else if (strstr(opc->mnem, "(iy")) {
 		mn.mem = 1;
-		if (opt != tabs->fdcb) e = mrd(adr, data);
+		if (opt != tabs->fdcb) e = mrd(adr, CPU_DASM_CODE, data);
 		madr = cpu->regIY + (signed char)e;
 	} else if (strstr(opc->mnem, "(:2)")) {
 		mn.mem = 1;
-		madr = mrd(adr, data) & 0xff;
-		madr |= (mrd(adr+1, data) << 8);
+		madr = mrd(adr, CPU_DASM_CODE, data) & 0xff;
+		madr |= (mrd(adr+1, CPU_DASM_CODE, data) << 8);
 	}
 	if (mn.mem) {
-		mop.l = mrd(madr++, data);
+		mop.l = mrd(madr++, CPU_DASM_DATA, data);
 		if (mn.flag & OF_MWORD)
-			mop.h = mrd(madr, data);
+			mop.h = mrd(madr, CPU_DASM_DATA, data);
 	}
 	if (strstr(opc->mnem, "bit") || strstr(opc->mnem, "res") || strstr(opc->mnem, "set")) {
 		mop.w = (mop.l & (1 << ((op >> 3) & 7))) ? 1 : 0;
@@ -360,14 +366,14 @@ xMnem z80_mnem(CPU* cpu, int qadr, cbdmr mrd, void* data) {
 			if (op & 8)
 				mn.met ^= 1;
 			if (retcc)		// ret cc: no operand, peek the stack for the target
-				mn.oadr = cpu_peek_word(mrd, data, cpu->regSP);
+				mn.oadr = z80_dasm_word(mrd, data, cpu->regSP);
 		} else if ((op == 0xc3) || (op == 0xcd)) {						// jp, call
 			mn.cond = 1;
 			mn.met = 1;
 		} else if (op == 0xc9) {								// ret
 			mn.cond = 1;
 			mn.met = 1;
-			mn.oadr = cpu_peek_word(mrd, data, cpu->regSP);
+			mn.oadr = z80_dasm_word(mrd, data, cpu->regSP);
 		} else if (op == 0x18) {								// jr
 			mn.cond = 1;
 			mn.met = 1;

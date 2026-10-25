@@ -55,6 +55,7 @@ typedef sndPair(*cbHwVol)(Computer*, sndVolume*);
 // side-effect-free memory for the debugger: value is output on reads and input
 // on writes; NULL asks only which physical cell the access reaches
 typedef void(*cbHwMemView)(Computer*, int, int, int*, xAdr*);
+typedef xMnem(*cbHwDisasm)(Computer*, int, char*, unsigned char*, int);
 
 // a port the machine keeps by itself: where in Computer, or a function when
 // it is not a field there (offset 0 then)
@@ -122,6 +123,7 @@ struct HardWare {
 	int ownLay;		// the machine lays its raster out itself (the Next's follows its timing): a layout asked for is not taken
 	int contLazy;		// cont walks the ray itself, when it needs it (comp_cont_hw leaves it)
 	cbHwMemView memView;	// cpu-visible memory behind overlays (NULL: Memory.map is the view)
+	cbHwDisasm disasm;	// instruction preview with paging across its M1 cycles
 };
 typedef struct HardWare HardWare;
 

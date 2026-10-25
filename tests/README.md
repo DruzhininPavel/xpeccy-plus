@@ -65,6 +65,19 @@ a destination that is not empty.
 
 ## Quick tier
 
+Label imports and expressions also have an optional Qt test, built against the program's
+own readers and evaluator. It covers the Next's 8K pages, MMU changes, physical watches,
+save/reload and the existing 16K format:
+
+```
+cmake -S tests -B build/out/tests-qt -DXPECCY_QT_TESTS=ON -DQTVERSION=6 -DCMAKE_PREFIX_PATH=<Qt prefix> -DSDL2_INCLUDE_DIR=<SDL2 include>
+cmake --build build/out/tests-qt --target labels-check
+ctest --test-dir build/out/tests-qt --output-on-failure
+```
+
+Use the same compiler and zlib options as the core tests. Qt's DLLs must be on PATH when
+running the test on Windows. The ordinary quick tier does not need Qt.
+
 ```
 python tests/regress.py quick                 # build, run every bench, PASS/FAIL per case
 python tests/regress.py quick tsconf -k 't1*'
@@ -78,6 +91,9 @@ libxpeccy as a static library and the benches in `core/` against it, into
 `--mingw`). Each bench's output is compared, case by case, with `expected.txt` beside it.
 
 - **z80** - `tools/z80test`, Fuse's per-instruction tests.
+- **zxnext** - eight independent 8K MMU slots, CPU and physical breakpoints, instruction
+  previews across divMMC traps and Multiface NMI entry, and heat-map operand accesses.
+  Also switches from a Next to a 48K and checks that the Next's CPU hooks are gone.
 - **tsconf**, **baseconf** - small Z80 programs on the TSConf and BaseConf cores, each
   checking one thing the hardware's RTL says; `cases.txt` lists them. The programs are
   committed assembled in `bin/` beside their sources in `asm/`, so a run needs no assembler.

@@ -10,7 +10,7 @@ text cut into `== <case>` sections, and a case passes when its section is the sa
   tape      tape-bench over the images core/tape/mktape.py writes
   pok       pok-bench: the .pok reader over core/pok/files, pokes in and out of 16/48/128K
   vfat      vfat-bench: a folder volume taking writes, FatFs as the guest, on a scratch folder
-  zxnext    zxnext-bench --switch: a Next then a 48K in one machine, the Next's cpu hooks gone
+  zxnext    zxnext-bench: debugger memory views, and a Next then a 48K with the Next's hooks gone
   kbd       kbd-bench over core/kbd/bin (cases.txt): host keys that are combinations, shift first
   esp       esp-bench over core/esp/bin (cases.txt): the emulated ESP-01 on the Next's UART, a
             server on 127.0.0.1
@@ -168,10 +168,13 @@ def bench_vfat():
 
 
 def bench_zxnext():
-    p = subprocess.run([str(BUILD / f"zxnext-bench{EXE}"), "--switch"], capture_output=True, text=True, errors="replace", timeout=120)
-    res = read_sections(p.stdout)
-    if p.returncode or not res:
-        res["zxnext-bench"] = f"exit {p.returncode}: {p.stderr.strip()}"
+    res = {}
+    for case in ("switch", "debugger"):
+        p = subprocess.run([str(BUILD / f"zxnext-bench{EXE}"), f"--{case}"], capture_output=True, text=True, errors="replace", timeout=120)
+        sections = read_sections(p.stdout)
+        res.update(sections)
+        if p.returncode or not sections:
+            res[f"zxnext-{case}"] = f"exit {p.returncode}: {p.stderr.strip()}"
     return res
 
 
