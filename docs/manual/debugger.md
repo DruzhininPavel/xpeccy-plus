@@ -318,8 +318,9 @@ before SP to 16 bytes after it. Where the panel starts is the **Stack offset** o
 The **MEMMAP** panel holds a few small blocks, one under another. The **Debugger** page of
 **Options** sets which of them are shown.
 
-The four rows at the top are the four 16K banks of the Z80's memory, with what is in each:
-ROM or RAM (or DIV, a [divMMC](disks.md#divmmc)'s memory) and the page number. You can put another page into a bank from here. See
+The rows at the top are the Z80's memory windows: four 16K banks on most machines, or the
+eight 8K MMU slots on a ZX Spectrum Next. They show the kind and page number, and let you
+put another page into a window. See
 [Memory](debugger-memory.md).
 
 ```{index} FMAPS, TSConf; FMAPS

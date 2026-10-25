@@ -140,22 +140,31 @@ instruction is about to read. It cannot be edited.
 
 ![The MEMMAP panel](images/dbg-memmap.png)
 
-The four rows at the top of the **MEMMAP** panel are the four 16K windows of the CPU's
-memory: 0000-3FFF, 4000-7FFF, 8000-BFFF and C000-FFFF. Hold the mouse over a row to see
-its addresses. Each row says what is in that window now, **ROM** or **RAM**, and the
-number of the page.
+On most machines the four rows at the top of the **MEMMAP** panel are the four 16K windows
+of the CPU's memory: 0000-3FFF, 4000-7FFF, 8000-BFFF and C000-FFFF. Hold the mouse over a
+row to see its addresses. Each row says what is in that window now, **ROM** or **RAM**, and
+the number of the page.
 
-Change a row to put another page in: pick **ROM** or **RAM** and type the page number. The
-**DUMP**, the listing and the CPU itself then see that page there. A window you changed has
+On a ZX Spectrum Next there are eight 8K rows instead, one for each MMU register: 0000-1FFF,
+2000-3FFF and so on. The page is the exact value of NextReg 50-57. **RAM** is a page below
+E0; a value from E0 to FF selects **ROM** in either of the first two slots and is **OFF**
+in the other six. The tooltip also gives the physical page the CPU reads after divMMC,
+Multiface, Layer 2 and ROMCS have been applied. The listing, the **CPU** dump, memory search
+and breakpoints follow that same effective view.
+
+Change a row to put another page in: pick **ROM** or **RAM** and type the page number. On a
+Next, typing a value writes its 8K MMU register; picking **ROM** writes FF and **OFF** writes
+FF to one of the six slots that can be unmapped. The **DUMP**, the listing and the CPU itself
+then see that page there. A window you changed has
 its type in bold and its page number highlighted. The page stays there until the program
 itself pages that window.
 
 Right-click the rows, or the **MEMMAP** title, and choose **Restore mapping** to put back
-all four windows as they were when the Debugger opened.
+all four windows, or all eight Next MMU registers, as they were when the Debugger opened.
 
-While a [divMMC](disks.md#divmmc) has its memory in the first 16K window, that row says
-**DIV** and the number of the board's 8K RAM page at `#2000`. The board pages it by
-itself, so this row cannot be changed then.
+On other ZX machines, while a [divMMC](disks.md#divmmc) has its memory in the first 16K
+window, that row says **DIV** and the number of the board's 8K RAM page at `#2000`. The
+board pages it by itself, so this row cannot be changed then.
 
 On TSConf a fifth row, `FM`, shows where the FMAPS window is (see
 [The FMAPS window on TSConf](#the-fmaps-window-on-tsconf)).
