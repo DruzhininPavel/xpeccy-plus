@@ -9,6 +9,8 @@ before that point is upstream's history and is not repeated here.
 
 ## Unreleased
 
+## 2026.8.1 - 2026-10-25
+
 ### Fixed
 
 - **The ZX Spectrum Next debugger sees the memory the CPU sees**: the listing, dump,
