@@ -11,7 +11,7 @@ class MemViewer : public QDialog {
 	Q_OBJECT
 	public:
 		MemViewer(QWidget* = NULL);
-		Memory* mem;
+		Computer* comp;
 		Ui::MemView ui;
 		QPoint winPos;
 		unsigned vis:1;

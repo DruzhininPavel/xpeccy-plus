@@ -76,8 +76,8 @@ void xMemFinder::doFind() {
 	idx = 0;
 	int found = 0;
 	unsigned char bt;
-	while (!found && (shift <= mem->busmask + 1)) {
-		bt = memRd(mem, adr + shift);
+	while (!found && (shift <= comp->mem->busmask + 1)) {
+		bt = comp_peek(comp, adr + shift, MEM_VIEW_READ, NULL);
 		if ((bt & msk[idx]) == (pat[idx] & msk[idx])) {
 			idx++;
 			if (idx >= psiz)

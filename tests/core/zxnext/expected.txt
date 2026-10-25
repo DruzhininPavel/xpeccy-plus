@@ -1,4 +1,9 @@
 == switch
+view mmu0: A4 @ 062123 page 11
+view mmu1: A5 @ 064123 page 12
+view div:  5A @ 024123
+view break: 01 @ 024123
+view write: 3C
 next: inta set, nextreg set
 48k:  inta none, nextreg none
 48k:  wait debt none

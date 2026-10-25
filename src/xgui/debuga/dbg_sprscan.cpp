@@ -65,9 +65,9 @@ unsigned char MemViewer::rdMem(int adr) {
 	unsigned char res;
 	int page = ui.sbPage->value();
 	if (adr < 0xc000) {
-		res = memRd(mem, adr);
+		res = comp_peek(comp, adr, MEM_VIEW_READ, NULL);
 	} else {
-		res = mem->ramData[((page << 14) | (adr & 0x3fff)) & mem->ramMask];
+		res = comp->mem->ramData[((page << 14) | (adr & 0x3fff)) & comp->mem->ramMask];
 	}
 	return res;
 }

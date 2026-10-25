@@ -190,7 +190,7 @@ bool xHeatView::fits(int extra) const {
 xHeatCell xHeatView::cellData(int off) const {
 	Computer* comp = conf.zx;
 	if (blockView()) {
-		xAdr xadr = mem_get_xadr(comp->mem, off);
+		xAdr xadr = comp_get_xadr(comp, off, MEM_VIEW_READ);
 		return heat_sum(comp, xadr.type, xadr.abs);
 	}
 	if (mode == XVIEW_CPU) return comp_heat_cpu(comp, off);
@@ -205,7 +205,7 @@ void xHeatView::rowSource(int row, int* type, int* base) const {
 	Computer* comp = conf.zx;
 	int off = row * HEAT_BPR;
 	if (mode == XVIEW_CPU) {
-		xAdr xadr = mem_get_xadr(comp->mem, off);
+		xAdr xadr = comp_get_xadr(comp, off, MEM_VIEW_READ);
 		*type = xadr.type;
 		*base = xadr.abs;
 	} else {
@@ -408,7 +408,7 @@ void xHeatView::mouseMoveEvent(QMouseEvent* ev) {
 	Computer* comp = conf.zx;
 	QString str;
 	if (mode == XVIEW_CPU) {
-		xAdr xadr = mem_get_xadr(comp->mem, off);
+		xAdr xadr = comp_get_xadr(comp, off, MEM_VIEW_READ);
 		const char* tp = "---";
 		switch (xadr.type) {
 			case MEM_RAM: tp = "RAM"; break;

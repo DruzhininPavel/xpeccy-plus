@@ -20,6 +20,16 @@ extern int blockEnd;
 static int mode = XVIEW_CPU;
 static int page = 0;
 
+static xAdr dasm_xadr(Computer* comp, int adr, int access = MEM_VIEW_READ) {
+	if (mode == XVIEW_CPU) return comp_get_xadr(comp, adr, access);
+	xAdr xadr;
+	xadr.type = (mode == XVIEW_ROM) ? MEM_ROM : MEM_RAM;
+	xadr.bank = page << 6;
+	xadr.adr = adr & 0x3fff;
+	xadr.abs = (page << 14) | xadr.adr;
+	return xadr;
+}
+
 extern int adr_of_reg(CPU* cpu, bool* flag, QString nam);
 
 static int text_width(const QFontMetrics& fm, const QString& str) {
@@ -223,19 +233,9 @@ QVariant xDisasmModel::data(const QModelIndex& idx, int role) const {
 int dasmrd(int adr, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	unsigned char res = 0xff;
-	int fadr;
-	MemPage* pg;
 	switch (mode) {
 		case XVIEW_CPU:
-			pg = mem_get_page(comp->mem, adr);	// = &comp->mem->map[adr >> 8];
-			fadr = mem_get_phys_adr(comp->mem, adr);
-			switch (pg->type) {
-				case MEM_ROM: res = comp->mem->romData[fadr & comp->mem->romMask]; break;
-				case MEM_RAM: res = comp->mem->ramData[fadr & comp->mem->ramMask]; break;
-				case MEM_SLOT: res = memRd(comp->mem, adr);
-					break;
-				case MEM_DIV: res = comp->div->data[fadr % (DIV_EE_SIZE + DIV_RAM_MAX)]; break;
-			}
+			res = comp_peek(comp, adr, MEM_VIEW_READ, NULL);
 			break;
 		case XVIEW_RAM:
 			res = comp->mem->ramData[((adr & 0x3fff) | (page << 14)) & comp->mem->ramMask];
@@ -250,29 +250,9 @@ int dasmrd(int adr, void* ptr) {
 void dasmwr(Computer* comp, int adr, int bt) {
 	rzx_rec_touch();
 	adr &= comp->mem->busmask;
-	int fadr;
-	MemPage* pg;
 	switch(mode) {
 		case XVIEW_CPU:
-			pg = mem_get_page(comp->mem, adr);		// = &comp->mem->map[(adr >> 8) & 0xff];
-			fadr = mem_get_phys_adr(comp->mem, adr);	// pg->num << 8) | (adr & 0xff);
-			switch (pg->type) {
-				// no writings to slot
-				case MEM_ROM:
-					if (conf.dbg.romwr)
-						comp->mem->romData[fadr & comp->mem->romMask] = bt & 0xff;
-					break;
-				case MEM_RAM:
-					comp->mem->ramData[fadr & comp->mem->ramMask] = bt & 0xff;
-					break;
-				case MEM_DIV:		// its SRAM, and its EEPROM as a ROM is
-					fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
-					if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr) {
-						comp->div->data[fadr] = bt & 0xff;
-						if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
-					}
-					break;
-			}
+			comp_poke(comp, adr, bt, conf.dbg.romwr);
 			break;
 		case XVIEW_RAM:
 			comp->mem->ramData[((adr & 0x3fff) | (page << 14)) & comp->mem->ramMask] = bt & 0xff;
@@ -292,7 +272,7 @@ void placeLabel(Computer* comp, dasmData& drow) {
 	xMnem mn;
 	xAdr xadr;
 	while (work && (shift < 8)) {
-		xadr = mem_get_xadr(comp->mem, drow.oadr - shift);
+		xadr = dasm_xadr(comp, drow.oadr - shift);
 		lab = find_label(xadr);
 		if (lab.isEmpty()) {
 			if (drow.oflag & OF_MEMADR) {
@@ -324,13 +304,13 @@ int dasmByte(Computer* comp, int adr, dasmData& drow) {
 	drow.command = QString("DB #%0").arg(gethexbyte(dasmrd(adr, comp)));
 	adr++;
 	unsigned char fl = getBrk(comp, adr);
-	xAdr xadr = mem_get_xadr(comp->mem, adr);
+	xAdr xadr = dasm_xadr(comp, adr);
 	while ((len < conf.dbg.dbsize) && (fl == DBG_VIEW_BYTE) && find_label(xadr).isEmpty()) {
 		drow.command.append(QString(",#%0").arg(gethexbyte(dasmrd(adr, comp))));
 		len++;
 		adr++;
 		fl = getBrk(comp, adr);
-		xadr = mem_get_xadr(comp->mem, adr);
+		xadr = dasm_xadr(comp, adr);
 	}
 	return len;
 }
@@ -342,7 +322,7 @@ int dasmWord(Computer* comp, int adr, dasmData& drow) {
 	drow.command = QString("DW #%0").arg(gethexword(word));
 	adr += 2;
 	unsigned char fl = getBrk(comp, adr);
-	xAdr xadr = mem_get_xadr(comp->mem, adr);
+	xAdr xadr = dasm_xadr(comp, adr);
 	while ((len < conf.dbg.dwsize * 2) && (fl == DBG_VIEW_WORD) && find_label(xadr).isEmpty()) {
 		word = dasmrd(adr, comp);
 		word |= (dasmrd(adr + 1, comp) << 8);
@@ -350,7 +330,7 @@ int dasmWord(Computer* comp, int adr, dasmData& drow) {
 		adr += 2;
 		len += 2;
 		fl = getBrk(comp, adr);
-		xadr = mem_get_xadr(comp->mem, adr);
+		xadr = dasm_xadr(comp, adr);
 	}
 	return len;
 }
@@ -454,7 +434,7 @@ QList<dasmData> getDisasm(Computer* comp, int& adr) {
 //	int wid;
 	// 0:adr
 	QString lab;
-	xadr = mem_get_xadr(comp->mem, cpu_get_pc(comp->cpu));
+	xadr = comp_get_xadr(comp, cpu_get_pc(comp->cpu), MEM_VIEW_FETCH);
 	int abs = xadr.abs;		// remember pc cell
 	int pct = xadr.type;
 	switch (mode) {
@@ -475,7 +455,7 @@ QList<dasmData> getDisasm(Computer* comp, int& adr) {
 			drow.ispc = ((xadr.type == pct) && (abs == xadr.abs)) ? 1 : 0;
 			break;
 		default:
-			xadr = mem_get_xadr(comp->mem, adr);
+			xadr = dasm_xadr(comp, adr);
 			drow.flag = getBrk(comp, xadr.adr);
 			drow.ispc = ((xadr.type == pct) && (abs == xadr.abs)) ? 1 : 0;
 			drow.issel = ((adr >= blockStart) && (adr <= blockEnd)) ? 1 : 0;
@@ -532,7 +512,7 @@ QList<dasmData> getDisasm(Computer* comp, int& adr) {
 	while (clen > 1) {
 		oadr++;
 		clen--;
-		xadr = mem_get_xadr(comp->mem, oadr);
+		xadr = dasm_xadr(comp, oadr);
 		lab = find_label(xadr);
 		//lab = findLabel(oadr, -1, -1);
 		if (!lab.isEmpty()) {
@@ -829,7 +809,7 @@ bool xDisasmModel::setData(const QModelIndex& cidx, const QVariant& val, int rol
 	QString str;
 	int adr = dasm[row].adr;
 	Computer* comp = conf.zx;
-	xAdr xadr = mem_get_xadr(comp->mem, adr);
+	xAdr xadr = dasm_xadr(comp, adr);
 	switch(col) {
 		case 0:
 			str = val.toString();
@@ -1319,7 +1299,9 @@ void xDisasmTable::keyPressEvent(QKeyEvent* ev) {
 				bpt = 0;
 			} else {
 				bpr = BRK_MEMCELL;
-				xadr = mem_get_xadr(comp->mem, adr);
+				int access = (key == XCUT_SETBRK_WR) ? MEM_VIEW_WRITE
+					: ((key == XCUT_SETBRK) ? MEM_VIEW_FETCH : MEM_VIEW_READ);
+				xadr = dasm_xadr(comp, adr, access);
 				switch(xadr.type) {
 					case MEM_RAM: bpt = MEM_BRK_RAM;
 						adr = xadr.abs & comp->mem->ramMask;

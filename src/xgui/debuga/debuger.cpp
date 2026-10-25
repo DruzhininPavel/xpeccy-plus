@@ -15,6 +15,7 @@
 #include <QFileDialog>
 #include <QTemporaryFile>
 #include <QTextCodec>
+#include <QStandardItemModel>
 
 #include "debuger.h"
 #include "dbg_sprscan.h"
@@ -221,7 +222,7 @@ void DebugWin::updateStyle() {
 // need, the way fitFlagBoxes() does for the flags.
 void DebugWin::fitMMapBoxes() {
 	int wid = comboFitWidth(mmapType[0]);
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 8; i++)
 		mmapType[i]->setFixedWidth(wid);
 }
 
@@ -267,10 +268,12 @@ void DebugWin::styleTabBars() {
 
 void DebugWin::save_mem_map() {
 	Computer* comp = conf.zx;
+	mem_map_next = comp->hw->id == HW_ZXNEXT;
 	for (int i = 0; i < 256; i++) {
 		mem_map[i] = comp->mem->map[i];
 	}
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 8; i++) {
+		mem_mmu[i] = mem_map_next ? next_mmu_get(comp, i) : 0xff;
 		mmapForced[i] = -1;
 	}
 }
@@ -278,11 +281,13 @@ void DebugWin::save_mem_map() {
 void DebugWin::rest_mem_map() {
 	Computer* comp = conf.zx;
 	rzx_rec_touch();
-	for (int i = 0; i < 256; i++) {
-		comp->mem->map[i] = mem_map[i];
+	if (mem_map_next && (comp->hw->id == HW_ZXNEXT)) {
+		for (int i = 0; i < 8; i++) next_mmu_set(comp, i, mem_mmu[i]);
+	} else {
+		for (int i = 0; i < 256; i++) comp->mem->map[i] = mem_map[i];
+		mem_derive(comp->mem);
 	}
-	mem_derive(comp->mem);
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 8; i++) {
 		mmapForced[i] = -1;
 	}
 	fillAll();
@@ -812,27 +817,36 @@ DebugWin::DebugWin(QWidget* par):QMainWindow(par) {
 	setHeaderMenu(ui_misc.labPorts, ":/images/bars.png", "Watched ports...", [this](){
 		editWatchPorts();
 	});
-	// MEMMAP: the four 16K banks
+	// MEMMAP: four 16K banks, or eight 8K MMU slots on the Next
 	mmapType[0] = ui_misc.cbPG0;	mmapPage[0] = ui_misc.numPG0;
 	mmapType[1] = ui_misc.cbPG1;	mmapPage[1] = ui_misc.numPG1;
 	mmapType[2] = ui_misc.cbPG2;	mmapPage[2] = ui_misc.numPG2;
 	mmapType[3] = ui_misc.cbPG3;	mmapPage[3] = ui_misc.numPG3;
+	mmapType[4] = ui_misc.cbPG4;	mmapPage[4] = ui_misc.numPG4;
+	mmapType[5] = ui_misc.cbPG5;	mmapPage[5] = ui_misc.numPG5;
+	mmapType[6] = ui_misc.cbPG6;	mmapPage[6] = ui_misc.numPG6;
+	mmapType[7] = ui_misc.cbPG7;	mmapPage[7] = ui_misc.numPG7;
 	QWidgetList mmapMenu;
 	mmapMenu << ui_misc.widMMap;
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < 8; i++) {
 		mmapForced[i] = -1;
 		mmapType[i]->addItem("ROM", MEM_ROM);
 		mmapType[i]->addItem("RAM", MEM_RAM);
+		mmapType[i]->addItem("OFF", MEM_EXT);
 		if (i == 0) mmapType[i]->addItem("DIV", MEM_DIV);	// a divMMC's, shown, not forced
 		// this column is narrow and the stack panel under it lives with whatever
 		// width is set here - fitMMapBoxes() pins it to the text and the arrow
 		// no XHS_BGR: this field is lit by the forced mark, not by the value moving
 		mmapPage[i]->setXFlag(XHS_FILL | XHS_AUTOW);
 		mmapPage[i]->setMax(0xff);
-		QString tip = QString("%0..%1").arg(i * 0x4000, 4, 16, QChar('0'))
-			.arg(i * 0x4000 + 0x3fff, 4, 16, QChar('0')).toUpper();
+		QString tip = QString("%0..%1").arg(i * 0x2000, 4, 16, QChar('0'))
+			.arg(i * 0x2000 + 0x1fff, 4, 16, QChar('0')).toUpper();
 		mmapType[i]->setToolTip(tip);
 		mmapPage[i]->setToolTip(tip);
+		if (i >= 4) {
+			mmapType[i]->hide();
+			mmapPage[i]->hide();
+		}
 		connect(mmapType[i], QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this, i](int){mmapEdit(i);});
 		connect(mmapPage[i], &xHexSpin::valueChanged, this, [this, i](int){mmapEdit(i);});
 		mmapMenu << mmapType[i] << mmapPage[i];
@@ -2105,12 +2119,56 @@ void DebugWin::setMMapMark(int idx, bool on) {
 void DebugWin::fillMem() {
 	// each field costs a style pass, so fill them only while they are up - the
 	// same rule the docks are refreshed by
-	if (!ui_misc.widMMap->isVisible()) return;
 	Computer* comp = conf.zx;
+	bool isNext = comp->hw->id == HW_ZXNEXT;
+	for (int i = 0; i < 8; i++) {
+		bool show = isNext || (i < 4);
+		mmapType[i]->setVisible(show);
+		mmapPage[i]->setVisible(show);
+		QStandardItemModel* model = qobject_cast<QStandardItemModel*>(mmapType[i]->model());
+		if (model) {
+			int idx = mmapType[i]->findData(MEM_ROM);
+			if (idx >= 0) model->item(idx)->setEnabled(!isNext || (i < 2));
+			idx = mmapType[i]->findData(MEM_EXT);
+			if (idx >= 0) model->item(idx)->setEnabled(isNext && (i >= 2));
+			idx = mmapType[i]->findData(MEM_DIV);
+			if (idx >= 0) model->item(idx)->setEnabled(!isNext);
+		}
+	}
+	if (!ui_misc.widMMap->isVisible()) return;
 	MemPage pg;
 	int page;
 	block = 1;
-	for (int i = 0; i < 4; i++) {
+	int count = isNext ? 8 : 4;
+	for (int i = 0; i < count; i++) {
+		int start = i * (isNext ? 0x2000 : 0x4000);
+		int size = isNext ? 0x2000 : 0x4000;
+		QString tip = QString("%0..%1").arg(start, 4, 16, QChar('0'))
+			.arg(start + size - 1, 4, 16, QChar('0')).toUpper();
+		if (!isNext && (mmapType[i]->toolTip() != tip)) {
+			mmapType[i]->setToolTip(tip);
+			mmapPage[i]->setToolTip(tip);
+		}
+		if (isNext) {
+			page = next_mmu_get(comp, i);
+			int type = (page < 0xe0) ? MEM_RAM : ((i < 2) ? MEM_ROM : MEM_EXT);
+			xAdr effective = comp_get_xadr(comp, start, MEM_VIEW_READ);
+			QString source = "EXT";
+			if (effective.type == MEM_RAM) source = "SRAM";
+			else if (effective.type == MEM_ROM) source = "ROM";
+			if (effective.abs >= 0)
+				tip.append(QString("\nMMU #%0; CPU view %1 #%2").arg(gethexbyte(page), source,
+					gethexbyte(effective.abs >> 13)));
+			else
+				tip.append(QString("\nMMU #%0; CPU view %1").arg(gethexbyte(page), source));
+			mmapType[i]->setToolTip(tip);
+			mmapPage[i]->setToolTip(tip);
+			if (mmapForced[i] != page) mmapForced[i] = -1;
+			setRFIndex(mmapType[i], type);
+			mmapPage[i]->setValue(page);
+			setMMapMark(i, mmapForced[i] >= 0);
+			continue;
+		}
 		pg = comp->mem->map[i << 6];
 		page = pg.num >> 6;
 		// a divMMC's window: the 8K bank of its SRAM at #2000
@@ -2150,6 +2208,20 @@ void DebugWin::mmapEdit(int bank) {
 	Computer* comp = conf.zx;
 	int type = getRFIData(mmapType[bank]);
 	int page = mmapPage[bank]->getValue();
+	if (comp->hw->id == HW_ZXNEXT) {
+		if (sender() == mmapType[bank]) {
+			if ((type == MEM_RAM) && (page >= 0xe0)) page = 0;
+			if (type == MEM_ROM) page = 0xff;
+			if (type == MEM_EXT) page = 0xff;
+		}
+		next_mmu_set(comp, bank, page);
+		rzx_rec_touch();
+		mmapForced[bank] = page;
+		wid_dump->draw();
+		ui_asm.dasmTable->updContent();
+		fillMem();
+		return;
+	}
 	if ((type == MEM_DIV) || (comp->mem->map[bank << 6].type == MEM_DIV)) {
 		fillMem();		// the board's own paging: not something to force
 		return;
@@ -2204,18 +2276,7 @@ void DebugWin::jumpToLabel(QString lab) {
 
 int rdbyte(int adr, void* ptr) {
 	Computer* comp = (Computer*)ptr;
-	int res = -1;
-	MemPage* pg = mem_get_page(comp->mem, adr);	// = &comp->mem->map[(adr >> 8) & 0xff];
-	int fadr = mem_get_phys_adr(comp->mem, adr);	// = pg->num << 8) | (adr & 0xff);
-	switch (pg->type) {
-		case MEM_RAM: res = comp->mem->ramData[fadr & comp->mem->ramMask]; break;
-		case MEM_ROM: res = comp->mem->romData[fadr & comp->mem->romMask]; break;
-		// through the map: the page the machine has in the window is
-		// the one the bank's own reader knows how to find
-		case MEM_SLOT: res = memRd(comp->mem, adr & 0xffff); break;
-		case MEM_DIV: res = comp->div->data[fadr % (DIV_EE_SIZE + DIV_RAM_MAX)]; break;
-	}
-	return res;
+	return comp_peek(comp, adr, MEM_VIEW_READ, NULL);
 }
 
 int DebugWin::fillDisasm() {
@@ -2540,8 +2601,10 @@ void DebugWin::chaCellProperty(QAction* act) {
 	adr = bgn;
 	if (data & MEM_BRK_ANY) {				// if set breakpoint
 		if (ui_asm.dasmTable->hasFocus()) {			// from disasm table
-			xadr = mem_get_xadr(comp->mem, bgn);
-			xend = mem_get_xadr(comp->mem, end);
+			int access = (bt & MEM_BRK_FETCH) ? MEM_VIEW_FETCH
+				: ((bt & MEM_BRK_WR) ? MEM_VIEW_WRITE : MEM_VIEW_READ);
+			xadr = comp_get_xadr(comp, bgn, access);
+			xend = comp_get_xadr(comp, end, access);
 			if (xadr.type == MEM_ROM) {
 				bt |= MEM_BRK_ROM;
 			} else if (xadr.type == MEM_RAM) {
@@ -2709,7 +2772,7 @@ void DebugWin::saveDumpToDisk(int idx) {
 
 void DebugWin::doFind() {
 	Computer* comp = conf.zx;
-	memFinder->mem = comp->mem;
+	memFinder->comp = comp;
 	if (memFinder->adr < 0)
 		memFinder->adr = (ui_asm.dasmTable->getAdr() + 1) & comp->mem->busmask;
 	memFinder->show();
@@ -2725,15 +2788,16 @@ void DebugWin::onFound(int adr) {
 
 void DebugWin::doFill() {
 	Computer* comp = conf.zx;
-	memFiller->start(comp->mem, blockStart, blockEnd);
+	memFiller->start(comp, blockStart, blockEnd);
 }
 
 // spr scanner
 
 void DebugWin::doMemView() {
 	Computer* comp = conf.zx;
-	memViewer->mem = comp->mem;
-	memViewer->ui.sbPage->setValue(comp->mem->map[0xc0].num >> 6);
+	memViewer->comp = comp;
+	xAdr xadr = comp_get_xadr(comp, 0xc000, MEM_VIEW_READ);
+	memViewer->ui.sbPage->setValue((xadr.type == MEM_RAM) ? (xadr.abs >> 14) : 0);
 	memViewer->fillImage();
 	memViewer->show();
 }
@@ -2742,24 +2806,7 @@ void DebugWin::doMemView() {
 
 void dbg_mem_wr(Computer* comp, int adr, unsigned char bt) {
 	rzx_rec_touch();
-	MemPage* pg = mem_get_page(comp->mem, adr);	// = &comp->mem->map[(adr >> 8) & 0xff];
-	int fadr = mem_get_phys_adr(comp->mem, adr);	// = pg->num << 8) | (adr & 0xff);
-	switch (pg->type) {
-		case MEM_RAM:
-			comp->mem->ramData[fadr & comp->mem->ramMask] = bt;
-			break;
-		case MEM_ROM:
-			if (conf.dbg.romwr)
-				comp->mem->romData[fadr & comp->mem->romMask] = bt;
-			break;
-		case MEM_DIV:		// its SRAM, and its EEPROM as a ROM is
-			fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
-			if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr) {
-				comp->div->data[fadr] = bt;
-				if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
-			}
-			break;
-	}
+	comp_poke(comp, adr, bt, conf.dbg.romwr);
 }
 
 int loadDUMP(Computer* comp, const char* name, int adr) {

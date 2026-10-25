@@ -2,14 +2,14 @@
 
 #include <QDialog>
 #include "../../xgui/xgui.h"
-#include "../../libxpeccy/memory.h"
+#include "../../libxpeccy/spectrum.h"
 #include "ui_dbgfinder.h"
 
 class xMemFinder : public QDialog {
 	Q_OBJECT
 	public:
 		xMemFinder(QWidget* = NULL);
-		Memory* mem;
+		Computer* comp;
 		int adr;
 	signals:
 		void patFound(int);

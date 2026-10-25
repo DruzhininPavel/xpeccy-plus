@@ -15,9 +15,64 @@ static int nsTime;
 static int res2;
 int res4 = 0;		// save last T synced with video (last is res2-res4)
 
-unsigned char* comp_get_memcell_flag_ptr(Computer* comp, int adr) {
+static void comp_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xadr) {
+	adr &= comp->mem->busmask;
+	if (comp->hw->memView) {
+		comp->hw->memView(comp, adr, mode, value, xadr);
+		return;
+	}
+	xAdr xa = mem_get_xadr(comp->mem, adr);
+	if (xadr) *xadr = xa;
+	if (!value) return;
+	if (mode & MEM_VIEW_WRITE) {
+		switch (xa.type) {
+			case MEM_RAM:
+				comp->mem->ramData[xa.abs & comp->mem->ramMask] = *value & 0xff;
+				break;
+			case MEM_ROM:
+				if (mode & MEM_VIEW_ROM_WRITE)
+					comp->mem->romData[xa.abs & comp->mem->romMask] = *value & 0xff;
+				break;
+			case MEM_DIV: {
+				int fadr = xa.abs % (DIV_EE_SIZE + DIV_RAM_MAX);
+				if ((fadr >= DIV_EE_SIZE) || (mode & MEM_VIEW_ROM_WRITE)) {
+					comp->div->data[fadr] = *value & 0xff;
+					if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
+				}
+				break;
+			}
+		}
+		return;
+	}
+	switch (xa.type) {
+		case MEM_RAM: *value = comp->mem->ramData[xa.abs & comp->mem->ramMask]; break;
+		case MEM_ROM: *value = comp->mem->romData[xa.abs & comp->mem->romMask]; break;
+		case MEM_SLOT: *value = memRd(comp->mem, adr); break;
+		case MEM_DIV: *value = comp->div->data[xa.abs % (DIV_EE_SIZE + DIV_RAM_MAX)]; break;
+		default: *value = 0xff; break;
+	}
+}
+
+int comp_peek(Computer* comp, int adr, int access, xAdr* xadr) {
+	int value = 0xff;
+	comp_mem_view(comp, adr, access & MEM_VIEW_FETCH, &value, xadr);
+	return value & 0xff;
+}
+
+void comp_poke(Computer* comp, int adr, int value, int romWrite) {
+	int mode = MEM_VIEW_WRITE | (romWrite ? MEM_VIEW_ROM_WRITE : 0);
+	comp_mem_view(comp, adr, mode, &value, NULL);
+}
+
+xAdr comp_get_xadr(Computer* comp, int adr, int access) {
+	xAdr xadr = {MEM_EXT, 0, adr & comp->mem->busmask, -1};
+	comp_mem_view(comp, adr, access, NULL, &xadr);
+	return xadr;
+}
+
+static unsigned char* comp_get_memcell_flag_ptr(Computer* comp, int adr, int access) {
 	unsigned char* res = NULL;
-	xAdr xadr = mem_get_xadr(comp->mem, adr);
+	xAdr xadr = comp_get_xadr(comp, adr, access);
 	switch (xadr.type) {
 		case MEM_RAM: res = comp->brkRamMap + (xadr.abs & comp->mem->ramMask); break;
 		case MEM_ROM: res = comp->brkRomMap + (xadr.abs & comp->mem->romMask); break;
@@ -38,7 +93,9 @@ bpChecker comp_check_bp(Computer* comp, int adr, int mask) {
 		}
 	}
 	if (ch.t < 0) {
-		xAdr xadr = mem_get_xadr(comp->mem, adr);
+		int access = (mask & (MEM_BRK_FETCH | MEM_BRK_TFETCH)) ? MEM_VIEW_FETCH
+			: ((mask & MEM_BRK_WR) ? MEM_VIEW_WRITE : MEM_VIEW_READ);
+		xAdr xadr = comp_get_xadr(comp, adr, access);
 		switch (xadr.type) {
 			case MEM_RAM: xadr.abs &= comp->mem->ramMask; ch.ptr = comp->brkRamMap + xadr.abs; ch.t = BRK_MEMRAM; break;
 			case MEM_ROM: xadr.abs &= comp->mem->romMask; ch.ptr = comp->brkRomMap + xadr.abs; ch.t = BRK_MEMROM; break;
@@ -121,7 +178,8 @@ static int memrd_watched(Computer* comp, int adr, int m1) {
 	if (comp->flgMAP || comp->flgHEAT || comp->flgCOND)
 		isExecByte = (cpu_get_pc(comp->cpu) - 1) == adr;
 	if (comp->flgMAP) {
-		unsigned char* fptr = comp_get_memcell_flag_ptr(comp, adr);
+		unsigned char* fptr = comp_get_memcell_flag_ptr(comp, adr,
+			isExecByte ? MEM_VIEW_FETCH : MEM_VIEW_READ);
 		if (fptr) {
 			unsigned char flag = *fptr;
 			if (isExecByte) {
@@ -193,7 +251,8 @@ static void memwr_watched(Computer* comp, int adr, int val) {
 		// writes (incl. stack push/call) are always data traffic, never execution
 		comp_heat_hit(comp, adr, HEAT_WR);
 	}
-	unsigned char* fptr = (comp->flgMAP || comp->flgBRKMEM) ? comp_get_memcell_flag_ptr(comp, adr) : NULL;
+	unsigned char* fptr = (comp->flgMAP || comp->flgBRKMEM)
+		? comp_get_memcell_flag_ptr(comp, adr, MEM_VIEW_WRITE) : NULL;
 	if (fptr) {
 		unsigned char flag = *fptr;
 		if (comp->flgMAP) {
@@ -1433,7 +1492,7 @@ void comp_brk(Computer* comp, int t) {
 static unsigned char dumBrk = 0x00;
 
 unsigned char* getBrkPtr(Computer* comp, int madr) {
-	unsigned char* ptr = comp_get_memcell_flag_ptr(comp, madr);
+	unsigned char* ptr = comp_get_memcell_flag_ptr(comp, madr, MEM_VIEW_READ);
 	if (!ptr) {
 		dumBrk = 0;
 		ptr = &dumBrk;

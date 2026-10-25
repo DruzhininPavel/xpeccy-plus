@@ -559,7 +559,65 @@ static void nx_mwr(Computer* comp, int adr, int val) {
 	nx_mem_wr(comp, adr, val, nx_wr_time(comp));
 }
 
-// The map the debugger reads: the MMU view, overlays left out
+// The debugger looks through the same overlays as a cpu access, without moving
+// the automapper, the floating byte, the raster or any other machine state.
+static void nx_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xadr) {
+	int held = NX.dmHeld;
+	int next = NX.dmNext;
+	int map = NX.dmMap;
+	int button = NX.dmButton;
+	if (mode & MEM_VIEW_FETCH) NX.dmMap = nx_dm_fetch(comp, adr);
+	int wr = (mode & MEM_VIEW_WRITE) && !(mode & MEM_VIEW_ROM_WRITE);
+	nxAccess a = nx_decode(comp, adr, wr);
+	NX.dmHeld = held;
+	NX.dmNext = next;
+	NX.dmMap = map;
+	NX.dmButton = button;
+
+	if (xadr) {
+		xadr->type = MEM_EXT;
+		xadr->bank = 0;
+		xadr->adr = adr & 0xffff;
+		xadr->abs = -1;
+		switch (a.kind) {
+			case NXM_SRAM:
+			case NXM_BRAM:
+			case NXM_ROM:
+				xadr->type = MEM_RAM;
+				xadr->bank = a.adr >> comp->mem->pgshift;
+				xadr->abs = a.adr;
+				break;
+			case NXM_SHADOW:
+				xadr->bank = (0x200000 + a.adr) >> comp->mem->pgshift;
+				xadr->abs = 0x200000 + a.adr;
+				break;
+		}
+	}
+	if (!value) return;
+	if (mode & MEM_VIEW_WRITE) {
+		switch (a.kind) {
+			case NXM_SRAM:
+			case NXM_BRAM:
+			case NXM_ROM:
+				comp->mem->ramData[a.adr] = *value & 0xff;
+				break;
+			case NXM_SHADOW:
+				NX.shadow[a.adr] = *value & 0xff;
+				break;
+		}
+		return;
+	}
+	switch (a.kind) {
+		case NXM_SRAM:
+		case NXM_BRAM:
+		case NXM_ROM: *value = comp->mem->ramData[a.adr]; break;
+		case NXM_SHADOW: *value = NX.shadow[a.adr]; break;
+		case NXM_BUS: *value = 0xff; break;
+		default: *value = NX.lastSram; break;
+	}
+}
+
+// The generic map and snapshots read the MMU view, overlays left out
 static int nx_rd_last(int adr, void* ptr) {
 	Computer* comp = (Computer*)ptr;
 	return NX.lastSram;
@@ -585,6 +643,17 @@ static void nx_map_mem(Computer* comp) {
 	for (int s = 0; s < 8; s++)
 		nx_map_slot(comp, s, rom);
 	comp->vid->vidPage = (NX_RAM + (((NX.p7ffd & 8) ? 0x0e : 0x0a) << 13)) >> 14;
+}
+
+int next_mmu_get(Computer* comp, int slot) {
+	return ((slot >= 0) && (slot < 8)) ? NX.mmu[slot] : 0xff;
+}
+
+void next_mmu_set(Computer* comp, int slot, int page) {
+	if ((slot < 0) || (slot >= 8)) return;
+	NX.mmu[slot] = page & 0xff;
+	int alt;
+	nx_map_slot(comp, slot, nx_rom(comp, &alt));
 }
 
 // The legacy paging remap (zxnext.vhd 3805-3818, 4619-4684): ramChange is
@@ -2634,4 +2703,5 @@ static const hwQuiet nx_quiet = {HWQ_ACK_NEXT, NULL, NULL, zx_devs_sync, NULL, 0
 
 HardWare nxt_hw_core = {HW_ZXNEXT, "ZXNext", "ZX Spectrum Next", MEM_2M, 1.0, NULL, NULL,
 			nx_init, nx_map_mem, nx_out, nx_in, nx_mrd, nx_mwr, nx_irq, nx_ack, nx_reset, nx_sync,
-			nx_keyp, nx_keyr, nx_vol, NULL, nx_cont, &nx_quiet, 1, nx_power_on, nx_firmware, 1, 1};
+			nx_keyp, nx_keyr, nx_vol, NULL, nx_cont, &nx_quiet, 1, nx_power_on, nx_firmware, 1, 1,
+			nx_mem_view};

@@ -91,13 +91,15 @@ xHeatCell comp_heat_phys(Computer* comp, int type, int abs) {
 }
 
 xHeatCell comp_heat_cpu(Computer* comp, int adr) {
-	xAdr xadr = mem_get_xadr(comp->mem, adr);
+	xAdr xadr = comp_get_xadr(comp, adr, MEM_VIEW_READ);
 	return comp_heat_phys(comp, xadr.type, xadr.abs);
 }
 
 void comp_heat_hit(Computer* comp, int adr, int kind) {
 	int idx;
-	xAdr xadr = mem_get_xadr(comp->mem, adr);
+	int access = (kind == HEAT_EX) ? MEM_VIEW_FETCH
+		: ((kind == HEAT_WR) ? MEM_VIEW_WRITE : MEM_VIEW_READ);
+	xAdr xadr = comp_get_xadr(comp, adr, access);
 	xHeatBank* bank = heatBankFor(comp, xadr.type, xadr.abs, &idx);
 	if (bank) heatBankHit(bank, idx, kind);
 }

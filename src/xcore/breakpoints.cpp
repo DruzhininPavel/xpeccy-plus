@@ -445,7 +445,7 @@ static QString brk_log_page(const char* nm, int abs) {
 // in at the time
 
 static QString brk_log_cell(Computer* comp, int cadr) {
-	xAdr xa = mem_get_xadr(comp->mem, cadr);
+	xAdr xa = comp_get_xadr(comp, cadr, MEM_VIEW_READ);
 	const char* nm;
 	switch (xa.type) {
 		case MEM_RAM: nm = "RAM"; break;
@@ -606,7 +606,7 @@ static xBrkPoint* brk_by_id(int id) {
 // cell's page and offset
 QString brk_label(int type, int adr) {
 	xAdr xa;
-	if (type == BRK_CPUADR) return find_label(mem_get_xadr(conf.zx->mem, adr & 0xffff));
+	if (type == BRK_CPUADR) return find_label(comp_get_xadr(conf.zx, adr & 0xffff, MEM_VIEW_READ));
 	if (type != BRK_MEMRAM) return QString();
 	xa.type = MEM_RAM;
 	xa.abs = adr;

@@ -139,11 +139,13 @@ class DebugWin : public QMainWindow {
 		xHeatWidget* wid_heat;
 		QList<xDockWidget*> dockWidgets;
 
-		// MEMMAP: the four 16K banks, editable on ZX and read-only labels elsewhere
+		// MEMMAP: four 16K banks, or the Next's eight 8K MMU slots
 		MemPage mem_map[256];		// the map as it was on entry, for Restore
-		QComboBox* mmapType[4];
-		xHexSpin* mmapPage[4];
-		int mmapForced[4];		// (type << 16) | page the user forced, -1 = none
+		int mem_mmu[8];			// the Next MMU as it was on entry
+		bool mem_map_next;
+		QComboBox* mmapType[8];
+		xHexSpin* mmapPage[8];
+		int mmapForced[8];		// map value the user forced, -1 = none
 
 		QList<xLabel*> dbgRegLabs;
 		QList<xHexSpin*> dbgRegEdit;

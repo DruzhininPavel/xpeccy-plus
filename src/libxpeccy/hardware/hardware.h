@@ -52,6 +52,9 @@ typedef int(*cbHwAck)(Computer*);
 typedef void(*cbHwKey)(Computer*, keyEntry*);
 // get volume
 typedef sndPair(*cbHwVol)(Computer*, sndVolume*);
+// side-effect-free memory for the debugger: value is output on reads and input
+// on writes; NULL asks only which physical cell the access reaches
+typedef void(*cbHwMemView)(Computer*, int, int, int*, xAdr*);
 
 // a port the machine keeps by itself: where in Computer, or a function when
 // it is not a field there (offset 0 then)
@@ -118,6 +121,7 @@ struct HardWare {
 	cbhwcomp boot;		// the firmware's work, before the first instruction after flgBOOT is set
 	int ownLay;		// the machine lays its raster out itself (the Next's follows its timing): a layout asked for is not taken
 	int contLazy;		// cont walks the ray itself, when it needs it (comp_cont_hw leaves it)
+	cbHwMemView memView;	// cpu-visible memory behind overlays (NULL: Memory.map is the view)
 };
 typedef struct HardWare HardWare;
 
@@ -199,6 +203,8 @@ extern long long next_log_cyc;	// ...and its cpu clock count
 void next_counters_at(Computer*, long long clk28, int* hc, int* vc, int* cvc);	// ...at that CLK_28 time
 int next_vsync_frame_at(Computer*, long long clk28);
 void next_audio(Computer*, int* l, int* r, int* env);	// the mixer's pcm_L/R (13 bits), psg0's env_vol
+int next_mmu_get(Computer*, int);
+void next_mmu_set(Computer*, int, int);
 // the Next for a viewer (the debugger's panel): nothing here moves the machine
 int next_nr_peek(Computer*, int reg);		// a nextreg as a read gives it, nothing run up to now first
 int next_ram(Computer*, int page, int ofs);	// a byte of 8K RAM page as the cpu reads it

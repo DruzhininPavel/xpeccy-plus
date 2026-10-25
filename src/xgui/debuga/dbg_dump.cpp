@@ -39,20 +39,10 @@ QString getDumpString(QByteArray bts, int cp) {
 
 int xDumpModel::mrd(int adr) const {
 	Computer* comp = conf.zx;
-	MemPage* pg;
-	int fadr;
 	int res = 0xff;
 	switch(mode) {
 		case XVIEW_CPU:
-			pg = mem_get_page(comp->mem, adr);	// = &comp->mem->map[(adr >> 8) & 0xff];
-			fadr = mem_get_phys_adr(comp->mem, adr);	// = pg->num << 8) | (adr & 0xff);
-			switch (pg->type) {
-				case MEM_ROM: res = comp->mem->romData[fadr & comp->mem->romMask]; break;
-				case MEM_RAM: res = comp->mem->ramData[fadr & comp->mem->ramMask]; break;
-				case MEM_SLOT: res = memRd(comp->mem, adr % maxadr);
-					break;
-				case MEM_DIV: res = comp->div->data[fadr % (DIV_EE_SIZE + DIV_RAM_MAX)]; break;
-			}
+			res = comp_peek(comp, adr % maxadr, MEM_VIEW_READ, NULL);
 			res |= getBrk(comp, adr % maxadr) << 8;
 			break;
 		case XVIEW_RAM:
@@ -74,30 +64,9 @@ int xDumpModel::mrd(int adr) const {
 void xDumpModel::mwr(int adr, unsigned char bt) {
 	Computer* comp = conf.zx;
 	rzx_rec_touch();
-	MemPage* pg;
-	int fadr;
 	switch(mode) {
 		case XVIEW_CPU:
-			pg = mem_get_page(comp->mem, adr);	// = &comp->mem->map[(adr >> 8) & 0xff];
-			fadr = mem_get_phys_adr(comp->mem, adr);	// = pg->num << 8) | (adr & 0xff);
-			switch (pg->type) {
-				case MEM_ROM:
-					if (conf.dbg.romwr)
-						comp->mem->romData[fadr & comp->mem->romMask] = bt;
-					break;
-				case MEM_RAM:
-					comp->mem->ramData[fadr & comp->mem->ramMask] = bt;
-					break;
-				case MEM_SLOT:
-					break;
-				case MEM_DIV:		// its SRAM, and its EEPROM as a ROM is
-					fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
-					if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr) {
-						comp->div->data[fadr] = bt;
-						if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
-					}
-					break;
-			}
+			comp_poke(comp, adr, bt, conf.dbg.romwr);
 			break;
 		case XVIEW_RAM:
 			adr &= 0x3fff;
@@ -702,14 +671,17 @@ void xDumpWidget::customMenu() {
 void xDumpWidget::customMenuAction(QAction* act) {
 	int bt = 0;
 	xAdr xadr;
-	Memory* mem = conf.zx->mem;
 	int adr = ui.dumpTable->getCurrentAdr();
 	if (ui.actFetch->isChecked()) bt |= MEM_BRK_FETCH;
 	if (ui.actRead->isChecked()) bt |= MEM_BRK_RD;
 	if (ui.actWrite->isChecked()) bt |= MEM_BRK_WR;
 	switch (getRFIData(ui.cbDumpView)) {
 		case XVIEW_CPU:
-			xadr = mem_get_xadr(mem, adr);
+			{
+				int access = (bt & MEM_BRK_FETCH) ? MEM_VIEW_FETCH
+					: ((bt & MEM_BRK_WR) ? MEM_VIEW_WRITE : MEM_VIEW_READ);
+				xadr = comp_get_xadr(conf.zx, adr, access);
+			}
 			switch(xadr.type) {
 				case MEM_RAM: emit s_brkrq(BRK_MEMRAM, bt, xadr.abs); break;
 				case MEM_ROM: emit s_brkrq(BRK_MEMROM, bt, xadr.abs); break;

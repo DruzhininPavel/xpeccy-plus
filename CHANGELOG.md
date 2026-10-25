@@ -11,6 +11,10 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **The ZX Spectrum Next debugger sees the memory the CPU sees**: the listing, dump,
+  searches, edits, heat map and physical breakpoints follow divMMC, Multiface, Layer 2 and
+  ROMCS overlays. MEMMAP shows and edits all eight 8K MMU slots instead of four 16K windows.
+  *(thanks to janko-jj)*
 - **The Next's card comes out of the program's own archive reader**: System/Next is
   unpacked inside Xpeccy+ - `.tar.gz` and `.zip` both, with progress, Cancel, and the
   same checks on where a file may land - so making a card needs no `tar`, `unzip` or

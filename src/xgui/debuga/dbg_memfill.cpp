@@ -10,8 +10,8 @@ xMemFiller::xMemFiller(QWidget* p):QDialog(p) {
 	connect(ui.pbFill,SIGNAL(clicked(bool)),this,SLOT(fill()));
 }
 
-void xMemFiller::start(Memory* me, int bgn, int end) {
-	mem = me;
+void xMemFiller::start(Computer* c, int bgn, int end) {
+	comp = c;
 	if ((bgn > -1) && (end > -1)) {
 		ui.leStartHex->setValue(bgn);
 		ui.leEndHex->setValue(end);
@@ -24,31 +24,12 @@ void xMemFiller::metChange() {
 }
 
 int xMemFiller::mrd(int adr) {
-	return memRd(mem, adr);
+	return comp_peek(comp, adr, MEM_VIEW_READ, NULL);
 }
 
 void xMemFiller::mwr(int adr, int val) {
 	rzx_rec_touch();
-	MemPage* pg = mem_get_page(mem, adr);	// = &mem->map[(adr >> 8) & 0xff];
-	int fadr = mem_get_phys_adr(mem, adr);	// = pg->num << 8) | (adr & 0xff);
-	switch(pg->type) {
-		case MEM_RAM:
-			mem->ramData[fadr & mem->ramMask] = val & 0xff;
-			break;
-		case MEM_ROM:
-			if (conf.dbg.romwr)
-				mem->romData[fadr & mem->romMask] = val & 0xff;
-			break;
-		case MEM_SLOT:
-			break;
-		case MEM_DIV:
-			fadr %= DIV_EE_SIZE + DIV_RAM_MAX;
-			if ((fadr >= DIV_EE_SIZE) || conf.dbg.romwr) {
-				conf.zx->div->data[fadr] = val & 0xff;
-				if (fadr < DIV_EE_SIZE) conf.zx->div->eeDirty = 1;	// so the changed EEPROM is saved
-			}
-			break;
-	}
+	comp_poke(comp, adr, val, conf.dbg.romwr);
 }
 
 void xMemFiller::fill() {

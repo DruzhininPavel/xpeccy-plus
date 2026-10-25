@@ -390,7 +390,7 @@ bool xBrkManager::readAdr(QString txt, int* adr, int* page) {
 		return true;
 	}
 	if (val < 0x4000) return true;
-	xAdr xa = mem_get_xadr(conf.zx->mem, val);
+	xAdr xa = comp_get_xadr(conf.zx, val, MEM_VIEW_READ);
 	if (xa.type == brk_mem_type(type)) *page = xa.abs >> 14;
 	*adr = val & 0x3fff;
 	return true;

@@ -94,10 +94,7 @@ QVariant xRDumpModel::data(const QModelIndex& idx, int role) const {
 	int col = idx.column();
 	if (row >= row_count) return res;
 	if (col >= col_count) return res;
-	Memory* mem = conf.zx->mem;
-	MemPage* pg;
 	int adr;
-	int fadr;
 	switch(role) {
 		case Qt::TextAlignmentRole:
 			// right, like the other dumps: the extra width of a group's first
@@ -113,16 +110,7 @@ QVariant xRDumpModel::data(const QModelIndex& idx, int role) const {
 					.arg(gethexword(regs.at(row).value & 0xffff));
 			} else {
 				adr = regs.at(row).value + col - 1;
-				pg = mem_get_page(mem, adr);
-				fadr = mem_get_phys_adr(mem, adr);	// = pg->num << 8) | (adr & 0xff);
-				switch (pg->type) {
-					case MEM_ROM: res = gethexbyte(mem->romData[fadr & mem->romMask]); break;
-					case MEM_RAM: res = gethexbyte(mem->ramData[fadr & mem->ramMask]); break;
-					case MEM_SLOT: res = gethexbyte(memRd(mem, adr)); break;
-					case MEM_DIV: res = gethexbyte(conf.zx->div->data[fadr % (DIV_EE_SIZE + DIV_RAM_MAX)]); break;
-					default: res = "--";
-						break;
-				}
+				res = gethexbyte(comp_peek(conf.zx, adr, MEM_VIEW_READ, NULL));
 			}
 			break;
 	}

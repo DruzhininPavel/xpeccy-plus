@@ -731,6 +731,15 @@ static inline int comp_mem_watched(Computer* comp) {
 	return comp->flgMAP | comp->flgHEAT | comp->flgCOND | comp->flgBRKMEM;
 }
 
+// A side-effect-free view of the byte the cpu sees. Hardware with overlays that
+// do not live in Memory.map supplies the callback at the end of HardWare.
+enum {
+	MEM_VIEW_READ = 0,
+	MEM_VIEW_WRITE = 1,
+	MEM_VIEW_FETCH = 2,
+	MEM_VIEW_ROM_WRITE = 4
+};
+
 #include "hardware/hardware.h"
 
 Computer* compCreate();
@@ -739,6 +748,9 @@ void compDestroy(Computer*);
 void compReset(Computer*,int);
 void compUserReset(Computer*,int);
 int compExec(Computer*);
+int comp_peek(Computer*, int, int, xAdr*);
+void comp_poke(Computer*, int, int, int);
+xAdr comp_get_xadr(Computer*, int, int);
 int comp_skip_ticks(Computer*, int);
 int comp_halt_skip(Computer*, int* ns);		// HALT steps up to the next event at once, fast mode
 int comp_halt_skip_rt(Computer*, int* ns, long long room);	// the same in real time, a machine with hwQuiet.halt
