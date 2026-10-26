@@ -79,7 +79,7 @@ xpeccy-plus --disk b data.trd --disk a boot.trd
 
 ## Window
 
-```{index} -s, --size, --fullscreen, -r, --ratio, -n, --noflick, --style
+```{index} -s, --size, --fullscreen, -r, --ratio, -n, --noflick, --style, --no-gl
 ```
 
 These options change the setting itself, as **Options** would, and the new value stays
@@ -90,6 +90,11 @@ for the next start.
 - `-r 1`, `--ratio 1` - keep the picture's shape in fullscreen; `0` stretches it.
 - `-n N`, `--noflick N` - anti-flicker intensity, 0 to 100 percent.
 - `--style` - macOS only: use the system's own look instead of the one Xpeccy+ sets.
+
+One more is for this run only:
+
+- `--no-gl` - draw the picture without OpenGL, and so with no shader. The program does
+  this by itself when the computer's graphics have no usable OpenGL.
 
 ## Debugging
 
