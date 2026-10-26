@@ -213,6 +213,9 @@ void add_label(xAdr, QString, xLabelSet* = nullptr);
 void del_label(QString);
 QString find_label(xAdr);
 xAdr find_label(QString);
+xAdr find_label_cell(QString);	// the label's cell, without working out where the CPU sees it now
+xAdr label_cpu(xAdr);		// ...and that, for a cell find_label_cell() gave
+unsigned labels_gen();		// changes whenever the labels in effect do
 void clear_labels();
 void clear_all_labels();
 

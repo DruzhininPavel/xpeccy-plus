@@ -28,9 +28,18 @@ xLabelSet* findLabelSet(QString name) {
 	return res;
 }
 
+// bumped on every change to the labels in effect: what a compiled expression
+// remembers of a label is good while this stays the same
+static unsigned labGen = 1;
+
+unsigned labels_gen() {
+	return labGen;
+}
+
 // create conf.labmap from current labset
 void map_labels() {
 	xLabelSet* set = conf.curlabset;
+	labGen++;
 	conf.labmap.clear();
 	if (set) {
 		xAdr xadr;
@@ -89,6 +98,7 @@ void clear_labels() {
 		set->list.clear();
 		conf.labmap.clear();
 	}
+	labGen++;
 }
 
 void clear_all_labels() {
@@ -96,6 +106,7 @@ void clear_all_labels() {
 		free(conf.labsets.first());
 		conf.labsets.takeFirst();
 	}
+	labGen++;
 }
 
 void del_label(QString name) {
@@ -107,6 +118,7 @@ void del_label(QString name) {
 			conf.labmap[xadr.type].remove(xadr.abs);
 		}
 	}
+	labGen++;
 }
 
 void add_label(xAdr xadr, QString name, xLabelSet* set) {
@@ -123,6 +135,7 @@ void add_label(xAdr xadr, QString name, xLabelSet* set) {
 		set->list[name] = xadr;
 		conf.labmap[xadr.type][xadr.abs] = name;
 	}
+	labGen++;
 }
 
 QString find_label(xAdr xadr) {
@@ -139,18 +152,24 @@ QString find_label(xAdr xadr) {
 	return lab;
 }
 
-xAdr find_label(QString nm) {
+// the cell a label names, its CPU address as it was when the label was read
+xAdr find_label_cell(QString nm) {
 	xAdr xadr = {-1, -1, -1, -1};
 	xLabelSet* set = conf.curlabset;
-	if (set) {
-		if (set->list.contains(nm)) {
-			xadr = set->list.value(nm);
-			if (conf.zx && (conf.zx->hw->id == HW_ZXNEXT) && (xadr.type == MEM_RAM)) {
-				xadr.adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
-			}
-		}
-	}
+	if (set) xadr = set->list.value(nm, xadr);
 	return xadr;
+}
+
+// that cell's CPU address now: on the Next it follows the paging, -1 when the
+// cell is not paged in
+xAdr label_cpu(xAdr xadr) {
+	if (conf.zx && (conf.zx->hw->id == HW_ZXNEXT) && (xadr.type == MEM_RAM))
+		xadr.adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
+	return xadr;
+}
+
+xAdr find_label(QString nm) {
+	return label_cpu(find_label_cell(nm));
 }
 
 // The page of a LABELSLIST line. SjASMPlus writes it in decimal; a page with a

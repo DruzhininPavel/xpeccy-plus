@@ -73,14 +73,12 @@ xAdr comp_get_xadr(Computer* comp, int adr, int access) {
 int comp_find_xadr(Computer* comp, int type, int abs, int access) {
 	if (abs < 0) return -1;
 	if (type == MEM_IO) return abs & comp->mem->busmask;
-	int adr = memFindAdr(comp->mem, type, abs);
-	if (!comp->hw->memView) return adr;
-	if (adr >= 0) {
-		xAdr cell = comp_get_xadr(comp, adr, access);
-		if ((cell.type == type) && (cell.abs == abs)) return adr;
-	}
-	for (int i = 0; i < 256; i++) {
-		adr = (i << comp->mem->pgshift) | (abs & comp->mem->pgmask);
+	if (!comp->hw->memView) return memFindAdr(comp->mem, type, abs);
+	// the one machine with a view of its own (the Next) pages everything in 8K
+	// steps, overlays included: the cell can only be at its offset in one of the
+	// eight slots. A condition naming a label asks this on every instruction.
+	for (int i = 0; i < 8; i++) {
+		int adr = (i << 13) | (abs & 0x1fff);
 		xAdr cell = comp_get_xadr(comp, adr, access);
 		if ((cell.type == type) && (cell.abs == abs)) return adr;
 	}

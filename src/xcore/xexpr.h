@@ -54,6 +54,9 @@ typedef struct {
 	unsigned val;
 	int base;		// XE_NUM: how the number was written, to read it back
 	std::string name;
+	// XE_LAB: the label's cell, looked up once while the labels stay the same
+	mutable xAdr lab;
+	mutable unsigned labGen = 0;
 } xExprItem;
 
 typedef struct {
