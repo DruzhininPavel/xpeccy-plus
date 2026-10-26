@@ -277,7 +277,7 @@ void MainWin::folderAsk() {
 	if (asking) return;
 	if (vfat_pin_news(conf.zx->sdc->vfat))
 		setMessage(" saves lost on reset: put the game on the card ", 8.0);
-	if (xm_next_wants_card()) nextCard();
+	if (xm_next_wants_card()) nextCard(true);
 	vFat* vf = fold_waiting(conf.zx);
 	if (!vf) return;
 	asking = true;
@@ -310,14 +310,14 @@ void MainWin::folderAsk() {
 // The Next's own card, which it takes whenever the slot has none it can start from.
 // Asked for when the Next has nothing to start from, or from the SD Card menu; a card
 // chosen goes in at once, with the power off and on.
-void MainWin::nextCard() {
+void MainWin::nextCard(bool asked) {
 	static bool open = false;
 	if (open) return;
 	open = true;
 	QString path;
 	bool own = false;
 	pause(true, PR_FILE);
-	bool ok = next_card_dialog(this, &path, &own);
+	bool ok = next_card_dialog(this, &path, &own, asked);
 	pause(false, PR_FILE);
 	open = false;
 	if (!ok) return;
