@@ -212,6 +212,11 @@ The lettering itself is "Xpeccy Keys Sans", cut down from Liberation Sans Bold 2
 built into the binary. It is under the SIL Open Font License 1.1 - see
 [`LICENSE_LIBERATION`](LICENSE_LIBERATION).
 
+Downloads (the ZX Spectrum Next's card, FFmpeg on Windows) go through
+[libcurl](https://curl.se/libcurl/), under the curl license - see
+[`LICENSE_CURL`](LICENSE_CURL). The Windows builds carry it, built in; macOS and Linux use
+the system's own.
+
 FFmpeg is not shipped with Xpeccy+. Video recording runs it as a separate program, and the
 copy the emulator fetches on Windows is a GPL build from
 [BtbN/FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds), kept under its own terms.

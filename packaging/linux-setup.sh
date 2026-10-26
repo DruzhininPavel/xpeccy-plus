@@ -13,7 +13,7 @@ TOOLS_DIR="${TOOLS_DIR:-$HOME/.cache/xpeccy-plus-tools}"
 
 PACKAGES="build-essential cmake pkg-config file ca-certificates wget
 	qtbase5-dev qtbase5-dev-tools libqt5opengl5-dev
-	libsdl2-dev zlib1g-dev libgl1-mesa-dev
+	libsdl2-dev zlib1g-dev libgl1-mesa-dev libcurl4-openssl-dev
 	desktop-file-utils libfuse2"
 
 # libfuse2: Ubuntu 22.04 ships fuse3 only, and an AppImage mounts itself

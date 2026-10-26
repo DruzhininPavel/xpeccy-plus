@@ -1,11 +1,12 @@
 # Downloads the build dependencies that aren't expected to be installed system-wide:
-# SDL2, and on request the System/Next distribution the ZX Spectrum Next's tests boot
-# from. Qt, MinGW and zlib come from a Qt installation.
+# SDL2, curl's source (make-dist.ps1 builds it per preset), and on request the
+# System/Next distribution the ZX Spectrum Next's tests boot from. Qt, MinGW and zlib
+# come from a Qt installation.
 #
 #   .\fetch-deps.ps1            # get what deps.json pins, skip what is already there
 #   .\fetch-deps.ps1 -SysNext   # System/Next too, for make-dist.ps1 -SysNext
 #   .\fetch-deps.ps1 -Force     # re-download and re-extract
-#   .\fetch-deps.ps1 -Update    # move the pin to the newest upstream release
+#   .\fetch-deps.ps1 -Update    # move the pins to the newest upstream releases
 #
 # Versions are pinned on purpose: rebuilding a given tag half a year later must
 # produce the same binary. -Update rewrites deps.json so a version bump lands as
@@ -27,15 +28,17 @@ $manifest = Join-Path $PSScriptRoot 'deps.json'
 New-Item -ItemType Directory -Path $depsDir -Force | Out-Null
 
 function Get-Pin {
-	(Get-Content $manifest -Raw | ConvertFrom-Json).sdl2
+	param([string]$Name = 'sdl2')
+	(Get-Content $manifest -Raw | ConvertFrom-Json).$Name
 }
 
 function Set-Pin {
-	param([string]$Version, [string]$Sha256)
-	# patch the two values in place so the file keeps its formatting
+	param([string]$Version, [string]$Sha256, [string]$Name = 'sdl2')
+	# patch the two values of that one entry in place so the file keeps its formatting
 	$text = Get-Content $manifest -Raw
-	$text = $text -replace '("version"\s*:\s*")[^"]*(")', "`${1}$Version`${2}"
-	$text = $text -replace '("sha256"\s*:\s*")[^"]*(")', "`${1}$Sha256`${2}"
+	foreach ($kv in @(@('version', $Version), @('sha256', $Sha256))) {
+		$text = $text -replace "(`"$Name`"\s*:\s*\{[^}]*?`"$($kv[0])`"\s*:\s*`")[^`"]*(`")", "`${1}$($kv[1])`${2}"
+	}
 	Set-Content $manifest $text -NoNewline
 }
 
@@ -94,6 +97,48 @@ function Get-SysNext {
 }
 
 if ($SysNext) { Get-SysNext }
+
+# curl's source, checked against its pin; make-dist.ps1 builds it with each preset's
+# MinGW into build\deps\curl-<version>-<preset>
+function Get-CurlSource {
+	param([string]$Version)
+	$tgz = Join-Path $depsDir "curl-$Version.tar.gz"
+	if (-not (Test-Path $tgz) -or $Force) {
+		$url = "https://curl.se/download/curl-$Version.tar.gz"
+		Write-Host "downloading $url"
+		Invoke-WebRequest $url -OutFile $tgz -TimeoutSec 600
+	}
+	return $tgz
+}
+
+if ($Update) {
+	# curl.se/info names the newest release
+	$info = (Invoke-WebRequest 'https://curl.se/info' -UseBasicParsing -TimeoutSec 60).Content
+	if ($info -notmatch '(?m)^Version:\s*(\S+)') { throw 'curl.se/info: no version' }
+	$newVer = $Matches[1]
+	$old = (Get-Pin curl).version
+	if ($newVer -eq $old) {
+		Write-Host "curl pin is current ($newVer)"
+	} else {
+		$tgz = Get-CurlSource $newVer
+		Set-Pin $newVer (Get-FileHash $tgz -Algorithm SHA256).Hash curl
+		Write-Host "curl pin: $old -> $newVer (commit packaging\deps.json)" -ForegroundColor Yellow
+	}
+}
+
+$curl = Get-Pin curl
+$curlTgz = Join-Path $depsDir "curl-$($curl.version).tar.gz"
+if ((Test-Path $curlTgz) -and -not $Force) {
+	Write-Host "curl $($curl.version): source already in build\deps"
+} else {
+	$curlTgz = Get-CurlSource $curl.version
+	$hash = (Get-FileHash $curlTgz -Algorithm SHA256).Hash
+	if ($hash -ne $curl.sha256) {
+		Remove-Item $curlTgz -Force
+		throw "curl $($curl.version) checksum mismatch`n  expected $($curl.sha256)`n  got      $hash"
+	}
+	Write-Host "curl $($curl.version): source ready in build\deps" -ForegroundColor Green
+}
 
 $pin = Get-Pin
 $target = Join-Path $depsDir "SDL2-$($pin.version)-mingw"

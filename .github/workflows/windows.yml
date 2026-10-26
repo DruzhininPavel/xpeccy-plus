@@ -151,6 +151,7 @@ jobs:
             "| Qt | ${{ matrix.qt }} ${{ matrix.qt_arch }} |"
             "| MinGW | $gcc |"
             "| SDL | $((Get-Content packaging\deps.json -Raw | ConvertFrom-Json).sdl2.version) |"
+            "| libcurl | $((Get-Content packaging\deps.json -Raw | ConvertFrom-Json).curl.version) (static, Schannel) |"
             "| archive | $env:ZIP_NAME.zip, $size |"
           ) >> $env:GITHUB_STEP_SUMMARY
 
