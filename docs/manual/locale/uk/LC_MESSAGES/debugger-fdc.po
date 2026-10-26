@@ -1,0 +1,177 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "FDC panel"
+msgstr "FDC panel"
+
+msgid "![The FDC panel](images/dbg-fdc.png)"
+msgstr "![Панель FDC](images/dbg-fdc.png)"
+
+msgid "The FDC panel"
+msgstr "Панель FDC"
+
+msgid ""
+"The **FDC** panel shows the floppy disk controller in its left and middle"
+" columns and the drive it works with in the right one. It is there only "
+"on a machine with a disk interface (see [Floppy disks](disks.md)). All "
+"numbers are hex; a flag is 1 or 0. In the picture Fire 'n Ice "
+"(n-Discovery, 2003) is loading from a TR-DOS disk: the controller reads a"
+" sector, command 80."
+msgstr ""
+"Панель **FDC** показує контролер дисковода в лівому і середньому "
+"стовпцях, а дисковод, з яким він працює, — у правому. Вона є лише на "
+"машині з дисковим інтерфейсом (див. [Floppy disks](disks.md)). Усі числа "
+"шістнадцяткові; прапорець — 1 або 0. На зображенні Fire 'n Ice "
+"(n-Discovery, 2003) завантажується з диска TR-DOS: контролер читає "
+"сектор, команда 80."
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "What it shows"
+msgstr "Що показує"
+
+msgid "**BUSY**"
+msgstr "**BUSY**"
+
+msgid "1 while the controller carries out a command"
+msgstr "1, поки контролер виконує команду"
+
+msgid "**COM**"
+msgstr "**COM**"
+
+msgid "the command it carries out; `--` when it is idle"
+msgstr "команда, яку він виконує; `--`, коли він простоює"
+
+msgid "**IRQ**"
+msgstr "**IRQ**"
+
+msgid "the controller's interrupt request: the command has ended"
+msgstr "запит на переривання від контролера: команда завершилася"
+
+msgid "**DRQ**"
+msgstr "**DRQ**"
+
+msgid "the data request: a byte is waiting to be read or written"
+msgstr "запит даних: байт чекає на читання або запис"
+
+msgid "**HEAD**"
+msgstr "**HEAD**"
+
+msgid "the side of the disk, 0 or 1"
+msgstr "бік диска, 0 або 1"
+
+msgid "**TRK**, **SEC**, **DATA**"
+msgstr "**TRK**, **SEC**, **DATA**"
+
+msgid "the track, sector and data registers"
+msgstr "регістри доріжки, сектора і даних"
+
+msgid "**SR**"
+msgstr "**SR**"
+
+msgid "the status register"
+msgstr "регістр стану"
+
+msgid "**SR0**, **SR1**, **SR2**"
+msgstr "**SR0**, **SR1**, **SR2**"
+
+msgid "the result registers of the +3's controller"
+msgstr "регістри результату контролера +3"
+
+msgid "**CRC**"
+msgstr "**CRC**"
+
+msgid "the checksum the controller has worked out so far"
+msgstr "контрольна сума, яку контролер обчислив на цей момент"
+
+msgid "**INT**"
+msgstr "**INT**"
+
+msgid "an interrupt waiting on the +3's controller"
+msgstr "переривання, що чекає на контролері +3"
+
+msgid "**DMA**"
+msgstr "**DMA**"
+
+msgid "the DMA mode of the +3's controller"
+msgstr "режим DMA контролера +3"
+
+msgid "**IE**"
+msgstr "**IE**"
+
+msgid "1 when interrupts from the disk interface are enabled"
+msgstr "1, коли переривання від дискового інтерфейсу дозволено"
+
+msgid "**FLP**"
+msgstr "**FLP**"
+
+msgid "the drive the controller works with, **A** to **D**"
+msgstr "дисковод, з яким працює контролер, від **A** до **D**"
+
+msgid "**RDY**"
+msgstr "**RDY**"
+
+msgid "a disk is in the drive"
+msgstr "у дисководі є диск"
+
+msgid "**MOT**"
+msgstr "**MOT**"
+
+msgid "the drive motor is on"
+msgstr "двигун дисковода ввімкнено"
+
+msgid "**TRK**"
+msgstr "**TRK**"
+
+msgid "the track the head stands on"
+msgstr "доріжка, на якій стоїть головка"
+
+msgid "**POS**"
+msgstr "**POS**"
+
+msgid "the place on the track under the head, in bytes from its start"
+msgstr "місце на доріжці під головкою, у байтах від її початку"
+
+msgid "**DATA**"
+msgstr "**DATA**"
+
+msgid "the byte under the head; `--` with no disk"
+msgstr "байт під головкою; `--` без диска"
+
+msgid "**IDX**"
+msgstr "**IDX**"
+
+msgid "the index hole is passing: the start of the track"
+msgstr "проходить індексний отвір: початок доріжки"
+
+msgid ""
+"Use it to follow a disk loader: step over the OUT that gives a command, "
+"then watch **BUSY**, **DRQ** and the registers as the command runs."
+msgstr ""
+"Користуйтеся нею, щоб стежити за дисковим завантажувачем: виконайте крок "
+"через OUT, що подає команду, а потім стежте за **BUSY**, **DRQ** і "
+"регістрами, поки команда виконується."
+
+msgid "floppy disk controller"
+msgstr "контролер дисковода"
+

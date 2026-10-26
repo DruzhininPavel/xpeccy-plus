@@ -1,0 +1,230 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:50+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Toolbar"
+msgstr "Toolbar"
+
+#, python-brace-format
+msgid ""
+"By default the toolbar has {icon}`fileopen` **Open**, {icon}`save_all` "
+"**Save**, {icon}`shutdown` **Reset**, {icon}`model-zx48` **Model**, "
+"{icon}`tape` **Tape Player**, {icon}`fdd_disk` **Disk Manager**, "
+"{icon}`fullscreen-16` **Fullscreen**, {icon}`vkeys` **Virtual Keyboard**,"
+" {icon}`gamepad` **Gamepads**, {icon}`bug` **Debugger**, {icon}`other` "
+"**Options** and {icon}`speaker` **Mute**, and at the right end {icon"
+"}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**, {icon"
+"}`time-pause` **Pause**, {icon}`time-ffwd` **Fast Forward** and {icon"
+"}`time-fast` **Fast Mode**."
+msgstr ""
+"Por defecto la barra de herramientas tiene {icon}`fileopen` **Open**, "
+"{icon}`save_all` **Save**, {icon}`shutdown` **Reset**, {icon}`model-zx48`"
+" **Model**, {icon}`tape` **Tape Player**, {icon}`fdd_disk` **Disk "
+"Manager**, {icon}`fullscreen-16` **Fullscreen**, {icon}`vkeys` **Virtual "
+"Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debugger**, "
+"{icon}`other` **Options** y {icon}`speaker` **Mute**, y en el extremo "
+"derecho {icon}`time-rewind` **Rewind**, {icon}`time-slow` **Slow "
+"Motion**, {icon}`time-pause` **Pause**, {icon}`time-ffwd` **Fast "
+"Forward** y {icon}`time-fast` **Fast Mode**."
+
+msgid "Right-click the toolbar to change it:"
+msgstr "Haz clic derecho en la barra de herramientas para cambiarla:"
+
+msgid ""
+"**Buttons** - every command that can be a button, by group; tick the ones"
+" you want."
+msgstr ""
+"**Buttons** — todos los comandos que pueden ser un botón, por grupos; "
+"marca los que quieras."
+
+msgid "**Remove** - removes the button you right-clicked."
+msgstr "**Remove** — quita el botón en el que hiciste clic derecho."
+
+msgid ""
+"**Add Separator Here**, **Add Space Here** - a line or a gap between "
+"groups."
+msgstr ""
+"**Add Separator Here**, **Add Space Here** — una línea o un hueco entre "
+"grupos."
+
+msgid ""
+"**Icon Size** - **Auto**, the default: 24 x 24 while every button fits "
+"the window's width, 16 x 16 when it does not. Or always 16 x 16 or 24 x "
+"24."
+msgstr ""
+"**Icon Size** — **Auto**, por defecto: 24 x 24 mientras todos los botones"
+" caben en el ancho de la ventana, 16 x 16 cuando no. O siempre 16 x 16 o "
+"24 x 24."
+
+msgid "**Restore Default Buttons** - back to the set above."
+msgstr "**Restore Default Buttons** — vuelve al conjunto de arriba."
+
+msgid "**Lock Toolbar** - on by default, so a slip of the mouse moves no button."
+msgstr ""
+"**Lock Toolbar** — activado por defecto, para que un descuido con el "
+"ratón no mueva ningún botón."
+
+msgid "**Hide Toolbar** - **View > Toolbar** brings it back."
+msgstr "**Hide Toolbar** — **View > Toolbar** la vuelve a mostrar."
+
+msgid "To move a button, untick **Lock Toolbar** and drag the button."
+msgstr "Para mover un botón, desmarca **Lock Toolbar** y arrastra el botón."
+
+msgid ""
+"The arrow beside **Mute** opens a volume slider. Alt with the mouse wheel"
+" over the picture changes the volume too."
+msgstr ""
+"La flecha junto a **Mute** abre un control deslizante de volumen. Alt con"
+" la rueda del ratón sobre la imagen también cambia el volumen."
+
+msgid "The buttons"
+msgstr "The buttons"
+
+msgid ""
+"**Buttons** in the toolbar's right-click menu lists every command that "
+"can be a button, in groups. Each one is the command of the same name in a"
+" menu, described there:"
+msgstr ""
+"**Buttons**, en el menú del clic derecho sobre la barra de herramientas, "
+"lista por grupos todos los comandos que pueden ser botones. Cada uno es "
+"el comando del mismo nombre en un menú, y se describe allí:"
+
+msgid "Described in"
+msgstr "Se describe en"
+
+msgid "Buttons"
+msgstr "Botones"
+
+msgid "[File menu](files.md), [Favorites menu](favorites.md)"
+msgstr "[File menu](files.md), [Favorites menu](favorites.md)"
+
+msgid ""
+"**Open...**, **Favorites**, **Reload**, **Save...**, **Save Changed "
+"Disks**, **Options...**"
+msgstr ""
+"**Open...**, **Favorites**, **Reload**, **Save...**, **Save Changed "
+"Disks**, **Options...**"
+
+msgid "[Capture menu](capture.md)"
+msgstr "[Capture menu](capture.md)"
+
+msgid ""
+"**Screenshot**, **Record Video**, **Record Sound to WAV...**, "
+"**Record...** (RZX), **RZX Player**"
+msgstr ""
+"**Screenshot**, **Record Video**, **Record Sound to WAV...**, "
+"**Record...** (RZX), **RZX Player**"
+
+msgid "[Machine menu](machines.md)"
+msgstr "[Machine menu](machines.md)"
+
+msgid "**Model**, **Reset**, **NMI**, **Turbo Mode**"
+msgstr "**Model**, **Reset**, **NMI**, **Turbo Mode**"
+
+msgid "[Speed and time](time.md)"
+msgstr "[Speed and time](time.md)"
+
+msgid "**Pause**, **Fast Mode**, **Fast Forward**, **Slow Motion**, **Rewind**"
+msgstr "**Pause**, **Fast Mode**, **Fast Forward**, **Slow Motion**, **Rewind**"
+
+msgid "[Media menu](media.md)"
+msgstr "[Media menu](media.md)"
+
+msgid ""
+"**Tape Play/Stop**, **Tape Record/Stop**, **Tape Player**, **Disk "
+"Manager**, **Cartridge**, **divMMC**, **SD Card**, **Drives**"
+msgstr ""
+"**Tape Play/Stop**, **Tape Record/Stop**, **Tape Player**, **Disk "
+"Manager**, **Cartridge**, **divMMC**, **SD Card**, **Drives**"
+
+msgid "[View menu](view.md)"
+msgstr "[View menu](view.md)"
+
+msgid ""
+"**Fullscreen**, **Keep Aspect Ratio in Fullscreen**, **Size**, "
+"**Shaders**, **ZX Palette**, **Virtual Keyboard**"
+msgstr ""
+"**Fullscreen**, **Keep Aspect Ratio in Fullscreen**, **Size**, "
+"**Shaders**, **ZX Palette**, **Virtual Keyboard**"
+
+msgid "[Input menu](input.md)"
+msgstr "[Input menu](input.md)"
+
+msgid "**Grab Keyboard**, **Grab Mouse**, **Keymap**, **Gamepads**"
+msgstr "**Grab Keyboard**, **Grab Mouse**, **Keymap**, **Gamepads**"
+
+msgid "[Tools menu](tools.md)"
+msgstr "[Tools menu](tools.md)"
+
+msgid "**Cheats...**, **Debugger**, **Screen**, **Sound Chips**"
+msgstr "**Cheats...**, **Debugger**, **Screen**, **Sound Chips**"
+
+msgid "[Mute](machines.md#mute)"
+msgstr "[Mute](machines.md#mute)"
+
+msgid "**Mute**"
+msgstr "**Mute**"
+
+msgid ""
+"A button for a menu - **Model**, **Turbo Mode**, **Size** and the like - "
+"opens that menu when clicked. A button with an arrow beside it does its "
+"command when clicked, and the arrow opens its menu: **Reset** lists the "
+"ROMs, **Disk Manager** the drives, **divMMC** the cards, **Gamepads** the"
+" joysticks, **Debugger** its windows, **Mute** the volume slider."
+msgstr ""
+"Un botón de menú — **Model**, **Turbo Mode**, **Size** y similares — abre"
+" ese menú al hacer clic. Un botón con una flecha al lado ejecuta su "
+"comando al hacer clic, y la flecha abre su menú: **Reset** lista las ROM,"
+" **Disk Manager** las unidades, **divMMC** las tarjetas, **Gamepads** los"
+" joysticks, **Debugger** sus ventanas, **Mute** el deslizador de volumen."
+
+msgid ""
+"**Rewind** has no menu item: it works while the button or its key is held"
+" down. The time buttons work as their keys do; see [How the keys "
+"work](time.md#how-the-keys-work)."
+msgstr ""
+"**Rewind** no tiene elemento de menú: funciona mientras se mantiene "
+"pulsado el botón o su tecla. Los botones de tiempo funcionan como sus "
+"teclas; consulta [How the keys work](time.md#how-the-keys-work)."
+
+msgid "toolbar"
+msgstr "barra de herramientas"
+
+msgid "customizing"
+msgstr "personalizar"
+
+msgid "Restore Default Buttons"
+msgstr "Restore Default Buttons"
+
+msgid "Icon Size"
+msgstr "Icon Size"
+
+msgid "Lock Toolbar"
+msgstr "Lock Toolbar"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "volume"
+msgstr "volumen"
+
+msgid "buttons"
+msgstr "botones"
+

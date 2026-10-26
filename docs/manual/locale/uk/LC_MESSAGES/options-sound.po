@@ -1,0 +1,232 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Sound page"
+msgstr "Sound page"
+
+msgid "![The Sound page](images/options-sound.png)"
+msgstr "![Сторінка Sound](images/options-sound.png)"
+
+msgid "The Sound page"
+msgstr "Сторінка Sound"
+
+msgid ""
+"What you hear comes from the machine's own sound devices - the beeper, "
+"the tape, and whatever sound chips and cards the machine has. Which "
+"devices a machine has is set on the **Machine** page of **Options** (see "
+"[Sound devices](options-machine.md#sound-devices)); how the sound is "
+"played and how loud each device is are on the **Sound** page."
+msgstr ""
+"Звук іде від власних звукових пристроїв машини — біпера, стрічки та тих "
+"звукових чипів і карт, що вона має. Які пристрої має машина, задають на "
+"сторінці **Machine** вікна **Options** (див. [Sound devices](options-"
+"machine.md#sound-devices)); як звук відтворюється і наскільки гучно "
+"звучить кожен пристрій — на сторінці **Sound**."
+
+msgid "**Options > Sound** has three groups."
+msgstr "**Options > Sound** має три групи."
+
+msgid "**Output** - how the sound reaches your speakers:"
+msgstr "**Output** — як звук доходить до ваших динаміків:"
+
+msgid "**Driver** - **SDL** plays the sound; **NULL** plays nothing."
+msgstr "**Driver** — **SDL** відтворює звук; **NULL** не відтворює нічого."
+
+msgid ""
+"**Rate** - the sample rate: **Auto** uses the rate of your computer's "
+"sound device and shows that rate; **48000** and **44100** set a fixed "
+"rate."
+msgstr ""
+"**Rate** — частота дискретизації: **Auto** використовує частоту звукового"
+" пристрою вашого комп'ютера і показує її; **48000** і **44100** задають "
+"фіксовану частоту."
+
+msgid ""
+"**Latency** - how much sound is kept ready ahead of playback, from 10 to "
+"150 ms. A lower value makes the sound follow the picture and the keys "
+"more closely; a value too low makes the sound click. With **Auto adjust**"
+" ticked (the default) the program finds the value by itself: it raises "
+"the latency when the sound runs short and lowers it again after a long "
+"time with no gaps. The slider then shows the value the program has "
+"settled on."
+msgstr ""
+"**Latency** — скільки звуку тримається напоготові наперед до відтворення,"
+" від 10 до 150 мс. Менше значення робить звук ближчим до зображення й "
+"клавіш; замале значення змушує звук клацати. Коли позначено **Auto "
+"adjust** (типово), програма сама знаходить значення: вона збільшує "
+"затримку, коли звуку бракує, і знову зменшує її після довгого часу без "
+"пропусків. Повзунок тоді показує значення, на якому програма зупинилася."
+
+msgid "The **Sound** group beside **Output** has three switches:"
+msgstr "Група **Sound** поруч з **Output** має три перемикачі:"
+
+msgid ""
+"**Enabled** - with it off, the program plays silence. The machine still "
+"runs at its normal speed."
+msgstr ""
+"**Enabled** — коли вимкнено, програма відтворює тишу. Машина й далі "
+"працює зі звичайною швидкістю."
+
+msgid ""
+"**Low cut (DC)** - takes out the lowest frequencies. The chips' output "
+"sits above zero rather than around it, and that offset only takes "
+"loudness away from the rest of the sound. On by default."
+msgstr ""
+"**Low cut (DC)** — прибирає найнижчі частоти. Вихід мікросхем лежить вище"
+" нуля, а не довкола нього, і цей зсув лише забирає гучність у решти "
+"звуку. Типово ввімкнено."
+
+msgid ""
+"**High cut (anti-alias)** - takes out the frequencies too high for the "
+"output rate. Without it they come back as false notes, which is heard "
+"most in beeper music as a harsh crunch. On by default; it costs a little "
+"CPU time."
+msgstr ""
+"**High cut (anti-alias)** — прибирає частоти, зависокі для вихідної "
+"частоти дискретизації. Без нього вони повертаються як фальшиві ноти, що "
+"найбільше чути в біперній музиці як різкий хрускіт. Типово ввімкнено; це "
+"коштує трохи часу CPU."
+
+msgid "**Volumes** - one slider for each device, from 0 to 100:"
+msgstr "**Volumes** — по повзунку для кожного пристрою, від 0 до 100:"
+
+msgid "Volume"
+msgstr "Гучність"
+
+msgid "What it sets"
+msgstr "Що задає"
+
+msgid "**Master**"
+msgstr "**Master**"
+
+msgid "everything together; the same as the toolbar's volume"
+msgstr "усе разом; те саме, що гучність на панелі інструментів"
+
+msgid "**Beeper**"
+msgstr "**Beeper**"
+
+msgid "the machine's own speaker"
+msgstr "власний динамік машини"
+
+msgid "**Tape**"
+msgstr "**Tape**"
+
+msgid "the tape, while it plays or records"
+msgstr "стрічку, поки вона відтворюється чи записується"
+
+msgid "**PSG**"
+msgstr "**PSG**"
+
+msgid "the AY or YM sound chips"
+msgstr "звукові мікросхеми AY або YM"
+
+msgid "**DAC**"
+msgstr "**DAC**"
+
+msgid "Covox and Soundrive"
+msgstr "Covox і Soundrive"
+
+msgid "**General Sound**"
+msgstr "**General Sound**"
+
+msgid "the General Sound card"
+msgstr "карту General Sound"
+
+msgid "**SAA1099**"
+msgstr "**SAA1099**"
+
+msgid "the SAA1099 chip"
+msgstr "мікросхему SAA1099"
+
+msgid "The **Sound** page is the same for every machine."
+msgstr "Сторінка **Sound** однакова для всіх машин."
+
+msgid "Beeper"
+msgstr "Beeper"
+
+msgid ""
+"The beeper is the machine's own speaker, and every machine has it. Its "
+"volume is **Beeper** on the **Sound** page. **MIC in the beeper**, in the"
+" **ULA** group of **Machine: Advanced Settings**, also mixes the signal "
+"the machine sends to the tape into the beeper sound, a tenth as loud, as "
+"a machine with a ULA does (see [Advanced settings](options-machine.md"
+"#advanced-settings))."
+msgstr ""
+"Біпер — власний динамік машини, і він є в кожної машини. Його гучність — "
+"**Beeper** на сторінці **Sound**. **MIC in the beeper** у групі **ULA** "
+"вікна **Machine: Advanced Settings** також домішує до звуку біпера "
+"сигнал, який машина посилає на стрічку, з десятою частиною гучності, як "
+"це робить машина з ULA (див. [Advanced settings](options-machine.md"
+"#advanced-settings))."
+
+msgid "Recording the sound"
+msgstr "Recording the sound"
+
+msgid ""
+"**Capture > Record Sound to WAV...** writes what you hear to a file; see "
+"[Capture menu](capture.md)."
+msgstr ""
+"**Capture > Record Sound to WAV...** записує те, що ви чуєте, у файл; "
+"див. [Capture menu](capture.md)."
+
+msgid "sound"
+msgstr "звук"
+
+msgid "Driver"
+msgstr "Driver"
+
+msgid "Latency"
+msgstr "Latency"
+
+msgid "Auto adjust"
+msgstr "Auto adjust"
+
+msgid "latency"
+msgstr "затримка"
+
+msgid "Low cut (DC)"
+msgstr "Low cut (DC)"
+
+msgid "High cut (anti-alias)"
+msgstr "High cut (anti-alias)"
+
+msgid "anti-alias filter"
+msgstr "фільтр згладжування"
+
+msgid "Volumes"
+msgstr "Volumes"
+
+msgid "Master"
+msgstr "Master"
+
+msgid "beeper"
+msgstr "біпер"
+
+msgid "MIC in the beeper"
+msgstr "MIC in the beeper"
+
+msgid "Record Sound to WAV"
+msgstr "Record Sound to WAV"
+
+msgid "recording"
+msgstr "запис"
+

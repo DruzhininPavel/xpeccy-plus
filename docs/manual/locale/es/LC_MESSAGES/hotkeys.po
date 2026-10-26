@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 03:44+0200\n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -19,8 +19,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "Hotkeys"
-msgstr "Hotkeys"
+msgid "Hotkeys page"
+msgstr "Hotkeys page"
+
+msgid "![The Hotkeys page](images/options-hotkeys.png)"
+msgstr "![La página Hotkeys](images/options-hotkeys.png)"
+
+msgid "The Hotkeys page"
+msgstr "La página Hotkeys"
+
+msgid ""
+"The keys of every command, in the Modern or Classic preset or one of your"
+" own. See [Hotkeys page](hotkeys.md)."
+msgstr ""
+"Las teclas de cada comando, en el preajuste Modern o Classic o en uno "
+"tuyo. Consulta [Hotkeys page](hotkeys.md)."
 
 msgid ""
 "A command that has a key shows it beside its name in the menu. All the "
@@ -35,7 +48,7 @@ msgstr ""
 "tecla para usarla."
 
 msgid "Modern, Classic and Custom"
-msgstr "Modern, Classic y Custom"
+msgstr "Modern, Classic and Custom"
 
 msgid ""
 "Two sets of keys come with the program. Pick one in the **Preset** list "
@@ -108,7 +121,7 @@ msgstr ""
 "cirílica u otra activada en el sistema, Alt+M sigue siendo Alt+M."
 
 msgid "Change a key"
-msgstr "Cambiar una tecla"
+msgstr "Change a key"
 
 msgid ""
 "The table on the **Hotkeys** page has three columns: **Action**, **Key** "
@@ -200,7 +213,7 @@ msgstr ""
 "cambios y devuelve Custom al juego del que se hizo."
 
 msgid "Find a key"
-msgstr "Buscar una tecla"
+msgstr "Find a key"
 
 msgid ""
 "Type in the search box to see only the actions whose name, group or key "
@@ -220,7 +233,7 @@ msgstr ""
 "que veas qué hace esa tecla."
 
 msgid "How the keys behave"
-msgstr "Cómo se comportan las teclas"
+msgstr "How the keys behave"
 
 msgid ""
 "**Grab Keyboard.** While the keyboard is grabbed, every key goes to the "
@@ -259,8 +272,8 @@ msgstr ""
 "uno de una de tres formas, fijada en la página **Emulation** de "
 "**Options**: **Toggle**, **Hold** o **Tap or hold** (por defecto): una "
 "pulsación corta activa o desactiva el modo, una más larga lo mantiene "
-"activo solo mientras se mantiene la tecla. Consulta [Velocidad y "
-"tiempo](time.md)."
+"activo solo mientras se mantiene la tecla. Consulta [Speed and "
+"time](time.md)."
 
 msgid ""
 "**Shift and Ctrl.** A hotkey's own Shift or Ctrl is not passed to the "
@@ -330,7 +343,7 @@ msgstr ""
 "Linux."
 
 msgid "All the keys"
-msgstr "Todas las teclas"
+msgstr "All the keys"
 
 msgid ""
 "A dash means no key. Where an action has two keys, both are given. In a "
@@ -729,7 +742,7 @@ msgid "Alt+A"
 msgstr "Alt+A"
 
 msgid "Debugger keys"
-msgstr "Teclas del Debugger"
+msgstr "Debugger keys"
 
 msgid ""
 "These work in the **Debugger** window. **Options**, **Open**, **Save**, "
@@ -1006,7 +1019,4 @@ msgstr "tecla Cmd"
 
 msgid "list of all"
 msgstr "lista completa"
-
-#~ msgid "Debug"
-#~ msgstr "Debug"
 

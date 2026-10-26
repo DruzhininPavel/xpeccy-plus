@@ -1,0 +1,98 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "FDD panel"
+msgstr "FDD panel"
+
+msgid "![The FDD panel](images/dbg-fdd.png)"
+msgstr "![Панель FDD](images/dbg-fdd.png)"
+
+msgid "The FDD panel"
+msgstr "Панель FDD"
+
+msgid ""
+"The **FDD** panel shows a whole track of a floppy disk as it lies on the "
+"disk: the gaps, the sector headers, the data and the checksums, byte by "
+"byte. It is on a tab beside **DUMP**, and only on a machine with a disk "
+"interface."
+msgstr ""
+"Панель **FDD** показывает целую дорожку дискеты так, как она лежит на "
+"диске: промежутки, заголовки секторов, данные и контрольные суммы, байт "
+"за байтом. Она на вкладке рядом с **DUMP** и есть только на машине с "
+"дисковым интерфейсом."
+
+msgid "**Drive** - the drive, **A** to **D**."
+msgstr "**Drive** — дисковод, от **A** до **D**."
+
+msgid ""
+"**Track** - the track to show, counted with both sides: 0 is the first "
+"track on side 0, 1 the same track on side 1, 2 the next track on side 0, "
+"and so on. On a single-sided drive the number steps by 2."
+msgstr ""
+"**Track** — показываемая дорожка, считая обе стороны: 0 — первая дорожка "
+"на стороне 0, 1 — та же дорожка на стороне 1, 2 — следующая дорожка на "
+"стороне 0 и так далее. На одностороннем дисководе номер меняется с шагом "
+"2."
+
+msgid "**Bytes per row** - **Auto**, **8/row**, **12/row** or **16/row**."
+msgstr "**Bytes per row** — **Auto**, **8/row**, **12/row** или **16/row**."
+
+#, python-brace-format
+msgid ""
+"{icon}`target` The target button - jumps to the drive, the track and the "
+"byte the head is at now."
+msgstr ""
+"{icon}`target` Кнопка-мишень — переходит к дисководу, дорожке и байту, "
+"где сейчас головка."
+
+msgid ""
+"Each row starts with the track and the place on the track, in hex: "
+"`02:0040`. The byte under the head is in bold. Sector headers are in the "
+"**ID / Label** color of the **Debugger** page of **Options**, sector data"
+" in the **Data** color and the checksums in the **CRC** color. With no "
+"disk in the drive every byte reads `FF`. The panel cannot be edited; to "
+"change a disk's files, use the **Disk Manager** (see [Floppy "
+"disks](disks.md))."
+msgstr ""
+"Каждая строка начинается с дорожки и места на дорожке в шестнадцатеричном"
+" виде: `02:0040`. Байт под головкой выделен жирным. Заголовки секторов "
+"окрашены цветом **ID / Label** со страницы **Debugger** окна **Options**,"
+" данные секторов — цветом **Data**, контрольные суммы — цветом **CRC**. "
+"Без диска в дисководе каждый байт читается как `FF`. Панель нельзя "
+"редактировать; чтобы изменить файлы диска, используйте **Disk Manager** "
+"(см. [Floppy disks](disks.md))."
+
+msgid ""
+"Use it to see how a disk is laid out: how many sectors a track has, how "
+"long they are, and whether a protected disk has a header or a checksum "
+"that is wrong on purpose."
+msgstr ""
+"Пользуйтесь ей, чтобы увидеть устройство диска: сколько секторов на "
+"дорожке, какой они длины и нет ли на защищённом диске заголовка или "
+"контрольной суммы, нарочно испорченных."
+
+msgid "track"
+msgstr "дорожка"
+
+msgid "raw bytes"
+msgstr "сырые байты"
+

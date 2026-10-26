@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 03:44+0200\n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Tapes"
-msgstr "Стрічки"
+msgstr "Tapes"
 
 msgid ""
 "The machine has a tape recorder: it plays a tape image into the machine's"
@@ -33,7 +33,7 @@ msgstr ""
 "`.wav`, а зберігає `.tap` і `.wav`."
 
 msgid "Putting a tape in"
-msgstr "Як вставити стрічку"
+msgstr "Putting a tape in"
 
 msgid ""
 "Open a tape like any other file: **File > Open...**, a drop onto the "
@@ -43,8 +43,8 @@ msgid ""
 msgstr ""
 "Відкрийте стрічку, як будь-який інший файл: **File > Open...**, "
 "перетягуванням у вікно, через **Recent** або **Favorites**. Run скидає "
-"машину й завантажує стрічку; Mount лише вставляє її (див. [Запуск "
-"програми](getting-started.md#run-a-program))."
+"машину й завантажує стрічку; Mount лише вставляє її (див. [Run a program"
+"](getting-started.md#run-a-program))."
 
 #, python-brace-format
 msgid ""
@@ -57,7 +57,7 @@ msgstr ""
 "неї на іншу машину."
 
 msgid "The Tape Player"
-msgstr "Tape Player"
+msgstr "The Tape Player"
 
 msgid "![The Tape Player](images/tape-player.png)"
 msgstr "![Tape Player](images/tape-player.png)"
@@ -89,15 +89,15 @@ msgid ""
 "{icon}`save_all` **Save the tape to a file** - see [Saving a "
 "tape](#saving-a-tape);"
 msgstr ""
-"{icon}`save_all` **Save the tape to a file** — див. [Збереження "
-"стрічки](#saving-a-tape);"
+"{icon}`save_all` **Save the tape to a file** — див. [Saving a "
+"tape](#saving-a-tape);"
 
 #, python-brace-format
 msgid ""
 "{icon}`wav` **Export the tape as a WAV recording** - see [Export to WAV"
 "](#export-to-wav);"
 msgstr ""
-"{icon}`wav` **Export the tape as a WAV recording** — див. [Експорт у WAV"
+"{icon}`wav` **Export the tape as a WAV recording** — див. [Export to WAV"
 "](#export-to-wav);"
 
 #, python-format
@@ -147,7 +147,7 @@ msgstr ""
 "видаляли."
 
 msgid "The block list"
-msgstr "Список блоків"
+msgstr "The block list"
 
 msgid "Each row is one block of the tape:"
 msgstr "Кожен рядок — один блок стрічки:"
@@ -229,7 +229,7 @@ msgid ""
 "to-a-disk);"
 msgstr ""
 "{icon}`floppy` **Copy the block to a disk as a TR-DOS file** — відкриває "
-"меню дисководів, див. [Копіювання блоку на диск](#copying-a-block-"
+"меню дисководів, див. [Copying a block to a disk](#copying-a-block-"
 "to-a-disk);"
 
 #, python-brace-format
@@ -245,7 +245,7 @@ msgid "{icon}`cancel` **Delete the block**."
 msgstr "{icon}`cancel` **Delete the block**."
 
 msgid "Playing"
-msgstr "Відтворення"
+msgstr "Playing"
 
 #, python-brace-format
 msgid ""
@@ -311,19 +311,19 @@ msgid ""
 msgstr ""
 "**Fast loading** запускає машину на повній швидкості, поки завантажувач "
 "читає стрічку. Звук вимкнено, а зображення оновлюється лише стільки разів"
-" на секунду, скільки задає **Fast Mode render** (див. [Швидкий "
-"режим](time.md#fast-mode)). Коли завантаження закінчується, машина "
-"повертається в мить, коли завантажувач завершив роботу, тож програма "
-"стартує на звичайній швидкості."
+" на секунду, скільки задає **Fast Mode render** (див. [Fast Mode](time.md"
+"#fast-mode)). Коли завантаження закінчується, машина повертається в мить,"
+" коли завантажувач завершив роботу, тож програма стартує на звичайній "
+"швидкості."
 
 msgid ""
 "Two more settings refine it. They are on the **Machine: Tape** sheet of "
-"**Options** (see [Tape settings](#tape-settings)), and work only with "
-"**Fast loading** on:"
+"**Options** (see [Machine: Tape](options-machine.md#machine-tape)), and "
+"work only with **Fast loading** on:"
 msgstr ""
 "Ще два налаштування його доповнюють. Вони є на аркуші **Machine: Tape** "
-"вікна **Options** (див. [Налаштування стрічки](#tape-settings)) і "
-"працюють лише з увімкненим **Fast loading**:"
+"вікна **Options** (див. [Machine: Tape](options-machine.md#machine-tape))"
+" і працюють лише з увімкненим **Fast loading**:"
 
 msgid ""
 "**Flash loading** - blocks read by the ROM's loading routine, or by a "
@@ -355,7 +355,7 @@ msgstr ""
 "завантажується, вимкніть **Edge detection**."
 
 msgid "Recording"
-msgstr "Запис"
+msgstr "Recording"
 
 #, python-brace-format
 msgid ""
@@ -377,7 +377,7 @@ msgstr ""
 "запис не потрібен: його блоки одразу потрапляють на стрічку."
 
 msgid "Saving a tape"
-msgstr "Збереження стрічки"
+msgstr "Saving a tape"
 
 #, python-brace-format
 msgid ""
@@ -412,7 +412,7 @@ msgstr ""
 "**Tape: game.tap has been changed. Do you want to save it?**"
 
 msgid "WAV files"
-msgstr "Файли WAV"
+msgstr "WAV files"
 
 msgid ""
 "A `.wav` file opens as a tape. Standard blocks in it are decoded into "
@@ -429,7 +429,7 @@ msgstr ""
 "Гц."
 
 msgid "Export to WAV"
-msgstr "Експорт у WAV"
+msgstr "Export to WAV"
 
 #, python-brace-format
 msgid ""
@@ -468,7 +468,7 @@ msgstr ""
 "recording, export** у **File > Save...** теж їх використовує."
 
 msgid "Copying a block to a disk"
-msgstr "Копіювання блоку на диск"
+msgstr "Copying a block to a disk"
 
 #, python-brace-format
 msgid ""
@@ -505,7 +505,7 @@ msgstr ""
 "в **Disk Manager** (див. [Disk Manager](disks.md#disk-manager))."
 
 msgid "The tape in the status bar"
-msgstr "Стрічка в рядку стану"
+msgstr "The tape in the status bar"
 
 #, python-brace-format
 msgid ""
@@ -517,7 +517,7 @@ msgid ""
 msgstr ""
 "Рядок стану показує індикатор стрічки {icon}`tapeGreen`, блок, що "
 "відтворюється, і скільки його стрічка вже пройшла, а за клацанням правою "
-"кнопкою — команди магнітофона: див. [Рядок стану](main-window.md#status-"
+"кнопкою — команди магнітофона: див. [Status bar](main-window.md#status-"
 "bar). Без стрічки індикатор лишається, лише тьмяний, і клацання на ньому "
 "відкриває **Tape Player**."
 
@@ -530,48 +530,6 @@ msgstr ""
 "стрічка відтворюється (зелений) чи записує (червоний). **Tape** у групі "
 "**Indicators** сторінки **Appearance** вікна **Options** вмикає й вимикає"
 " цей індикатор."
-
-msgid "Tape settings"
-msgstr "Налаштування стрічки"
-
-#, python-brace-format
-msgid ""
-"On the **Machine** page of **Options**, the **Storage** group has a "
-"**Tape** row. It sums up the settings: **plain**, or the ones that are "
-"on: **fast**, **flash**, **edge**, **auto**. By default all four are on. "
-"The {icon}`settings` button at the end of the row opens the **Machine: "
-"Tape** sheet:"
-msgstr ""
-"На сторінці **Machine** вікна **Options** група **Storage** має рядок "
-"**Tape**. Він підсумовує налаштування: **plain** або ті, що ввімкнено: "
-"**fast**, **flash**, **edge**, **auto**. Типово ввімкнено всі чотири. "
-"Кнопка {icon}`settings` у кінці рядка відкриває аркуш **Machine: Tape**:"
-
-msgid "**Playback speed**;"
-msgstr "**Playback speed**;"
-
-msgid "**Auto play / stop**;"
-msgstr "**Auto play / stop**;"
-
-msgid "**Rewind at end**;"
-msgstr "**Rewind at end**;"
-
-msgid "**Fast loading**, **Flash loading** and **Edge detection**."
-msgstr "**Fast loading**, **Flash loading** і **Edge detection**."
-
-msgid ""
-"The first four are the same settings as in the **Tape Player**, where a "
-"change takes effect at once."
-msgstr ""
-"Перші чотири — ті самі налаштування, що й у **Tape Player**, де зміна діє"
-" одразу."
-
-msgid ""
-"The tape's loudness is **Tape** in the **Volumes** group of the **Sound**"
-" page (see [Sound](sound.md))."
-msgstr ""
-"Гучність стрічки — це **Tape** у групі **Volumes** сторінки **Sound** "
-"(див. [Звук](sound.md))."
 
 msgid "tape"
 msgstr "стрічка"
@@ -638,10 +596,4 @@ msgstr "копіювання на диск"
 
 msgid "indicator"
 msgstr "індикатор"
-
-msgid "settings"
-msgstr "налаштування"
-
-msgid "Machine: Tape"
-msgstr "Machine: Tape"
 

@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Tools menu"
+msgstr "Tools menu"
+
+msgid ""
+"The **Tools** menu holds the windows for looking into the machine and "
+"changing it. The right-click menu over the picture has the same list "
+"under **Tools**."
+msgstr ""
+"Меню **Tools** містить вікна, щоб зазирнути всередину машини і щось у ній"
+" змінити. У меню правого клацання по зображенню той самий список — у "
+"**Tools**."
+
+#, python-brace-format
+msgid ""
+"{icon}`cheats` **Cheats...** - trainers and pokes for the program that "
+"runs; see [Cheats](cheats.md)."
+msgstr ""
+"{icon}`cheats` **Cheats...** — трейнери й POKE для запущеної програми; "
+"див. [Cheats](cheats.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`bug` **Debugger** - stops the machine and shows what is inside it;"
+" see [Debugger](debugger.md)."
+msgstr ""
+"{icon}`bug` **Debugger** — зупиняє машину й показує, що в неї всередині; "
+"див. [Debugger](debugger.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`objective` **Watcher** - registers and memory, followed while the "
+"machine runs; see [Watcher](debugger-watcher.md)."
+msgstr ""
+"{icon}`objective` **Watcher** — регістри й пам'ять, за якими вікно "
+"стежить, поки машина працює; див. [Watcher](debugger-watcher.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`rulers` **Screen** and {icon}`note` **Sound Chips** - two panels "
+"of the Debugger in windows of their own, described below."
+msgstr ""
+"{icon}`rulers` **Screen** і {icon}`note` **Sound Chips** — дві панелі "
+"Debugger в окремих вікнах, описані нижче."
+
+msgid "Screen and Sound Chips windows"
+msgstr "Screen and Sound Chips windows"
+
+msgid "![The Screen window](images/dbg-screen-window.png)"
+msgstr "![Вікно Screen](images/dbg-screen-window.png)"
+
+msgid "The Screen window"
+msgstr "Вікно Screen"
+
+msgid "![The Sound Chips window](images/dbg-sound-window.png)"
+msgstr "![Вікно Sound Chips](images/dbg-sound-window.png)"
+
+msgid "The Sound Chips window"
+msgstr "Вікно Sound Chips"
+
+msgid ""
+"**Tools > Screen** and **Tools > Sound Chips** move the **Screen** and "
+"**Sound Chip** panels out of the Debugger into windows of their own. The "
+"same command again puts the panel back. In the Classic preset the keys "
+"are Alt+S and Alt+A; the Modern preset has no keys for them."
+msgstr ""
+"**Tools > Screen** і **Tools > Sound Chips** виносять панелі **Screen** і"
+" **Sound Chip** з Debugger в окремі вікна. Та сама команда ще раз "
+"повертає панель назад. У наборі Classic клавіші — Alt+S і Alt+A; набір "
+"Modern не має для них клавіш."
+
+#, python-brace-format
+msgid ""
+"The button at the top right of each panel, {icon}`display` **Show in its "
+"own window**, does the same. In the window it is pressed in; click it "
+"again, or close the window, to put the panel back in the Debugger. While "
+"the panel is out, its tab in the Debugger says so, with a **Bring it "
+"back** or **Bring them back** button."
+msgstr ""
+"Кнопка вгорі праворуч на кожній панелі, {icon}`display` **Show in its own"
+" window**, робить те саме. У вікні вона натиснута; клацніть її знову або "
+"закрийте вікно, щоб повернути панель у Debugger. Поки панель винесено, її"
+" вкладка в Debugger повідомляє про це і має кнопку **Bring it back** або "
+"**Bring them back**."
+
+msgid ""
+"The windows work without the Debugger: they follow the machine while the "
+"machine runs, one picture a frame (in fast mode, one in ten frames). The "
+"settings are the same as in the panel. Each window keeps its place and "
+"size, and a window that was open when you quit opens again at the next "
+"start."
+msgstr ""
+"Вікна працюють без Debugger: вони стежать за машиною, поки машина працює,"
+" одне зображення на кадр (у швидкому режимі — одне на десять кадрів). "
+"Параметри такі самі, як на панелі. Кожне вікно запам'ятовує своє "
+"розташування і розмір, а вікно, відкрите під час виходу, знову "
+"відкривається під час наступного запуску."
+
+msgid "Tools"
+msgstr "Tools"
+
+msgid "Screen window"
+msgstr "вікно Screen"
+
+msgid "Sound Chips window"
+msgstr "вікно Sound Chips"
+
+msgid "Show in its own window"
+msgstr "Show in its own window"
+

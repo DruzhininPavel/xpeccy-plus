@@ -1,0 +1,140 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Application page"
+msgstr "Application page"
+
+msgid "![The Application page](images/options-application.png)"
+msgstr "![La página Application](images/options-application.png)"
+
+msgid "The Application page"
+msgstr "La página Application"
+
+msgid "**Machine at start** - see [Machine at start](#machine-at-start)."
+msgstr "**Machine at start** — consulta [Machine at start](#machine-at-start)."
+
+msgid ""
+"**Listen port** - the network port the program listens on, for tools that"
+" control it."
+msgstr ""
+"**Listen port** — el puerto de red en el que escucha el programa, para "
+"herramientas que lo controlan."
+
+msgid "**Confirm exit** - ask before closing."
+msgstr "**Confirm exit** — preguntar antes de cerrar."
+
+msgid ""
+"**Pause when inactive** - pause the machine while the window is in the "
+"background. See [Pause](time.md#pause)."
+msgstr ""
+"**Pause when inactive** — pausar la máquina mientras la ventana está en "
+"segundo plano. Consulta [Pause](time.md#pause)."
+
+#, python-brace-format
+msgid "{icon}`star` **Manage favorites...** - see [Favorites menu](favorites.md)."
+msgstr ""
+"{icon}`star` **Manage favorites...** — consulta [Favorites "
+"menu](favorites.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`save_all` **Export settings...**, {icon}`fileopen` **Import "
+"settings...** - keep all your settings, your own machines included, in "
+"one file, and bring them back."
+msgstr ""
+"{icon}`save_all` **Export settings...**, {icon}`fileopen` **Import "
+"settings...** — guarda todos tus ajustes, incluidas tus propias máquinas,"
+" en un archivo, y recupéralos."
+
+#, python-brace-format
+msgid ""
+"{icon}`refresh` **Reset to defaults** - puts every setting back to its "
+"default value. Your own machines stay."
+msgstr ""
+"{icon}`refresh` **Reset to defaults** — devuelve cada ajuste a su valor "
+"por defecto. Tus propias máquinas se conservan."
+
+msgid ""
+"**Log** - a log file of what the program does, for reporting a problem: "
+"**Write a log file**, **To the console**, **Level**, **Folder**."
+msgstr ""
+"**Log** — un archivo de registro de lo que hace el programa, para "
+"informar de un problema: **Write a log file**, **To the console**, "
+"**Level**, **Folder**."
+
+msgid "Machine at start"
+msgstr "Machine at start"
+
+msgid ""
+"**Machine at start** on the **Application** page of **Options** sets "
+"which machine Xpeccy+ starts with:"
+msgstr ""
+"**Machine at start** en la página **Application** de **Options** fija con"
+" qué máquina arranca Xpeccy+:"
+
+msgid ""
+"**The last one chosen** - the last machine you picked yourself. A machine"
+" that a file switched to does not count."
+msgstr ""
+"**The last one chosen** — la última máquina que elegiste tú. Una máquina "
+"a la que cambió un archivo no cuenta."
+
+msgid "**Ask** - the **Start Machine** window asks every time."
+msgstr "**Ask** — la ventana **Start Machine** pregunta cada vez."
+
+msgid "one of the machines - always that one."
+msgstr "una de las máquinas — siempre esa."
+
+msgid ""
+"At the first start you are asked (see [The first start](getting-"
+"started.md#the-first-start)). When a machine or a file is named on the "
+"command line, the question is skipped (see [Command line](command-"
+"line.md))."
+msgstr ""
+"En el primer arranque se te pregunta (consulta [The first start](getting-"
+"started.md#the-first-start)). Cuando se indica una máquina o un archivo "
+"en la línea de comandos, la pregunta se omite (consulta [Command line"
+"](command-line.md))."
+
+msgid "Listen port"
+msgstr "Listen port"
+
+msgid "Confirm exit"
+msgstr "Confirm exit"
+
+msgid "Export settings"
+msgstr "Export settings"
+
+msgid "Import settings"
+msgstr "Import settings"
+
+msgid "Reset to defaults"
+msgstr "Reset to defaults"
+
+msgid "log"
+msgstr "registro (log)"
+
+msgid "log file"
+msgstr "archivo de registro"
+
+msgid "Start Machine"
+msgstr "Start Machine"
+

@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Debugger page"
+msgstr "Debugger page"
+
+msgid "![The Debugger page](images/options-debugger.png)"
+msgstr "![Сторінка Debugger](images/options-debugger.png)"
+
+msgid "The Debugger page"
+msgstr "Сторінка Debugger"
+
+msgid "The font, the colors and what the Debugger shows."
+msgstr "Шрифт, кольори і те, що показує Debugger."
+
+msgid "**View**:"
+msgstr "**View**:"
+
+#, python-brace-format
+msgid ""
+"**Font** - the font of all the Debugger's panels. The {icon}`font` button"
+" beside it picks one. The menus keep the font of the rest of the program."
+msgstr ""
+"**Font** — шрифт усіх панелей Debugger. Кнопка {icon}`font` поруч дає "
+"його вибрати. Меню зберігають шрифт решти програми."
+
+msgid ""
+"**DB in row**, **DW in row**, **Max text length** - how many bytes, words"
+" or characters one line of the listing holds when it shows data instead "
+"of code. See [Disasm panel](debugger-code.md)."
+msgstr ""
+"**DB in row**, **DW in row**, **Max text length** — скільки байтів, слів "
+"чи символів містить один рядок лістингу, коли він показує дані замість "
+"коду. Див. [Disasm panel](debugger-code.md)."
+
+msgid ""
+"**Stack offset** - where the **STACK** panel starts, from -16 to 16 bytes"
+" from SP. See [STACK panel](debugger-stack.md)."
+msgstr ""
+"**Stack offset** — звідки починається панель **STACK**, від -16 до 16 "
+"байтів від SP. Див. [STACK panel](debugger-stack.md)."
+
+msgid ""
+"**State info** - which blocks the **MEMMAP** panel shows: **Ports**, "
+"**Signals**, **Frame** and **Ray**. **Memmap** cannot be switched off: "
+"the panel's title bar, which you drag the panel by, is part of it."
+msgstr ""
+"**State info** — які блоки показує панель **MEMMAP**: **Ports**, "
+"**Signals**, **Frame** і **Ray**. **Memmap** вимкнути не можна: до нього "
+"входить заголовок панелі, за який її перетягують."
+
+msgid ""
+"**Ports** - the watched ports of the machine that is running. See "
+"[Watched ports](debugger-memmap.md#watched-ports)."
+msgstr ""
+"**Ports** — відстежувані порти машини, що працює. Див. [Watched ports"
+"](debugger-memmap.md#watched-ports)."
+
+msgid ""
+"**Palette** - the Debugger's own colors, each with a background (**BGR**)"
+" and a text (**TXT**) color. Click a color to change it; right-click it "
+"to go back to the color of the interface style."
+msgstr ""
+"**Palette** — власні кольори Debugger, кожен із кольором тла (**BGR**) і "
+"тексту (**TXT**). Клацніть колір, щоб змінити його; клацніть правою "
+"кнопкою, щоб повернути колір стилю інтерфейсу."
+
+msgid "Color"
+msgstr "Колір"
+
+msgid "Where it is used"
+msgstr "Де використовується"
+
+msgid "**Header**"
+msgstr "**Header**"
+
+msgid "the title bars of the panels and the block names of **MEMMAP**"
+msgstr "заголовки панелей і назви блоків **MEMMAP**"
+
+msgid "**Changed**"
+msgstr "**Changed**"
+
+msgid "a value that changed in the last step"
+msgstr "значення, що змінилося за останній крок"
+
+msgid "**PC**"
+msgstr "**PC**"
+
+msgid "the line of the listing at PC"
+msgstr "рядок лістингу за адресою PC"
+
+msgid "**Block**"
+msgstr "**Block**"
+
+msgid "a selected block in the listing and the dump"
+msgstr "виділений блок у лістингу й дампі"
+
+msgid "**Break**"
+msgstr "**Break**"
+
+msgid "the lines that have a breakpoint"
+msgstr "рядки, на яких є точка зупинки"
+
+msgid "**ID / Label**"
+msgstr "**ID / Label**"
+
+msgid "the ID field of a disk track, and labels in the listing"
+msgstr "поле ID доріжки диска й мітки в лістингу"
+
+msgid "**Data**"
+msgstr "**Data**"
+
+msgid "the data of a disk sector"
+msgstr "дані сектора диска"
+
+msgid "**CRC**"
+msgstr "**CRC**"
+
+msgid "the checksums on a disk track"
+msgstr "контрольні суми на доріжці диска"
+
+msgid "**Const**"
+msgstr "**Const**"
+
+msgid "constants in the listing"
+msgstr "константи в лістингу"
+
+msgid "**FMAPS**"
+msgstr "**FMAPS**"
+
+msgid "the TSConf FMAPS window in the dump and **MEMMAP**"
+msgstr "вікно FMAPS на TSConf у дампі та **MEMMAP**"
+
+msgid ""
+"Choosing another interface style on the **Appearance** page puts these "
+"colors back to that style's own."
+msgstr ""
+"Вибір іншого стилю інтерфейсу на сторінці **Appearance** повертає цим "
+"кольорам власні кольори того стилю."
+
+msgid ""
+"**Misc** - **Auto-load labels**: opening an image also loads a `.labels` "
+"file of the same name, if there is one. See [Disasm panel](debugger-"
+"code.md)."
+msgstr ""
+"**Misc** — **Auto-load labels**: під час відкриття образу також "
+"завантажується файл `.labels` із тим самим ім'ям, якщо він є. Див. "
+"[Disasm panel](debugger-code.md)."
+
+msgid "Debugger"
+msgstr "Debugger"
+
+msgid "font"
+msgstr "шрифт"
+
+msgid "colors"
+msgstr "кольори"
+
+msgid "State info"
+msgstr "State info"
+
+msgid "DB in row"
+msgstr "DB in row"
+
+msgid "DW in row"
+msgstr "DW in row"
+
+msgid "Max text length"
+msgstr "Max text length"
+

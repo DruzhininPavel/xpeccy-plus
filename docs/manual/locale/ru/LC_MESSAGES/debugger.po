@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 14:04+0100\n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "The Debugger"
+msgid "Debugger"
 msgstr "Debugger"
 
 msgid ""
@@ -36,33 +36,32 @@ msgstr ""
 "ставить точки останова, которые остановят машину в нужном месте."
 
 msgid ""
-"This chapter is about the window, running and stepping, the CPU registers"
-" and the small state panels. The rest has chapters of its own: [Code and "
-"labels](debugger-code.md), [Memory](debugger-memory.md), [Breakpoints and"
-" watching](debugger-breakpoints.md) and [Device panels](debugger-"
-"devices.md)."
+"This page is about the window, opening and closing it, and running and "
+"stepping. Each panel has a page of its own, listed at the end of [The "
+"panels](#the-panels)."
 msgstr ""
-"Эта глава — об окне, запуске и пошаговом выполнении, регистрах CPU и "
-"небольших панелях состояния. Остальному отведены отдельные главы: [Код и "
-"метки](debugger-code.md), [Память](debugger-memory.md), [Точки останова и"
-" наблюдение](debugger-breakpoints.md) и [Панели устройств](debugger-"
-"devices.md)."
+"Эта страница — об окне, о том, как его открыть и закрыть, и о выполнении "
+"по шагам. У каждой панели своя страница; они перечислены в конце раздела "
+"[The panels](#the-panels)."
 
 msgid "The window"
-msgstr "Окно"
+msgstr "The window"
 
 msgid "![The Debugger](images/dbg-window.png)"
 msgstr "![Debugger](images/dbg-window.png)"
 
-msgid "**CPU** - the registers and flags. See [The CPU panel](#the-cpu-panel)."
-msgstr "**CPU** — регистры и флаги. См. [Панель CPU](#the-cpu-panel)."
+msgid "The Debugger"
+msgstr "Debugger"
+
+msgid "**CPU** - the registers and flags. See [CPU panel](debugger-cpu.md)."
+msgstr "**CPU** — регистры и флаги. См. [CPU panel](debugger-cpu.md)."
 
 msgid ""
 "**Disasm** - the program as code, with the Debugger's buttons and the "
-"T-state counter above it. See [Code and labels](debugger-code.md)."
+"T-state counter above it. See [Disasm panel](debugger-code.md)."
 msgstr ""
 "**Disasm** — программа в виде кода, над ней кнопки Debugger и счётчик "
-"тактов. См. [Код и метки](debugger-code.md)."
+"тактов. См. [Disasm panel](debugger-code.md)."
 
 msgid ""
 "**DUMP** - memory as bytes, with **REG-DUMP**, **FDD** and **CMOS** on "
@@ -82,15 +81,13 @@ msgstr ""
 
 msgid ""
 "**MEMMAP** - the memory banks, the watched ports and the state of the "
-"machine. See [The MEMMAP panel](#the-memmap-panel)."
+"machine. See [MEMMAP panel](debugger-memmap.md)."
 msgstr ""
 "**MEMMAP** — банки памяти, отслеживаемые порты и состояние машины. См. "
-"[Панель MEMMAP](#the-memmap-panel)."
+"[MEMMAP panel](debugger-memmap.md)."
 
-msgid ""
-"**STACK** - the words on the stack. See [The STACK panel](#the-stack-"
-"panel)."
-msgstr "**STACK** — слова на стеке. См. [Панель STACK](#the-stack-panel)."
+msgid "**STACK** - the words on the stack. See [STACK panel](debugger-stack.md)."
+msgstr "**STACK** — слова на стеке. См. [STACK panel](debugger-stack.md)."
 
 msgid ""
 "Most pictures of the Debugger chapters show it stopped in a game, Exolon "
@@ -111,7 +108,7 @@ msgstr ""
 "**Options**."
 
 msgid "Opening and closing"
-msgstr "Открытие и закрытие"
+msgstr "Opening and closing"
 
 msgid "Open the Debugger in any of these ways:"
 msgstr "Откройте Debugger любым из способов:"
@@ -139,10 +136,10 @@ msgstr ""
 
 msgid ""
 "a breakpoint opens it by itself when the machine reaches it (see "
-"[Breakpoints and watching](debugger-breakpoints.md))."
+"[Breakpoints panel](debugger-breakpoints.md))."
 msgstr ""
 "точка останова открывает его сама, когда машина до неё доходит (см. "
-"[Точки останова и наблюдение](debugger-breakpoints.md))."
+"[Breakpoints panel](debugger-breakpoints.md))."
 
 msgid ""
 "While the Debugger is open, the machine stands still. There is no sound, "
@@ -172,7 +169,7 @@ msgstr ""
 "останавливается сразу же на том же месте."
 
 msgid "The panels"
-msgstr "Панели"
+msgstr "The panels"
 
 msgid ""
 "Every part of the window is a panel that can be moved. Panels that share "
@@ -199,8 +196,8 @@ msgstr "**CPU**"
 msgid "the CPU registers and flags"
 msgstr "регистры и флаги CPU"
 
-msgid "[The CPU panel](#the-cpu-panel)"
-msgstr "[Панель CPU](#the-cpu-panel)"
+msgid "[CPU panel](debugger-cpu.md)"
+msgstr "[CPU panel](debugger-cpu.md)"
 
 msgid "**Disasm**"
 msgstr "**Disasm**"
@@ -208,8 +205,8 @@ msgstr "**Disasm**"
 msgid "the program as code"
 msgstr "программа в виде кода"
 
-msgid "[Code and labels](debugger-code.md)"
-msgstr "[Код и метки](debugger-code.md)"
+msgid "[Disasm panel](debugger-code.md)"
+msgstr "[Disasm panel](debugger-code.md)"
 
 msgid "**DUMP**"
 msgstr "**DUMP**"
@@ -217,8 +214,8 @@ msgstr "**DUMP**"
 msgid "memory as bytes and text"
 msgstr "память в виде байтов и текста"
 
-msgid "[Memory](debugger-memory.md)"
-msgstr "[Память](debugger-memory.md)"
+msgid "[DUMP panel](debugger-memory.md)"
+msgstr "[DUMP panel](debugger-memory.md)"
 
 msgid "**REG-DUMP**"
 msgstr "**REG-DUMP**"
@@ -232,8 +229,8 @@ msgstr "**CMOS**"
 msgid "the clock chip's memory"
 msgstr "память микросхемы часов"
 
-msgid "[Device panels](debugger-devices.md#cmos)"
-msgstr "[Панели устройств](debugger-devices.md#cmos)"
+msgid "[CMOS panel](debugger-cmos.md)"
+msgstr "[CMOS panel](debugger-cmos.md)"
 
 msgid "**Heat map**"
 msgstr "**Heat map**"
@@ -241,14 +238,17 @@ msgstr "**Heat map**"
 msgid "how often each memory cell is read, written and run"
 msgstr "как часто каждая ячейка памяти читается, пишется и исполняется"
 
+msgid "[Heat map panel](debugger-heatmap.md)"
+msgstr "[Heat map panel](debugger-heatmap.md)"
+
 msgid "**Breakpoints**"
 msgstr "**Breakpoints**"
 
 msgid "the breakpoints"
 msgstr "точки останова"
 
-msgid "[Breakpoints and watching](debugger-breakpoints.md)"
-msgstr "[Точки останова и наблюдение](debugger-breakpoints.md)"
+msgid "[Breakpoints panel](debugger-breakpoints.md)"
+msgstr "[Breakpoints panel](debugger-breakpoints.md)"
 
 msgid "**Screen**"
 msgstr "**Screen**"
@@ -256,8 +256,8 @@ msgstr "**Screen**"
 msgid "a ZX screen drawn from memory"
 msgstr "экран ZX, нарисованный по памяти"
 
-msgid "[Device panels](debugger-devices.md)"
-msgstr "[Панели устройств](debugger-devices.md)"
+msgid "[Screen panel](debugger-screen.md)"
+msgstr "[Screen panel](debugger-screen.md)"
 
 msgid "**Sound Chip**"
 msgstr "**Sound Chip**"
@@ -265,11 +265,17 @@ msgstr "**Sound Chip**"
 msgid "the registers of the sound chips"
 msgstr "регистры звуковых микросхем"
 
+msgid "[Sound Chip panel](debugger-sound-chip.md)"
+msgstr "[Sound Chip panel](debugger-sound-chip.md)"
+
 msgid "**Tape**"
 msgstr "**Tape**"
 
 msgid "the tape's state and the signals in and out"
 msgstr "состояние ленты, входной и выходной сигналы"
+
+msgid "[Tape panel](debugger-tape.md)"
+msgstr "[Tape panel](debugger-tape.md)"
 
 msgid "**FDC**"
 msgstr "**FDC**"
@@ -277,11 +283,17 @@ msgstr "**FDC**"
 msgid "the floppy disk controller and the drive"
 msgstr "контроллер дисковода и сам дисковод"
 
+msgid "[FDC panel](debugger-fdc.md)"
+msgstr "[FDC panel](debugger-fdc.md)"
+
 msgid "**FDD**"
 msgstr "**FDD**"
 
 msgid "the bytes on a track of a floppy disk"
 msgstr "байты на дорожке дискеты"
+
+msgid "[FDD panel](debugger-fdd.md)"
+msgstr "[FDD panel](debugger-fdd.md)"
 
 msgid "**Palette**"
 msgstr "**Palette**"
@@ -289,14 +301,17 @@ msgstr "**Palette**"
 msgid "the colors of the machine's palette"
 msgstr "цвета палитры машины"
 
+msgid "[Palette panel](debugger-palette.md)"
+msgstr "[Palette panel](debugger-palette.md)"
+
 msgid "**ZX Evo**"
 msgstr "**ZX Evo**"
 
 msgid "the video and memory hardware of a ZX Evolution"
 msgstr "оборудование видео и памяти ZX Evolution"
 
-msgid "[Device panels](debugger-devices.md#zx-evo)"
-msgstr "[Панели устройств](debugger-devices.md#zx-evo)"
+msgid "[ZX Evo panel](debugger-zx-evo.md)"
+msgstr "[ZX Evo panel](debugger-zx-evo.md)"
 
 msgid "**ZX Next**"
 msgstr "**ZX Next**"
@@ -304,8 +319,8 @@ msgstr "**ZX Next**"
 msgid "the registers, sprites, copper, layers and DMA of a ZX Spectrum Next"
 msgstr "регистры, спрайты, copper, слои и DMA ZX Spectrum Next"
 
-msgid "[Device panels](debugger-devices.md#zx-next)"
-msgstr "[Панели устройств](debugger-devices.md#zx-next)"
+msgid "[ZX Next panel](debugger-zx-next.md)"
+msgstr "[ZX Next panel](debugger-zx-next.md)"
 
 msgid "**MEMMAP**"
 msgstr "**MEMMAP**"
@@ -313,8 +328,8 @@ msgstr "**MEMMAP**"
 msgid "the memory banks, ports and signals"
 msgstr "банки памяти, порты и сигналы"
 
-msgid "[The MEMMAP panel](#the-memmap-panel)"
-msgstr "[Панель MEMMAP](#the-memmap-panel)"
+msgid "[MEMMAP panel](debugger-memmap.md)"
+msgstr "[MEMMAP panel](debugger-memmap.md)"
 
 msgid "**STACK**"
 msgstr "**STACK**"
@@ -322,8 +337,8 @@ msgstr "**STACK**"
 msgid "the words on the stack"
 msgstr "слова на стеке"
 
-msgid "[The STACK panel](#the-stack-panel)"
-msgstr "[Панель STACK](#the-stack-panel)"
+msgid "[STACK panel](debugger-stack.md)"
+msgstr "[STACK panel](debugger-stack.md)"
 
 msgid ""
 "**CMOS** is there only on machines that have a clock chip: the ZX "
@@ -345,16 +360,16 @@ msgid ""
 " Screen** and **Tools > Sound Chips** open them, and they work while the "
 "machine runs. **ZX Evo** and **ZX Next** can be too, from the "
 "{icon}`display` button at the top right of the panel. See [Device panels"
-"](debugger-devices.md)."
+"](#device-panels)."
 msgstr ""
 "**Screen** и **Sound Chip** могут быть и отдельными окнами: их открывают "
 "**Tools > Screen** и **Tools > Sound Chips**, и они работают, пока машина"
 " идёт. **ZX Evo** и **ZX Next** тоже могут быть окнами — по кнопке "
-"{icon}`display` в правом верхнем углу панели. См. [Панели устройств"
-"](debugger-devices.md)."
+"{icon}`display` в правом верхнем углу панели. См. [Device panels"
+"](#device-panels)."
 
 msgid "Arranging the panels"
-msgstr "Расстановка панелей"
+msgstr "Arranging the panels"
 
 msgid ""
 "Drag a panel by its title bar and drop it where you want it: beside "
@@ -385,8 +400,112 @@ msgstr ""
 "выберите **Reset panel layout** в кнопке {icon}`settings` **Options** над"
 " листингом. Эта команда также возвращает окну исходный размер."
 
+msgid "Device panels"
+msgstr "Device panels"
+
+msgid ""
+"Besides the CPU and the memory, the Debugger shows the state of the "
+"machine's devices: the screen, the sound chips, the tape, the floppy disk"
+" controller, the clock chip and the palette, and on a ZX Evolution or a "
+"ZX Spectrum Next its video hardware. Each is a panel of its own, on a tab"
+" beside **Breakpoints** or **DUMP**. Like every panel, they show the "
+"state the machine stopped in and change with each step."
+msgstr ""
+"Кроме CPU и памяти, Debugger показывает состояние устройств машины: "
+"экрана, звуковых чипов, ленты, контроллера дисковода, микросхемы часов и "
+"палитры, а на ZX Evolution и ZX Spectrum Next — их видеосистемы. Каждое —"
+" отдельная панель, на вкладке рядом с **Breakpoints** или **DUMP**. Как и"
+" все панели, они показывают состояние, в котором остановилась машина, и "
+"меняются с каждым шагом."
+
+msgid ""
+"The **Screen** and **Sound Chip** panels can also be windows of their own"
+" that work while the machine runs: see [Screen and Sound Chips "
+"windows](tools.md#screen-and-sound-chips-windows). So can the **ZX Evo** "
+"and **ZX Next** panels: see [The ZX Evolution window](debugger-zx-evo.md"
+"#the-zx-evolution-window)."
+msgstr ""
+"Панели **Screen** и **Sound Chip** могут также быть отдельными окнами, "
+"которые работают, пока машина идёт: см. [Screen and Sound Chips "
+"windows](tools.md#screen-and-sound-chips-windows). Так же могут и панели "
+"**ZX Evo** и **ZX Next**: см. [The ZX Evolution window](debugger-zx-"
+"evo.md#the-zx-evolution-window)."
+
+msgid "Shown on"
+msgstr "Где есть"
+
+msgid "Use it to"
+msgstr "Для чего"
+
+msgid "every machine"
+msgstr "на любой машине"
+
+msgid "see a screen in memory and find the address of a dot"
+msgstr "посмотреть экран в памяти и найти адрес точки"
+
+msgid "read and change the registers of the AY and YM chips"
+msgstr "читать и менять регистры микросхем AY и YM"
+
+msgid "see the tape signal around the current position"
+msgstr "посмотреть сигнал ленты вокруг текущей позиции"
+
+msgid "a machine with a disk interface"
+msgstr "на машине с дисковым интерфейсом"
+
+msgid "see the registers of the disk controller and the drive"
+msgstr "посмотреть регистры контроллера дисковода и сам дисковод"
+
+msgid "read the raw bytes of a disk track"
+msgstr "читать сырые байты дорожки диска"
+
+msgid "a machine with a clock chip"
+msgstr "на машине с микросхемой часов"
+
+msgid "read and change the memory of the clock chip"
+msgstr "читать и менять память микросхемы часов"
+
+msgid "every machine but the ZX Evolution"
+msgstr "на любой машине, кроме ZX Evolution"
+
+msgid "see the colors of the machine's palette"
+msgstr "посмотреть цвета палитры машины"
+
+msgid "a ZX Evolution, with TSConf or BaseConf"
+msgstr "на ZX Evolution, с TSConf или BaseConf"
+
+msgid "see what its video and memory hardware is set to, and hide TSConf layers"
+msgstr ""
+"посмотреть, как настроено её оборудование видео и памяти, и скрыть слои "
+"TSConf"
+
+msgid "a ZX Spectrum Next"
+msgstr "ZX Spectrum Next"
+
+msgid "see its registers, sprites, copper, layers, tilemap, palettes and DMA"
+msgstr "посмотреть её регистры, спрайты, copper, слои, карту тайлов, палитры и DMA"
+
+msgid ""
+"**ZX Evo** and **ZX Next** are made for one machine each. On a ZX "
+"Evolution, **ZX Evo** takes the place of **Palette** and has a "
+"**Palette** tab of its own; on the Next, **Palette** stays beside **ZX "
+"Next**."
+msgstr ""
+"**ZX Evo** и **ZX Next** сделаны каждая для одной машины. На ZX Evolution"
+" **ZX Evo** стоит вместо **Palette** и имеет собственную вкладку "
+"**Palette**; на Next **Palette** остаётся рядом с **ZX Next**."
+
+msgid "The pages of the panels"
+msgstr "The pages of the panels"
+
+msgid ""
+"The rest of this part of the manual has a page for each panel, and one "
+"for the **Watcher** window:"
+msgstr ""
+"Дальше в этой части руководства — по странице на каждую панель и одна на "
+"окно **Watcher**:"
+
 msgid "The buttons over the listing"
-msgstr "Кнопки над листингом"
+msgstr "The buttons over the listing"
 
 msgid ""
 "A row of buttons above the **Disasm** panel holds the Debugger's menus. "
@@ -396,8 +515,7 @@ msgid ""
 msgstr ""
 "В ряду кнопок над панелью **Disasm** находятся меню Debugger. Наведите "
 "мышь на кнопку, чтобы увидеть её название. Меню, относящиеся к листингу, "
-"полностью описаны в разделе [Панель инструментов](debugger-code.md#the-"
-"toolbar)."
+"полностью описаны в разделе [The toolbar](debugger-code.md#the-toolbar)."
 
 msgid "![The buttons over the listing](images/dbg-toolbar.png)"
 msgstr "![Кнопки над листингом](images/dbg-toolbar.png)"
@@ -414,19 +532,19 @@ msgstr "{icon}`stop` **Breakpoints**"
 
 msgid ""
 "**Fetch break**, **Read break**, **Write break** on the line or block - "
-"see [Breakpoints and watching](debugger-breakpoints.md)"
+"see [Breakpoints panel](debugger-breakpoints.md)"
 msgstr ""
 "**Fetch break**, **Read break**, **Write break** на строке или блоке — "
-"см. [Точки останова и наблюдение](debugger-breakpoints.md)"
+"см. [Breakpoints panel](debugger-breakpoints.md)"
 
 #, python-brace-format
 msgid "{icon}`label` **Labels**"
 msgstr "{icon}`label` **Labels**"
 
-msgid "show, load, save and list labels - see [Code and labels](debugger-code.md)"
+msgid "show, load, save and list labels - see [Disasm panel](debugger-code.md)"
 msgstr ""
-"показать, загрузить, сохранить метки и вывести их список — см. [Код и "
-"метки](debugger-code.md)"
+"показать, загрузить, сохранить метки и вывести их список — см. [Disasm "
+"panel](debugger-code.md)"
 
 #, python-brace-format
 msgid "{icon}`bars` **View**"
@@ -434,10 +552,10 @@ msgstr "{icon}`bars` **View**"
 
 msgid ""
 "show the lines as **Opcode**, **Byte**, **ASCII**, **Word** or "
-"**Address** - see [Code and labels](debugger-code.md)"
+"**Address** - see [Disasm panel](debugger-code.md)"
 msgstr ""
 "показывать строки как **Opcode**, **Byte**, **ASCII**, **Word** или "
-"**Address** — см. [Код и метки](debugger-code.md)"
+"**Address** — см. [Disasm panel](debugger-code.md)"
 
 #, python-brace-format
 msgid "{icon}`arrGreen` **Trace**"
@@ -451,25 +569,23 @@ msgid "{icon}`other` **Tools**"
 msgstr "{icon}`other` **Tools**"
 
 msgid ""
-"**Search**, **Fill...**, **Sprite scanner** ([Memory](debugger-"
-"memory.md)), **Keyboard** (the [Virtual Keyboard](input.md#virtual-"
-"keyboard)), **Watcher** ([Breakpoints and watching](debugger-"
-"breakpoints.md))"
+"**Search**, **Fill...**, **Sprite scanner** ([DUMP panel](debugger-"
+"memory.md)), **Keyboard** (the [Virtual Keyboard](view.md#virtual-"
+"keyboard)), **Watcher** ([Breakpoints panel](debugger-breakpoints.md))"
 msgstr ""
-"**Search**, **Fill...**, **Sprite scanner** ([Память](debugger-"
-"memory.md)), **Keyboard** ([Virtual Keyboard](input.md#virtual-"
-"keyboard)), **Watcher** ([Точки останова и наблюдение](debugger-"
-"breakpoints.md))"
+"**Search**, **Fill...**, **Sprite scanner** ([DUMP panel](debugger-"
+"memory.md)), **Keyboard** ([Virtual Keyboard](view.md#virtual-keyboard)),"
+" **Watcher** ([Breakpoints panel](debugger-breakpoints.md))"
 
 #, python-brace-format
 msgid "{icon}`settings` **Options**"
 msgstr "{icon}`settings` **Options**"
 
 msgid ""
-"how the listing looks, writing to ROM, runtime mapping ([Code and labels"
+"how the listing looks, writing to ROM, runtime mapping ([Disasm panel"
 "](debugger-code.md)), and **Reset panel layout**"
 msgstr ""
-"вид листинга, запись в ROM, отображение во время работы ([Код и метки"
+"вид листинга, запись в ROM, отображение во время работы ([Disasm panel"
 "](debugger-code.md)) и **Reset panel layout**"
 
 #, python-brace-format
@@ -485,24 +601,24 @@ msgstr "{icon}`floppy` (дискета)"
 
 msgid ""
 "**Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save "
-"map** - see [Code and labels](debugger-code.md) and [Memory](debugger-"
+"map** - see [Disasm panel](debugger-code.md) and [DUMP panel](debugger-"
 "memory.md)"
 msgstr ""
 "**Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save "
-"map** — см. [Код и метки](debugger-code.md) и [Память](debugger-"
+"map** — см. [Disasm panel](debugger-code.md) и [DUMP panel](debugger-"
 "memory.md)"
 
 msgid "Running and stepping"
-msgstr "Запуск и пошаговое выполнение"
+msgstr "Running and stepping"
 
 msgid ""
 "These keys work while the Debugger has the focus. The **Hotkeys** page of"
 " **Options** lists them under **Debugger**, and changes them there (see "
-"[Hotkeys](hotkeys.md))."
+"[Hotkeys page](hotkeys.md))."
 msgstr ""
 "Эти клавиши работают, пока фокус у Debugger. Страница **Hotkeys** окна "
 "**Options** перечисляет их в разделе **Debugger** и позволяет там их "
-"поменять (см. [Hotkeys](hotkeys.md))."
+"поменять (см. [Hotkeys page](hotkeys.md))."
 
 msgid "Action"
 msgstr "Действие"
@@ -715,7 +831,7 @@ msgstr ""
 "текст: откройте в ней файл с разделителем `|`."
 
 msgid "The T-state counter"
-msgstr "Счётчик тактов"
+msgstr "The T-state counter"
 
 msgid "Above the listing, on the right, are two numbers:"
 msgstr "Над листингом справа два числа:"
@@ -752,438 +868,11 @@ msgstr ""
 "Счёт идёт в реальном времени машины, с учётом задержек доступа к памяти и"
 " прерываний, пришедших в промежутке."
 
-msgid "The CPU panel"
-msgstr "Панель CPU"
-
-msgid "![The CPU panel](images/dbg-cpu.png)"
-msgstr "![Панель CPU](images/dbg-cpu.png)"
-
-msgid ""
-"The **CPU** panel shows the Z80 registers: PC, AF, BC, DE, HL, SP, the "
-"alternate set AF', BC', DE', HL', then IX, IY, IR, IM and the interrupt "
-"switches IFF1 and IFF2. Under them are the flags S, Z, 5, H, 3, P, N and "
-"C."
-msgstr ""
-"Панель **CPU** показывает регистры Z80: PC, AF, BC, DE, HL, SP, "
-"альтернативный набор AF', BC', DE', HL', затем IX, IY, IR, IM и триггеры "
-"прерываний IFF1 и IFF2. Под ними флаги S, Z, 5, H, 3, P, N и C."
-
-msgid ""
-"A register that changed in the last step is marked in the **Changed** "
-"color of the **Debugger** page of **Options**. With **Split pairs** on, "
-"only the byte that changed is marked: after an instruction that changes "
-"only A, only the A half of AF lights up."
-msgstr ""
-"Регистр, изменившийся на последнем шаге, выделяется цветом **Changed** со"
-" страницы **Debugger** окна **Options**. Если включено **Split pairs**, "
-"выделяется только изменившийся байт: после команды, меняющей только A, "
-"подсвечивается лишь половина A в AF."
-
-msgid "Changing registers"
-msgstr "Изменение регистров"
-
-msgid ""
-"Click a value and type over it in hex. The change takes effect at once. "
-"In a value field:"
-msgstr ""
-"Щёлкните значение и введите поверх него новое в шестнадцатеричном виде. "
-"Изменение действует сразу. В поле значения:"
-
-msgid "Up and Down, or the mouse wheel, add or subtract 1;"
-msgstr "Up и Down или колесо мыши прибавляют или отнимают 1;"
-
-msgid "PgUp and PgDn add or subtract 256;"
-msgstr "PgUp и PgDn прибавляют или отнимают 256;"
-
-msgid "X switches the field between hex and decimal."
-msgstr "X переключает поле между шестнадцатеричным и десятичным видом."
-
-msgid "IFF1 and IFF2 are check boxes. Tick or untick a flag to change it in F."
-msgstr ""
-"IFF1 и IFF2 — флажки. Установите или снимите отметку у флага, чтобы "
-"изменить его в F."
-
-msgid ""
-"Click the name of a register to see, in the listing, the code at the "
-"address the register holds. Right-click the name to see that address in "
-"the **DUMP** panel."
-msgstr ""
-"Щёлкните имя регистра, чтобы увидеть в листинге код по адресу, который "
-"хранит регистр. Щёлкните имя правой кнопкой, чтобы увидеть этот адрес на "
-"панели **DUMP**."
-
-msgid "Layouts"
-msgstr "Компоновка"
-
-msgid ""
-"Right-click the panel's title bar to choose how the registers are laid "
-"out. A small dot in the corner of a title bar shows that the panel has "
-"such a menu."
-msgstr ""
-"Щёлкните правой кнопкой заголовок панели, чтобы выбрать, как расположить "
-"регистры. Маленькая точка в углу заголовка означает, что у панели есть "
-"такое меню."
-
-msgid "![The registers layout menu](images/dbg-cpu-menu.png)"
-msgstr "![Меню компоновки регистров](images/dbg-cpu-menu.png)"
-
-msgid "The registers layout menu"
-msgstr "Меню компоновки регистров"
-
-msgid ""
-"**Auto** (the default) - one column when the panel is narrow, two when it"
-" is wide enough. **Auto** also uses two columns when two panels stand "
-"side by side under the **CPU** panel."
-msgstr ""
-"**Auto** (по умолчанию) — один столбец, когда панель узкая, и два, когда "
-"она достаточно широка. **Auto** также использует два столбца, когда под "
-"панелью **CPU** рядом стоят две панели."
-
-msgid "**1 column** - a register on each line."
-msgstr "**1 column** — по регистру в строке."
-
-msgid ""
-"**2 columns** - two on a line, each beside its pair: AF beside AF', PC "
-"beside SP."
-msgstr ""
-"**2 columns** — по два в строке, каждый рядом со своей парой: AF рядом с "
-"AF', PC рядом с SP."
-
-msgid ""
-"**Wide** - a column for each kind: AF, BC, DE, HL; the alternate set; PC,"
-" SP, IX, IY; and IR, IM, IFF1, IFF2. The flags are one more column beside"
-" them, under the title **Flags**."
-msgstr ""
-"**Wide** — по столбцу на каждый вид: AF, BC, DE, HL; альтернативный "
-"набор; PC, SP, IX, IY; и IR, IM, IFF1, IFF2. Флаги — ещё один столбец "
-"рядом, под заголовком **Flags**."
-
-msgid ""
-"**Split pairs** - mark only the byte that changed, as above. On by "
-"default."
-msgstr ""
-"**Split pairs** — выделять только изменившийся байт, как описано выше. "
-"Изначально включено."
-
-msgid "![The CPU panel in the Wide layout](images/dbg-cpu-wide.png)"
-msgstr "![Панель CPU в компоновке Wide](images/dbg-cpu-wide.png)"
-
-msgid "The CPU panel in the Wide layout"
-msgstr "Панель CPU в компоновке Wide"
-
-msgid "The STACK panel"
-msgstr "Панель STACK"
-
-msgid "![The STACK panel](images/dbg-stack.png)"
-msgstr "![Панель STACK](images/dbg-stack.png)"
-
-msgid ""
-"Each line of the **STACK** panel is a word in memory, starting near the "
-"address SP holds. The shaded line is the word at SP, named by its "
-"address. The lines above and below it are named by their distance from "
-"SP: `-02:`, `+02:`, `+04:` and so on. The panel shows as many lines as "
-"fit in its height."
-msgstr ""
-"Каждая строка панели **STACK** — слово в памяти, начиная около адреса из "
-"SP. Затенённая строка — слово по адресу SP, она подписана своим адресом. "
-"Строки выше и ниже подписаны расстоянием от SP: `-02:`, `+02:`, `+04:` и "
-"так далее. Панель показывает столько строк, сколько помещается по высоте."
-
-msgid ""
-"The two arrows at the top move the lines by a word. The first line can be"
-" from 16 bytes before SP to 16 bytes after it. Where the panel starts is "
-"the **Stack offset** on the **Debugger** page of **Options**: `-2` by "
-"default, so the word just above SP is in view too."
-msgstr ""
-"Две стрелки вверху сдвигают строки на слово. Первая строка может быть от "
-"16 байт до SP до 16 байт после него. С какого места начинается панель, "
-"задаёт **Stack offset** на странице **Debugger** окна **Options**: "
-"изначально `-2`, чтобы было видно и слово прямо над SP."
-
-msgid "The MEMMAP panel"
-msgstr "Панель MEMMAP"
-
-msgid "![The MEMMAP panel](images/dbg-memmap.png)"
-msgstr "![Панель MEMMAP](images/dbg-memmap.png)"
-
-msgid ""
-"The **MEMMAP** panel holds a few small blocks, one under another. The "
-"**Debugger** page of **Options** sets which of them are shown."
-msgstr ""
-"Панель **MEMMAP** состоит из нескольких небольших блоков, один под "
-"другим. Какие из них показывать, задаёт страница **Debugger** окна "
-"**Options**."
-
-msgid ""
-"The rows at the top are the Z80's memory windows: four 16K banks on most "
-"machines, or the eight 8K MMU slots on a ZX Spectrum Next. They show the "
-"kind and page number, and let you put another page into a window. See "
-"[Memory](debugger-memory.md)."
-msgstr ""
-"Строки вверху — окна памяти Z80: четыре банка по 16K на большинстве машин "
-"или восемь 8K-слотов MMU на ZX Spectrum Next. Они показывают тип и номер "
-"страницы и позволяют подключить в окно другую страницу. См. [Память"
-"](debugger-memory.md)."
-
-msgid ""
-"On the **ZX Evolution (TSConf)** a fifth row says where the FMAPS window "
-"is: `FM #0000` when port `15AF` (**FMAddr**) has switched it on at "
-"`#0000`, `FM off` when it is off. The window is for writing only: a write"
-" in its first `#0500` bytes also goes to the palette (CRAM, from "
-"`+#000`), the sprite descriptors (SFILE, from `+#200`) or the TSConf "
-"registers (from `+#400`, one byte for each port `#xxAF`), and a read "
-"gives what is in the bank. The row and these bytes in the dump are drawn "
-"in the **FMAPS** color; the tooltip of a byte in the dump says where a "
-"write to it goes."
-msgstr ""
-"На **ZX Evolution (TSConf)** пятая строка показывает, где окно FMAPS: `FM"
-" #0000`, когда порт `15AF` (**FMAddr**) включил его по адресу `#0000`, и "
-"`FM off`, когда оно выключено. Окно работает только на запись: запись в "
-"его первые `#0500` байт попадает ещё и в палитру (CRAM, с `+#000`), в "
-"дескрипторы спрайтов (SFILE, с `+#200`) или в регистры TSConf (с `+#400`,"
-" по байту на каждый порт `#xxAF`), а чтение даёт то, что лежит в банке. "
-"Эта строка и эти байты в дампе рисуются цветом **FMAPS**; подсказка байта"
-" в дампе говорит, куда попадёт запись в него."
-
-msgid ""
-"**PORTS** lists the watched ports and the last value on each. For a port "
-"whose value the machine keeps in a register, such as `7FFD` on a 128K, "
-"the value shown is that register's; for any other port it is the last "
-"byte read from it or written to it, and `--` until the port is used."
-msgstr ""
-"**PORTS** перечисляет отслеживаемые порты и последнее значение на каждом."
-" Для порта, значение которого машина хранит в регистре, например `7FFD` "
-"на 128K, показывается значение этого регистра; для любого другого порта —"
-" последний прочитанный из него или записанный в него байт, а пока порт не"
-" используется — `--`."
-
-msgid "**SIGNALS** are four words that are bold while the signal is on:"
-msgstr "**SIGNALS** — четыре слова, которые выделены жирным, пока сигнал активен:"
-
-msgid "**DOS** - the TR-DOS ROM is switched in;"
-msgstr "**DOS** — включён ROM TR-DOS;"
-
-msgid ""
-"**ROM** - the ROM bit of port `7FFD` is set; on a 128K that is the 48K "
-"BASIC ROM;"
-msgstr "**ROM** — установлен бит ROM порта `7FFD`; на 128K это ROM 48K BASIC;"
-
-msgid "**CPM** - the machine is in its CP/M mode;"
-msgstr "**CPM** — машина в режиме CP/M;"
-
-msgid "**INT** - an interrupt is waiting and the CPU will take it."
-msgstr "**INT** — ожидает прерывание, и CPU его примет."
-
-msgid ""
-"**FRAME** counts the frames since the last reset. Right-click it and "
-"choose **Reset counter** to start it again from 0, for example to count "
-"the frames until something happens. Breakpoint conditions read the same "
-"number as `FRAME` (see [Breakpoints and watching](debugger-"
-"breakpoints.md))."
-msgstr ""
-"**FRAME** считает кадры с последнего сброса. Щёлкните его правой кнопкой "
-"и выберите **Reset counter**, чтобы начать счёт снова с 0, — например, "
-"чтобы сосчитать кадры до какого-то события. Условия точек останова читают"
-" то же число как `FRAME` (см. [Точки останова и наблюдение](debugger-"
-"breakpoints.md))."
-
-msgid ""
-"**RAY** is where the beam is on the frame: X on the first line, Y on the "
-"second. X is bold during the line's blanking, Y during the frame's."
-msgstr ""
-"**RAY** — где луч находится в кадре: X в первой строке, Y во второй. X "
-"выделен жирным во время строчного гашения, Y — во время кадрового."
-
-msgid "Watched ports"
-msgstr "Отслеживаемые порты"
-
-msgid ""
-"Right-click **PORTS**, or any port under it, and choose **Watched "
-"ports...** to change the list."
-msgstr ""
-"Щёлкните правой кнопкой **PORTS** или любой порт под ним и выберите "
-"**Watched ports...**, чтобы изменить список."
-
-msgid "![The Watched Ports window](images/dbg-watched-ports.png)"
-msgstr "![Окно Watched Ports](images/dbg-watched-ports.png)"
-
-msgid "The Watched Ports window"
-msgstr "Окно Watched Ports"
-
-#, python-brace-format
-msgid ""
-"Each line is a port in hex. Four digits are a full address, matched as it"
-" is; two digits are a byte port, matched on the low byte alone. Untick a "
-"port to stop showing it while keeping it in the list. Of the buttons "
-"beside the list, {icon}`add` adds a port and {icon}`cancel` removes the "
-"selected one. Double-click a port to change it."
-msgstr ""
-"Каждая строка — порт в шестнадцатеричном виде. Четыре цифры — полный "
-"адрес, он сравнивается как есть; две цифры — байтовый порт, сравнивается "
-"только по младшему байту. Снимите отметку с порта, чтобы перестать его "
-"показывать, но оставить в списке. Из кнопок рядом со списком {icon}`add` "
-"добавляет порт, а {icon}`cancel` убирает выбранный. Дважды щёлкните порт,"
-" чтобы его изменить."
-
-msgid ""
-"The ports whose values the machine keeps in registers are added to the "
-"list automatically; untick them if you do not need them. The list is kept"
-" for the machine that is running. The **Ports** group of the **Debugger**"
-" page of **Options** is the same list."
-msgstr ""
-"Порты, значения которых машина хранит в регистрах, добавляются в список "
-"автоматически; снимите с них отметку, если они не нужны. Список хранится "
-"для работающей машины. Группа **Ports** на странице **Debugger** окна "
-"**Options** — это тот же список."
-
-msgid "The Debugger page of Options"
-msgstr "Страница Debugger окна Options"
-
-msgid "![The Debugger page](images/options-debugger.png)"
-msgstr "![Страница Debugger](images/options-debugger.png)"
-
-msgid "The Debugger page"
-msgstr "Страница Debugger"
-
-msgid "**View**:"
-msgstr "**View**:"
-
-#, python-brace-format
-msgid ""
-"**Font** - the font of all the Debugger's panels. The {icon}`font` button"
-" beside it picks one. The menus keep the font of the rest of the program."
-msgstr ""
-"**Font** — шрифт всех панелей Debugger. Выбирается кнопкой {icon}`font` "
-"рядом. Меню сохраняют шрифт остальной программы."
-
-msgid ""
-"**DB in row**, **DW in row**, **Max text length** - how many bytes, words"
-" or characters one line of the listing holds when it shows data instead "
-"of code. See [Code and labels](debugger-code.md)."
-msgstr ""
-"**DB in row**, **DW in row**, **Max text length** — сколько байтов, слов "
-"или символов помещается в одной строке листинга, когда он показывает "
-"данные вместо кода. См. [Код и метки](debugger-code.md)."
-
-msgid ""
-"**Stack offset** - where the **STACK** panel starts, from -16 to 16 bytes"
-" from SP. See [The STACK panel](#the-stack-panel)."
-msgstr ""
-"**Stack offset** — где начинается панель **STACK**, от -16 до 16 байт от "
-"SP. См. [Панель STACK](#the-stack-panel)."
-
-msgid ""
-"**State info** - which blocks the **MEMMAP** panel shows: **Ports**, "
-"**Signals**, **Frame** and **Ray**. **Memmap** cannot be switched off: "
-"the panel's title bar, which you drag the panel by, is part of it."
-msgstr ""
-"**State info** — какие блоки показывает панель **MEMMAP**: **Ports**, "
-"**Signals**, **Frame** и **Ray**. **Memmap** выключить нельзя: в него "
-"входит заголовок панели, за который её перетаскивают."
-
-msgid ""
-"**Ports** - the watched ports of the machine that is running. See "
-"[Watched ports](#watched-ports)."
-msgstr ""
-"**Ports** — отслеживаемые порты работающей машины. См. [Отслеживаемые "
-"порты](#watched-ports)."
-
-msgid ""
-"**Palette** - the Debugger's own colors, each with a background (**BGR**)"
-" and a text (**TXT**) color. Click a color to change it; right-click it "
-"to go back to the color of the interface style."
-msgstr ""
-"**Palette** — собственные цвета Debugger, у каждого цвет фона (**BGR**) и"
-" текста (**TXT**). Щёлкните цвет, чтобы его изменить; правый щелчок "
-"возвращает цвет стиля интерфейса."
-
-msgid "Color"
-msgstr "Цвет"
-
-msgid "Where it is used"
-msgstr "Где используется"
-
-msgid "**Header**"
-msgstr "**Header**"
-
-msgid "the title bars of the panels and the block names of **MEMMAP**"
-msgstr "заголовки панелей и названия блоков **MEMMAP**"
-
-msgid "**Changed**"
-msgstr "**Changed**"
-
-msgid "a value that changed in the last step"
-msgstr "значение, изменившееся на последнем шаге"
-
-msgid "**PC**"
-msgstr "**PC**"
-
-msgid "the line of the listing at PC"
-msgstr "строка листинга по адресу PC"
-
-msgid "**Block**"
-msgstr "**Block**"
-
-msgid "a selected block in the listing and the dump"
-msgstr "выделенный блок в листинге и дампе"
-
-msgid "**Break**"
-msgstr "**Break**"
-
-msgid "the lines that have a breakpoint"
-msgstr "строки с точкой останова"
-
-msgid "**ID / Label**"
-msgstr "**ID / Label**"
-
-msgid "the ID field of a disk track, and labels in the listing"
-msgstr "поле ID дорожки диска и метки в листинге"
-
-msgid "**Data**"
-msgstr "**Data**"
-
-msgid "the data of a disk sector"
-msgstr "данные сектора диска"
-
-msgid "**CRC**"
-msgstr "**CRC**"
-
-msgid "the checksums on a disk track"
-msgstr "контрольные суммы на дорожке диска"
-
-msgid "**Const**"
-msgstr "**Const**"
-
-msgid "constants in the listing"
-msgstr "константы в листинге"
-
-msgid "**FMAPS**"
-msgstr "**FMAPS**"
-
-msgid "the TSConf FMAPS window in the dump and **MEMMAP**"
-msgstr "окно FMAPS TSConf в дампе и **MEMMAP**"
-
-msgid ""
-"Choosing another interface style on the **Appearance** page puts these "
-"colors back to that style's own."
-msgstr ""
-"Выбор другого стиля интерфейса на странице **Appearance** возвращает этим"
-" цветам значения этого стиля."
-
-msgid ""
-"**Misc** - **Auto-load labels**: opening an image also loads a `.labels` "
-"file of the same name, if there is one. See [Code and labels](debugger-"
-"code.md)."
-msgstr ""
-"**Misc** — **Auto-load labels**: при открытии образа загружается и файл "
-"`.labels` с тем же именем, если он есть. См. [Код и метки](debugger-"
-"code.md)."
-
 msgid "Examples"
-msgstr "Примеры"
+msgstr "Examples"
 
 msgid "Stop at the start of a loaded program and step through it"
-msgstr "Остановиться в начале загруженной программы и пройти её по шагам"
+msgstr "Stop at the start of a loaded program and step through it"
 
 msgid ""
 "A program on tape usually loads a code block and starts it at its first "
@@ -1200,7 +889,7 @@ msgid ""
 "Mount the tape - do not run it (see [Run a program](getting-"
 "started.md#run-a-program))."
 msgstr ""
-"Вставьте ленту — не запускайте её (см. [Запуск программы](getting-"
+"Вставьте ленту — не запускайте её (см. [Run a program](getting-"
 "started.md#run-a-program))."
 
 msgid ""
@@ -1209,8 +898,8 @@ msgid ""
 "code.md#typing-an-address))."
 msgstr ""
 "Откройте Debugger. Щёлкните листинг, нажмите G, введите `8000` и нажмите "
-"Enter. Листинг покажет адрес 8000 (см. [Ввод адреса](debugger-code.md"
-"#typing-an-address))."
+"Enter. Листинг покажет адрес 8000 (см. [Typing an address](debugger-"
+"code.md#typing-an-address))."
 
 msgid "Press Space. The line gets a breakpoint, shown in the **Break** color."
 msgstr ""
@@ -1254,7 +943,7 @@ msgid "Stopped at the start of a program"
 msgstr "Остановка в начале программы"
 
 msgid "Count the T-states of a routine"
-msgstr "Сосчитать такты подпрограммы"
+msgstr "Count the T-states of a routine"
 
 msgid ""
 "Stop the machine on a CALL of the routine, with a breakpoint or by "
@@ -1302,9 +991,6 @@ msgstr "![Счётчик тактов после Step over](images/dbg-example-t
 msgid "The T-state counter after a Step over"
 msgstr "Счётчик тактов после Step over"
 
-msgid "Debugger"
-msgstr "Debugger"
-
 msgid "window"
 msgstr "окно"
 
@@ -1319,6 +1005,9 @@ msgstr "расстановка"
 
 msgid "Reset panel layout"
 msgstr "Reset panel layout"
+
+msgid "device panels"
+msgstr "панели устройств"
 
 msgid "step"
 msgstr "шаг"
@@ -1353,90 +1042,6 @@ msgstr "такт"
 msgid "counting"
 msgstr "подсчёт"
 
-msgid "CPU panel"
-msgstr "панель CPU"
-
-msgid "register"
-msgstr "регистр"
-
-msgid "flag"
-msgstr "флаг"
-
-msgid "changing"
-msgstr "изменение"
-
-msgid "layout"
-msgstr "компоновка"
-
-msgid "Split pairs"
-msgstr "Split pairs"
-
-msgid "STACK panel"
-msgstr "панель STACK"
-
-msgid "Stack offset"
-msgstr "Stack offset"
-
-msgid "MEMMAP panel"
-msgstr "панель MEMMAP"
-
-msgid "memory bank"
-msgstr "банк памяти"
-
-msgid "FMAPS"
-msgstr "FMAPS"
-
-msgid "TSConf"
-msgstr "TSConf"
-
-msgid "SIGNALS"
-msgstr "SIGNALS"
-
-msgid "FRAME"
-msgstr "FRAME"
-
-msgid "frame counter"
-msgstr "счётчик кадров"
-
-msgid "Reset counter"
-msgstr "Reset counter"
-
-msgid "RAY"
-msgstr "RAY"
-
-msgid "beam position"
-msgstr "положение луча"
-
-msgid "Watched Ports"
-msgstr "Watched Ports"
-
-msgid "port"
-msgstr "порт"
-
-msgid "watched"
-msgstr "отслеживаемый"
-
-msgid "Debugger page"
-msgstr "страница Debugger"
-
-msgid "font"
-msgstr "шрифт"
-
-msgid "colors"
-msgstr "цвета"
-
-msgid "State info"
-msgstr "State info"
-
-msgid "DB in row"
-msgstr "DB in row"
-
-msgid "DW in row"
-msgstr "DW in row"
-
-msgid "Max text length"
-msgstr "Max text length"
-
 msgid "breakpoint"
 msgstr "точка останова"
 
@@ -1445,192 +1050,4 @@ msgstr "в начале программы"
 
 msgid "timing a routine"
 msgstr "измерение подпрограммы"
-
-#~ msgid ""
-#~ "**Breakpoints** - the list of "
-#~ "breakpoints, with **Screen**, **Sound Chip**,"
-#~ " **Tape**, **FDC**, **Heat map** and "
-#~ "**Palette** on tabs behind it."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**CMOS** is there only on machines "
-#~ "that have a clock chip: the ZX "
-#~ "Evolution with BaseConf or TSConf, the"
-#~ " Pentagon 1024, the Profi v5, and "
-#~ "any machine with a SMUC. **FDC** "
-#~ "and **FDD** are there only on a"
-#~ " machine with a disk interface."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**Screen** and **Sound Chip** can also"
-#~ " be windows of their own: **Debug "
-#~ "> Screen** and **Debug > Sound "
-#~ "Chips** open them, and they work "
-#~ "while the machine runs. See [Device "
-#~ "panels](debugger-devices.md)."
-#~ msgstr ""
-
-#~ msgid "**Debug > Debugger**, or the **Debug** button on the toolbar;"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**Screen** and **Sound Chip** can also"
-#~ " be windows of their own: **Debug "
-#~ "> Screen** and **Debug > Sound "
-#~ "Chips** open them, and they work "
-#~ "while the machine runs. **ZX Evo** "
-#~ "can be one too, from the button"
-#~ " at the top right of the panel."
-#~ " See [Device panels](debugger-devices.md)."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The arrangement is kept: the next "
-#~ "time the Debugger opens, and the "
-#~ "next time the program starts. To "
-#~ "get the arrangement it ships with, "
-#~ "choose **Reset panel layout** from the"
-#~ " **Options** button over the listing. "
-#~ "It also brings the window back to"
-#~ " its first size."
-#~ msgstr ""
-
-#~ msgid "**Labels**"
-#~ msgstr ""
-
-#~ msgid "**View**"
-#~ msgstr ""
-
-#~ msgid "**Trace**"
-#~ msgstr ""
-
-#~ msgid "**Tools**"
-#~ msgstr ""
-
-#~ msgid "**Options**"
-#~ msgstr ""
-
-#~ msgid "**Reload snapshot & labels**"
-#~ msgstr ""
-
-#~ msgid "(disk)"
-#~ msgstr ""
-
-#~ msgid "The **Trace** button over the listing has four kinds:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Each line is a port in hex. "
-#~ "Four digits are a full address, "
-#~ "matched as it is; two digits are"
-#~ " a byte port, matched on the "
-#~ "low byte alone. Untick a port to"
-#~ " stop showing it while keeping it "
-#~ "in the list. The buttons beside "
-#~ "the list add a port and drop "
-#~ "the selected one. Double-click a "
-#~ "port to change it."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**Font** - the font of all the "
-#~ "Debugger's panels. The button beside it"
-#~ " picks one. The menus keep the "
-#~ "font of the rest of the program."
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-window.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/bug.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/display.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/settings.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-toolbar.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/stop.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/label.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/bars.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/arrGreen.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/other.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/refresh.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/floppy.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-trace-menu.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-cpu.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-cpu-menu.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-cpu-wide.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-stack.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-memmap.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-watched-ports.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/add.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/cancel.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/options-debugger.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: ../../images/font.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-example-start.png"
-#~ msgstr ""
-
-#~ msgid ".. image:: images/dbg-example-tstates.png"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The four rows at the top are "
-#~ "the four 16K banks of the Z80's"
-#~ " memory, with what is in each: "
-#~ "ROM or RAM (or DIV, a "
-#~ "[divMMC](disks.md#divmmc)'s memory) and the "
-#~ "page number. You can put another "
-#~ "page into a bank from here. See"
-#~ " [Memory](debugger-memory.md)."
-#~ msgstr ""
-#~ "Четыре строки вверху — четыре банка "
-#~ "памяти Z80 по 16K и что в "
-#~ "каждом: ROM или RAM (или DIV, "
-#~ "память [divMMC](disks.md#divmmc)) и номер "
-#~ "страницы. Отсюда можно включить в банк"
-#~ " другую страницу. См. [Память](debugger-"
-#~ "memory.md)."
 

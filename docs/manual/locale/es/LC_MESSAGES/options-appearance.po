@@ -1,0 +1,169 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Appearance page"
+msgstr "Appearance page"
+
+msgid "![The Appearance page](images/options-appearance.png)"
+msgstr "![La página Appearance](images/options-appearance.png)"
+
+msgid "The Appearance page"
+msgstr "La página Appearance"
+
+msgid ""
+"**Interface** - **Style**: **System** (the look of your system) or one of"
+" seven bundled styles."
+msgstr ""
+"**Interface** — **Style**: **System** (el aspecto de tu sistema) o uno de"
+" los siete estilos incluidos."
+
+msgid ""
+"**Indicators** - which signs are shown over the picture. See [Indicators "
+"on the picture](#indicators-on-the-picture)."
+msgstr ""
+"**Indicators** — qué indicadores se muestran sobre la imagen. Consulta "
+"[Indicators on the picture](#indicators-on-the-picture)."
+
+msgid "Indicators on the picture"
+msgstr "Indicators on the picture"
+
+msgid ""
+"The **Indicators** group on the **Appearance** page of **Options** sets "
+"what is drawn over the picture. Tick the ones you want:"
+msgstr ""
+"El grupo **Indicators** de la página **Appearance** de **Options** fija "
+"qué se dibuja sobre la imagen. Marca los que quieras:"
+
+msgid "Indicator"
+msgstr "Indicador"
+
+msgid "What it shows"
+msgstr "Qué muestra"
+
+msgid "**Keyboard**"
+msgstr "**Keyboard**"
+
+msgid "the rows of keys the program is reading (ZX machines only)"
+msgstr "las filas de teclas que lee el programa (solo máquinas ZX)"
+
+msgid "**Joystick**"
+msgstr "**Joystick**"
+
+msgid "blinks while the joystick is read"
+msgstr "parpadea mientras se lee el joystick"
+
+msgid "**Mouse**"
+msgstr "**Mouse**"
+
+msgid "blinks while the mouse is read"
+msgstr "parpadea mientras se lee el ratón"
+
+msgid "**Tape**"
+msgstr "**Tape**"
+
+msgid "on while the tape plays, red while it records"
+msgstr "encendido mientras la cinta se reproduce, rojo mientras graba"
+
+msgid "**Disk**"
+msgstr "**Disk**"
+
+msgid "green when a disk is read, red when it is written"
+msgstr "verde cuando se lee un disco, rojo cuando se escribe"
+
+msgid "**FPS**"
+msgstr "**FPS**"
+
+msgid "frames per second, top right"
+msgstr "fotogramas por segundo, arriba a la derecha"
+
+msgid "**HALT**"
+msgstr "**HALT**"
+
+msgid "the T-states up to the HALT and in the whole frame, bottom right"
+msgstr ""
+"los ciclos (T-states) hasta el HALT y en todo el fotograma, abajo a la "
+"derecha"
+
+msgid "**CPU clock**"
+msgstr "**CPU clock**"
+
+msgid ""
+"the clock in MHz, bottom right, while the CPU is not on its base clock - "
+"turbo or overclock"
+msgstr ""
+"el reloj en MHz, abajo a la derecha, mientras la CPU no está en su reloj "
+"base — turbo u overclock"
+
+msgid "**Messages**"
+msgstr "**Messages**"
+
+msgid ""
+"what Xpeccy+ has just done, bottom left: \"size x3\", \"quick save\" and "
+"so on"
+msgstr ""
+"lo que Xpeccy+ acaba de hacer, abajo a la izquierda: «size x3», «quick "
+"save», etc."
+
+msgid "**Fade out**"
+msgstr "**Fade out**"
+
+msgid "signs and messages fade away instead of vanishing at once"
+msgstr "los símbolos y mensajes se desvanecen en lugar de desaparecer de golpe"
+
+msgid ""
+"**Joystick**, **Mouse**, **Tape**, **Disk**, **FPS** and **CPU clock** "
+"are drawn on the picture only while the status bar is hidden; with the "
+"status bar shown, they are in the status bar instead (see [Status bar"
+"](main-window.md#status-bar))."
+msgstr ""
+"**Joystick**, **Mouse**, **Tape**, **Disk**, **FPS** y **CPU clock** solo"
+" se dibujan sobre la imagen mientras la barra de estado está oculta; con "
+"la barra de estado visible, aparecen en la barra de estado (consulta "
+"[Status bar](main-window.md#status-bar))."
+
+msgid ""
+"In the top right corner a sign also shows the speed mode, in the manner "
+"of a video recorder: pause, rewind with how many seconds back, fast mode,"
+" fast forward or slow motion (see [Speed and time](time.md))."
+msgstr ""
+"En la esquina superior derecha, un símbolo también muestra el modo de "
+"velocidad, al estilo de un vídeo doméstico: pausa, rebobinado con cuántos"
+" segundos hacia atrás, modo rápido, avance rápido o cámara lenta "
+"(consulta [Speed and time](time.md))."
+
+msgid "Style"
+msgstr "Style"
+
+msgid "interface style"
+msgstr "estilo de la interfaz"
+
+msgid "Indicators"
+msgstr "Indicators"
+
+msgid "CPU clock"
+msgstr "CPU clock"
+
+msgid "HALT indicator"
+msgstr "indicador HALT"
+
+msgid "Fade out"
+msgstr "Fade out"
+

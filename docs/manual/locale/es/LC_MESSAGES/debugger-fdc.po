@@ -1,0 +1,176 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "FDC panel"
+msgstr "FDC panel"
+
+msgid "![The FDC panel](images/dbg-fdc.png)"
+msgstr "![El panel FDC](images/dbg-fdc.png)"
+
+msgid "The FDC panel"
+msgstr "El panel FDC"
+
+msgid ""
+"The **FDC** panel shows the floppy disk controller in its left and middle"
+" columns and the drive it works with in the right one. It is there only "
+"on a machine with a disk interface (see [Floppy disks](disks.md)). All "
+"numbers are hex; a flag is 1 or 0. In the picture Fire 'n Ice "
+"(n-Discovery, 2003) is loading from a TR-DOS disk: the controller reads a"
+" sector, command 80."
+msgstr ""
+"El panel **FDC** muestra el controlador de disquete en sus columnas "
+"izquierda y central, y la unidad con la que trabaja en la derecha. Solo "
+"está en una máquina con interfaz de disco (consulta [Floppy "
+"disks](disks.md)). Todos los números son hexadecimales; un flag es 1 o 0."
+" En la imagen se está cargando Fire 'n Ice (n-Discovery, 2003) desde un "
+"disco TR-DOS: el controlador lee un sector, comando 80."
+
+msgid "Field"
+msgstr "Campo"
+
+msgid "What it shows"
+msgstr "Qué muestra"
+
+msgid "**BUSY**"
+msgstr "**BUSY**"
+
+msgid "1 while the controller carries out a command"
+msgstr "1 mientras el controlador ejecuta un comando"
+
+msgid "**COM**"
+msgstr "**COM**"
+
+msgid "the command it carries out; `--` when it is idle"
+msgstr "el comando que ejecuta; `--` cuando está inactivo"
+
+msgid "**IRQ**"
+msgstr "**IRQ**"
+
+msgid "the controller's interrupt request: the command has ended"
+msgstr "la petición de interrupción del controlador: el comando ha terminado"
+
+msgid "**DRQ**"
+msgstr "**DRQ**"
+
+msgid "the data request: a byte is waiting to be read or written"
+msgstr "la petición de datos: hay un byte esperando a ser leído o escrito"
+
+msgid "**HEAD**"
+msgstr "**HEAD**"
+
+msgid "the side of the disk, 0 or 1"
+msgstr "la cara del disco, 0 o 1"
+
+msgid "**TRK**, **SEC**, **DATA**"
+msgstr "**TRK**, **SEC**, **DATA**"
+
+msgid "the track, sector and data registers"
+msgstr "los registros de pista, sector y datos"
+
+msgid "**SR**"
+msgstr "**SR**"
+
+msgid "the status register"
+msgstr "el registro de estado"
+
+msgid "**SR0**, **SR1**, **SR2**"
+msgstr "**SR0**, **SR1**, **SR2**"
+
+msgid "the result registers of the +3's controller"
+msgstr "los registros de resultado del controlador del +3"
+
+msgid "**CRC**"
+msgstr "**CRC**"
+
+msgid "the checksum the controller has worked out so far"
+msgstr "la suma de comprobación que ha calculado el controlador hasta ahora"
+
+msgid "**INT**"
+msgstr "**INT**"
+
+msgid "an interrupt waiting on the +3's controller"
+msgstr "una interrupción pendiente en el controlador del +3"
+
+msgid "**DMA**"
+msgstr "**DMA**"
+
+msgid "the DMA mode of the +3's controller"
+msgstr "el modo DMA del controlador del +3"
+
+msgid "**IE**"
+msgstr "**IE**"
+
+msgid "1 when interrupts from the disk interface are enabled"
+msgstr "1 cuando las interrupciones de la interfaz de disco están habilitadas"
+
+msgid "**FLP**"
+msgstr "**FLP**"
+
+msgid "the drive the controller works with, **A** to **D**"
+msgstr "la unidad con la que trabaja el controlador, de **A** a **D**"
+
+msgid "**RDY**"
+msgstr "**RDY**"
+
+msgid "a disk is in the drive"
+msgstr "hay un disco en la unidad"
+
+msgid "**MOT**"
+msgstr "**MOT**"
+
+msgid "the drive motor is on"
+msgstr "el motor de la unidad está en marcha"
+
+msgid "**TRK**"
+msgstr "**TRK**"
+
+msgid "the track the head stands on"
+msgstr "la pista sobre la que está el cabezal"
+
+msgid "**POS**"
+msgstr "**POS**"
+
+msgid "the place on the track under the head, in bytes from its start"
+msgstr "el lugar de la pista bajo el cabezal, en bytes desde su inicio"
+
+msgid "**DATA**"
+msgstr "**DATA**"
+
+msgid "the byte under the head; `--` with no disk"
+msgstr "el byte bajo el cabezal; `--` sin disco"
+
+msgid "**IDX**"
+msgstr "**IDX**"
+
+msgid "the index hole is passing: the start of the track"
+msgstr "está pasando el agujero índice: el inicio de la pista"
+
+msgid ""
+"Use it to follow a disk loader: step over the OUT that gives a command, "
+"then watch **BUSY**, **DRQ** and the registers as the command runs."
+msgstr ""
+"Úsalo para seguir un cargador de disco: pasa por encima del OUT que da un"
+" comando y después observa **BUSY**, **DRQ** y los registros mientras se "
+"ejecuta el comando."
+
+msgid "floppy disk controller"
+msgstr "controlador de disquete"
+

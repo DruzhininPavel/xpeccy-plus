@@ -50,7 +50,7 @@ msgstr ""
 "позначка одразу змінює пам'ять машини, і застосовувати нічого не треба."
 
 msgid "Cheat files"
-msgstr "Файли читів"
+msgstr "Cheat files"
 
 msgid ""
 "A cheat file (`.pok`) holds trainers: infinite lives, more time, a level "
@@ -93,7 +93,7 @@ msgid "A file that is not a cheat file at all is refused with a message."
 msgstr "Файл, який зовсім не є файлом читів, програма відхиляє з повідомленням."
 
 msgid "Turning a trainer on"
-msgstr "Увімкнення трейнера"
+msgstr "Turning a trainer on"
 
 msgid ""
 "Tick a trainer to poke it into the machine. Untick it, and the bytes it "
@@ -199,7 +199,7 @@ msgstr ""
 "файлом читів."
 
 msgid "When cheats go off"
-msgstr "Коли чити вимикаються"
+msgstr "When cheats go off"
 
 msgid ""
 "A reset, opening a file, a machine switch, **Quick Load** and **Undo "

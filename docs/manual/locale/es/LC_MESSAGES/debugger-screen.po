@@ -1,0 +1,395 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Screen panel"
+msgstr "Screen panel"
+
+msgid "![The Screen panel](images/dbg-screen.png)"
+msgstr "![El panel Screen](images/dbg-screen.png)"
+
+msgid "The Screen panel"
+msgstr "El panel Screen"
+
+msgid ""
+"**Mode** - **Auto**, **Main**, **Shadow**, **Both** or **Custom**: which "
+"screen is drawn."
+msgstr ""
+"**Mode** — **Auto**, **Main**, **Shadow**, **Both** o **Custom**: qué "
+"pantalla se dibuja."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Screen** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — lleva el panel a la ventana "
+"**Screen**."
+
+msgid ""
+"**Picture** - the screen, with a strip of the border color around it and "
+"its name above it."
+msgstr ""
+"**Imagen** — la pantalla, con una franja del color del borde alrededor y "
+"su nombre encima."
+
+msgid ""
+"**View** - the zoom and four check boxes that change how the picture is "
+"drawn."
+msgstr ""
+"**Vista** — el zoom y cuatro casillas que cambian cómo se dibuja la "
+"imagen."
+
+msgid "**Readout** - where the dot under the mouse is and which bytes hold it."
+msgstr "**Lectura** — dónde está el punto bajo el ratón y qué bytes lo contienen."
+
+msgid "**Page** and **Offset** - only in **Custom** mode: which memory to draw."
+msgstr "**Page** y **Offset** — solo en el modo **Custom**: qué memoria dibujar."
+
+msgid ""
+"The panel draws a ZX screen of 256 x 192 dots from memory: 6144 bytes of "
+"pixels and 768 bytes of attributes, in the standard layout. It draws that"
+" layout whatever video mode the machine is in, so it always shows what a "
+"ZX screen at that place in memory would look like."
+msgstr ""
+"El panel dibuja desde la memoria una pantalla ZX de 256 x 192 puntos: "
+"6144 bytes de píxeles y 768 bytes de atributos, con la disposición "
+"estándar. Dibuja esa disposición sea cual sea el modo de vídeo de la "
+"máquina, así que siempre muestra cómo se vería una pantalla ZX en ese "
+"lugar de la memoria."
+
+msgid "Which screen"
+msgstr "Which screen"
+
+msgid "Button"
+msgstr "Botón"
+
+msgid "What it draws"
+msgstr "Qué dibuja"
+
+msgid "**Auto**"
+msgstr "**Auto**"
+
+msgid ""
+"the screen the machine is showing now; it follows a program that flips "
+"between two screens"
+msgstr ""
+"la pantalla que la máquina muestra ahora; sigue a un programa que alterna"
+" entre dos pantallas"
+
+msgid "**Main**"
+msgstr "**Main**"
+
+msgid "the normal screen, RAM page 5"
+msgstr "la pantalla normal, página 5 de RAM"
+
+msgid "**Shadow**"
+msgstr "**Shadow**"
+
+msgid "the second screen of a 128K, RAM page 7"
+msgstr "la segunda pantalla de un 128K, página 7 de RAM"
+
+msgid "**Both**"
+msgstr "**Both**"
+
+msgid "page 5 and page 7 side by side, or one above the other in a tall panel"
+msgstr ""
+"las páginas 5 y 7 una al lado de la otra, o una encima de la otra en un "
+"panel alto"
+
+msgid "**Custom**"
+msgstr "**Custom**"
+
+msgid "any 16K page, from any offset in it"
+msgstr "cualquier página de 16K, desde cualquier desplazamiento dentro de ella"
+
+msgid ""
+"**Shadow** and **Both** are grayed out on a machine with no page 7, such "
+"as the 48K."
+msgstr ""
+"**Shadow** y **Both** aparecen en gris en una máquina sin página 7, como "
+"el 48K."
+
+msgid ""
+"The name above a picture says where it comes from: **Main (5)**, **Shadow"
+" (7)**, or **Page** with a number for any other page. In **Custom** mode "
+"it is **Custom** with the page number. The name of the screen the machine"
+" is showing is in the **Header** color of the **Debugger** page of "
+"**Options**; the other one is plain."
+msgstr ""
+"El nombre encima de una imagen dice de dónde viene: **Main (5)**, "
+"**Shadow (7)** o **Page** con un número para cualquier otra página. En el"
+" modo **Custom** es **Custom** con el número de página. El nombre de la "
+"pantalla que muestra la máquina aparece en el color **Header** de la "
+"página **Debugger** de **Options**; el otro, en color normal."
+
+msgid ""
+"In **Custom** mode, type the page into **Page** and the place in the page"
+" where the screen starts into **Offset**, both in hex. **Offset** goes "
+"from 0000 to 3FFF. Use **Custom** to look at a picture a program keeps "
+"elsewhere in memory, for example one it copies to the screen later."
+msgstr ""
+"En el modo **Custom**, escribe la página en **Page** y el lugar de la "
+"página donde empieza la pantalla en **Offset**, ambos en hexadecimal. "
+"**Offset** va de 0000 a 3FFF. Usa **Custom** para ver una imagen que un "
+"programa guarda en otra parte de la memoria, por ejemplo una que copia a "
+"la pantalla más tarde."
+
+msgid "How it is drawn"
+msgstr "How it is drawn"
+
+msgid "Setting"
+msgstr "Ajuste"
+
+msgid "What it does"
+msgstr "Qué hace"
+
+msgid "**Zoom Fit**"
+msgstr "**Zoom Fit**"
+
+msgid ""
+"fills the panel; when there is room, each dot takes a whole number of "
+"pixels"
+msgstr ""
+"llena el panel; cuando hay espacio, cada punto ocupa un número entero de "
+"píxeles"
+
+msgid "**Zoom x1** to **Zoom x4**"
+msgstr "**Zoom x1** a **Zoom x4**"
+
+msgid "a fixed number of pixels per dot"
+msgstr "un número fijo de píxeles por punto"
+
+msgid "**no pixels**"
+msgstr "**no pixels**"
+
+msgid ""
+"attributes only: each cell is its paper color with a small dot of ink in "
+"the middle"
+msgstr ""
+"solo atributos: cada celda es su color de papel con un pequeño punto de "
+"tinta en el centro"
+
+msgid "**no colors**"
+msgstr "**no colors**"
+
+msgid "pixels only, white on black"
+msgstr "solo píxeles, blanco sobre negro"
+
+msgid "**no flash**"
+msgstr "**no flash**"
+
+msgid "holds flashing cells still; grayed out while ULA+ is in use"
+msgstr "congela las celdas con parpadeo; en gris mientras se usa ULA+"
+
+msgid "**show grid**"
+msgstr "**show grid**"
+
+msgid "dims every other 8 x 8 cell, so the character cells can be counted"
+msgstr ""
+"oscurece una de cada dos celdas de 8 x 8, para poder contar las celdas de"
+" carácter"
+
+msgid "Finding a dot"
+msgstr "Finding a dot"
+
+msgid "Move the mouse over the picture. The readout shows:"
+msgstr "Mueve el ratón sobre la imagen. La lectura muestra:"
+
+msgid "Field"
+msgstr "Campo"
+
+msgid "What it shows"
+msgstr "Qué muestra"
+
+msgid "**XY:**"
+msgstr "**XY:**"
+
+msgid ""
+"the dot, in pixels from the top left corner: 0 to 255 across, 0 to 191 "
+"down"
+msgstr ""
+"el punto, en píxeles desde la esquina superior izquierda: de 0 a 255 en "
+"horizontal, de 0 a 191 en vertical"
+
+msgid "**Char:**"
+msgstr "**Char:**"
+
+msgid "the character cell, 0 to 31 across, 0 to 23 down"
+msgstr "la celda de carácter, de 0 a 31 en horizontal, de 0 a 23 en vertical"
+
+msgid "**Screen:**"
+msgstr "**Screen:**"
+
+msgid ""
+"the address of the byte that holds the dot, and after it the bit: `.7` is"
+" the leftmost dot of the byte"
+msgstr ""
+"la dirección del byte que contiene el punto, y tras ella el bit: `.7` es "
+"el punto más a la izquierda del byte"
+
+msgid "**Attr:**"
+msgstr "**Attr:**"
+
+msgid "the address of the attribute byte that colors the dot's cell"
+msgstr "la dirección del byte de atributos que colorea la celda del punto"
+
+msgid ""
+"The addresses are the ones the CPU uses. The addresses of page 5 start at"
+" 4000, where this page always is in memory. The addresses of any other "
+"page start at C000, where a 128K pages it in."
+msgstr ""
+"Las direcciones son las que usa la CPU. Las direcciones de la página 5 "
+"empiezan en 4000, donde esta página siempre está en la memoria. Las "
+"direcciones de cualquier otra página empiezan en C000, donde la pagina un"
+" 128K."
+
+msgid ""
+"Click the picture to hold the readout on a dot: the cell is marked, and "
+"the numbers stay while you move the mouse away. Click again to let go."
+msgstr ""
+"Haz clic en la imagen para fijar la lectura en un punto: la celda queda "
+"marcada y los números se mantienen mientras apartas el ratón. Haz clic "
+"otra vez para soltarla."
+
+msgid ""
+"Right-click the picture for **Copy screen address** and **Copy attribute "
+"address**. They copy the address of the dot under the mouse, or of the "
+"held dot, as four hex digits."
+msgstr ""
+"Haz clic derecho en la imagen para **Copy screen address** y **Copy "
+"attribute address**. Copian la dirección del punto bajo el ratón, o del "
+"punto fijado, como cuatro cifras hexadecimales."
+
+msgid ""
+"The readout works the other way too: type an address into **Screen:** or "
+"**Attr:** and the cell it belongs to is marked on the picture. Move the "
+"mouse back over the picture to make the readout follow the mouse again."
+msgstr ""
+"La lectura también funciona al revés: escribe una dirección en "
+"**Screen:** o **Attr:** y la celda a la que pertenece se marca en la "
+"imagen. Vuelve a mover el ratón sobre la imagen para que la lectura siga "
+"otra vez al ratón."
+
+msgid "Examples"
+msgstr "Examples"
+
+msgid "See which screen a 128K program draws to"
+msgstr "See which screen a 128K program draws to"
+
+msgid ""
+"A 128K has two screens, in RAM pages 5 and 7. Many programs draw on the "
+"screen that is not shown and then flip, so that the picture never shows "
+"half drawn."
+msgstr ""
+"Un 128K tiene dos pantallas, en las páginas 5 y 7 de RAM. Muchos "
+"programas dibujan en la pantalla que no se muestra y después las "
+"intercambian, para que la imagen nunca se vea a medio dibujar."
+
+msgid "Choose a 128K machine and load the program."
+msgstr "Elige una máquina de 128K y carga el programa."
+
+msgid "Choose **Tools > Screen**. The **Screen** window opens."
+msgstr "Elige **Tools > Screen**. Se abre la ventana **Screen**."
+
+msgid "Click **Both**. The window shows **Main (5)** and **Shadow (7)** together."
+msgstr ""
+"Haz clic en **Both**. La ventana muestra **Main (5)** y **Shadow (7)** "
+"juntas."
+
+msgid ""
+"Let the program run. The name of the screen the machine shows is in the "
+"**Header** color; when the program flips, the other name takes that "
+"color."
+msgstr ""
+"Deja que el programa funcione. El nombre de la pantalla que muestra la "
+"máquina está en el color **Header**; cuando el programa intercambia las "
+"pantallas, el otro nombre toma ese color."
+
+msgid ""
+"You see the hidden screen being drawn while the other one is shown. Click"
+" **Auto** to see only the screen the machine shows, the way the main "
+"window does."
+msgstr ""
+"Ves cómo se dibuja la pantalla oculta mientras se muestra la otra. Haz "
+"clic en **Auto** para ver solo la pantalla que muestra la máquina, como "
+"hace la ventana principal."
+
+msgid "![Both screens of a 128K](images/dbg-example-screens.png)"
+msgstr "![Las dos pantallas de un 128K](images/dbg-example-screens.png)"
+
+msgid "Both screens of a 128K"
+msgstr "Las dos pantallas de un 128K"
+
+msgid "Find the bytes behind a spot on the screen"
+msgstr "Find the bytes behind a spot on the screen"
+
+msgid "Open the Debugger and click the **Screen** tab."
+msgstr "Abre el Debugger y haz clic en la pestaña **Screen**."
+
+msgid ""
+"Move the mouse onto the spot and click: the cell is marked and the "
+"readout stays on it."
+msgstr ""
+"Lleva el ratón al punto y haz clic: la celda queda marcada y la lectura "
+"se queda en ella."
+
+msgid ""
+"Read **Screen:** for the byte of pixels and **Attr:** for its colors, for"
+" example `#4000` and `#5800` for the top left corner."
+msgstr ""
+"Lee **Screen:** para el byte de píxeles y **Attr:** para sus colores, por"
+" ejemplo `#4000` y `#5800` para la esquina superior izquierda."
+
+msgid "Right-click the picture and choose **Copy screen address**."
+msgstr "Haz clic derecho en la imagen y elige **Copy screen address**."
+
+msgid ""
+"With the address in hand, look at the byte in the **DUMP** panel (see "
+"[DUMP panel](debugger-memory.md)), or set a **Write** breakpoint on it to"
+" stop the machine when the program draws there (see [Breakpoints panel"
+"](debugger-breakpoints.md))."
+msgstr ""
+"Con la dirección a mano, mira el byte en el panel **DUMP** (consulta "
+"[DUMP panel](debugger-memory.md)), o pon en él un punto de interrupción "
+"**Write** para detener la máquina cuando el programa dibuje ahí (consulta"
+" [Breakpoints panel](debugger-breakpoints.md))."
+
+msgid "shadow screen"
+msgstr "pantalla sombra"
+
+msgid "which screen"
+msgstr "qué pantalla"
+
+msgid "zoom"
+msgstr "zoom"
+
+msgid "screen address"
+msgstr "dirección de pantalla"
+
+msgid "attribute address"
+msgstr "dirección de atributos"
+
+msgid "Copy screen address"
+msgstr "Copy screen address"
+
+msgid "Copy attribute address"
+msgstr "Copy attribute address"
+

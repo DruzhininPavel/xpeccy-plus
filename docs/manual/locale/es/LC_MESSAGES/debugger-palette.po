@@ -1,0 +1,72 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Palette panel"
+msgstr "Palette panel"
+
+msgid "![The Palette panel](images/dbg-palette.png)"
+msgstr "![El panel Palette](images/dbg-palette.png)"
+
+msgid "The Palette panel"
+msgstr "El panel Palette"
+
+msgid ""
+"The **Palette** panel shows the machine's palette as it is now: 256 "
+"squares, 16 to a row. Click a square to see its **Index** (0 to 255), its"
+" **Red**, **Green** and **Blue** levels (0 to 255 each) and the **Color**"
+" itself. The panel only shows the colors; it cannot change them."
+msgstr ""
+"El panel **Palette** muestra la paleta de la máquina tal como está ahora:"
+" 256 cuadros, 16 por fila. Haz clic en un cuadro para ver su **Index** "
+"(de 0 a 255), sus niveles **Red**, **Green** y **Blue** (de 0 a 255 cada "
+"uno) y el propio **Color**. El panel solo muestra los colores; no puede "
+"cambiarlos."
+
+msgid ""
+"A plain ZX uses the first 16 squares. With ULA+ in use, the first 64 are "
+"the colors the program set. The ATM Turbo 2+ and the Profi v5 set their "
+"colors through ports, and the colors a program sets show here as it sets "
+"them."
+msgstr ""
+"Un ZX normal usa los 16 primeros cuadros. Con ULA+ en uso, los 64 "
+"primeros son los colores que fijó el programa. El ATM Turbo 2+ y el Profi"
+" v5 fijan sus colores mediante puertos, y los colores que fija un "
+"programa se muestran aquí a medida que los fija."
+
+msgid ""
+"On a ZX Evolution this panel is not there: the **Palette** tab of the "
+"**ZX Evo** panel shows the colors instead (see [The Palette tab"
+"](debugger-zx-evo.md#the-palette-tab))."
+msgstr ""
+"En un ZX Evolution este panel no está: en su lugar, la pestaña "
+"**Palette** del panel **ZX Evo** muestra los colores (consulta [The "
+"Palette tab](debugger-zx-evo.md#the-palette-tab))."
+
+msgid ""
+"Use it to check the colors a program has set, for example after a fade to"
+" black."
+msgstr ""
+"Úsalo para comprobar los colores que ha fijado un programa, por ejemplo "
+"tras un fundido a negro."
+
+msgid "palette"
+msgstr "paleta"
+

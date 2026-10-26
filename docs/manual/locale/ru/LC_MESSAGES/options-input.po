@@ -1,0 +1,40 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Input page"
+msgstr "Input page"
+
+msgid "![The Input page](images/options-input.png)"
+msgstr "![Страница Input](images/options-input.png)"
+
+msgid "The Input page"
+msgstr "Страница Input"
+
+msgid ""
+"The keymap; the gamepads of **Player 1** and **Player 2**, with the "
+"**Gamepads...** button that opens their window; and **Game bindings**. "
+"See [Input menu](input.md)."
+msgstr ""
+"Раскладка; геймпады **Player 1** и **Player 2** с кнопкой "
+"**Gamepads...**, которая открывает их окно; и **Game bindings**. См. "
+"[Input menu](input.md)."
+

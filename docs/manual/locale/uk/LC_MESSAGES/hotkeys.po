@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 03:44+0200\n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -20,8 +20,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "Hotkeys"
-msgstr "Hotkeys"
+msgid "Hotkeys page"
+msgstr "Hotkeys page"
+
+msgid "![The Hotkeys page](images/options-hotkeys.png)"
+msgstr "![Сторінка Hotkeys](images/options-hotkeys.png)"
+
+msgid "The Hotkeys page"
+msgstr "Сторінка Hotkeys"
+
+msgid ""
+"The keys of every command, in the Modern or Classic preset or one of your"
+" own. See [Hotkeys page](hotkeys.md)."
+msgstr ""
+"Клавіші кожної команди, у наборі Modern чи Classic або у вашому власному."
+" Див. [Hotkeys page](hotkeys.md)."
 
 msgid ""
 "A command that has a key shows it beside its name in the menu. All the "
@@ -36,7 +49,7 @@ msgstr ""
 "нею користуватися."
 
 msgid "Modern, Classic and Custom"
-msgstr "Modern, Classic і Custom"
+msgstr "Modern, Classic and Custom"
 
 msgid ""
 "Two sets of keys come with the program. Pick one in the **Preset** list "
@@ -109,7 +122,7 @@ msgstr ""
 "розкладкою, увімкненою в системі, Alt+M — однаково Alt+M."
 
 msgid "Change a key"
-msgstr "Зміна клавіші"
+msgstr "Change a key"
 
 msgid ""
 "The table on the **Hotkeys** page has three columns: **Action**, **Key** "
@@ -198,7 +211,7 @@ msgstr ""
 "повертає Custom до набору, з якого його створено."
 
 msgid "Find a key"
-msgstr "Пошук клавіші"
+msgstr "Find a key"
 
 msgid ""
 "Type in the search box to see only the actions whose name, group or key "
@@ -217,7 +230,7 @@ msgstr ""
 " побачили, що ця клавіша робить."
 
 msgid "How the keys behave"
-msgstr "Як поводяться клавіші"
+msgstr "How the keys behave"
 
 msgid ""
 "**Grab Keyboard.** While the keyboard is grabbed, every key goes to the "
@@ -256,7 +269,7 @@ msgstr ""
 " в один із трьох способів, що задаються на сторінці **Emulation** вікна "
 "**Options**: **Toggle**, **Hold** або **Tap or hold** (типово): коротке "
 "натискання вмикає чи вимикає режим, довше тримає його ввімкненим лише "
-"поки клавішу утримують. Див. [Швидкість і час](time.md)."
+"поки клавішу утримують. Див. [Speed and time](time.md)."
 
 msgid ""
 "**Shift and Ctrl.** A hotkey's own Shift or Ctrl is not passed to the "
@@ -324,7 +337,7 @@ msgstr ""
 "перевіряйте клавішу там. Таблиці нижче наводять клавіші Windows і Linux."
 
 msgid "All the keys"
-msgstr "Усі клавіші"
+msgstr "All the keys"
 
 msgid ""
 "A dash means no key. Where an action has two keys, both are given. In a "
@@ -723,7 +736,7 @@ msgid "Alt+A"
 msgstr "Alt+A"
 
 msgid "Debugger keys"
-msgstr "Клавіші Debugger"
+msgstr "Debugger keys"
 
 msgid ""
 "These work in the **Debugger** window. **Options**, **Open**, **Save**, "
@@ -1000,7 +1013,4 @@ msgstr "клавіша Cmd"
 
 msgid "list of all"
 msgstr "повний список"
-
-#~ msgid "Debug"
-#~ msgstr "Debug"
 

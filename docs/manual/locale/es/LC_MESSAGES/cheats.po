@@ -50,7 +50,7 @@ msgstr ""
 "nada que aplicar."
 
 msgid "Cheat files"
-msgstr "Archivos de trucos"
+msgstr "Cheat files"
 
 msgid ""
 "A cheat file (`.pok`) holds trainers: infinite lives, more time, a level "
@@ -93,7 +93,7 @@ msgid "A file that is not a cheat file at all is refused with a message."
 msgstr "Un archivo que no es de trucos en absoluto se rechaza con un mensaje."
 
 msgid "Turning a trainer on"
-msgstr "Activar un trainer"
+msgstr "Turning a trainer on"
 
 msgid ""
 "Tick a trainer to poke it into the machine. Untick it, and the bytes it "
@@ -203,7 +203,7 @@ msgstr ""
 "de trucos."
 
 msgid "When cheats go off"
-msgstr "Cuándo se desactivan los trucos"
+msgstr "When cheats go off"
 
 msgid ""
 "A reset, opening a file, a machine switch, **Quick Load** and **Undo "

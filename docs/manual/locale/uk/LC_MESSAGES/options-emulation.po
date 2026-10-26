@@ -1,0 +1,107 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Emulation page"
+msgstr "Emulation page"
+
+msgid "![The Emulation page](images/options-emulation.png)"
+msgstr "![Сторінка Emulation](images/options-emulation.png)"
+
+msgid "The Emulation page"
+msgstr "Сторінка Emulation"
+
+msgid ""
+"**Input lag** - **Low latency** and **Run ahead**. See [Input lag"
+"](#input-lag)."
+msgstr ""
+"**Input lag** — **Low latency** і **Run ahead**. Див. [Input lag](#input-"
+"lag)."
+
+msgid ""
+"**Speed and rewind** - how far back rewind goes, how the keys of Slow "
+"Motion, Fast Forward and Fast Mode work, and what Fast Mode shows. See "
+"[Speed and time](time.md)."
+msgstr ""
+"**Speed and rewind** — наскільки далеко назад сягає перемотування, як "
+"працюють клавіші сповільнення, прискорення і швидкого режиму і що показує"
+" швидкий режим. Див. [Speed and time](time.md)."
+
+msgid ""
+"**Folder as a disk** - whether a folder used as a card or a disk takes "
+"what the machine writes, and where a file it deletes there goes. See "
+"[Writing to a folder](sd-hdd.md#writing-to-a-folder)."
+msgstr ""
+"**Folder as a disk** — чи приймає папка, що слугує карткою або диском, "
+"те, що записує машина, і куди потрапляє файл, який машина там видаляє. "
+"Див. [Writing to a folder](sd-hdd.md#writing-to-a-folder)."
+
+msgid "Input lag"
+msgstr "Input lag"
+
+msgid ""
+"The **Input lag** group on the **Emulation** page sets how soon a key "
+"press shows on the screen."
+msgstr ""
+"Група **Input lag** на сторінці **Emulation** задає, як швидко натискання"
+" клавіші з'являється на екрані."
+
+msgid ""
+"**Low latency** shows each frame as soon as it is made. In a window the "
+"desktop still holds each frame back by one more frame; in fullscreen that"
+" delay is skipped too, but menus then flicker as they open. With **Low "
+"latency** off, frames are buffered, for smoother motion. It is on by "
+"default."
+msgstr ""
+"**Low latency** показує кожен кадр, щойно його створено. У вікні робочий "
+"стіл усе одно затримує кожен кадр ще на один кадр; у повноекранному "
+"режимі пропускається і ця затримка, але тоді меню мерехтять під час "
+"відкриття. Коли **Low latency** вимкнено, кадри буферизуються для "
+"плавнішого руху. Типово цей параметр увімкнено."
+
+msgid ""
+"**Run ahead** makes keys respond sooner by one or two frames. Each frame,"
+" the program emulates that many frames further, shows the picture from "
+"there, and goes back. So you see the result of a key press a frame or two"
+" earlier than the machine itself would show it. The cost is CPU time - "
+"the frames are emulated more than once - and the sound stays a frame "
+"behind the picture. **Off** is the default. Run ahead does nothing while "
+"an RZX recording plays, in Fast Mode and Fast Forward, while the machine "
+"is paused, and while you rewind."
+msgstr ""
+"**Run ahead** змушує клавіші відгукуватися на один або два кадри раніше. "
+"Щокадру програма емулює стільки кадрів наперед, показує зображення звідти"
+" і повертається назад. Тож ви бачите результат натискання клавіші на "
+"кадр-два раніше, ніж показала б сама машина. Ціна — час CPU (кадри "
+"емулюються не раз), а звук відстає від зображення на кадр. Типово стоїть "
+"**Off**. Run ahead нічого не робить під час відтворення запису RZX, у "
+"швидкому режимі та під час прискорення, поки машина на паузі і поки ви "
+"перемотуєте."
+
+msgid "input lag"
+msgstr "затримка введення"
+
+msgid "Low latency"
+msgstr "Low latency"
+
+msgid "Run ahead"
+msgstr "Run ahead"
+

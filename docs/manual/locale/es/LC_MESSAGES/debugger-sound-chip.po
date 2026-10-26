@@ -1,0 +1,375 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Sound Chip panel"
+msgstr "Sound Chip panel"
+
+msgid "![The Sound Chip panel](images/dbg-sound.png)"
+msgstr "![El panel Sound Chip](images/dbg-sound.png)"
+
+msgid "The Sound Chip panel"
+msgstr "El panel Sound Chip"
+
+msgid "**Chips** - a tab for each sound chip of the machine."
+msgstr "**Chips** — una pestaña por cada chip de sonido de la máquina."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Sound Chips** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — lleva el panel a la ventana "
+"**Sound Chips**."
+
+msgid "**Regs** - the 16 registers of the chip."
+msgstr "**Regs** — los 16 registros del chip."
+
+msgid ""
+"**Channels** - the tone channels A, B and C, the noise N and the envelope"
+" E."
+msgstr "**Canales** — los canales de tono A, B y C, el ruido N y la envolvente E."
+
+msgid "**Envelope** - the shape of the envelope."
+msgstr "**Envolvente** — la forma de la envolvente."
+
+msgid ""
+"**Wave** - the peak level, the time span, and the **Fit** and **Log** "
+"check boxes."
+msgstr ""
+"**Wave** — el nivel de pico, el intervalo de tiempo y las casillas "
+"**Fit** y **Log**."
+
+msgid "**Beeper** - the level of the beeper."
+msgstr "**Beeper** — el nivel del beeper."
+
+msgid "**Wave box** - the sound the machine puts out."
+msgstr "**Cuadro de onda** — el sonido que produce la máquina."
+
+msgid ""
+"In the picture the title tune of Cybernoid (Dave Rogers, Hewson, 1988) "
+"plays."
+msgstr ""
+"En la imagen suena la melodía del título de Cybernoid (Dave Rogers, "
+"Hewson, 1988)."
+
+msgid ""
+"The tabs are named **PSG1**, **PSG2** and so on, one for each AY or YM "
+"chip: a TurboSound machine has two. A chip with an FM part, as in "
+"TurboSound FM, has an **FM** tab beside its **PSG** tab. A machine with "
+"no sound chip has no tabs."
+msgstr ""
+"Las pestañas se llaman **PSG1**, **PSG2**, etc., una por cada chip AY o "
+"YM: una máquina TurboSound tiene dos. Un chip con parte FM, como en "
+"TurboSound FM, tiene una pestaña **FM** junto a su pestaña **PSG**. Una "
+"máquina sin chip de sonido no tiene pestañas."
+
+msgid "The PSG page"
+msgstr "The PSG page"
+
+msgid ""
+"**Regs** shows the 16 registers in two rows: `#00` holds registers 0 to "
+"7, `#08` holds registers 8 to 15. Click a register and type a new value "
+"in hex. The value goes to the chip as if a program wrote it with an OUT "
+"to the chip's port, so the rest of the page changes with it."
+msgstr ""
+"**Regs** muestra los 16 registros en dos filas: `#00` contiene los "
+"registros 0 a 7, `#08` los registros 8 a 15. Haz clic en un registro y "
+"escribe un valor nuevo en hexadecimal. El valor va al chip como si un "
+"programa lo escribiera con un OUT al puerto del chip, así que el resto de"
+" la página cambia con él."
+
+msgid "The table below it shows the same registers by channel:"
+msgstr "La tabla de debajo muestra los mismos registros por canal:"
+
+msgid "Column"
+msgstr "Columna"
+
+msgid "What it shows"
+msgstr "Qué muestra"
+
+msgid "**Period**"
+msgstr "**Period**"
+
+msgid ""
+"the tone period of A, B and C (up to FFF), the noise period of N (up to "
+"1F), the envelope period of E (up to FFFF)"
+msgstr ""
+"el periodo de tono de A, B y C (hasta FFF), el periodo de ruido de N "
+"(hasta 1F), el periodo de envolvente de E (hasta FFFF)"
+
+msgid "**Vol**"
+msgstr "**Vol**"
+
+msgid ""
+"the volume of A, B and C, 0 to F; on the E row, the level the envelope is"
+" at now"
+msgstr ""
+"el volumen de A, B y C, de 0 a F; en la fila E, el nivel en que está "
+"ahora la envolvente"
+
+msgid "**Mixer**"
+msgstr "**Mixer**"
+
+msgid ""
+"what the channel mixes: `T` tone, `N` noise, `E` the envelope in place of"
+" the volume; `-` for off"
+msgstr ""
+"lo que mezcla el canal: `T` tono, `N` ruido, `E` la envolvente en lugar "
+"del volumen; `-` desactivado"
+
+msgid "**Lev**"
+msgstr "**Lev**"
+
+msgid "how loud the channel is, as a bar"
+msgstr "cuánto suena el canal, como una barra"
+
+msgid "**State**"
+msgstr "**State**"
+
+msgid "the output of the tone or noise generator, 0 or 1"
+msgstr "la salida del generador de tono o de ruido, 0 o 1"
+
+msgid "**Mute**"
+msgstr "**Mute**"
+
+msgid "tick to silence the channel"
+msgstr "márcalo para silenciar el canal"
+
+msgid ""
+"**Period** and **Vol** can be changed as the registers can: click and "
+"type in hex."
+msgstr ""
+"**Period** y **Vol** se pueden cambiar igual que los registros: haz clic "
+"y escribe en hexadecimal."
+
+msgid ""
+"**Lev** is green, amber near the top and red at the end. While the "
+"machine runs, the bar shows the loudest level of the channel since the "
+"last refresh. While the machine stands still, the bar and the number on "
+"it show exactly what the channel puts out at that moment."
+msgstr ""
+"**Lev** es verde, ámbar cerca del máximo y rojo al final. Mientras la "
+"máquina funciona, la barra muestra el nivel más fuerte del canal desde la"
+" última actualización. Mientras la máquina está parada, la barra y el "
+"número sobre ella muestran exactamente lo que el canal emite en ese "
+"momento."
+
+msgid ""
+"**State** is shown only while the machine stands still. A tone generator "
+"flips much too fast to be read while the machine runs, so the column "
+"shows `-` then."
+msgstr ""
+"**State** solo se muestra mientras la máquina está parada. Un generador "
+"de tono cambia demasiado deprisa para leerlo con la máquina en marcha, "
+"así que entonces la columna muestra `-`."
+
+msgid ""
+"**Mute** silences a channel without touching the chip: the program goes "
+"on writing the same registers, and the other channels play as before. Use"
+" it to pick one voice out of a tune."
+msgstr ""
+"**Mute** silencia un canal sin tocar el chip: el programa sigue "
+"escribiendo los mismos registros y los demás canales suenan como antes. "
+"Úsalo para aislar una voz de una melodía."
+
+msgid ""
+"The E row draws the envelope shape set in register 13: two cycles of it, "
+"so the eight shapes can be told apart."
+msgstr ""
+"La fila E dibuja la forma de envolvente fijada en el registro 13: dos "
+"ciclos de ella, para poder distinguir las ocho formas."
+
+msgid "The FM page"
+msgstr "The FM page"
+
+msgid "The FM page shows the FM part of a YM2203 chip. Across the top:"
+msgstr "La página FM muestra la parte FM de un chip YM2203. En la parte superior:"
+
+msgid "Field"
+msgstr "Campo"
+
+msgid "**Timer A**, **Timer B**"
+msgstr "**Timer A**, **Timer B**"
+
+msgid "the timer values in hex, and **on** or **off**"
+msgstr "los valores de los temporizadores en hexadecimal, y **on** u **off**"
+
+msgid "**Ch3**"
+msgstr "**Ch3**"
+
+msgid "the mode of channel 3: **off**, **special** or **CSM**"
+msgstr "el modo del canal 3: **off**, **special** o **CSM**"
+
+msgid "**1**, **2**, **3**"
+msgstr "**1**, **2**, **3**"
+
+msgid "tabs for the three FM channels"
+msgstr "pestañas para los tres canales FM"
+
+msgid "**off**"
+msgstr "**off**"
+
+msgid "tick to silence this FM channel"
+msgstr "márcalo para silenciar este canal FM"
+
+msgid "**Alg**, **Fb**"
+msgstr "**Alg**, **Fb**"
+
+msgid "the algorithm and the feedback of the channel"
+msgstr "el algoritmo y la realimentación del canal"
+
+msgid "**Bk/Fq**"
+msgstr "**Bk/Fq**"
+
+msgid "the block and frequency of the channel"
+msgstr "el bloque y la frecuencia del canal"
+
+msgid "**Out**"
+msgstr "**Out**"
+
+msgid "the channel's output now"
+msgstr "la salida actual del canal"
+
+msgid ""
+"Under them is a row for each operator, **Op1** to **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** and "
+"**EG** are the operator's register fields: click one and type a new value"
+" in hex. **St** is the state of the operator's envelope (**OFF**, "
+"**ATK**, **DEC**, **SUS** or **REL**), **Bk/Fq** its block and frequency,"
+" and **Lev** its envelope level, where a bigger number is louder. A `*` "
+"in the last column marks the operators that reach the output in the "
+"channel's algorithm."
+msgstr ""
+"Debajo hay una fila por cada operador, de **Op1** a **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** y **EG** "
+"son los campos de registro del operador: haz clic en uno y escribe un "
+"valor nuevo en hexadecimal. **St** es el estado de la envolvente del "
+"operador (**OFF**, **ATK**, **DEC**, **SUS** o **REL**), **Bk/Fq** su "
+"bloque y frecuencia, y **Lev** su nivel de envolvente, donde un número "
+"mayor suena más fuerte. Un `*` en la última columna marca los operadores "
+"que llegan a la salida en el algoritmo del canal."
+
+msgid "Wave and Beeper"
+msgstr "Wave and Beeper"
+
+msgid ""
+"The wave box at the bottom shows the sound the machine puts out, all "
+"sources mixed: the sound chips, the beeper and the rest. While the "
+"machine runs it holds the last 40 milliseconds, enough to see a tune "
+"move. While the machine stands still it holds the last 2 milliseconds, "
+"fine enough to count the edges of a beeper routine one step at a time."
+msgstr ""
+"El cuadro de onda de abajo muestra el sonido que produce la máquina, con "
+"todas las fuentes mezcladas: los chips de sonido, el beeper y lo demás. "
+"Mientras la máquina funciona contiene los últimos 40 milisegundos, "
+"suficiente para ver moverse una melodía. Mientras la máquina está parada "
+"contiene los últimos 2 milisegundos, con detalle suficiente para contar "
+"los flancos de una rutina de beeper paso a paso."
+
+msgid ""
+"The number beside **Wave** is the highest level in the box, in hex, "
+"followed by the time the box holds. The scale at the left marks the "
+"levels."
+msgstr ""
+"La cifra junto a **Wave** es el nivel más alto del cuadro, en "
+"hexadecimal, seguida del tiempo que abarca el cuadro. La escala de la "
+"izquierda marca los niveles."
+
+msgid ""
+"**Fit** - centers the wave and scales the box to it, so quiet sound fills"
+" the box too. With **Fit** off, the box keeps one fixed scale."
+msgstr ""
+"**Fit** — centra la onda y ajusta la escala del cuadro a ella, para que "
+"un sonido bajo también llene el cuadro. Con **Fit** desactivado, el "
+"cuadro mantiene una escala fija."
+
+msgid ""
+"**Log** - draws the wave on a curve, so a quiet tune is still visible "
+"beside a loud one."
+msgstr ""
+"**Log** — dibuja la onda sobre una curva, para que una melodía baja siga "
+"viéndose junto a una fuerte."
+
+msgid "**Beeper** is a bar of the beeper's level."
+msgstr "**Beeper** es una barra con el nivel del beeper."
+
+msgid "Example"
+msgstr "Example"
+
+msgid "Watch the AY registers while music plays"
+msgstr "Watch the AY registers while music plays"
+
+msgid "Choose **ZX Spectrum 128K** and pick **128 BASIC** in its menu."
+msgstr "Elige **ZX Spectrum 128K** y selecciona **128 BASIC** en su menú."
+
+msgid ""
+"Choose **Tools > Sound Chips**. The **Sound Chips** window opens on "
+"**PSG1**."
+msgstr ""
+"Elige **Tools > Sound Chips**. Se abre la ventana **Sound Chips** en "
+"**PSG1**."
+
+msgid "Type `PLAY \"cdefgab\"` and press Enter."
+msgstr "Escribe `PLAY \"cdefgab\"` y pulsa Enter."
+
+msgid ""
+"Watch channel A: its **Period** changes with each note, its **Mixer** "
+"starts with `T` for the tone, and its **Lev** bar rises and falls. The "
+"wave box shows the square wave of the tone."
+msgstr ""
+"Observa el canal A: su **Period** cambia con cada nota, su **Mixer** "
+"empieza por `T` del tono, y su barra **Lev** sube y baja. El cuadro de "
+"onda muestra la onda cuadrada del tono."
+
+msgid ""
+"Tick **Mute** on the A row and play again: the registers still change "
+"with each note, but you hear nothing."
+msgstr ""
+"Marca **Mute** en la fila A y vuelve a tocar: los registros siguen "
+"cambiando con cada nota, pero no oyes nada."
+
+msgid "Untick **Mute** to hear the channel again."
+msgstr "Desmarca **Mute** para volver a oír el canal."
+
+msgid "AY"
+msgstr "AY"
+
+msgid "registers"
+msgstr "registros"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "FM"
+msgstr "FM"
+
+msgid "YM2203"
+msgstr "YM2203"
+
+msgid "wave box"
+msgstr "cuadro de onda"
+
+msgid "beeper"
+msgstr "beeper"
+
+msgid "level"
+msgstr "nivel"
+

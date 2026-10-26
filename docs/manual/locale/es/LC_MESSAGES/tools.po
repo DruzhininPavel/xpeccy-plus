@@ -1,0 +1,130 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Tools menu"
+msgstr "Tools menu"
+
+msgid ""
+"The **Tools** menu holds the windows for looking into the machine and "
+"changing it. The right-click menu over the picture has the same list "
+"under **Tools**."
+msgstr ""
+"El menú **Tools** reúne las ventanas para mirar dentro de la máquina y "
+"cambiarla. El menú del clic derecho sobre la imagen tiene la misma lista "
+"en **Tools**."
+
+#, python-brace-format
+msgid ""
+"{icon}`cheats` **Cheats...** - trainers and pokes for the program that "
+"runs; see [Cheats](cheats.md)."
+msgstr ""
+"{icon}`cheats` **Cheats...** — entrenadores y POKE para el programa en "
+"marcha; consulta [Cheats](cheats.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`bug` **Debugger** - stops the machine and shows what is inside it;"
+" see [Debugger](debugger.md)."
+msgstr ""
+"{icon}`bug` **Debugger** — detiene la máquina y muestra lo que hay "
+"dentro; consulta [Debugger](debugger.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`objective` **Watcher** - registers and memory, followed while the "
+"machine runs; see [Watcher](debugger-watcher.md)."
+msgstr ""
+"{icon}`objective` **Watcher** — registros y memoria, seguidos mientras la"
+" máquina funciona; consulta [Watcher](debugger-watcher.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`rulers` **Screen** and {icon}`note` **Sound Chips** - two panels "
+"of the Debugger in windows of their own, described below."
+msgstr ""
+"{icon}`rulers` **Screen** y {icon}`note` **Sound Chips** — dos paneles "
+"del Debugger en ventanas propias, descritos más abajo."
+
+msgid "Screen and Sound Chips windows"
+msgstr "Screen and Sound Chips windows"
+
+msgid "![The Screen window](images/dbg-screen-window.png)"
+msgstr "![La ventana Screen](images/dbg-screen-window.png)"
+
+msgid "The Screen window"
+msgstr "La ventana Screen"
+
+msgid "![The Sound Chips window](images/dbg-sound-window.png)"
+msgstr "![La ventana Sound Chips](images/dbg-sound-window.png)"
+
+msgid "The Sound Chips window"
+msgstr "La ventana Sound Chips"
+
+msgid ""
+"**Tools > Screen** and **Tools > Sound Chips** move the **Screen** and "
+"**Sound Chip** panels out of the Debugger into windows of their own. The "
+"same command again puts the panel back. In the Classic preset the keys "
+"are Alt+S and Alt+A; the Modern preset has no keys for them."
+msgstr ""
+"**Tools > Screen** y **Tools > Sound Chips** sacan los paneles **Screen**"
+" y **Sound Chip** del Debugger a ventanas propias. El mismo comando otra "
+"vez devuelve el panel. En el preajuste Classic las teclas son Alt+S y "
+"Alt+A; el preajuste Modern no tiene teclas para ellos."
+
+#, python-brace-format
+msgid ""
+"The button at the top right of each panel, {icon}`display` **Show in its "
+"own window**, does the same. In the window it is pressed in; click it "
+"again, or close the window, to put the panel back in the Debugger. While "
+"the panel is out, its tab in the Debugger says so, with a **Bring it "
+"back** or **Bring them back** button."
+msgstr ""
+"El botón de arriba a la derecha de cada panel, {icon}`display` **Show in "
+"its own window**, hace lo mismo. En la ventana está pulsado; haz clic en "
+"él otra vez, o cierra la ventana, para devolver el panel al Debugger. "
+"Mientras el panel está fuera, su pestaña en el Debugger lo indica, con un"
+" botón **Bring it back** o **Bring them back**."
+
+msgid ""
+"The windows work without the Debugger: they follow the machine while the "
+"machine runs, one picture a frame (in fast mode, one in ten frames). The "
+"settings are the same as in the panel. Each window keeps its place and "
+"size, and a window that was open when you quit opens again at the next "
+"start."
+msgstr ""
+"Las ventanas funcionan sin el Debugger: siguen a la máquina mientras la "
+"máquina está en marcha, una imagen por fotograma (en modo rápido, una "
+"cada diez fotogramas). Los ajustes son los mismos que en el panel. Cada "
+"ventana conserva su posición y su tamaño, y una ventana que estaba "
+"abierta al salir se vuelve a abrir en el siguiente arranque."
+
+msgid "Tools"
+msgstr "Tools"
+
+msgid "Screen window"
+msgstr "ventana Screen"
+
+msgid "Sound Chips window"
+msgstr "ventana Sound Chips"
+
+msgid "Show in its own window"
+msgstr "Show in its own window"
+
