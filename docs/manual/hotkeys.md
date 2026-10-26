@@ -1,4 +1,12 @@
-# Hotkeys
+# Hotkeys page
+
+```{index} Hotkeys page
+```
+
+![The Hotkeys page](images/options-hotkeys.png)
+
+The keys of every command, in the Modern or Classic preset or one of your own. See
+[Hotkeys page](hotkeys.md).
 
 ```{index} hotkeys, Hotkey List
 ```

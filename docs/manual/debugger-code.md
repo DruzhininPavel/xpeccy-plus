@@ -1,4 +1,4 @@
-# Code and labels
+# Disasm panel
 
 The **Disasm** panel of the Debugger shows memory as Z80 instructions, the way the CPU
 sees it now. You can move through it, change bytes and instructions, give addresses names
@@ -92,7 +92,7 @@ These commands have keys of their own, listed in
 
 A click on a register's name in the **CPU** panel takes the listing to the address the
 register holds. A right-click on the name does the same for the **DUMP** panel (see
-[Memory](debugger-memory.md)).
+[DUMP panel](debugger-memory.md)).
 
 ### Typing an address
 
@@ -185,7 +185,7 @@ The {icon}`label` Labels menu of the toolbar has:
 When you type a name in the address or command column, after the second letter a list of
 the labels that contain those letters drops down. Enter picks the first one, or pick
 another with the arrow keys or the mouse. The same list appears in the
-[Breakpoint Editor](debugger-breakpoints.md).
+[The Breakpoint Editor](debugger-breakpoints.md#the-breakpoint-editor).
 
 ### Label files
 
@@ -239,7 +239,7 @@ when there is none.
 A program can also come with its labels. With **Auto-load labels** ticked on the
 **Debugger** page of **Options**, opening a file also loads the `.labels` file of the same
 name from the same folder. These labels are in effect until the next file is opened. See
-[Opening a file](files.md). From the command line, `-l` loads a labels file (see
+[Opening a file](files.md#opening-a-file). From the command line, `-l` loads a labels file (see
 [Command line](command-line.md#debugging)).
 
 ### The Labels List
@@ -285,7 +285,7 @@ With a block selected:
 - Ctrl+C copies the block as assembler text, ready to paste into a source file. With no
   block, it copies the cursor row;
 - **Fill...** in the {icon}`other` Tools menu opens with the block's start and end filled
-  in (see [Memory](debugger-memory.md)).
+  in (see [DUMP panel](debugger-memory.md)).
 
 ## How memory is shown
 
@@ -331,11 +331,11 @@ The marks, the labels and the comments are kept together in a memory map file: s
 
 | Button | What is in it |
 |---|---|
-| {icon}`stop` **Breakpoints** | **Fetch break**, **Read break**, **Write break** for the cursor row or the block. See [Breakpoints and watching](debugger-breakpoints.md) |
+| {icon}`stop` **Breakpoints** | **Fetch break**, **Read break**, **Write break** for the cursor row or the block. See [Breakpoints panel](debugger-breakpoints.md) |
 | {icon}`label` **Labels** | **Show labels**, **Load labels**, **Save labels**, **Labels list** |
 | {icon}`bars` **View** | **Opcode**, **Byte**, **ASCII**, **Word**, **Address** |
-| {icon}`arrGreen` **Trace** | running the program step by step, see [The Debugger](debugger.md) |
-| {icon}`other` **Tools** | **Search**, **Fill...**, **Sprite scanner** (see [Memory](debugger-memory.md)), **Keyboard**, **Watcher** |
+| {icon}`arrGreen` **Trace** | running the program step by step, see [Debugger](debugger.md) |
+| {icon}`other` **Tools** | **Search**, **Fill...**, **Sprite scanner** (see [DUMP panel](debugger-memory.md)), **Keyboard**, **Watcher** |
 | {icon}`settings` **Options** | how the listing looks and works, see below |
 | {icon}`refresh` (circular arrows) | **Reload snapshot & labels** |
 | {icon}`floppy` (floppy disk) | **Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save map** |
@@ -358,7 +358,7 @@ A right-click on the listing opens a shorter menu: **Breakpoints**, **View**,
 - **Block separator** - the empty row after each return and jump. On by default.
 - **Show segment** - addresses as the memory and page they are in: `RAM:05:0000` is the
   first byte of RAM page 5, `ROM:00:0038` a byte of ROM page 0, and `DIV:` a byte of a
-  [divMMC](disks.md#divmmc)'s EEPROM or RAM. Off each time the program starts.
+  [divMMC](divmmc.md)'s EEPROM or RAM. Off each time the program starts.
 - **Allow ROM wr** - lets the listing, the dump, the filler and a loaded dump write into
   ROM and into a divMMC's EEPROM.
 - **Runtime mapping**, **Clear mapping** - see [How memory is shown](#how-memory-is-shown).
@@ -394,7 +394,7 @@ A memory map, a `.xmap` file, keeps what you have worked out about a program:
 Loading a map replaces all label sets and comments. Comments are only kept in a memory map,
 never in a labels file, so save a map when you have written comments. A map does not hold
 breakpoints: they have a file of their own (see
-[Breakpoints and watching](debugger-breakpoints.md)).
+[Breakpoints panel](debugger-breakpoints.md)).
 
 From the command line, `--xmap` loads a map at start (see
 [Command line](command-line.md#debugging)).
@@ -405,7 +405,7 @@ From the command line, `--xmap` loads a map at start (see
 ```
 
 The {icon}`refresh` button with the circular arrows opens the last file again, the way it
-was opened (see [Opening a file](files.md)), and reads again the labels file you loaded.
+was opened (see [Opening a file](files.md#opening-a-file)), and reads again the labels file you loaded.
 Then the listing goes to PC. Use it after building a new version of your program: the new
 code and its new labels come in with one click. The **Reload file** hotkey does the same;
 no key is set for it by default.
@@ -424,7 +424,6 @@ On a 48K, at the BASIC prompt:
 A bold `beep_it` row now stands above 8010. Go back to 8000: the row reads
 `CALL beep_it`. Put the cursor on it and use **Jump to operand**: the listing goes to
 `beep_it`. **Return** brings you back.
-
 
 ## Example: mark a table as data
 

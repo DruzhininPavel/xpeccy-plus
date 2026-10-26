@@ -1,4 +1,4 @@
-# The Debugger
+# Debugger
 
 ```{index} Debugger
 ```
@@ -8,10 +8,8 @@ CPU registers, the memory, the stack and the state of the devices. From there yo
 program one instruction at a time, change registers and memory, and set breakpoints that
 stop the machine where you want it.
 
-This chapter is about the window, running and stepping, the CPU registers and the small
-state panels. The rest has chapters of its own: [Code and labels](debugger-code.md),
-[Memory](debugger-memory.md), [Breakpoints and watching](debugger-breakpoints.md) and
-[Device panels](debugger-devices.md).
+This page is about the window, opening and closing it, and running and stepping. Each panel
+has a page of its own, listed at the end of [The panels](#the-panels).
 
 ## The window
 
@@ -20,16 +18,16 @@ state panels. The rest has chapters of its own: [Code and labels](debugger-code.
 
 ![The Debugger](images/dbg-window.png)
 
-1. **CPU** - the registers and flags. See [The CPU panel](#the-cpu-panel).
+1. **CPU** - the registers and flags. See [CPU panel](debugger-cpu.md).
 2. **Disasm** - the program as code, with the Debugger's buttons and the T-state counter
-   above it. See [Code and labels](debugger-code.md).
+   above it. See [Disasm panel](debugger-code.md).
 3. **DUMP** - memory as bytes, with **REG-DUMP**, **FDD** and **CMOS** on tabs behind it.
 4. **Breakpoints** - the list of breakpoints, with **Screen**, **Sound Chip**, **Tape**,
    **FDC**, **Heat map** and **Palette** on tabs behind it. On a ZX Evolution, **ZX Evo**
    is there in place of **Palette**.
 5. **MEMMAP** - the memory banks, the watched ports and the state of the machine. See
-   [The MEMMAP panel](#the-memmap-panel).
-6. **STACK** - the words on the stack. See [The STACK panel](#the-stack-panel).
+   [MEMMAP panel](debugger-memmap.md).
+6. **STACK** - the words on the stack. See [STACK panel](debugger-stack.md).
 
 Most pictures of the Debugger chapters show it stopped in a game, Exolon (Raffaele Cecco,
 Hewson, 1987), with three labels and three breakpoints set for it.
@@ -50,7 +48,7 @@ Open the Debugger in any of these ways:
 - `-d` on the command line opens it as soon as the program starts (see
   [Command line](command-line.md#debugging));
 - a breakpoint opens it by itself when the machine reaches it (see
-  [Breakpoints and watching](debugger-breakpoints.md)).
+  [Breakpoints panel](debugger-breakpoints.md)).
 
 While the Debugger is open, the machine stands still. There is no sound, fast mode is
 switched off, and keys pressed in the main window do not reach the machine. The picture in
@@ -74,23 +72,23 @@ the panel in front is in its title bar.
 
 | Panel | What it shows | Explained in |
 |---|---|---|
-| **CPU** | the CPU registers and flags | [The CPU panel](#the-cpu-panel) |
-| **Disasm** | the program as code | [Code and labels](debugger-code.md) |
-| **DUMP** | memory as bytes and text | [Memory](debugger-memory.md) |
-| **REG-DUMP** | the memory the registers point at | [Memory](debugger-memory.md) |
-| **CMOS** | the clock chip's memory | [Device panels](debugger-devices.md#cmos) |
-| **Heat map** | how often each memory cell is read, written and run | [Memory](debugger-memory.md) |
-| **Breakpoints** | the breakpoints | [Breakpoints and watching](debugger-breakpoints.md) |
-| **Screen** | a ZX screen drawn from memory | [Device panels](debugger-devices.md) |
-| **Sound Chip** | the registers of the sound chips | [Device panels](debugger-devices.md) |
-| **Tape** | the tape's state and the signals in and out | [Device panels](debugger-devices.md) |
-| **FDC** | the floppy disk controller and the drive | [Device panels](debugger-devices.md) |
-| **FDD** | the bytes on a track of a floppy disk | [Device panels](debugger-devices.md) |
-| **Palette** | the colors of the machine's palette | [Device panels](debugger-devices.md) |
-| **ZX Evo** | the video and memory hardware of a ZX Evolution | [Device panels](debugger-devices.md#zx-evo) |
-| **ZX Next** | the registers, sprites, copper, layers and DMA of a ZX Spectrum Next | [Device panels](debugger-devices.md#zx-next) |
-| **MEMMAP** | the memory banks, ports and signals | [The MEMMAP panel](#the-memmap-panel) |
-| **STACK** | the words on the stack | [The STACK panel](#the-stack-panel) |
+| **CPU** | the CPU registers and flags | [CPU panel](debugger-cpu.md) |
+| **Disasm** | the program as code | [Disasm panel](debugger-code.md) |
+| **DUMP** | memory as bytes and text | [DUMP panel](debugger-memory.md) |
+| **REG-DUMP** | the memory the registers point at | [DUMP panel](debugger-memory.md) |
+| **CMOS** | the clock chip's memory | [CMOS panel](debugger-cmos.md) |
+| **Heat map** | how often each memory cell is read, written and run | [Heat map panel](debugger-heatmap.md) |
+| **Breakpoints** | the breakpoints | [Breakpoints panel](debugger-breakpoints.md) |
+| **Screen** | a ZX screen drawn from memory | [Screen panel](debugger-screen.md) |
+| **Sound Chip** | the registers of the sound chips | [Sound Chip panel](debugger-sound-chip.md) |
+| **Tape** | the tape's state and the signals in and out | [Tape panel](debugger-tape.md) |
+| **FDC** | the floppy disk controller and the drive | [FDC panel](debugger-fdc.md) |
+| **FDD** | the bytes on a track of a floppy disk | [FDD panel](debugger-fdd.md) |
+| **Palette** | the colors of the machine's palette | [Palette panel](debugger-palette.md) |
+| **ZX Evo** | the video and memory hardware of a ZX Evolution | [ZX Evo panel](debugger-zx-evo.md) |
+| **ZX Next** | the registers, sprites, copper, layers and DMA of a ZX Spectrum Next | [ZX Next panel](debugger-zx-next.md) |
+| **MEMMAP** | the memory banks, ports and signals | [MEMMAP panel](debugger-memmap.md) |
+| **STACK** | the words on the stack | [STACK panel](debugger-stack.md) |
 
 **CMOS** is there only on machines that have a clock chip: the ZX Evolution with BaseConf
 or TSConf, the Pentagon 1024, the Profi v5, and any machine with a SMUC. **FDC** and **FDD**
@@ -101,7 +99,7 @@ there only on a ZX Spectrum Next.
 **Screen** and **Sound Chip** can also be windows of their own: **Tools > Screen** and
 **Tools > Sound Chips** open them, and they work while the machine runs. **ZX Evo** and
 **ZX Next** can be too, from the {icon}`display` button at the top right of the panel. See
-[Device panels](debugger-devices.md).
+[Device panels](#device-panels).
 
 ### Arranging the panels
 
@@ -120,6 +118,64 @@ starts. To get the arrangement it ships with, choose **Reset panel layout** from
 {icon}`settings` **Options** button over the listing. This command also brings the window
 back to its original size.
 
+### Device panels
+
+```{index} Debugger; device panels
+```
+
+Besides the CPU and the memory, the Debugger shows the state of the machine's devices: the
+screen, the sound chips, the tape, the floppy disk controller, the clock chip and the
+palette, and on a ZX Evolution or a ZX Spectrum Next its video hardware. Each is a panel of its own, on a tab
+beside **Breakpoints** or **DUMP**. Like every panel, they show the state the machine stopped in and change with each step.
+
+The **Screen** and **Sound Chip** panels can also be windows of their own that work while
+the machine runs: see [Screen and Sound Chips windows](tools.md#screen-and-sound-chips-windows).
+So can the **ZX Evo** and **ZX Next** panels: see
+[The ZX Evolution window](debugger-zx-evo.md#the-zx-evolution-window).
+
+| Panel | Shown on | Use it to |
+|---|---|---|
+| **Screen** | every machine | see a screen in memory and find the address of a dot |
+| **Sound Chip** | every machine | read and change the registers of the AY and YM chips |
+| **Tape** | every machine | see the tape signal around the current position |
+| **FDC** | a machine with a disk interface | see the registers of the disk controller and the drive |
+| **FDD** | a machine with a disk interface | read the raw bytes of a disk track |
+| **CMOS** | a machine with a clock chip | read and change the memory of the clock chip |
+| **Palette** | every machine but the ZX Evolution | see the colors of the machine's palette |
+| **ZX Evo** | a ZX Evolution, with TSConf or BaseConf | see what its video and memory hardware is set to, and hide TSConf layers |
+| **ZX Next** | a ZX Spectrum Next | see its registers, sprites, copper, layers, tilemap, palettes and DMA |
+
+**ZX Evo** and **ZX Next** are made for one machine each. On a ZX Evolution, **ZX Evo**
+takes the place of **Palette** and has a **Palette** tab of its own; on the Next,
+**Palette** stays beside **ZX Next**.
+
+### The pages of the panels
+
+The rest of this part of the manual has a page for each panel, and one for the
+**Watcher** window:
+
+```{toctree}
+:maxdepth: 2
+
+debugger-cpu
+debugger-code
+debugger-memory
+debugger-memmap
+debugger-stack
+debugger-heatmap
+debugger-breakpoints
+debugger-watcher
+debugger-screen
+debugger-sound-chip
+debugger-tape
+debugger-fdc
+debugger-fdd
+debugger-cmos
+debugger-palette
+debugger-zx-evo
+debugger-zx-next
+```
+
 ## The buttons over the listing
 
 A row of buttons above the **Disasm** panel holds the Debugger's menus. Hold the mouse over
@@ -130,14 +186,14 @@ a button to see its name. The menus that belong to the listing are described in 
 
 | Button | What is in it |
 |---|---|
-| {icon}`stop` **Breakpoints** | **Fetch break**, **Read break**, **Write break** on the line or block - see [Breakpoints and watching](debugger-breakpoints.md) |
-| {icon}`label` **Labels** | show, load, save and list labels - see [Code and labels](debugger-code.md) |
-| {icon}`bars` **View** | show the lines as **Opcode**, **Byte**, **ASCII**, **Word** or **Address** - see [Code and labels](debugger-code.md) |
+| {icon}`stop` **Breakpoints** | **Fetch break**, **Read break**, **Write break** on the line or block - see [Breakpoints panel](debugger-breakpoints.md) |
+| {icon}`label` **Labels** | show, load, save and list labels - see [Disasm panel](debugger-code.md) |
+| {icon}`bars` **View** | show the lines as **Opcode**, **Byte**, **ASCII**, **Word** or **Address** - see [Disasm panel](debugger-code.md) |
 | {icon}`arrGreen` **Trace** | the kinds of trace - see [Trace](#trace) |
-| {icon}`other` **Tools** | **Search**, **Fill...**, **Sprite scanner** ([Memory](debugger-memory.md)), **Keyboard** (the [Virtual Keyboard](input.md#virtual-keyboard)), **Watcher** ([Breakpoints and watching](debugger-breakpoints.md)) |
-| {icon}`settings` **Options** | how the listing looks, writing to ROM, runtime mapping ([Code and labels](debugger-code.md)), and **Reset panel layout** |
+| {icon}`other` **Tools** | **Search**, **Fill...**, **Sprite scanner** ([DUMP panel](debugger-memory.md)), **Keyboard** (the [Virtual Keyboard](view.md#virtual-keyboard)), **Watcher** ([Breakpoints panel](debugger-breakpoints.md)) |
+| {icon}`settings` **Options** | how the listing looks, writing to ROM, runtime mapping ([Disasm panel](debugger-code.md)), and **Reset panel layout** |
 | {icon}`refresh` **Reload snapshot & labels** | opens the last file again and its labels, as **File > Reload** does |
-| {icon}`floppy` (disk) | **Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save map** - see [Code and labels](debugger-code.md) and [Memory](debugger-memory.md) |
+| {icon}`floppy` (disk) | **Disasm to file**, **Load dump**, **Save dump**, **Load map**, **Save map** - see [Disasm panel](debugger-code.md) and [DUMP panel](debugger-memory.md) |
 
 ## Running and stepping
 
@@ -145,7 +201,7 @@ a button to see its name. The menus that belong to the listing are described in 
 ```
 
 These keys work while the Debugger has the focus. The **Hotkeys** page of **Options** lists
-them under **Debugger**, and changes them there (see [Hotkeys](hotkeys.md)).
+them under **Debugger**, and changes them there (see [Hotkeys page](hotkeys.md)).
 
 | Action | Modern | Classic | What it does |
 |---|---|---|---|
@@ -238,196 +294,6 @@ until you untick it. Ticking it starts the count again from 0.
 
 The count is the real time on the machine, with memory contention and the interrupts that
 came in between.
-
-## The CPU panel
-
-```{index} CPU panel, register, flag
-```
-
-![The CPU panel](images/dbg-cpu.png)
-
-The **CPU** panel shows the Z80 registers: PC, AF, BC, DE, HL, SP, the alternate set AF',
-BC', DE', HL', then IX, IY, IR, IM and the interrupt switches IFF1 and IFF2. Under them
-are the flags S, Z, 5, H, 3, P, N and C.
-
-A register that changed in the last step is marked in the **Changed** color of the
-**Debugger** page of **Options**. With **Split pairs** on, only the byte that changed is
-marked: after an instruction that changes only A, only the A half of AF lights up.
-
-### Changing registers
-
-```{index} register; changing
-```
-
-Click a value and type over it in hex. The change takes effect at once. In a value field:
-
-- Up and Down, or the mouse wheel, add or subtract 1;
-- PgUp and PgDn add or subtract 256;
-- X switches the field between hex and decimal.
-
-IFF1 and IFF2 are check boxes. Tick or untick a flag to change it in F.
-
-Click the name of a register to see, in the listing, the code at the address the register
-holds.
-Right-click the name to see that address in the **DUMP** panel.
-
-### Layouts
-
-```{index} CPU panel; layout, Split pairs
-```
-
-Right-click the panel's title bar to choose how the registers are laid out. A small dot in
-the corner of a title bar shows that the panel has such a menu.
-
-![The registers layout menu](images/dbg-cpu-menu.png)
-
-- **Auto** (the default) - one column when the panel is narrow, two when it is wide enough.
-  **Auto** also uses two columns when two panels stand side by side under the **CPU**
-  panel.
-- **1 column** - a register on each line.
-- **2 columns** - two on a line, each beside its pair: AF beside AF', PC beside SP.
-- **Wide** - a column for each kind: AF, BC, DE, HL; the alternate set; PC, SP, IX, IY; and
-  IR, IM, IFF1, IFF2. The flags are one more column beside them, under the title **Flags**.
-- **Split pairs** - mark only the byte that changed, as above. On by default.
-
-![The CPU panel in the Wide layout](images/dbg-cpu-wide.png)
-
-## The STACK panel
-
-```{index} STACK panel, Stack offset
-```
-
-![The STACK panel](images/dbg-stack.png)
-
-Each line of the **STACK** panel is a word in memory, starting near the address SP holds.
-The shaded line is the word at SP, named by its address. The lines above and below it are
-named by their distance from SP: `-02:`, `+02:`, `+04:` and so on. The panel shows as
-many lines as fit in its height.
-
-The two arrows at the top move the lines by a word. The first line can be from 16 bytes
-before SP to 16 bytes after it. Where the panel starts is the **Stack offset** on the **Debugger** page of **Options**:
-`-2` by default, so the word just above SP is in view too.
-
-## The MEMMAP panel
-
-```{index} MEMMAP panel, memory bank
-```
-
-![The MEMMAP panel](images/dbg-memmap.png)
-
-The **MEMMAP** panel holds a few small blocks, one under another. The **Debugger** page of
-**Options** sets which of them are shown.
-
-The rows at the top are the Z80's memory windows: four 16K banks on most machines, or the
-eight 8K MMU slots on a ZX Spectrum Next. They show the kind and page number, and let you
-put another page into a window. See
-[Memory](debugger-memory.md).
-
-```{index} FMAPS, TSConf; FMAPS
-```
-
-On the **ZX Evolution (TSConf)** a fifth row says where the FMAPS window is: `FM #0000`
-when port `15AF` (**FMAddr**) has switched it on at `#0000`, `FM off` when it is off. The
-window is for writing only: a write in its first `#0500` bytes also goes to the palette
-(CRAM, from `+#000`), the sprite descriptors (SFILE, from `+#200`) or the TSConf registers
-(from `+#400`, one byte for each port `#xxAF`), and a read gives what is in the bank. The
-row and these bytes in the dump are drawn in the **FMAPS** color; the tooltip of a byte
-in the dump says where a write to it goes.
-
-**PORTS** lists the watched ports and the last value on each. For a port whose value the
-machine keeps in a register, such as `7FFD` on a 128K, the value shown is that register's;
-for any other port it is the last byte read from it or written to it, and `--` until the
-port is used.
-
-```{index} SIGNALS
-```
-
-**SIGNALS** are four words that are bold while the signal is on:
-
-- **DOS** - the TR-DOS ROM is switched in;
-- **ROM** - the ROM bit of port `7FFD` is set; on a 128K that is the 48K BASIC ROM;
-- **CPM** - the machine is in its CP/M mode;
-- **INT** - an interrupt is waiting and the CPU will take it.
-
-```{index} FRAME, frame counter, Reset counter
-```
-
-**FRAME** counts the frames since the last reset. Right-click it and choose
-**Reset counter** to start it again from 0, for example to count the frames until
-something happens. Breakpoint conditions read the same number as `FRAME` (see
-[Breakpoints and watching](debugger-breakpoints.md)).
-
-```{index} RAY, beam position
-```
-
-**RAY** is where the beam is on the frame: X on the first line, Y on the second. X is bold
-during the line's blanking, Y during the frame's.
-
-### Watched ports
-
-```{index} Watched Ports, port; watched
-```
-
-Right-click **PORTS**, or any port under it, and choose **Watched ports...** to change the
-list.
-
-![The Watched Ports window](images/dbg-watched-ports.png)
-
-Each line is a port in hex. Four digits are a full address, matched as it is; two digits
-are a byte port, matched on the low byte alone. Untick a port to stop showing it while
-keeping it in the list. Of the buttons beside the list, {icon}`add` adds a port and
-{icon}`cancel` removes the selected one. Double-click a port to change it.
-
-The ports whose values the machine keeps in registers are added to the list automatically;
-untick them if you do not need them. The list is kept for the machine that is running. The
-**Ports** group of the **Debugger** page of **Options** is the same list.
-
-## The Debugger page of Options
-
-```{index} Debugger page, Debugger; font, Debugger; colors, State info, DB in row, DW in row, Max text length
-```
-
-![The Debugger page](images/options-debugger.png)
-
-**View**:
-
-- **Font** - the font of all the Debugger's panels. The {icon}`font` button beside it
-  picks one. The menus keep the font of the rest of the program.
-- **DB in row**, **DW in row**, **Max text length** - how many bytes, words or characters
-  one line of the listing holds when it shows data instead of code. See
-  [Code and labels](debugger-code.md).
-- **Stack offset** - where the **STACK** panel starts, from -16 to 16 bytes from SP. See
-  [The STACK panel](#the-stack-panel).
-
-**State info** - which blocks the **MEMMAP** panel shows: **Ports**, **Signals**, **Frame**
-and **Ray**. **Memmap** cannot be switched off: the panel's title bar, which you drag the
-panel by, is part of it.
-
-**Ports** - the watched ports of the machine that is running. See
-[Watched ports](#watched-ports).
-
-**Palette** - the Debugger's own colors, each with a background (**BGR**) and a text
-(**TXT**) color. Click a color to change it; right-click it to go back to the color of
-the interface style.
-
-| Color | Where it is used |
-|---|---|
-| **Header** | the title bars of the panels and the block names of **MEMMAP** |
-| **Changed** | a value that changed in the last step |
-| **PC** | the line of the listing at PC |
-| **Block** | a selected block in the listing and the dump |
-| **Break** | the lines that have a breakpoint |
-| **ID / Label** | the ID field of a disk track, and labels in the listing |
-| **Data** | the data of a disk sector |
-| **CRC** | the checksums on a disk track |
-| **Const** | constants in the listing |
-| **FMAPS** | the TSConf FMAPS window in the dump and **MEMMAP** |
-
-Choosing another interface style on the **Appearance** page puts these colors back to that
-style's own.
-
-**Misc** - **Auto-load labels**: opening an image also loads a `.labels` file of the same
-name, if there is one. See [Code and labels](debugger-code.md).
 
 ## Examples
 

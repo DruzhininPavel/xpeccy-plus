@@ -25,13 +25,20 @@ the system reports - Ukrainian is `uk`), and its name and title in `LANG_NAMES` 
 **What stays English.** The program is English only, so the reader must find on screen
 exactly the words the manual names. Every name the program shows - menus and their items,
 windows, panels, tabs, Options pages, groups, buttons, check boxes, messages - stays
-English: in bold, in index terms, in a heading whose section is about that one element
-(**Cheats**, **Rewind**, **Fast loading**), and in the text of a link to such a section.
-A heading that names a topic is translated, even if the word is also on screen (Sound,
-Picture, Memory). Translate the names a picture's legend gives to parts of a window
-(toolbar, scrollbar, listing) unless the program shows them as text, and name the
-operating system's own windows as that system does in the reader's language. The rest is
-prose and is translated.
+English: in bold and in index terms. Every heading stays English too, page titles
+included, and so does the text of a link that names a page or a section by its title: the
+manual is laid out as the program is (a page per menu, per Options page, per Debugger
+panel), and the reader finds a section by the words on screen. Translate the names a
+picture's legend gives to parts of a window (toolbar, scrollbar, listing) unless the
+program shows them as text, and name the operating system's own windows as that system
+does in the reader's language. The rest is prose and is translated.
+
+**Where a thing is described.** The pages follow the program: the menu bar, a page per
+menu, the toolbar, the right-click menu, Options with a page per page, the command line, the
+Debugger with a page per panel. A command is described once, on the page of the menu it is
+in; the toolbar and the right-click menu link there. A setting is described on its Options
+page, and the menu's page links to it. A new menu, Options page or panel gets a page of its
+own in the same place.
 
 **Commits.** A change to the program that the reader sees changes its English chapter and
 pictures in the same branch, but in a commit of its own, `manual: ...`, never in a commit

@@ -1,7 +1,11 @@
-# Screenshots and recording
+# Capture menu
+
+```{index} Capture menu
+```
 
 The **Capture** menu saves what the machine shows and plays: still pictures, video, sound,
-and RZX recordings of a game as it is played.
+and RZX recordings of a game as it is played. Where the files go and what they look like is
+set in the **Screenshots** and **Recording** groups of the [Video page](options-video.md).
 
 ## Screenshots
 
@@ -20,39 +24,21 @@ apart. Use
 **Capture > Screenshot** while a series runs to stop it.
 
 The files go into the screenshots folder, named after the time they were taken:
-`xpeccy_153012_250.png` is 15:30:12 and 250 ms.
+`xpeccy_153012_250.png` is 15:30:12 and 250 ms. The folder, the format and the number of
+pictures in a series are set in [Screenshots](options-video.md#screenshots) on the
+**Video** page.
 
-### Screenshot settings
-
-```{index} Screenshot; format, Screenshot; folder, No border, SCR, Hobeta, PNG
-```
-
-The **Screenshots** group on the **Video** page of **Options**:
-
-- **Output** - the folder for the files; the {icon}`fileopen` button beside it picks one.
-  Your home folder by default.
-- **Format** - the kind of file, see below.
-- **Combo** ... **each** ... **frames** - how many pictures **Screenshot Series** takes, and
-  how many frames apart.
-- **No border** - the screen only, without the border around it.
-
-| Format | What is saved |
-|---|---|
-| **PNG**, **BMP**, **JPG** | the machine's picture at the window's size, without the shader |
-| **SCR** | the 6912 bytes of the machine's screen memory, to load back on a Spectrum |
-| **Hobeta** | the same screen memory as a Hobeta file (`.$C`), which goes onto a TR-DOS disk as `screen` |
-
-**SCR** and **Hobeta** hold only the standard Spectrum screen: a picture made in another
-video mode does not fit in them.
-
-## Video
+## Record Video
 
 ```{index} Record Video, video
 ```
 
 **Capture > Record Video** starts a video, and the same command again stops it. While it
 records, a blinking sign in the top right corner of the picture says so; the sign is not in
-the video. When the recording stops, the message **video saved:** names the file.
+the video. When the recording stops, the message **video saved:** names the file. Its
+size, codec and name are set in [Recording](options-video.md#recording) on the **Video**
+page, which can also start and stop a video by itself
+([Auto recording](options-video.md#auto-recording)).
 
 The video has the picture and the sound together, in an MP4 file by default. It is made by
 FFmpeg, a free program that is not part of Xpeccy+.
@@ -65,7 +51,7 @@ FFmpeg, a free program that is not part of Xpeccy+.
 Xpeccy+ looks for FFmpeg in the `ffmpeg` folder inside the
 [settings folder](getting-started.md#where-the-settings-are), then wherever your system
 finds programs (and on macOS in Homebrew's folders). To use another copy, give its path in
-the **FFmpeg** field of the **Recording** group; leave the field empty to let Xpeccy+ find it.
+the **FFmpeg** field of the [Recording](options-video.md#recording) group; leave the field empty to let Xpeccy+ find it.
 
 When FFmpeg is not found, **Record Video** opens the **Get FFmpeg** window instead (the
 {icon}`arrow-down` arrow button beside the **FFmpeg** field opens it too):
@@ -83,91 +69,7 @@ When FFmpeg is not found, **Record Video** opens the **Get FFmpeg** window inste
 
 When the window says **FFmpeg ... is ready**, close it and use **Record Video** again.
 
-### Recording settings
-
-```{index} video; settings, RAW frame, Real FPS
-```
-
-The **Recording** group on the **Video** page of **Options**:
-
-- **Source** - **RAW frame** records the machine's picture alone, with no shader and no
-  indicators. **Screen** records the window as you see it, shader and all.
-- **Scale** - how many times bigger the video is than the machine's picture, from
-  **Scale x1** to **Scale x8** (for **RAW frame** only).
-- **Real FPS** or **50 FPS** - **Real FPS** records at the machine's own frame rate, which
-  on most machines is a little different from 50. **50 FPS** records at exactly 50 frames
-  per second, and the sound is adjusted to match.
-- **Output** - the folder for the videos; your system's videos folder by default.
-- **FFmpeg** - see [Getting FFmpeg](#getting-ffmpeg).
-
-The size and frame rate of the video are shown beside these settings. The **Border**
-setting of the **Picture** group changes the size too.
-
-```{index} Recording: Advanced Settings, video; codec, MP4, MKV, NVENC
-```
-
-{icon}`settings` **Advanced settings** opens **Recording: Advanced Settings**:
-
-- **Video** - **Container** (**MP4** or **MKV**), **Codec**, **Preset** (slower makes a
-  smaller file, but can slow the machine down), **Quality (CRF)** (lower is better; 18 looks
-  lossless), **Color**, and **Blend up to 60 fps**. The codecs are **H.264** and **H.265**,
-  **AV1** and the graphics card encoders (**NVENC**, **AMF**, **QSV**) when your FFmpeg and
-  computer can use them, and **FFV1, lossless**, which is always saved as MKV.
-- **Sound** - **Codec** (**Auto**, **AAC** or **Opus**) and its bit rate. **Keep pitch at
-  50 FPS** keeps the notes in tune when **50 FPS** speeds the sound up a little.
-- **File name template** - the name of the video file; the name it gives right now is shown
-  under it.
-- **Auto recording** - see below.
-- **FFmpeg** - **Extra options** for the encoder, **Video override** and
-  **Sound override** to replace the options Xpeccy+ sets, and the whole FFmpeg command as
-  it will run.
-
-```{index} File name template, video; file name
-```
-
-The file name template can contain these keys:
-
-| Key | Becomes |
-|---|---|
-| `%d` | the date, `20260929` |
-| `%t` | the time, `153012` |
-| `%image` | the name of the file in use (snapshot, tape, disk or divMMC card), or the machine's name when there is none |
-| `%machine` | the machine's name |
-
-The default is `xpeccy-plus_%d_%t_%image`. The name is made when the recording stops, so
-`%image` is the last file that was in use.
-
-### Auto recording
-
-```{index} Auto recording, Autostart at, Autostop at
-```
-
-**Auto recording** starts and stops a video by itself, to catch a demo or a game from its
-first frame.
-
-- **Autostart at** - starts a video when the condition is met: **Code in RAM** (the first
-  program code the machine runs from RAM, which is where a loaded program starts), or the
-  CPU reaching an address: **PC ==**, **PC >=** or **PC <=**, with the address beside it
-  (`#8000`, `$8000`, `0x8000` or `32768`). A video is started this way once after each
-  reset. When you turn this on in Options, it waits for the next reset.
-- **Autostop at** - stops any video, including one started by hand: at a **Reset**, or
-  when the CPU reaches an address as above.
-
-**Record Video** used by hand always overrides these settings: after a video is started or
-stopped by hand, auto recording does not start one again until the next reset.
-
-The **?** button lists the command-line switches for recording:
-
-- `--video-out <file>` - record from the start into this file; `.mp4` or `.mkv` picks the
-  container.
-- `--video-auto`, `--no-video-auto` - turn auto recording on or off for this run, with the
-  conditions set in Options.
-- `--video-autostart <at>`, `--video-autostop <at>` - the conditions for this run: `ram`,
-  `reset`, or an address such as `==#6000` or `">=#8000"`.
-
-They hold for that run only. See [Command line](command-line.md).
-
-## Sound to WAV
+## Record Sound to WAV
 
 ```{index} Record Sound to WAV, WAV; recording sound, sound; recording
 ```
@@ -178,7 +80,7 @@ plays into it, until you choose the command again. The file is 16-bit stereo, at
 **stop WAV output** confirm it. `--wav-out <file>` on the command line records from the
 start.
 
-## RZX recordings
+## RZX
 
 ```{index} RZX
 ```
@@ -229,7 +131,7 @@ While you record:
   set when the machine runs again.
 - **Rollback to Bookmark** - go back to the last bookmark, or to the start when there is
   none, and play on from there; what was recorded after that point is thrown away.
-  [Rewind](time.md) takes the recording back the same way.
+  [Rewind](time.md#rewind) takes the recording back the same way.
 - **Stop and Finalize** - end the recording and save it without the bookmarks: this is the
   file to share.
 
