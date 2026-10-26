@@ -356,7 +356,13 @@ MainWin::MainWin(QMainWindow* frm) {
 	// otherwise leave the destructor deleting an uninitialized pointer.
 	vtx_shd = NULL;
 	frg_shd = NULL;
+	if (conf.vid.gl) {
+		glw = new xGLView(this);
+		glw->lower();
+	}
 #endif
+	// the picture covers it all, or the view does: no background under them
+	setAttribute(Qt::WA_OpaquePaintEvent);
 
 // a legacygl code must be here, else the main process doesn't finish properly (???)
 #if USELEGACYGL
@@ -994,6 +1000,7 @@ void MainWin::rzxStateChanged(int state) {
 // effect at once, even while the machine is paused.
 void MainWin::uploadFrame() {
 #if defined(USEOPENGL) && !BLOCKGL
+	if (!glw) return;
 	Computer* comp = conf.zx;
 	Video* vid = comp->vid;
 	// GL_UNPACK_ROW_LENGTH and friends are core in GL 3.3 and GLES 3.0, which
@@ -1017,10 +1024,11 @@ void MainWin::uploadFrame() {
 // without it is undefined and crashes some drivers.
 void MainWin::uploadOffPaint() {
 #if defined(USEOPENGL) && !BLOCKGL
-	makeCurrent();
+	if (!glw) return;
+	glw->makeCurrent();
 	glBindTexture(GL_TEXTURE_2D, texids[curtex]);
 	uploadFrame();
-	doneCurrent();
+	glw->doneCurrent();
 #endif
 }
 
@@ -1028,7 +1036,15 @@ void MainWin::uploadOffPaint() {
 void MainWin::presentFrame() {
 	blockSignals(true);
 	paintOwed = 1;
+#if defined(USEOPENGL) && !BLOCKGL
+	if (glw) {
+		glw->repaint();
+	} else {
+		repaint();
+	}
+#else
 	repaint();
+#endif
 	blockSignals(false);
 }
 
@@ -1057,7 +1073,7 @@ void MainWin::frame_timer() {
 	// a steady timer rate looks smoother.
 	if (conf.vid.lowLatency && !conf.emu.fast && !conf.emu.pause) return;
 #if defined(USEOPENGL) && !BLOCKGL
-	if (conf.emu.fast || conf.emu.pause) {
+	if (glw && (conf.emu.fast || conf.emu.pause)) {
 		// fast loading finishes a picture 30 times a second at most, and one
 		// upload of it is enough however often the window is painted
 		if (conf.emu.pause || (upSwaps != bufSwaps)) {
@@ -1079,13 +1095,15 @@ void MainWin::d_frame() {
 	if (conf.emu.fast) return;
 	upSwaps = -1;		// the texture the timer shows next is not this one
 #if defined(USEOPENGL) && !BLOCKGL
-	queue.append(texids[curtex]);
-	// Low latency keeps only the newest frame; buffered keeps a couple to
-	// smooth jitter (see paintEvent).
-	if (queue.size() > (conf.vid.lowLatency ? 1 : 2))
-		queue.takeFirst();
-	uploadOffPaint();
-	curtex++;
+	if (glw) {
+		queue.append(texids[curtex]);
+		// Low latency keeps only the newest frame; buffered keeps a couple to
+		// smooth jitter (see paintGLView).
+		if (queue.size() > (conf.vid.lowLatency ? 1 : 2))
+			queue.takeFirst();
+		uploadOffPaint();
+		curtex++;
+	}
 #endif
 	// Low latency: show the frame now. Buffered: let the timer show it.
 	if (conf.vid.lowLatency)
@@ -1102,12 +1120,44 @@ void MainWin::drawText(QPainter* pnt, int x, int y, const char* buf) {
 	}
 }
 
-// bug? QOpenGLWidget crash during show->event (ResizeEvent): calling random slot-signal connection
-// repaint/update causes recursion on QOpenGLWidget (whyyyyy?) even if there no paintEvent/paingGL
-// if paintEvent exists, paintGL do not called
-
+// No GL view: the picture is drawn here. Every paint draws it whole, from the
+// frame buffer - an expose, a menu closing as well as a new frame.
 void MainWin::paintEvent(QPaintEvent*) {
 #if defined(USEOPENGL) && !BLOCKGL
+	if (glw) return;		// under the view, nothing of this widget shows
+#endif
+	QPainter pnt(this);
+	paintPlain(pnt);
+	drawInputOsd(pnt);
+	drawIcons(pnt);
+}
+
+// The same buffer as the GL path, scaled here instead. No smooth transform, so
+// a dot stays a block of whole pixels. Black around it, as GL clears it.
+void MainWin::paintPlain(QPainter& pnt) {
+	const QRect pic(drawX, drawY, drawW, drawH);
+	for (const QRect& r : QRegion(rect()).subtracted(pic))
+		pnt.fillRect(r, Qt::black);
+	Computer* comp = conf.zx;
+	Video* vid = comp->vid;
+	// cut out under the lock and scaled after it: the emulation waits on it
+	const unsigned char* shown = frame_shown_lock();
+	QImage img = QImage(comp->flgDBG ? scrimg : shown, vid->full.x * 2, bufSize / bytesPerLine, bytesPerLine, QImage::Format_RGBA8888)
+		.copy(vid->lcut.x * 2, vid->lcut.y, vid->vsze.x * 2, vid->vsze.y);
+	frame_shown_unlock();
+	pnt.drawImage(pic, img);
+}
+
+// The view keeps the picture in its framebuffer and follows MainWin's size.
+void MainWin::resizeEvent(QResizeEvent*) {
+#if defined(USEOPENGL) && !BLOCKGL
+	if (glw) glw->setGeometry(rect());
+#endif
+}
+
+#if defined(USEOPENGL) && !BLOCKGL
+// The GL view's paint: the frame through the shader, then the indicators.
+void MainWin::paintGLView() {
 	// Qt paints the window on its own too - an expose, a menu closing. The
 	// framebuffer keeps the last frame for that, and the frame is drawn only
 	// when presentFrame() asks. Updates are not switched off instead: Qt then
@@ -1117,9 +1167,7 @@ void MainWin::paintEvent(QPaintEvent*) {
 	// it would show black until the next frame comes.
 	if (!paintOwed) return;
 	paintOwed = 0;
-#endif
-	QPainter pnt(this);
-#if defined(USEOPENGL) && !BLOCKGL
+	QPainter pnt(glw);
 	pnt.beginNativePainting();
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -1154,22 +1202,10 @@ void MainWin::paintEvent(QPaintEvent*) {
 	drawPicture();
 	glFlush();
 	pnt.endNativePainting();
-#else
-	// same buffer as the GL path, scaled here instead. No smooth transform, so
-	// a dot stays a block of whole pixels.
-	Computer* comp = conf.zx;
-	Video* vid = comp->vid;
-	// cut out under the lock and scaled after it: the emulation waits on it
-	const unsigned char* shown = frame_shown_lock();
-	QImage img = QImage(comp->flgDBG ? scrimg : shown, vid->full.x * 2, bufSize / bytesPerLine, bytesPerLine, QImage::Format_RGBA8888)
-		.copy(vid->lcut.x * 2, vid->lcut.y, vid->vsze.x * 2, vid->vsze.y);
-	frame_shown_unlock();
-	pnt.drawImage(QRect(drawX, drawY, drawW, drawH), img);
-#endif
 	drawInputOsd(pnt);
 	drawIcons(pnt);
 	pnt.end();
-#if defined(USEOPENGL) && !BLOCKGL && !ISLEGACYGL
+#if !ISLEGACYGL
 	if (vrec_wants_screen()) {
 		grabScreen();
 		// the sign is the user's alone: the picture under it is drawn again
@@ -1177,7 +1213,7 @@ void MainWin::paintEvent(QPaintEvent*) {
 		if (rec != osd_none) {
 			const qreal r = widgetDpr(this);
 			QRect slot = modeSlot();
-			QPainter top(this);
+			QPainter top(glw);
 			top.beginNativePainting();
 			glEnable(GL_SCISSOR_TEST);
 			glScissor(int(slot.x() * r), int((height() - slot.bottom() - 1) * r),
@@ -1194,6 +1230,7 @@ void MainWin::paintEvent(QPaintEvent*) {
 	}
 #endif
 }
+#endif
 
 // the frame, through the shader, where drawX/Y/W/H say
 void MainWin::drawPicture() {
@@ -1242,7 +1279,7 @@ void MainWin::grabScreen() {
 	int fw = int(width() * r + 0.5);
 	int fh = int(height() * r + 0.5);
 	QImage img(fw & ~1, fh & ~1, QImage::Format_RGBA8888);
-	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+	glBindFramebuffer(GL_FRAMEBUFFER, glw->defaultFramebufferObject());
 	glPixelStorei(GL_PACK_ALIGNMENT, 4);
 	glReadPixels(0, fh - img.height(), img.width(), img.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
 	vrec_screen(img);
@@ -1345,7 +1382,7 @@ bool MainWin::recStart(const QString& file) {
 	int sw = 0;
 	int sh = 0;
 #if defined(USEOPENGL) && !BLOCKGL && !ISLEGACYGL
-	if (conf.rec.source == VREC_SRC_SCREEN) {
+	if (glw && (conf.rec.source == VREC_SRC_SCREEN)) {
 		const qreal r = widgetDpr(this);
 		sw = int(width() * r + 0.5);
 		sh = int(height() * r + 0.5);
@@ -1546,6 +1583,12 @@ void MainWin::drawIcons(QPainter& pnt) {
 			pnt.setOpacity(1.0);
 		}
 		msgTimer--;
+		if (msgTimer == 0) {
+			msgHeld = false;
+			msg = msgNext;
+			msgTimer = msgNextTimer;
+			msgNextTimer = 0;
+		}
 	}
 // end
 }
@@ -1901,7 +1944,15 @@ void addLed(int x, int y, QString name, int time) {
 	}
 }
 
-void MainWin::setMessage(QString str, double dur) {
+// hold: the message stays its time out, and the last one that comes meanwhile
+// shows after it - one the user must see, not lost under a routine one
+void MainWin::setMessage(QString str, double dur, bool hold) {
+	if (msgHeld && (msgTimer > 0) && !hold) {
+		msgNext = str;
+		msgNextTimer = (int)(dur * 50);
+		return;
+	}
+	msgHeld = hold;
 	msgTimer = (int)(dur * 50);
 	msg = str;
 }
@@ -2778,7 +2829,7 @@ void MainWin::fillUserMenu() {
 	act = shdMenu->addAction("None");
 	act->setData("");
 	act->setCheckable(true);
-	if (conf.vid.shader.empty()) act->setChecked(true);
+	if (conf.vid.shader.empty() || !conf.vid.shd_support) act->setChecked(true);	// none is what runs
 #if defined(USEOPENGL) && !BLOCKGL
 	if (conf.vid.shd_support) {
 		foreach(QString nam, xres_list("shaders", QStringList() << "*.txt")) {

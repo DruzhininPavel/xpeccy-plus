@@ -122,7 +122,9 @@ the **Shader** list of **Options > Video**; **None** turns it off. The program c
 twenty shaders built in, and one of them is on by default.
 
 The shader is not used at **x1**, where there is no room for its effect. When the
-computer's graphics cannot run shaders, the list holds **None** only.
+computer's graphics cannot run shaders, the list holds **None** only. With no usable OpenGL at
+all, on an old graphics chip, the picture is drawn without it, and the window says so at
+the start; `--no-gl` does the same on purpose.
 
 ```{index} shader; own, GLSL
 ```

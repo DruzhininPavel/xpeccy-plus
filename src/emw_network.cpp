@@ -268,14 +268,14 @@ void MainWin::socketRead() {
 		// The picture is read from the framebuffer, where the last frame left
 		// it, and the window rendered around it: rendering the picture widget
 		// itself would clear its framebuffer.
-		if (!w) {
+		if (!w && glw) {
 			const qreal r = widgetDpr(this);
 			QImage img(int(width() * r + 0.5), int(height() * r + 0.5), QImage::Format_RGBA8888);
-			makeCurrent();
-			glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+			glw->makeCurrent();
+			glBindFramebuffer(GL_FRAMEBUFFER, glw->defaultFramebufferObject());
 			glPixelStorei(GL_PACK_ALIGNMENT, 4);
 			glReadPixels(0, 0, img.width(), img.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
-			doneCurrent();
+			glw->doneCurrent();
 			img.setDevicePixelRatio(r);
 			QRect scr(mapTo(frame, QPoint(0, 0)), size());
 			QRegion around = QRegion(frame->rect()).subtracted(scr);

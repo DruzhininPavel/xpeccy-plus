@@ -111,19 +111,46 @@ typedef struct {
 
 #ifdef USEOPENGL
 	#include <QtOpenGL>
-
-	#if ISLEGACYGL
-		class MainWin : public QGLWidget {
-	#else
+	#if !ISLEGACYGL
 		#include <QOpenGLWidget>
 		#include <QOpenGLBuffer>
 		#include <QOpenGLVertexArrayObject>
-		class MainWin : public QOpenGLWidget, protected QOpenGLFunctions {
 	#endif
+#endif
+
+class MainWin;
+
+#if defined(USEOPENGL) && !BLOCKGL
+// Whether the picture can go through OpenGL here; why not, when it cannot
+bool gl_probe(QString* why);
+
+// The picture through OpenGL: a child that covers MainWin and only draws.
+// Keys and the mouse go past it to MainWin. Made only when gl_probe() says
+// yes - with no context a GL widget takes the whole window down.
+#if ISLEGACYGL
+class xGLView : public QGLWidget {
 #else
-	class MainWin : public QWidget {
+class xGLView : public QOpenGLWidget {
+#endif
+	public:
+		xGLView(MainWin*);
+	protected:
+		void initializeGL() override;
+		void resizeGL(int, int) override;
+		void paintGL() override {}
+		void paintEvent(QPaintEvent*) override;
+	private:
+		MainWin* mw;
+};
+#endif
+
+#if defined(USEOPENGL) && !BLOCKGL && !ISLEGACYGL
+class MainWin : public QWidget, protected QOpenGLFunctions {
+#else
+class MainWin : public QWidget {
 #endif
 	Q_OBJECT
+	friend class xGLView;
 	public:
 		MainWin(QMainWindow*);
 		~MainWin();
@@ -132,7 +159,7 @@ typedef struct {
 		void addSatellite(QWidget*, bool allKeys = false);
 		int hotkeyOf(QKeyEvent*);
 		void hotkeysNote();
-		void setMessage(QString, double = 2.0);
+		void setMessage(QString, double = 2.0, bool hold = false);
 		void fillUserMenu();
 		void openMedia(const QString& path, int id, int drv, int run, bool pinned = false);
 		void padGame(const QString&);		// an image opened: player 1 takes its .pad, or its own table back
@@ -302,6 +329,9 @@ typedef struct {
 
 		int msgTimer;
 		QString msg;
+		bool msgHeld = false;	// msg stays its time out, see setMessage
+		QString msgNext;	// what came meanwhile, shown after it
+		int msgNextTimer = 0;
 
 		bool saveChanged(bool tape);
 		void updateHead();
@@ -518,14 +548,17 @@ typedef struct {
 		void focusOutEvent(QFocusEvent*) override;
 		void focusInEvent(QFocusEvent*) override;
 		void timerEvent(QTimerEvent*) override;
+		void resizeEvent(QResizeEvent*) override;
+		void paintPlain(QPainter&);
 #if defined(USEOPENGL) && !BLOCKGL
+		xGLView* glw = nullptr;		// the picture through OpenGL; none: drawn here, plain
 		unsigned curtex:2;
 		GLuint texids[4];
 		GLuint curtxid;
 		QList<GLuint> queue;
-		void initializeGL() override;
-		void resizeGL(int,int) override;
-		void paintGL() override;
+		void initializeGL();
+		void resizeGL(int,int);
+		void paintGLView();
 		void cleanupGL();
 #if ISLEGACYGL
 		QGLContext* cont;

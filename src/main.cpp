@@ -91,6 +91,7 @@ void help() {
 	printf("--video-autostart AT\tstart at code in ram, or the PC against an address: ram | ==#6000 | \">=#8000\"\n");
 	printf("--video-autostop AT\tstop at a reset, or the PC against an address: reset | ==#0000\n");
 	printf("--style\t\t\tMacOSX only: use native qt style, else 'fusion' will be forced\n");
+	printf("--no-gl\t\t\tdraw the picture without OpenGL, and so with no shader\n");
 	printf("--xmap FILE\t\tLoad *.xmap file\n");
 	printf("--confdir DIR\t\tChange config directory\n");
 	printf("--autostart\t\tstart the media given here, whatever the Auto-run option says\n");
@@ -410,6 +411,8 @@ int main(int ac,char** av) {
 	bool pinned = false;		// the command line names the machine: files do not pick one
 	const char* cliMac = NULL;	// that machine, chosen before anything else is acted on
 	bool given = false;		// it hands over something to open: no start question either
+	bool noGl = false;		// --no-gl: the picture without OpenGL
+	bool bench = false;		// --bench...: no window, nothing to probe GL for
 	for (int n = 1; n < ac; ) {
 		const char* earg = av[n++];
 		if (!strcmp(earg, "--confdir")) {
@@ -418,8 +421,11 @@ int main(int ac,char** av) {
 			cli_astart = 1;
 		} else if (!strcmp(earg, "--no-autostart")) {
 			cli_astart = 0;
+		} else if (!strcmp(earg, "--no-gl")) {
+			noGl = true;
 		} else if (!strncmp(earg, "--bench", 7)) {
 			xhost_time_fixed = 1790000000;	// the machines are built below: freeze their clock first
+			bench = true;
 		} else if (!strcmp(earg, "-m") || !strcmp(earg, "--machine")
 				|| !strcmp(earg, "-p") || !strcmp(earg, "--profile")) {
 			if (n < ac) {			// the last one wins
@@ -461,6 +467,21 @@ int main(int ac,char** av) {
 	// makes Qt walk every widget a second time, and the debugger alone is half
 	// a second of that.
 	app.d_style();
+
+	// before the window: it is made with the GL view or without it
+	QString glWhy;
+#if defined(USEOPENGL) && !BLOCKGL
+	conf.vid.gl = !noGl && !bench && gl_probe(&glWhy);
+#else
+	conf.vid.gl = 0;
+#endif
+	if (conf.vid.gl) {
+		xlog(XLG_GL, XLL_INFO, "picture: OpenGL");
+	} else if (noGl) {
+		xlog(XLG_GL, XLL_INFO, "picture: plain (--no-gl), no shaders");
+	} else if (!glWhy.isEmpty()) {
+		xlog(XLG_GL, XLL_WARN, "picture: plain, no shaders - %s", glWhy.toUtf8().constData());
+	}
 
 	QMainWindow mframe;		// before the picture in it, so it goes after it
 	MainWin mwin(&mframe);
@@ -660,7 +681,8 @@ int main(int ac,char** av) {
 			i++;
 		} else if (!strcmp(parg,"--panic")) {
 			compflags |= CFLG_PANIC;
-		} else if (!strcmp(parg,"--autostart") || !strcmp(parg,"--no-autostart")) {
+		} else if (!strcmp(parg,"--autostart") || !strcmp(parg,"--no-autostart")
+				|| !strcmp(parg,"--no-gl")) {
 			// read in the early walk
 #ifdef __WIN32
 		} else if (!strcmp(parg,"-c") || !strcmp(parg,"--console")) {
@@ -886,6 +908,8 @@ int main(int ac,char** av) {
 			mframe.activateWindow();
 			if (dbg) mwin.doDebug();
 			mwin.hotkeysNote();
+			if (!glWhy.isEmpty())		// never a silent black window, or none at all
+				mwin.setMessage(" OpenGL unavailable: plain picture, no shaders ", 8.0, true);
 			if (!cliWarns.isEmpty()) {		// over the note: it is about what was just typed
 				QString more = (cliWarns.size() > 1) ? QString(" (+%0 in the log)").arg(cliWarns.size() - 1) : QString();
 				mwin.setMessage(QString(" %0%1 ").arg(cliWarns.first(), more), 6.0);

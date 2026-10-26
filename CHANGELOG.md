@@ -22,6 +22,10 @@ before that point is upstream's history and is not repeated here.
 - **The Next's card and FFmpeg download on Windows 8.1** and wherever curl is missing;
   a cancelled FFmpeg download continues where it stopped. *(reported by DruzhininPavel)*
 
+- **The program starts on graphics with no usable OpenGL**, such as the Intel HD Graphics of
+  2010 laptops, instead of closing a second after its window shows: the picture is drawn
+  without OpenGL and with no shader, and `--no-gl` does the same on purpose. *(reported by Lis)*
+
 - **Leaving fullscreen after starting in it** puts the window back where it was, with
   its title bar on the screen, instead of in the corner with the title bar above it.
 
