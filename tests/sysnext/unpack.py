@@ -304,6 +304,15 @@ class Unpack(unittest.TestCase):
                 self.destination = self.root / f"zip-cut-{index}"
                 self.extract_zip(cut, valid=False)
 
+    def test_zip_entry_past_its_size(self):
+        # 5 MB of zeros deflate to a few KB; the entry claims 10 bytes in both headers
+        raw = bytearray(zipped([("release/file", bytes(5_000_000))]))
+        for signature, offset in ((b"PK\x01\x02", 24), (b"PK\x03\x04", 22)):
+            at = raw.index(signature) + offset
+            raw[at:at + 4] = (10).to_bytes(4, "little")
+        self.extract_zip(bytes(raw), valid=False)
+        self.assertLessEqual((self.destination / "release/file").stat().st_size, 10)
+
     def test_zip_encrypted(self):
         raw = bytearray(zipped([("release/file", b"payload")]))
         for signature, offset in ((b"PK\x01\x02", 8), (b"PK\x03\x04", 6)):

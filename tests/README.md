@@ -59,9 +59,9 @@ ctest --test-dir build/out/sysnext --output-on-failure
 
 `-DQTVERSION=5` builds it against Qt 5. The fixtures cover USTAR, GNU and pax names and
 sizes, stored and deflated entries, byte progress, cancellation, corrupt and truncated
-gzip, tar and zip data, paths that would land outside the folder, links and special
-files, versions of the formats that are refused (ZIP64, encrypted zips, sparse tar), and
-a destination that is not empty.
+gzip, tar and zip data, a zip entry that unpacks past its stated size, paths that would
+land outside the folder, links and special files, versions of the formats that are refused
+(ZIP64, encrypted zips, sparse tar), and a destination that is not empty.
 
 ## Quick tier
 
