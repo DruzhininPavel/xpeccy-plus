@@ -95,7 +95,8 @@ enum {
 	BRK_MEMEXT,
 	BRK_IRQ,
 	BRK_HBLANK,
-	BRK_COND		// global condition, not bound to an address
+	BRK_COND,		// global condition, not bound to an address
+	BRK_MEMDIV		// a divMMC's EEPROM or SRAM byte (not the Next's: that one is in its RAM)
 };
 
 // 16/32-bits reg

@@ -43,9 +43,11 @@ QString brkGetString(xBrkPoint brk) {
 			break;
 		case BRK_MEMRAM:
 		case BRK_MEMROM:
-		case BRK_MEMSLT: {
+		case BRK_MEMSLT:
+		case BRK_MEMDIV: {
 			// the cell in the machine's own pages: the Next's are 8K
-			const char* nm = (brk.type == BRK_MEMRAM) ? "RAM" : (brk.type == BRK_MEMROM) ? "ROM" : "SLT";
+			const char* nm = (brk.type == BRK_MEMRAM) ? "RAM" : (brk.type == BRK_MEMROM) ? "ROM"
+				: (brk.type == BRK_MEMDIV) ? "DIV" : "SLT";
 			int mt = brk_mem_type(brk.type);
 			if (brk.eadr > brk.adr) {
 				res = QString("%0:%1-%2 [%3-%4]").arg(nm).arg(gethex6(brk.adr)).arg(gethex6(brk.eadr))
@@ -286,6 +288,7 @@ void xBreakTable::onDoubleClick(QModelIndex idx) {
 		case BRK_CPUADR: adr = bp.adr; break;
 		case BRK_MEMRAM: adr = comp_find_xadr(conf.zx, MEM_RAM, bp.adr, MEM_VIEW_FETCH); break;
 		case BRK_MEMROM: adr = comp_find_xadr(conf.zx, MEM_ROM, bp.adr, MEM_VIEW_FETCH); break;
+		case BRK_MEMDIV: adr = comp_find_xadr(conf.zx, MEM_DIV, bp.adr, MEM_VIEW_FETCH); break;
 	}
 	if (adr < 0) return;
 	emit rqDisasm(adr);
@@ -303,6 +306,7 @@ xBrkManager::xBrkManager(QWidget* p):QDialog(p) {
 	ui.brkType->addItem("RAM cell", BRK_MEMRAM);
 	ui.brkType->addItem("ROM cell", BRK_MEMROM);
 	ui.brkType->addItem("Slot cell", BRK_MEMSLT);
+	ui.brkType->addItem("divMMC cell", BRK_MEMDIV);
 	ui.brkType->addItem("Interrupt", BRK_IRQ);
 	ui.brkType->addItem("Condition (global)", BRK_COND);
 
@@ -331,13 +335,14 @@ xBrkManager::xBrkManager(QWidget* p):QDialog(p) {
 }
 
 static bool brk_is_cell(int type) {
-	return (type == BRK_MEMRAM) || (type == BRK_MEMROM) || (type == BRK_MEMSLT);
+	return (type == BRK_MEMRAM) || (type == BRK_MEMROM) || (type == BRK_MEMSLT) || (type == BRK_MEMDIV);
 }
 
 static const char* brk_cell_name(int type) {
 	switch (type) {
 		case BRK_MEMRAM: return "RAM";
 		case BRK_MEMROM: return "ROM";
+		case BRK_MEMDIV: return "DIV";
 		default: return "SLT";
 	}
 }
@@ -351,6 +356,7 @@ static int brk_base_area(int type) {
 	switch (type) {
 		case BRK_MEMRAM: return CELL_RAM;
 		case BRK_MEMROM: return CELL_ROM;
+		case BRK_MEMDIV: return CELL_DIV;
 		default: return CELL_SLT;
 	}
 }

@@ -99,6 +99,7 @@ xBrkPoint brkCreate(int type, int flag, int adr, int mask, int act) {
 			case MEM_BRK_ROM: brk.type = BRK_MEMROM; adrmask = conf.zx->mem->romMask; break;
 			case MEM_BRK_RAM: brk.type = BRK_MEMRAM; adrmask = conf.zx->mem->ramMask; break;
 			case MEM_BRK_SLT: brk.type = BRK_MEMSLT; adrmask = conf.zx->slot->memMask; break;
+			case MEM_BRK_DIV: brk.type = BRK_MEMDIV; break;
 			default: brk.type = BRK_MEMEXT; break;
 		}
 		adr &= adrmask;
@@ -311,6 +312,10 @@ void brk_clear_tmp(Computer* comp) {
 	for (i = 0; i < MEM_64K; i++) {
 		comp->brkAdrMap[i] &= ~MEM_BRK_TFETCH;
 	}
+	if (comp->div) {
+		for (i = 0; i < DIV_EE_SIZE + DIV_RAM_MAX; i++)
+			comp->div->brkMap[i] &= ~MEM_BRK_TFETCH;
+	}
 }
 
 void clearMap(unsigned char* ptr, int siz) {
@@ -367,6 +372,11 @@ void brkInstall(xBrkPoint* brk, int del) {
 				ptr = comp->brkRomMap + (brk->adr & comp->mem->romMask);
 				cnt = brk->eadr - brk->adr + 1;
 				break;
+			case BRK_MEMDIV:
+				if (!comp->div) break;
+				ptr = comp->div->brkMap + (brk->adr % (DIV_EE_SIZE + DIV_RAM_MAX));
+				cnt = brk->eadr - brk->adr + 1;
+				break;
 			case BRK_MEMSLT:
 				if (!comp->slot->brkMap) break;
 				ptr = comp->slot->brkMap + (brk->adr & comp->slot->memMask);
@@ -420,6 +430,8 @@ void brkInstallAll() {
 	clearMap(comp->brkRomMap, MEM_512K);
 	if (comp->slot->brkMap)
 		clearMap(comp->slot->brkMap, comp->slot->memMask + 1);
+	if (comp->div)
+		clearMap(comp->div->brkMap, DIV_EE_SIZE + DIV_RAM_MAX);
 	comp->flgBRKMEM = 0;		// brkInstall() sets it again for each point it puts in the maps
 	conf.brk.map.clear();
 	comp->flgIBRK = 0;
@@ -447,6 +459,7 @@ int brk_mem_type(int type) {
 		case BRK_MEMRAM: return MEM_RAM;
 		case BRK_MEMROM: return MEM_ROM;
 		case BRK_MEMSLT: return MEM_SLOT;
+		case BRK_MEMDIV: return MEM_DIV;
 	}
 	return -1;
 }
@@ -546,6 +559,7 @@ static QString brk_log_place(xBrkPoint* brk, Computer* comp) {
 		case BRK_MEMRAM: own = brk_log_page("RAM", adr); break;
 		case BRK_MEMROM: own = brk_log_page("ROM", adr); break;
 		case BRK_MEMSLT: own = brk_log_page("SLT", adr); break;
+		case BRK_MEMDIV: own = brk_log_page("DIV", adr); break;
 		case BRK_MEMEXT: own = QString("EXT:%0").arg(gethex6(adr)); break;
 		default: return QString("BRK");
 	}
@@ -680,9 +694,10 @@ static xBrkPoint* brk_by_id(int id) {
 QString brk_label(int type, int adr) {
 	xAdr xa;
 	if (type == BRK_CPUADR) return find_label(comp_get_xadr(conf.zx, adr & 0xffff, MEM_VIEW_READ));
-	if (type != BRK_MEMRAM) return QString();
-	xa.type = MEM_RAM;
+	xa.type = brk_mem_type(type);
+	if (xa.type < 0) return QString();
 	xa.abs = adr;
+	xa.adr = -1;
 	return find_label(xa);
 }
 
@@ -696,6 +711,7 @@ static QString brk_name(xBrkPoint* brk) {
 		case BRK_MEMRAM: return brk_log_page("RAM", brk->adr);
 		case BRK_MEMROM: return brk_log_page("ROM", brk->adr);
 		case BRK_MEMSLT: return brk_log_page("SLT", brk->adr);
+		case BRK_MEMDIV: return brk_log_page("DIV", brk->adr);
 		case BRK_IRQ: return QString("IRQ");
 	}
 	return QString("BRK");
@@ -1059,8 +1075,9 @@ int brk_load_list(const char* fpath, int* bad, bool add) {
 				b0 = parseRange(list.at(1), &brk);
 				brk.adr &= 0xffff;
 				brk.eadr &= 0xffff;
-			} else if ((list.at(0) == "ROM") || (list.at(0) == "RAM") || (list.at(0) == "SLT")) {
-				brk.type = (list.at(0) == "ROM") ? BRK_MEMROM : (list.at(0) == "RAM") ? BRK_MEMRAM : BRK_MEMSLT;
+			} else if ((list.at(0) == "ROM") || (list.at(0) == "RAM") || (list.at(0) == "SLT") || (list.at(0) == "DIV")) {
+				brk.type = (list.at(0) == "ROM") ? BRK_MEMROM : (list.at(0) == "RAM") ? BRK_MEMRAM
+					: (list.at(0) == "DIV") ? BRK_MEMDIV : BRK_MEMSLT;
 				// a label carries its page, which may then be left out
 				b0 = parseCells(list.at(1), list.at(2), brk_mem_type(brk.type), &brk);
 			} else if (list.at(0) == "IRQ") {
@@ -1133,10 +1150,12 @@ int brk_save_list(const char* fpath) {
 				break;
 			case BRK_MEMRAM:
 			case BRK_MEMROM:
-			case BRK_MEMSLT: {
+			case BRK_MEMSLT:
+			case BRK_MEMDIV: {
 				// the page in the machine's own unit (the Next's 8K), or an area's token
 				int ofs;
-				nm = (brk.type == BRK_MEMRAM) ? "RAM" : (brk.type == BRK_MEMROM) ? "ROM" : "SLT";
+				nm = (brk.type == BRK_MEMRAM) ? "RAM" : (brk.type == BRK_MEMROM) ? "ROM"
+					: (brk.type == BRK_MEMDIV) ? "DIV" : "SLT";
 				ar1 = cell_page_text(brk_mem_type(brk.type), brk.adr, &ofs);
 				ar2 = gethexword(ofs);
 				if (brk.eadr > brk.adr) {

@@ -2377,6 +2377,8 @@ void DebugWin::mapClear() {
 		if (adr < 0x80000) comp->brkRomMap[adr] &= 0x0f;
 		if (comp->slot->data && (adr <= comp->slot->memMask))
 			comp->slot->brkMap[adr] &= 0x0f;
+		if (comp->div && (adr < DIV_EE_SIZE + DIV_RAM_MAX))
+			comp->div->brkMap[adr] &= 0x0f;
 	}
 	fillDisasm();
 }
@@ -2617,6 +2619,10 @@ void DebugWin::chaCellProperty(QAction* act) {
 				bt |= MEM_BRK_ROM;
 			} else if (xadr.type == MEM_RAM) {
 				bt |= MEM_BRK_RAM;
+			} else if (xadr.type == MEM_DIV) {
+				bt |= MEM_BRK_DIV;
+				xadr.abs %= DIV_EE_SIZE + DIV_RAM_MAX;
+				xend.abs %= DIV_EE_SIZE + DIV_RAM_MAX;
 			} else {
 				bt |= MEM_BRK_SLT;
 			}

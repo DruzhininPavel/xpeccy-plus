@@ -76,6 +76,9 @@ typedef struct {
 	int eeDirty;		// written since the image was saved
 
 	unsigned char data[DIV_EE_SIZE + DIV_RAM_MAX];	// the EEPROM, then the SRAM
+	// the debugger's breakpoint and view flags, a byte for each of data's (after
+	// data, so a state snapshot leaves them out)
+	unsigned char brkMap[DIV_EE_SIZE + DIV_RAM_MAX];
 	SDCard* card[2];
 
 	// the machine: its memory map, and its time

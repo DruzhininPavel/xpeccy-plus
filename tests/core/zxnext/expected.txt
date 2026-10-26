@@ -23,4 +23,5 @@ data read does not reuse cached opcode: ok
 Multiface NMI fetch and physical breakpoint: ok
 edits land on the cell shown: ok
 cells by area and page: ok
+divMMC cell breakpoint: ok
 long prefix chain: ok

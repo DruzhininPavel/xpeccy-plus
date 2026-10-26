@@ -1334,6 +1334,9 @@ void xDisasmTable::keyPressEvent(QKeyEvent* ev) {
 					case MEM_ROM: bpt = MEM_BRK_ROM;
 						adr = xadr.abs & comp->mem->romMask;
 						break;
+					case MEM_DIV: bpt = MEM_BRK_DIV;
+						adr = xadr.abs % (DIV_EE_SIZE + DIV_RAM_MAX);
+						break;
 					default: bpt = MEM_BRK_SLT;
 						adr = xadr.abs & comp->slot->memMask;
 						break;

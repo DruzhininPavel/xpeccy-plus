@@ -14,10 +14,14 @@ before that point is upstream's history and is not repeated here.
 - **SjASMPlus `CSPECTMAP` files load as labels**, alongside `LABELSLIST`: each label is
   placed by its physical address, so it lands on the right page on any machine.
 
+- **The dump shows divMMC's RAM**: its DIV view goes through the board's banks 8K at a time,
+  the Next's included. *(reported by AlexZor)*
+
 ### Fixed
 
 - **Fullscreen on a second monitor** fits the picture to that monitor, including when
   its resolution differs from the main display.
+
 - **SjASMPlus labels** land on their pages: page numbers are read in decimal, as SjASMPlus
   writes them, and the Next uses its 8K pages in the listing, named breakpoints and watches.
   CPU watches follow the MMU; RAM and ROM watches read physical memory, even when it is not
@@ -25,9 +29,14 @@ before that point is upstream's history and is not repeated here.
 
 - **Saved labels keep the ones in ROM and divMMC**: they are written by name (`ROM0:0038`,
   `DIV3:0010`) and load back where they were.
+
 - **The Next debugger counts in 8K pages**: a breakpoint's RAM cell is page:offset in the
   pages MEMMAP shows, its ROMs and divMMC go by name (`ROM0`, `DIV3`), and the MEMMAP tooltip
   says what the CPU sees in each slot.
+
+- **Breakpoints in divMMC memory fire**: a byte of its EEPROM or RAM takes a breakpoint of its
+  own, "divMMC cell", set from the listing, the dump or the breakpoint editor.
+  *(reported by AlexZor)*
 
 - **Debugger edits change the byte that is shown** wherever the machine can write it; ROM,
   divMMC's ROM and its bank 3 under MAPRAM take an edit only with "Allow ROM wr" on.

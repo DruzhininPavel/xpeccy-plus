@@ -106,8 +106,8 @@ int comp_cell_pages(Computer* comp, int area) {
 		case CELL_RAM: return next ? 0xe0 : ((comp->mem->ramMask + 1) >> 14);
 		case CELL_ROM: return next ? 4 : ((comp->mem->romMask + 1) >> 14);
 		case CELL_ALTROM: return next ? 2 : 0;
-		case CELL_DIV: return next ? 16 : (DIV_RAM_MAX >> 13);
-		case CELL_DIVROM: return 1;
+		case CELL_DIV: return next ? 16 : ((comp->div && comp->div->model) ? comp->div->pages : 0);	// as many as the board has
+		case CELL_DIVROM: return (next || (comp->div && comp->div->model)) ? 1 : 0;
 		case CELL_MFROM: case CELL_MFRAM: return next ? 1 : 0;
 		case CELL_SLT: return comp->slot ? ((comp->slot->memMask + 1) >> 14) : 0;
 	}
@@ -229,6 +229,7 @@ static unsigned char* comp_get_memcell_flag_ptr(Computer* comp, int adr, int acc
 		case MEM_RAM: res = comp->brkRamMap + (xadr.abs & comp->mem->ramMask); break;
 		case MEM_ROM: res = comp->brkRomMap + (xadr.abs & comp->mem->romMask); break;
 		case MEM_SLOT: if (comp->slot->brkMap) {res = comp->slot->brkMap + (xadr.abs & comp->slot->memMask);} break;
+		case MEM_DIV: if (comp->div) res = comp->div->brkMap + (xadr.abs % (DIV_EE_SIZE + DIV_RAM_MAX)); break;
 	}
 	return res;
 }
@@ -253,6 +254,11 @@ static bpChecker comp_check_bp(Computer* comp, int adr, int mask, int access) {
 					xadr.abs &= comp->slot->memMask;
 					ch.ptr = comp->slot->brkMap + xadr.abs;
 					ch.t = BRK_MEMSLT;
+				} break;
+			case MEM_DIV: if (comp->div) {
+					xadr.abs %= DIV_EE_SIZE + DIV_RAM_MAX;
+					ch.ptr = comp->div->brkMap + xadr.abs;
+					ch.t = BRK_MEMDIV;
 				} break;
 		}
 		if (ch.ptr) {

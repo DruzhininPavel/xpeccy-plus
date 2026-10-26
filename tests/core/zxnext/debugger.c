@@ -279,6 +279,8 @@ int debugger_check(void) {
 	compDestroy(comp);
 	comp = compCreate();
 	compSetHardware(comp, "ZX128");
+	ok &= comp_cell_pages(comp, CELL_DIV) == 0;		// no board, no pages
+	div_set_model(comp->div, DIV_MMC, 16);
 	{
 		xCell c = comp_cell(comp, MEM_RAM, (7 << 14) | 0x123);
 		int type, abs;
@@ -290,6 +292,21 @@ int debugger_check(void) {
 		ok &= (c.area == CELL_DIVROM) && (c.ofs == 0x123);
 	}
 	check("cells by area and page", ok);
+	// a divMMC cell takes a breakpoint of its own on other machines
+	div_out(comp->div, 0xe3, 0x82);		// conmem, bank 2 at #2000
+	{
+		int cell = DIV_EE_SIZE + 2 * 0x2000 + 0x123;
+		comp->div->data[cell] = 0x00;		// NOP
+		comp->div->brkMap[cell] = MEM_BRK_FETCH;
+		comp->flgBRKMEM = 1;
+		comp->flgBRK = 0;
+		comp->cpu->regPC = 0x2123;
+		compExec(comp);
+		ok = comp->flgBRK && (comp->brkt == BRK_MEMDIV) && (comp->brka == cell);
+		ok &= (getBrk(comp, 0x2123) & MEM_BRK_FETCH) != 0;
+		comp->div->brkMap[cell] = 0;
+	}
+	check("divMMC cell breakpoint", ok);
 	compDestroy(comp);
 
 	comp = machine();
