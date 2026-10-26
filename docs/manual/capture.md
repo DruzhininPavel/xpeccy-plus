@@ -74,7 +74,8 @@ When FFmpeg is not found, **Record Video** opens the **Get FFmpeg** window inste
   checks it. {icon}`arrow-down` **Get latest** downloads the newest release,
   {icon}`arrow-down` **Get previous** downloads the one before it. Take the previous one if
   your graphics driver is not new: with an old driver the newest release cannot use the
-  graphics card to encode.
+  graphics card to encode. A download that was cancelled or cut off continues where it
+  stopped the next time.
 - **Linux** - installs the distribution's `ffmpeg` package; the system asks for your
   password.
 - **macOS** - installs it with Homebrew. When Homebrew is not installed, the window says
