@@ -128,6 +128,10 @@ void MainWin::updateWindow() {
 	// a size change can switch the shader off or bring it back (wantedShader)
 	if (conf.vid.shd_support && (wantedShader() != shdLoaded))
 		loadShader();
+	// on the way out, asked before the bars come back: the resize they make takes the
+	// window out of the state, and Qt puts it where it was when the state came - which,
+	// for a start in fullscreen, is before it was ever shown, at 0,0
+	bool back = !conf.vid.fullScreen && fsCovers();
 	blockSignals(true);
 	showBars();
 	if (conf.vid.fullScreen) {
@@ -142,6 +146,7 @@ void MainWin::updateWindow() {
 		// is up, Options after Apply, which is then no longer drawn over it while
 		// it still takes every key and click.
 		if (!fsCovers()) {
+			fsHome = QPoint(conf.xpos, conf.ypos);
 #if defined(__WIN32)
 			// Qt keeps the window's style here, to put it back once the state goes
 			// (the first resize sees to that, after this returns). With a modal
@@ -159,7 +164,6 @@ void MainWin::updateWindow() {
 #endif
 		}
 	} else {
-		bool back = fsCovers();
 		// the picture: a whole number of pixels per dot, or it would be
 		// resampled and some columns come out a pixel wider than others
 		wsz = QSize(drawW, drawH);
@@ -2444,12 +2448,14 @@ void MainWin::fsOverlay(QWidget* w) {
 // Back from fullscreen: where the window was, else in the middle - either way
 // on a screen, title bar in view. Asked for once the window has its size back.
 void MainWin::placeWindow() {
-	QScreen* scr = QGuiApplication::screenAt(QPoint(conf.xpos + 40, conf.ypos + 10));
+	// fsHome, not conf: the moves of the way out have been written there meanwhile.
+	// -1,-1 is a window that has had no place yet: one started in fullscreen.
+	QScreen* scr = (fsHome != QPoint(-1, -1)) ? QGuiApplication::screenAt(fsHome + QPoint(40, 10)) : nullptr;
 	bool kept = (scr != nullptr);
 	if (!scr) scr = frame->screen();
 	QRect avail = scr->availableGeometry();
 	QRect fg = frame->frameGeometry();
-	QPoint at = kept ? QPoint(conf.xpos, conf.ypos) : avail.center() - QPoint(fg.width() / 2, fg.height() / 2);
+	QPoint at = kept ? fsHome : avail.center() - QPoint(fg.width() / 2, fg.height() / 2);
 	at.setX(std::max(avail.left(), std::min(at.x(), avail.right() + 1 - fg.width())));
 	at.setY(std::max(avail.top(), std::min(at.y(), avail.bottom() + 1 - fg.height())));
 	frame->move(at);
