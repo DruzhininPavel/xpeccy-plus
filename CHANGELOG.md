@@ -17,6 +17,12 @@ before that point is upstream's history and is not repeated here.
 - **The dump shows divMMC's RAM**: its DIV view goes through the board's banks 8K at a time,
   the Next's included. *(reported by AlexZor)*
 
+### Changed
+
+- **The System/Next Card window reads the path**: a card with System/Next on it is used,
+  a new or empty folder or a new `.img` becomes a new card, and when it opens by itself it
+  says what is wrong with the Next's card. *(thanks to Volutar)*
+
 ### Fixed
 
 - **The Next's card and FFmpeg download on Windows 8.1** and wherever curl is missing;

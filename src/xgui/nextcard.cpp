@@ -18,6 +18,8 @@
 #include <QMenu>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QTimer>
+#include <QToolButton>
 #include <QVBoxLayout>
 
 #include <functional>
@@ -27,18 +29,20 @@
 #include "../xcore/download.h"
 #include "../xcore/sysnext.h"
 
-enum {NC_FOLDER = 0, NC_IMAGE, NC_HAVE};
+// what the path is, and so what the window does with it
+enum {NC_FOLDER = 0, NC_IMAGE, NC_HAVE, NC_NONE};
 
 class xNextCard : public QDialog {
 	public:
-		xNextCard(QWidget* p);
+		xNextCard(QWidget* p, bool asked);
 		QString path;		// the card, once there is one
 		bool own;		// made here
 		void reject() override;
 	private:
-		QComboBox* cbKind;
 		QLineEdit* lePath;
-		QPushButton* btnPath;
+		QToolButton* btnPath;
+		QLabel* labState;	// what the path is: a card found, or one to make
+		QTimer* chk;		// the path looked at once typing pauses
 		QComboBox* cbSize;
 		QComboBox* cbRel;
 		QLabel* labFrom;
@@ -57,9 +61,9 @@ class xNextCard : public QDialog {
 		snRelease rel;
 		bool treeKnown;		// the archive's own checksum matched: the tree is the known one
 		bool dropArchive;	// a downloaded archive not checked yet: a failure takes it away
-		QString pathFor[2];	// what the path field held for a new folder and a new image
-		int kindWas;
-		void kindChanged();
+		int kind;		// NC_*, from the path
+		int making;		// the kind being made, while it runs
+		void check();
 		void formEnabled(bool on);
 		void fillReleases();
 		void showFrom();
@@ -92,16 +96,32 @@ static QString nc_size_name(qint64 bytes) {
 	return QString("%0 MB").arg((bytes + (1 << 19)) >> 20);
 }
 
-xNextCard::xNextCard(QWidget* p):QDialog(p) {
+xNextCard::xNextCard(QWidget* p, bool asked):QDialog(p) {
 	setWindowTitle("ZX Spectrum Next SD Card");
 	own = false;
 	running = false;
 	treeKnown = false;
 	dropArchive = false;
-	kindWas = NC_FOLDER;
-	pathFor[NC_FOLDER] = sn_default_path(false);
-	pathFor[NC_IMAGE] = sn_default_path(true);
+	kind = NC_NONE;
+	making = NC_NONE;
 	QVBoxLayout* lay = new QVBoxLayout(this);
+	// the card in the config, shown as it is; opened on its own, the window says what is wrong with it
+	QString card = QString::fromLocal8Bit(conf.next.card.c_str());
+	QString start = card;
+	if (asked) {
+		QString why = card.isEmpty() ? QString("The Next has no card to start from yet.")
+			: !QFileInfo::exists(card) ? QString("The Next's card is not at %0 any more. Pick it where it is now, or make another.")
+				.arg(QDir::toNativeSeparators(card).toHtmlEscaped())
+			: QString("There is no System/Next on the Next's card, %0, so the Next cannot start from it. Pick another card, or make one.")
+				.arg(QDir::toNativeSeparators(card).toHtmlEscaped());
+		QLabel* labWhy = new QLabel("<b>" + why + "</b>");
+		labWhy->setWordWrap(true);
+		labWhy->setMinimumWidth(460);
+		lay->addWidget(labWhy);
+	} else if (!QFileInfo::exists(card)) {
+		start.clear();
+	}
+	if (start.isEmpty()) start = sn_default_path(false);
 	QLabel* intro = new QLabel(QString("The Next starts from an SD card with System/Next on it: its ROMs, NextZXOS and "
 		"the programs that come with it. It is not part of Xpeccy+. A card is made here from the official "
 		"release, unchanged - an archive of it beside the program, or downloaded from "
@@ -112,20 +132,25 @@ xNextCard::xNextCard(QWidget* p):QDialog(p) {
 	intro->setMinimumWidth(460);
 	lay->addWidget(intro);
 	xOptSheet sheet;
-	cbKind = new QComboBox;
-	cbKind->addItem("New folder", NC_FOLDER);
-	cbKind->addItem("New image", NC_IMAGE);
-	cbKind->addItem("A card I have", NC_HAVE);
-	sheet.field("Card", cbKind);
 	QWidget* pw = new QWidget;
-	QHBoxLayout* pl = new QHBoxLayout(pw);
-	pl->setContentsMargins(0, 0, 0, 0);
+	QVBoxLayout* pv = new QVBoxLayout(pw);
+	pv->setContentsMargins(0, 0, 0, 0);
+	QHBoxLayout* pl = new QHBoxLayout;
 	lePath = new QLineEdit;
 	lePath->setMinimumWidth(280);
-	btnPath = new QPushButton("...");
-	btnPath->setFixedWidth(btnPath->fontMetrics().height() * 2 + 8);
+	lePath->setPlaceholderText("A card with System/Next, or where to make one");
+	btnPath = new QToolButton;
+	btnPath->setIcon(QIcon(":/images/fileopen.png"));
+	btnPath->setToolTip("Pick a folder or an image");
 	pl->addWidget(lePath, 1);
 	pl->addWidget(btnPath);
+	pv->addLayout(pl);
+	labState = new QLabel;
+	labState->setWordWrap(true);
+	labState->setTextFormat(Qt::RichText);
+	labState->setMinimumHeight(labState->fontMetrics().lineSpacing() * 2);	// the longest says it in two
+	labState->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	pv->addWidget(labState);
 	sheet.field("Path", pw);
 	cbSize = new QComboBox;
 	for (int gb : {1, 2, 4, 8, 16})
@@ -154,26 +179,39 @@ xNextCard::xNextCard(QWidget* p):QDialog(p) {
 	labLine->hide();
 	lay->addWidget(labLine);
 	box = new QDialogButtonBox(QDialogButtonBox::Cancel);
-	btnGo = box->addButton("Create", QDialogButtonBox::AcceptRole);
+	btnGo = box->addButton("Create Card", QDialogButtonBox::AcceptRole);
 	btnGo->setDefault(true);
 	btnGo->setIcon(QIcon(":/images/ok-apply.png"));
 	box->button(QDialogButtonBox::Cancel)->setIcon(QIcon(":/images/cancel.png"));
 	lay->addWidget(box);
 	// named for the control port's set-value and click-widget
-	cbKind->setObjectName("nextCardKind");
 	lePath->setObjectName("nextCardPath");
+	labState->setObjectName("nextCardState");
 	cbSize->setObjectName("nextCardSize");
 	cbRel->setObjectName("nextCardRelease");
 	btnGo->setObjectName("nextCardGo");
 	connect(box, &QDialogButtonBox::rejected, this, &xNextCard::reject);
 	connect(btnGo, &QPushButton::clicked, this, &xNextCard::go);
 	connect(btnPath, &QPushButton::clicked, this, &xNextCard::browse);
-	connect(cbKind, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() {kindChanged();});
 	connect(cbRel, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() {showFrom();});
+	// an image is opened to be looked at, so not at every key typed
+	chk = new QTimer(this);
+	chk->setSingleShot(true);
+	chk->setInterval(250);
+	connect(chk, &QTimer::timeout, this, &xNextCard::check);
+	connect(lePath, &QLineEdit::textChanged, this, [this]() {
+		btnGo->setEnabled(false);	// until the new path is looked at
+		chk->start();
+	});
+	// the folder with other files: the card made in a new folder inside it
+	connect(labState, &QLabel::linkActivated, this, [this]() {
+		lePath->setText(QDir::toNativeSeparators(QDir(QDir::fromNativeSeparators(lePath->text().trimmed())).filePath("next-sd")));
+		check();
+	});
 	rels = sn_releases();
 	fillReleases();
-	lePath->setText(pathFor[NC_FOLDER]);
-	kindChanged();
+	lePath->setText(start);
+	check();
 	// releases newer than the ones known here, if GitLab can be reached; quietly not otherwise
 	tags.toMemory(sn_tags_url(), 15);
 	dl_follow(this, &tags, nullptr, nullptr, [this](const dlStatus& st) {
@@ -217,43 +255,88 @@ void xNextCard::showFrom() {
 	labFrom->setText(from);
 }
 
-void xNextCard::kindChanged() {
-	int kind = cbKind->currentData().toInt();
-	if (kindWas != NC_HAVE) pathFor[kindWas] = lePath->text();
-	lePath->setText((kind == NC_HAVE) ? QString() : pathFor[kind]);
-	lePath->setPlaceholderText((kind == NC_HAVE) ? "A folder or an image with System/Next on it" : QString());
-	cbSize->setEnabled(kind == NC_IMAGE);
-	cbRel->setEnabled(kind != NC_HAVE);
-	labFrom->setEnabled(kind != NC_HAVE);
-	btnGo->setText((kind == NC_HAVE) ? "Use" : "Create");
-	kindWas = kind;
-}
-
-// the form, while a card is being made: its size and release follow the kind again after
-void xNextCard::formEnabled(bool on) {
-	QWidget* form[] = {cbKind, lePath, btnPath, cbSize, cbRel, btnGo};
-	for (QWidget* w : form) w->setEnabled(on);
-}
-
-void xNextCard::browse() {
-	int kind = cbKind->currentData().toInt();
-	QString got;
-	QString at = lePath->text();
-	if (kind == NC_FOLDER) {
-		got = QFileDialog::getExistingDirectory(this, "Folder for the card", QFileInfo(at).path(), QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
-		// a folder picked is where the card's own folder goes, unless it is empty
-		if (!got.isEmpty() && !QDir(got).isEmpty()) got = QDir(got).filePath("next-sd");
-	} else if (kind == NC_IMAGE) {
-		got = QFileDialog::getSaveFileName(this, "Image for the card", at, "Images (*.img);;All files (*)", NULL, QFileDialog::DontUseNativeDialog);
+// The path decides: System/Next on it is a card to use; a new or empty folder, or a new
+// .img, is where one is made; anything else is left alone and the line says why.
+void xNextCard::check() {
+	chk->stop();
+	QString at = QDir::cleanPath(QDir::fromNativeSeparators(lePath->text().trimmed()));
+	QFileInfo inf(at);
+	QString say;
+	kind = NC_NONE;
+	if (at.isEmpty()) {
+		say = "Say where the card is, or where to make one.";
+	} else if (inf.exists() && sn_card_ok(at)) {
+		kind = NC_HAVE;
+		say = inf.isDir() ? "<b>Found</b> a card with System/Next: the Next starts from it."
+			: "<b>Found</b> an image with System/Next: the Next starts from it.";
+	} else if (inf.isDir()) {
+		if (QDir(at).isEmpty()) {
+			kind = NC_FOLDER;
+			say = "<b>New card</b>: made in this empty folder, with the release below.";
+		} else {
+			say = "This folder has other files and no System/Next. Pick an empty one, "
+				"or make the card in <a href=\"next-sd\">next-sd inside it</a>.";
+		}
+	} else if (inf.exists()) {
+		say = "This file has no System/Next on it: the Next cannot start from it. "
+			"Pick another, or type a new name ending in .img.";
+	} else if (at.endsWith(".img", Qt::CaseInsensitive)) {
+		kind = NC_IMAGE;
+		say = "<b>New card</b>: an image is made here, with the release and size below.";
 	} else {
-		QMenu menu(this);
-		QAction* dir = menu.addAction("Folder...");
-		QAction* img = menu.addAction("Image...");
-		QAction* act = menu.exec(btnPath->mapToGlobal(QPoint(0, btnPath->height())));
-		if (act == dir) got = QFileDialog::getExistingDirectory(this, "The card's folder", at, QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
-		if (act == img) got = QFileDialog::getOpenFileName(this, "The card's image", at, "All files (*)", NULL, QFileDialog::DontUseNativeDialog);
+		kind = NC_FOLDER;
+		say = "<b>New card</b>: a folder is made here, with the release below.";
 	}
-	if (!got.isEmpty()) lePath->setText(QDir::toNativeSeparators(got));
+	labState->setText(say);
+	// a line longer than the room kept for it: the window grows, not the text cut
+	int more = labState->heightForWidth(labState->width()) - labState->height();
+	if (isVisible() && (more > 0)) resize(width(), height() + more);
+	bool make = (kind == NC_FOLDER) || (kind == NC_IMAGE);
+	cbSize->setEnabled(kind == NC_IMAGE);
+	cbRel->setEnabled(make);
+	labFrom->setEnabled(make);
+	btnGo->setText((kind == NC_HAVE) ? "Use This Card" : "Create Card");
+	btnGo->setEnabled(kind != NC_NONE);
+}
+
+// the form, while a card is being made: what the path allows is looked at again after
+void xNextCard::formEnabled(bool on) {
+	QWidget* form[] = {lePath, btnPath, cbSize, cbRel, btnGo};
+	for (QWidget* w : form) w->setEnabled(on);
+	if (on) check();
+}
+
+// a folder or an image, one there or a new one: the path field then says which
+void xNextCard::browse() {
+	QMenu menu(this);
+	QAction* dir = menu.addAction(QIcon(":/images/fileopen.png"), "Folder...");
+	QAction* img = menu.addAction(QIcon(":/images/sdcard.png"), "Image...");
+	QAction* act = menu.exec(btnPath->mapToGlobal(QPoint(0, btnPath->height())));
+	QString at = QDir::fromNativeSeparators(lePath->text().trimmed());
+	QString got;
+	if (act == dir) {
+		QString from = QFileInfo(at).isDir() ? at : QFileInfo(at).path();
+		got = QFileDialog::getExistingDirectory(this, "The card's folder, or one to make it in", from,
+			QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
+	} else if (act == img) {
+		QFileDialog dlg(this, "The card's image, or a name for a new one");
+		dlg.setOption(QFileDialog::DontUseNativeDialog);
+		dlg.setOption(QFileDialog::DontConfirmOverwrite);	// one there is used, never written over
+		dlg.setAcceptMode(QFileDialog::AcceptSave);
+		dlg.setNameFilters(QStringList() << "Images (*.img)" << "All files (*)");
+		dlg.setDefaultSuffix("img");
+		dlg.setLabelText(QFileDialog::Accept, "Choose");
+		if (QFileInfo(at).isDir()) {
+			dlg.setDirectory(at);
+		} else if (!at.isEmpty()) {
+			dlg.setDirectory(QFileInfo(at).path());
+			if (at.endsWith(".img", Qt::CaseInsensitive)) dlg.selectFile(QFileInfo(at).fileName());
+		}
+		if (dlg.exec() && !dlg.selectedFiles().isEmpty()) got = dlg.selectedFiles().first();
+	}
+	if (got.isEmpty()) return;
+	lePath->setText(QDir::toNativeSeparators(got));
+	check();
 }
 
 bool xNextCard::tick() {
@@ -262,32 +345,18 @@ bool xNextCard::tick() {
 }
 
 void xNextCard::go() {
-	int kind = cbKind->currentData().toInt();
+	check();		// as it is now, not as it was when last typed
+	if (kind == NC_NONE) return;
 	target = QDir::cleanPath(QDir::fromNativeSeparators(lePath->text().trimmed()));
-	lab->show();
-	if (target.isEmpty()) {
-		lab->setText("Say where the card is.");
-		return;
-	}
 	if (kind == NC_HAVE) {
-		if (!sn_card_ok(target)) {
-			lab->setText("There is no System/Next on this card: the Next cannot start from it.");
-			return;
-		}
 		path = QDir::toNativeSeparators(target);
 		own = false;
 		accept();
 		return;
 	}
+	making = kind;
+	lab->show();
 	QFileInfo inf(target);
-	if ((kind == NC_FOLDER) && inf.exists() && !(inf.isDir() && QDir(target).isEmpty())) {
-		lab->setText("The folder for a new card has to be new or empty.");
-		return;
-	}
-	if ((kind == NC_IMAGE) && inf.exists()) {
-		lab->setText("There is a file of this name already.");
-		return;
-	}
 	if (!QDir().mkpath(inf.path())) {
 		lab->setText("Cannot make the folder this goes into.");
 		return;
@@ -393,7 +462,7 @@ void xNextCard::place() {
 		}
 		dropArchive = false;
 	}
-	if (cbKind->currentData().toInt() == NC_FOLDER) {
+	if (making == NC_FOLDER) {
 		lab->setText("Putting the card in place");
 		if (QFileInfo(target).isDir()) QDir().rmdir(target);	// checked empty
 		if (!QDir().rename(root, target) && !nc_copy_tree(root, target, [this]() {return tick();})) {
@@ -434,7 +503,7 @@ void xNextCard::fail(const QString& msg) {
 	if (dropArchive) {		// downloaded and bad: the next try downloads it again
 		QFile::remove(archive);
 		dropArchive = false;
-		more = "<br><br>The downloaded archive was taken away: Create downloads it again.";
+		more = "<br><br>The downloaded archive was taken away: Create Card downloads it again.";
 		rels = sn_releases();
 		fillReleases();
 	}
@@ -442,7 +511,6 @@ void xNextCard::fail(const QString& msg) {
 	labLine->hide();
 	lab->setText("No card was made.<br><br>" + msg.toHtmlEscaped() + more);
 	formEnabled(true);
-	kindChanged();
 }
 
 // cancel: whatever runs is stopped and what it left is taken away
@@ -455,8 +523,8 @@ void xNextCard::reject() {
 	QDialog::reject();
 }
 
-bool next_card_dialog(QWidget* parent, QString* path, bool* own) {
-	xNextCard dlg(parent);
+bool next_card_dialog(QWidget* parent, QString* path, bool* own, bool asked) {
+	xNextCard dlg(parent, asked);
 	if (dlg.exec() != QDialog::Accepted) return false;
 	*path = dlg.path;
 	*own = dlg.own;

@@ -177,7 +177,7 @@ bool lab_char(QChar);
 // offers to get FFmpeg and does: true when there is one to use afterwards
 bool ffmpeg_get(QWidget* parent);
 // the Next's own SD card, made from a System/Next release or picked; own: made here
-bool next_card_dialog(QWidget* parent, QString* path, bool* own);
+bool next_card_dialog(QWidget* parent, QString* path, bool* own, bool asked);
 
 // a download (xcore/download.h) followed on a bar and a line, "45 of 190 MB";
 // done(status) once it has ended, whichever way. bar and line may be null; expect is

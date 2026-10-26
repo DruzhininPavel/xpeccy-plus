@@ -19,6 +19,7 @@
 #include "../libxpeccy/xreplay.h"
 #include "vfat_scan.h"
 #include "vscalers.h"
+#include "sysnext.h"
 
 #include <fstream>
 #include <algorithm>
@@ -1174,10 +1175,11 @@ static bool xm_next_own_in() {
 	return !nextIn.empty() && comp->sdc->image && (nextIn == comp->sdc->image);
 }
 
-// the card the Next takes when the slot has none it can start from, empty if none
+// the card the Next takes when the slot has none it can start from, empty if none;
+// the configured one only if System/Next is still on it
 static QString xm_next_own() {
 	QString own = QString::fromLocal8Bit(conf.next.card.c_str());
-	if (!own.isEmpty() && QFileInfo::exists(own)) return own;
+	if (!own.isEmpty() && sn_card_ok(own)) return own;
 	QString dir = QString::fromLocal8Bit(conf.path.sysnextDir.c_str());
 	return QFileInfo(dir + "/machines/next").isDir() ? dir : QString();
 }
