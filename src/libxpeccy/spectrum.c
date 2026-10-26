@@ -24,6 +24,8 @@ static void comp_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* x
 	xAdr xa = mem_get_xadr(comp->mem, adr);
 	if (xadr) *xadr = xa;
 	if (!value) return;
+	// a debugger edit: RAM always, ROM with "write to ROM", divMMC where the board
+	// lets the CPU write (not bank 3 under MAPRAM, the EEPROM only when enabled)
 	if (mode & MEM_VIEW_WRITE) {
 		switch (xa.type) {
 			case MEM_RAM:
@@ -35,7 +37,7 @@ static void comp_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* x
 				break;
 			case MEM_DIV: {
 				int fadr = xa.abs % (DIV_EE_SIZE + DIV_RAM_MAX);
-				if ((fadr >= DIV_EE_SIZE) || (mode & MEM_VIEW_ROM_WRITE)) {
+				if (mem_get_page(comp->mem, adr)->wr || (mode & MEM_VIEW_ROM_WRITE)) {
 					comp->div->data[fadr] = *value & 0xff;
 					if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
 				}

@@ -211,6 +211,42 @@ int debugger_check(void) {
 	check("Multiface NMI fetch and physical breakpoint", ok && comp->cpu->regBC == 0x3412 && comp->next->irq.mfEnable);
 	compDestroy(comp);
 
+	// a debugger edit goes to the cell a read shows, where the machine can write
+	comp = machine();
+	{
+		unsigned char* ram = comp->mem->ramData;
+		int mmu = 0x40000 + 0x30 * 0x2000 + 0x123;
+		int l2 = 0x40000 + 0x20 * 0x2000 + 0x123;
+		next_mmu_set(comp, 0, 0x30);
+		comp->next->nr[0x12] = 0x10;		// Layer 2 in bank 16 = pages 20/21...
+		comp->next->p123b = 1;			// ...mapped for writes only, over 0000-3FFF
+		ram[mmu] = ram[l2] = 0;
+		comp_poke(comp, 0x0123, 0x55, 0);
+		ok = (ram[mmu] == 0x55) && (ram[l2] == 0);
+		comp->next->p123b = 0;
+		next_mmu_set(comp, 0, 0xff);		// ROM: only with "write to ROM"
+		int rom = comp_get_xadr(comp, 0x0123, MEM_VIEW_READ).abs;
+		ram[rom] = 0x11;
+		comp_poke(comp, 0x0123, 0x66, 0);
+		ok &= ram[rom] == 0x11;
+		comp_poke(comp, 0x0123, 0x66, 1);
+		ok &= ram[rom] == 0x66;
+		comp->next->nr[0x83] |= 1;
+		comp->next->pe3 = 0xc3;			// divMMC conmem, MAPRAM, bank 3: read only
+		int div3 = 0x20000 + 3 * 0x2000 + 0x123;
+		ram[div3] = 0x22;
+		comp_poke(comp, 0x2123, 0x77, 0);
+		ok &= ram[div3] == 0x22;
+		comp_poke(comp, 0x2123, 0x77, 1);
+		ok &= ram[div3] == 0x77;
+		comp->next->pe3 = 0x82;			// bank 2: written
+		int div2 = 0x20000 + 2 * 0x2000 + 0x123;
+		comp_poke(comp, 0x2123, 0x88, 0);
+		ok &= ram[div2] == 0x88;
+	}
+	check("edits land on the cell shown", ok);
+	compDestroy(comp);
+
 	// cells by name: the Next's RAM in 8K pages after its ROM and divMMC areas
 	comp = machine();
 	{

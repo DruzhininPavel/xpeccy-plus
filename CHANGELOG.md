@@ -29,6 +29,9 @@ before that point is upstream's history and is not repeated here.
   pages MEMMAP shows, its ROMs and divMMC go by name (`ROM0`, `DIV3`), and the MEMMAP tooltip
   says what the CPU sees in each slot.
 
+- **Debugger edits change the byte that is shown** wherever the machine can write it; ROM,
+  divMMC's ROM and its bank 3 under MAPRAM take an edit only with "Allow ROM wr" on.
+
 - **The Next debugger follows paging during an instruction**: the listing and physical
   breakpoints handle divMMC traps and Multiface NMI entry, heat maps count operands in the
   right page, and write breakpoints catch attempts to write to ROM or an unmapped window.

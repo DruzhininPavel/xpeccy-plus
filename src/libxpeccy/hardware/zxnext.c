@@ -580,6 +580,24 @@ static void nx_view_restore(Computer* comp, const nxMemViewState* state) {
 	NX.irq = state->irq;
 }
 
+// Whether the machine can write the cell a read of adr shows: its RAM can be
+// written whatever lies over it, anything else only if a CPU write lands there
+// too - not divMMC's ROM or its bank 3 under MAPRAM, the Multiface's ROM, a ROM
+// or the alt ROM being read
+static int nx_edit_ok(Computer* comp, int adr, const nxAccess* a) {
+	switch (a->kind) {
+		case NXM_BRAM:
+		case NXM_SHADOW:
+			return 1;
+		case NXM_SRAM: {
+			if (a->adr >= NX_RAM) return 1;
+			nxAccess w = nx_decode(comp, adr, 1);
+			return (w.kind == NXM_SRAM) && (w.adr == a->adr);
+		}
+	}
+	return 0;
+}
+
 // Only an instruction preview advances these latches; nx_disasm restores them.
 enum {NX_VIEW_STEP = 8};
 
@@ -590,8 +608,9 @@ static void nx_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xad
 		nx_nmi_fetch(comp, adr);
 		NX.dmMap = nx_dm_fetch(comp, adr);
 	}
-	int wr = (mode & MEM_VIEW_WRITE) && !(mode & MEM_VIEW_ROM_WRITE);
-	nxAccess a = nx_decode(comp, adr, wr);
+	// a value to write is a debugger edit: it goes to the cell a read shows
+	int edit = (mode & MEM_VIEW_WRITE) && value;
+	nxAccess a = nx_decode(comp, adr, (mode & MEM_VIEW_WRITE) && !edit);
 	if (mode & MEM_VIEW_FETCH) {
 		if (mode & NX_VIEW_STEP) {
 			NX.dmHeld = NX.dmMap = NX.dmNext;
@@ -621,7 +640,8 @@ static void nx_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xad
 		}
 	}
 	if (!value) return;
-	if (mode & MEM_VIEW_WRITE) {
+	if (edit) {
+		if (!(mode & MEM_VIEW_ROM_WRITE) && !nx_edit_ok(comp, adr, &a)) return;
 		switch (a.kind) {
 			case NXM_SRAM:
 			case NXM_BRAM:
