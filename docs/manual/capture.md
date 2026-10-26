@@ -70,7 +70,7 @@ the **FFmpeg** field of the **Recording** group; leave the field empty to let Xp
 When FFmpeg is not found, **Record Video** opens the **Get FFmpeg** window instead (the
 {icon}`arrow-down` arrow button beside the **FFmpeg** field opens it too):
 
-- **Windows** - downloads a ready-made FFmpeg (about 190 MB) into the settings folder and
+- **Windows** - downloads a ready-made FFmpeg (about 185 MB) into the settings folder and
   checks it. {icon}`arrow-down` **Get latest** downloads the newest release,
   {icon}`arrow-down` **Get previous** downloads the one before it. Take the previous one if
   your graphics driver is not new: with an old driver the newest release cannot use the
