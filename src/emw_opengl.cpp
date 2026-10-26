@@ -3,6 +3,10 @@
 #include "xcore/log.h"
 
 #include <QRegularExpression>
+#if defined(USEOPENGL) && !BLOCKGL && !ISLEGACYGL
+#include <QOffscreenSurface>
+#include <QOpenGLContext>
+#endif
 #include <algorithm>
 #include <vector>
 
@@ -174,6 +178,52 @@ QString shimLegacyShader(QString src,
 
 } // anonymous namespace
 
+// A context of the default format, made current, and at least what the renderer
+// needs: GLSL 330 / 300 es and a VAO. Qt can have no GL at all - its blacklist
+// turns the desktop GL of some GPUs off (Arrandale's HD Graphics among them),
+// and the fallbacks it would take instead are not shipped.
+bool gl_probe(QString* why) {
+#if ISLEGACYGL
+	(void)why;
+	return true;
+#else
+	QOffscreenSurface surf;
+	surf.create();
+	QOpenGLContext ctx;
+	if (!ctx.create()) {
+		*why = "no OpenGL context";
+		return false;
+	}
+	if (!ctx.makeCurrent(&surf)) {
+		*why = "the OpenGL context cannot be made current";
+		return false;
+	}
+	const QSurfaceFormat f = ctx.format();
+	const int ver = f.majorVersion() * 10 + f.minorVersion();
+	const bool es = ctx.isOpenGLES();
+	const bool ok = es ? (ver >= 30) : (ver >= 33);
+	if (!ok) {
+		const char* ren = (const char*)ctx.functions()->glGetString(GL_RENDERER);
+		*why = QString("OpenGL %1%2.%3 on %4, %5 needed").arg(es ? "ES " : "")
+			.arg(f.majorVersion()).arg(f.minorVersion())
+			.arg(ren ? ren : "?").arg(es ? "ES 3.0" : "3.3");
+	}
+	ctx.doneCurrent();
+	return ok;
+#endif
+}
+
+xGLView::xGLView(MainWin* p) : mw(p) {
+	setParent(p);
+	setFocusPolicy(Qt::NoFocus);
+	setAttribute(Qt::WA_TransparentForMouseEvents);
+	setGeometry(p->rect());
+}
+
+void xGLView::initializeGL() { mw->initializeGL(); }
+void xGLView::resizeGL(int w, int h) { mw->resizeGL(w, h); }
+void xGLView::paintEvent(QPaintEvent*) { mw->paintGLView(); }
+
 void MainWin::initializeGL() {
 	qDebug() << __FUNCTION__;
 #if !ISLEGACYGL
@@ -253,13 +303,13 @@ void MainWin::initializeGL() {
 
 void MainWin::cleanupGL() {
 #if !ISLEGACYGL
-	if (!vao.isCreated() && !vbo.isCreated()) return;
-	makeCurrent();
+	if (!glw || (!vao.isCreated() && !vbo.isCreated())) return;
+	glw->makeCurrent();
 	if (vao.isCreated()) vao.destroy();
 	if (vbo.isCreated()) vbo.destroy();
 	prg.removeAllShaders();
 	glDeleteTextures(4, texids);
-	doneCurrent();
+	glw->doneCurrent();
 #endif
 }
 
@@ -270,9 +320,6 @@ void MainWin::resizeGL(int w, int h) {
 	glViewport(0, 0, vw, vh);
 	paintOwed = 1;
 	qDebug() << "resizeGL logical" << w << h << "dpr" << r << "viewport" << vw << vh;
-}
-
-void MainWin::paintGL() {
 }
 
 #endif
@@ -291,9 +338,9 @@ std::string MainWin::wantedShader() {
 // it by Qt, and releasing it under them would leave Qt drawing into nothing.
 namespace {
 	struct glHold {
-		MainWin* win;
+		xGLView* win;
 		bool taken;
-		glHold(MainWin* w) : win(w) {
+		glHold(xGLView* w) : win(w) {
 #if !ISLEGACYGL
 			taken = (QOpenGLContext::currentContext() != w->context());
 #else
@@ -313,8 +360,8 @@ namespace {
 // couple of seconds later.
 void MainWin::loadShader() {
 #if defined(USEOPENGL) && !BLOCKGL
-	if (!conf.vid.shd_support) return;
-	glHold hold(this);
+	if (!glw || !conf.vid.shd_support) return;
+	glHold hold(glw);
 	shdLoaded = wantedShader();
 
 	QString vtx;

@@ -1415,7 +1415,9 @@ void SetupWin::applyGlobal() {
 	conf.scrShot.noBorder = ui.ssNoBord->isChecked() ? 1 : 0;
 	applyRecording();
 	vid_set_border_mode(ui.bszsld->value());
-	if (getRFIData(ui.cbShader) == 0) {
+	// with no shaders the list holds None only: the chosen one stays for a run that has them
+	if (!conf.vid.shd_support) {
+	} else if (getRFIData(ui.cbShader) == 0) {
 		conf.vid.shader.clear();
 	} else {
 		conf.vid.shader = std::string(ui.cbShader->currentText().toLocal8Bit().data());
@@ -3001,10 +3003,8 @@ void SetupWin::buildRecording() {
 	cbRecSrc->addItem(tr("RAW frame"), VREC_SRC_PICTURE);
 	cbRecSrc->addItem(tr("Screen"), VREC_SRC_SCREEN);
 	cbRecSrc->setToolTip(tr("RAW frame: the machine's picture, no shader or indicators\nScreen: the window as shown"));
-#if !defined(USEOPENGL)
-	// nothing to read the window back from
-	cbRecSrc->setItemData(1, 0, Qt::UserRole - 1);
-#endif
+	// no GL view: nothing to read the window back from
+	if (!conf.vid.gl) cbRecSrc->setItemData(1, 0, Qt::UserRole - 1);
 	cbRecScale = new QComboBox;
 	for (int n = 1; n <= VREC_SCALE_MAX; n++)
 		cbRecScale->addItem(QString("Scale x%0").arg(n), n);

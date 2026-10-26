@@ -890,6 +890,7 @@ struct xConfig {
 		double curfps;		// last measured fps
 		std::string shader;
 		int shd_support;
+		int gl;			// the picture goes through OpenGL: decided at start, see gl_probe
 	} vid;
 	struct {
 		unsigned toolbar:1;	// the bars of the main window, off in fullscreen anyway
