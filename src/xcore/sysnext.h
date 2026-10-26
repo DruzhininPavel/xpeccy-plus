@@ -31,8 +31,10 @@ QString sn_cache_dir();				// <config>/downloads/: archives downloaded, kept for
 // A .tar.gz or a .zip, by the name the archive goes by: both are read here, so making a
 // card needs no tar, unzip or PowerShell on the machine. The destination must be empty;
 // the caller discards it on failure or cancellation. tick(done, total) false stops it.
+// pick, when given, is asked for each file: where it goes in dir, or empty to leave it.
 bool sn_unpack_archive(const QString& archive, const QString& dir, QString* err,
-	std::function<bool(qint64, qint64)> tick = nullptr);
+	std::function<bool(qint64, qint64)> tick = nullptr,
+	std::function<QString(const QString&)> pick = nullptr);
 
 // the checksum of a tree: sha256 over the sorted "sha256  path" lines of its files, as
 // sha256sum prints them - the same whatever packed them. tick() false stops it.

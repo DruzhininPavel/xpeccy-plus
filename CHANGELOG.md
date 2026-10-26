@@ -11,6 +11,9 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **The Next's card and FFmpeg download on Windows 8.1** and wherever curl is missing;
+  a cancelled FFmpeg download continues where it stopped. *(reported by DruzhininPavel)*
+
 - **Leaving fullscreen after starting in it** puts the window back where it was, with
   its title bar on the screen, instead of in the corner with the title bar above it.
 - **Fullscreen on a second monitor** fits the picture to that monitor, including when

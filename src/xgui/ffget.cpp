@@ -1,7 +1,7 @@
-// Getting FFmpeg for the video recorder. Windows: the newest release of BtbN's
-// static build into the config folder, checked against its sha256, with the
-// curl and tar every Windows 10 has. Linux: the distribution's package through
-// pkexec. macOS: Homebrew.
+// Getting FFmpeg for the video recorder. Windows: a release of BtbN's static
+// build into the config folder, downloaded (xcore/download), checked against its
+// sha256 and unpacked here. Linux: the distribution's package through pkexec.
+// macOS: Homebrew.
 
 #include <QApplication>
 #include <QCryptographicHash>
@@ -24,6 +24,10 @@
 #include "xgui.h"
 #include "../xcore/xcore.h"
 #include "../xcore/vidrec.h"
+#ifdef _WIN32
+#include "../xcore/download.h"
+#include "../xcore/sysnext.h"
+#endif
 
 #define FG_BASE		"https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/"
 #define FG_MASTER	"ffmpeg-master-latest-win64-gpl.zip"
@@ -41,37 +45,32 @@ class xFfGet : public QDialog {
 		QPushButton* btnGo;
 		QPushButton* btnLatest;	// Windows: the newest release, btnGo the one before
 		bool latest;
-		QProcess* prc;
 		bool running;
-		QByteArray out;		// the step's stdout, for the one step that reads it
-		QString tail;		// the program's last line, what a failure shows
 		QString offer();
 		void go();
-		void run(const QString& prog, const QStringList& args, std::function<void()> next);
-		void output(const QByteArray& chunk);
 		void finish(const QString& html);
 		void fail(const QString& msg);
 		void ready(const QString& prog);
 #ifdef _WIN32
-		QString tmp;		// where the download goes
+		xDownload dl;
+		QString tmp;		// <config>/ffmpeg.part/: the download and what it unpacks to
 		QString name;
 		QString sha;
+		QString zip;		// the download, named by its checksum: another build is not continued
 		void getList();
 		void check();
 		void install();
 #else
+		QProcess* prc;
+		QString tail;		// the program's last line, what a failure shows
 		QString pm;
 		QStringList pmArgs;
+		void run(const QString& prog, const QStringList& args, std::function<void()> next);
+		void output(const QByteArray& chunk);
 #endif
 };
 
-#ifdef _WIN32
-// the system's own, not one a shell put first on PATH
-static QString fg_system_tool(const QString& exe) {
-	QString path = qEnvironmentVariable("SystemRoot") + "/System32/" + exe;
-	return QFileInfo(path).isFile() ? path : QStandardPaths::findExecutable(exe);
-}
-#else
+#ifndef _WIN32
 // what installs FFmpeg here, and how it is told to without asking
 static bool fg_manager(QString* pm, QStringList* args) {
 #ifdef __APPLE__
@@ -103,7 +102,9 @@ xFfGet::xFfGet(QWidget* p):QDialog(p) {
 	setWindowTitle(tr("Get FFmpeg"));
 	installed = false;
 	running = false;
+#ifndef _WIN32
 	prc = NULL;
+#endif
 	latest = false;
 	btnLatest = NULL;
 	QVBoxLayout* lay = new QVBoxLayout(this);
@@ -174,20 +175,17 @@ QString xFfGet::offer() {
 #endif
 }
 
+#ifndef _WIN32
 void xFfGet::run(const QString& prog, const QStringList& args, std::function<void()> next) {
 	if (prog.isEmpty()) {
 		fail(tr("A tool this needs is missing"));
 		return;
 	}
-	// the step before may be the one finishing now
 	if (prc) prc->deleteLater();
 	prc = new QProcess(this);
 	tail.clear();
-	out.clear();
 	connect(prc, &QProcess::readyReadStandardOutput, this, [this]() {
-		QByteArray chunk = prc->readAllStandardOutput();
-		out.append(chunk);
-		output(chunk);
+		output(prc->readAllStandardOutput());
 	});
 	connect(prc, &QProcess::readyReadStandardError, this, [this]() {
 		output(prc->readAllStandardError());
@@ -222,6 +220,7 @@ void xFfGet::output(const QByteArray& chunk) {
 		}
 	}
 }
+#endif
 
 void xFfGet::go() {
 	running = true;
@@ -231,13 +230,20 @@ void xFfGet::go() {
 	bar->show();
 #ifdef _WIN32
 	tmp = QString::fromLocal8Bit(conf.path.confDir.c_str()) + "/ffmpeg.part/";
-	QDir(tmp).removeRecursively();
+	// a download cut short stays for this try to continue; what was unpacked does not
+	QDir(tmp + "x").removeRecursively();
 	if (!QDir().mkpath(tmp)) {
 		fail(tr("Cannot write into the config folder"));
 		return;
 	}
+	labLine->clear();
+	labLine->show();
 	lab->setText(tr("Looking up the latest release"));
-	run(fg_system_tool("curl.exe"), QStringList() << "-fsSL" << FG_BASE "checksums.sha256", [this]() { getList(); });
+	dl.toMemory(FG_BASE "checksums.sha256", 60);
+	dl_follow(this, &dl, bar, labLine, [this](const dlStatus& st) {
+		if (st.state == DL_DONE) getList();
+		if (st.state == DL_FAIL) fail(st.error);
+	});
 #else
 	// a package manager has the system's lock: it is left to finish, not stopped midway
 	box->button(QDialogButtonBox::Cancel)->setEnabled(false);
@@ -263,7 +269,7 @@ void xFfGet::getList() {
 	static QRegularExpression rx("^([0-9a-f]{64})\\s+(ffmpeg-n(\\d+)\\.(\\d+)-latest-win64-gpl-[\\d.]+\\.zip)$");
 	QMap<int, QPair<QString, QString> > rel;	// major * 1000 + minor: sha, name
 	QString master;
-	foreach(QString line, QString::fromLatin1(out).split('\n')) {
+	foreach(QString line, QString::fromLatin1(dl.data()).split('\n')) {
 		line = line.trimmed();
 		if (line.endsWith(" " FG_MASTER)) master = line.section(' ', 0, 0);
 		QRegularExpressionMatch m = rx.match(line);
@@ -286,17 +292,35 @@ void xFfGet::getList() {
 		fail(tr("No Windows build in the release list"));
 		return;
 	}
+	// BtbN rebuilds "latest" under the same name: a part is continued only by its own build
+	const QString own = sha.left(16) + ".zip";
+	zip = tmp + own;
+	foreach(const QFileInfo& inf, QDir(tmp).entryInfoList(QDir::Files))
+		if ((inf.fileName() != own) && (inf.fileName() != own + ".part")) QFile::remove(inf.filePath());
+	if (QFileInfo(zip).isFile()) {		// whole already, its unpacking did not finish
+		check();
+		return;
+	}
 	bar->setRange(0, 1000);
 	bar->setValue(0);
 	lab->setText(tr("Downloading %0").arg(name));
-	run(fg_system_tool("curl.exe"), QStringList() << "-fL" << "--progress-bar" << "-o" << QDir::toNativeSeparators(tmp + name) << FG_BASE + name,
-		[this]() { check(); });
+	dl.toFile(FG_BASE + name, zip + ".part");
+	dl_follow(this, &dl, bar, labLine, [this](const dlStatus& st) {
+		if (st.state == DL_FAIL) fail(st.error);
+		if (st.state != DL_DONE) return;
+		if (!QFile::rename(zip + ".part", zip)) {
+			fail(tr("Cannot write into the config folder"));
+			return;
+		}
+		check();
+	});
 }
 
 void xFfGet::check() {
 	lab->setText(tr("Checking the download"));
 	bar->setRange(0, 0);
-	QFile file(tmp + name);
+	labLine->clear();
+	QFile file(zip);
 	QCryptographicHash hash(QCryptographicHash::Sha256);
 	if (file.open(QFile::ReadOnly)) {
 		while (!file.atEnd()) {
@@ -307,14 +331,29 @@ void xFfGet::check() {
 		file.close();
 	}
 	if (hash.result().toHex() != sha.toLatin1()) {
+		QFile::remove(zip);
 		fail(tr("The download is damaged, its checksum does not match"));
 		return;
 	}
 	lab->setText(tr("Unpacking"));
-	QDir().mkpath(tmp + "x");
-	run(fg_system_tool("tar.exe"), QStringList() << "-xf" << QDir::toNativeSeparators(tmp + name)
-		<< "-C" << QDir::toNativeSeparators(tmp + "x") << "--strip-components" << "1" << "*/bin/ffmpeg.exe" << "*/LICENSE.txt",
-		[this]() { install(); });
+	bar->setRange(0, 1000);
+	QDir(tmp + "x").removeRecursively();
+	QString err;
+	bool ok = sn_unpack_archive(zip, tmp + "x", &err, [this](qint64 done, qint64 total) {
+		bar->setValue(total ? int(1000.0 * done / total) : 0);
+		QApplication::processEvents();
+		return running;
+	}, [](const QString& path) {
+		// the build's own folder taken off the front; the program and its licence kept
+		QString rest = path.section('/', 1);
+		return ((rest == "bin/ffmpeg.exe") || (rest == "LICENSE.txt")) ? rest : QString();
+	});
+	if (!running) return;		// cancelled meanwhile
+	if (!ok) {
+		fail(err);
+		return;
+	}
+	install();
 }
 
 // into <config>/ffmpeg/bin/, where vrec_ffmpeg_auto() looks
@@ -361,25 +400,22 @@ void xFfGet::finish(const QString& html) {
 	btn->setText(tr("Close"));
 }
 
+// a download cut short stays for the next try to continue
 void xFfGet::fail(const QString& msg) {
 #ifdef _WIN32
-	if (!tmp.isEmpty()) QDir(tmp).removeRecursively();
+	if (!tmp.isEmpty()) QDir(tmp + "x").removeRecursively();
 #endif
 	finish(tr("FFmpeg was not installed.") + "<br><br>" + msg.toHtmlEscaped());
 }
 
-// cancel: the download is stopped and what it left is taken away
+// cancel: the download stops, its part stays for the next try to continue
 void xFfGet::reject() {
-#ifndef _WIN32
-	if (running) return;		// a package manager is left to finish
-#endif
-	running = false;
-	if (prc && (prc->state() != QProcess::NotRunning)) {
-		prc->kill();
-		prc->waitForFinished(2000);
-	}
 #ifdef _WIN32
-	if (!tmp.isEmpty()) QDir(tmp).removeRecursively();
+	running = false;
+	dl.cancel();
+	if (!tmp.isEmpty()) QDir(tmp + "x").removeRecursively();
+#else
+	if (running) return;		// a package manager is left to finish
 #endif
 	QDialog::reject();
 }
