@@ -16,6 +16,8 @@
 #include <QTreeView>
 #include <QWheelEvent>
 
+#include <functional>
+
 #include "classes.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(6,0,0)
@@ -176,6 +178,13 @@ bool lab_char(QChar);
 bool ffmpeg_get(QWidget* parent);
 // the Next's own SD card, made from a System/Next release or picked; own: made here
 bool next_card_dialog(QWidget* parent, QString* path, bool* own);
+
+// a download (xcore/download.h) followed on a bar and a line, "45 of 190 MB";
+// done(status) once it has ended, whichever way. bar and line may be null
+class xDownload;
+struct dlStatus;
+class QProgressBar;
+void dl_follow(QObject* owner, xDownload* dl, QProgressBar* bar, QLabel* line, std::function<void(const dlStatus&)> done);
 
 // a text that shortens in the middle to the width it gets, whole in its tooltip
 class xElideLabel : public QLabel {
