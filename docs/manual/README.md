@@ -18,10 +18,20 @@ A paragraph whose English changed only in its `{icon}` roles (a button got anoth
 an icon was put before a name) is not: `update` makes the same change in its translations.
 
 **Translating.** Fill `msgstr` of each entry; remove `#, fuzzy` once an entry is right.
-Names of windows, menus and buttons stay as on screen - the program itself is English.
 A new language: `python tools/manual.py update --add xx` (the ISO 639-1 code, the one
 the system reports - Ukrainian is `uk`), and its name and title in `LANG_NAMES` and
 `TITLES` of `conf.py`. Help > Manual and the Pages front page pick it by that code.
+
+**What stays English.** The program is English only, so the reader must find on screen
+exactly the words the manual names. Every name the program shows - menus and their items,
+windows, panels, tabs, Options pages, groups, buttons, check boxes, messages - stays
+English: in bold, in index terms, in a heading whose section is about that one element
+(**Cheats**, **Rewind**, **Fast loading**), and in the text of a link to such a section.
+A heading that names a topic is translated, even if the word is also on screen (Sound,
+Picture, Memory). Translate the names a picture's legend gives to parts of a window
+(toolbar, scrollbar, listing) unless the program shows them as text, and name the
+operating system's own windows as that system does in the reader's language. The rest is
+prose and is translated.
 
 **Commits.** A change to the program that the reader sees changes its English chapter and
 pictures in the same branch, but in a commit of its own, `manual: ...`, never in a commit
