@@ -17,7 +17,7 @@ breakpoint (see [Running and stepping](debugger.md#running-and-stepping)).
 
 ## Kinds of breakpoint
 
-```{index} breakpoint; CPU address, breakpoint; I/O port, breakpoint; RAM cell, breakpoint; ROM cell, breakpoint; Slot cell, breakpoint; Interrupt
+```{index} breakpoint; CPU address, breakpoint; I/O port, breakpoint; RAM cell, breakpoint; ROM cell, breakpoint; Slot cell, breakpoint; divMMC cell, breakpoint; Interrupt
 ```
 
 | Kind | Stops when |
@@ -27,6 +27,7 @@ breakpoint (see [Running and stepping](debugger.md#running-and-stepping)).
 | **RAM cell** | the CPU uses a byte of RAM, wherever that page is mapped |
 | **ROM cell** | the CPU uses a byte of ROM, wherever that page is mapped |
 | **Slot cell** | the CPU uses a byte of the cartridge |
+| **divMMC cell** | the CPU uses a byte of a [divMMC](disks.md#divmmc)'s ROM or RAM, wherever that page is mapped |
 | **Interrupt** | the CPU gets an interrupt request |
 | **Condition (global)** | an expression comes true; no address |
 
@@ -46,6 +47,11 @@ stops after the instruction that made the access has run to its end.
 **CPU address** and **RAM cell** differ on a machine that pages its memory. A breakpoint
 on CPU address `C000` stops the machine whatever page is at `C000`. A breakpoint on a RAM
 cell stops only for that byte of that page, at whatever CPU address the page is mapped.
+
+On a ZX Spectrum Next the pages of a RAM cell are its 8K pages, numbered as MEMMAP shows
+them. The Next keeps its ROMs and divMMC in that same memory, so a RAM cell can also be one of
+them: `ROM0:0038`, `DIV3:0010`, `ALTROM1:...`, `DIVROM:...`, `MFROM:...`, `MFRAM:...`.
+Its divMMC needs no **divMMC cell**.
 
 ## Setting breakpoints from the listing
 
@@ -113,7 +119,7 @@ the list by it.
 | `CPU:8000`, `CPU:4000-5AFF` | **CPU address**, an address or a range |
 | `IO:00FE mask 0001` | **I/O port**, the port and its mask |
 | `RAM:014000 [05:0000]` | **RAM cell**: the place in all of RAM, then the page and the offset in it |
-| `ROM:...`, `SLT:...` | **ROM cell**, **Slot cell**, written the same way |
+| `ROM:...`, `SLT:...`, `DIV:...` | **ROM cell**, **Slot cell**, **divMMC cell**, written the same way; a divMMC page is 8K, its ROM `DIVROM` |
 | `IRQ` | **Interrupt** |
 | `COND`, `COND, on change` | **Condition (global)** |
 
@@ -155,8 +161,8 @@ is what the span has measured so far.
 
 | Field | What it sets |
 |---|---|
-| **Type** | the kind: **CPU address**, **I/O port**, **RAM cell**, **ROM cell**, **Slot cell**, **Interrupt**, **Condition (global)** |
-| **Page** | the 16K page of a RAM, ROM or slot cell, as a decimal number |
+| **Type** | the kind: **CPU address**, **I/O port**, **RAM cell**, **ROM cell**, **Slot cell**, **divMMC cell**, **Interrupt**, **Condition (global)** |
+| **Page** | the page of a cell, as a decimal number: 16K, but 8K for the Next's RAM and for divMMC |
 | **Address** ... **to** | the first and the last byte; **to** left empty means one byte. For an **I/O port** they are **Port** and **mask** |
 | **Access** | **Fetch**, **Read**, **Write** |
 | **Span** | **None**, **Opens a span** or **Closes a span**, see [Spans](#spans) |
@@ -177,13 +183,13 @@ label name. A label takes priority over a number written the same way: if there 
 
 A cell of RAM, ROM or the slot can be given in four ways:
 
-- an offset in the page, `0000` to `3FFF`, with the page in **Page**;
+- an offset in the page, `0000` to `3FFF` (`1FFF` for an 8K page), with the page in **Page**;
 - the page and the offset together, `05:1800`. The page is hex here, while **Page** counts
-  in decimal;
-- a CPU address of `4000` or more, such as `5800`: the cell is the one mapped there now, and
-  **Page** changes to that cell's page. This works when the memory there is of the kind
+  in decimal. Memory with a name of its own takes the name instead: `ROM0:0038`, `DIV3:0010`;
+- a CPU address past the page size, such as `5800`: the cell is the one mapped there now,
+  and **Page** changes to that cell's page. This works when the memory there is of the kind
   that **Type** names; otherwise the address is taken as an offset in **Page**;
-- a label. For a RAM cell the label also sets **Page**.
+- a label, which also sets **Page**.
 
 The line under the fields shows how the address was read: `8000, START` for a CPU address
 with its label; `RAM 05:1800-1AFF, at 5800 now` for a cell, or `not mapped now` when its
@@ -546,9 +552,9 @@ CPU:DONE::F]:DBG:DT > 11400
 
 | Field | What it holds |
 |---|---|
-| 1, kind | `CPU`, `IO`, `RAM`, `ROM`, `SLT`, `IRQ` or `COND` |
-| 2 | `CPU`: the address or a range; `IO`: the port; `RAM`, `ROM`, `SLT`: the page; others: empty |
-| 3 | `IO`: the mask; `RAM`, `ROM`, `SLT`: the offset or a range of offsets; others: empty |
+| 1, kind | `CPU`, `IO`, `RAM`, `ROM`, `SLT`, `DIV`, `IRQ` or `COND` |
+| 2 | `CPU`: the address or a range; `IO`: the port; `RAM`, `ROM`, `SLT`, `DIV`: the page in hex, or a name such as `ROM0` or `DIVROM`; others: empty |
+| 3 | `IO`: the mask; `RAM`, `ROM`, `SLT`, `DIV`: the offset or a range of offsets; others: empty |
 | 4, flags | any of `F`, `R`, `W`; `0` switched off; `E` **On change**; `L` **Log**; `[` opens a span, `]` closes one |
 | 5, action | `DBG` (**Debugger**), `CNT` (**Counter**) or `SCR` (**Screen dump**) |
 | 6, condition | the condition, or empty |
@@ -558,8 +564,9 @@ A line can stop after the condition; the last two fields can be empty.
 
 An address in a list is hex without a prefix, as **Save** writes it, or a label of the
 labels loaded at the time: `CPU:START`, `CPU:START-DONE`. A label takes priority over hex
-written the same way; `#`, `$` or `0x` in front makes it a number. A RAM label carries its
-page, so the page field can be left empty: `RAM::SCREEN_BUF:W:CNT:`. **Save** writes the
+written the same way; `#`, `$` or `0x` in front makes it a number. A label carries its
+page, so the page field can be left empty: `RAM::SCREEN_BUF:W:CNT:`. On the Next a RAM page
+is 8K, as in the editor. **Save** writes the
 addresses as numbers.
 
 A line that cannot be read is left out and named in the log. A condition or a log
