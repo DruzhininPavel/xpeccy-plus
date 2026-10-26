@@ -211,6 +211,51 @@ int debugger_check(void) {
 	check("Multiface NMI fetch and physical breakpoint", ok && comp->cpu->regBC == 0x3412 && comp->next->irq.mfEnable);
 	compDestroy(comp);
 
+	// cells by name: the Next's RAM in 8K pages after its ROM and divMMC areas
+	comp = machine();
+	{
+		static const struct {int abs, area, page, ofs; const char* tok;} cells[] = {
+			{0x0123, CELL_ROM, 0, 0x123, "ROM0"},
+			{0xc123, CELL_ROM, 3, 0x123, "ROM3"},
+			{0x10123, CELL_DIVROM, 0, 0x123, "DIVROM"},
+			{0x14123, CELL_MFROM, 0, 0x123, "MFROM"},
+			{0x16123, CELL_MFRAM, 0, 0x123, "MFRAM"},
+			{0x1c123, CELL_ALTROM, 1, 0x123, "ALTROM1"},
+			{0x26123, CELL_DIV, 3, 0x123, "DIV3"},
+			{0x40000 + 17 * 0x2000 + 0x123, CELL_RAM, 17, 0x123, ""},
+			{0x1fffff, CELL_RAM, 223, 0x1fff, ""}
+		};
+		ok = 1;
+		for (unsigned i = 0; i < sizeof(cells) / sizeof(cells[0]); i++) {
+			xCell c = comp_cell(comp, MEM_RAM, cells[i].abs);
+			char buf[16];
+			int type, abs, area, page;
+			ok &= (c.area == cells[i].area) && (c.page == cells[i].page) && (c.ofs == cells[i].ofs);
+			ok &= !strcmp(cell_token(c, buf), cells[i].tok);
+			ok &= comp_cell_xadr(comp, c.area, c.page, c.ofs, &type, &abs) && (type == MEM_RAM) && (abs == cells[i].abs);
+			if (cells[i].tok[0]) ok &= cell_token_parse(buf, &area, &page) && (area == c.area) && (page == c.page);
+			if (!ok) fprintf(stderr, "cell %06X\n", cells[i].abs);
+		}
+		int type, abs;
+		ok &= !comp_cell_xadr(comp, CELL_RAM, 0xe0, 0, &type, &abs) && !comp_cell_xadr(comp, CELL_DIV, 3, 0x2000, &type, &abs);
+		ok &= comp_cell_pages(comp, CELL_RAM) == 0xe0 && comp_cell_unit(comp, CELL_RAM) == 0x2000;
+	}
+	compDestroy(comp);
+	comp = compCreate();
+	compSetHardware(comp, "ZX128");
+	{
+		xCell c = comp_cell(comp, MEM_RAM, (7 << 14) | 0x123);
+		int type, abs;
+		ok &= (c.area == CELL_RAM) && (c.page == 7) && (c.ofs == 0x123) && (c.unit == 0x4000);
+		c = comp_cell(comp, MEM_DIV, DIV_EE_SIZE + 3 * 0x2000 + 0x10);
+		ok &= (c.area == CELL_DIV) && (c.page == 3) && (c.ofs == 0x10);
+		ok &= comp_cell_xadr(comp, CELL_DIV, 3, 0x10, &type, &abs) && (type == MEM_DIV) && (abs == DIV_EE_SIZE + 3 * 0x2000 + 0x10);
+		c = comp_cell(comp, MEM_DIV, 0x123);
+		ok &= (c.area == CELL_DIVROM) && (c.ofs == 0x123);
+	}
+	check("cells by area and page", ok);
+	compDestroy(comp);
+
 	comp = machine();
 	unsigned char longCode[27];
 	memset(longCode, 0xdd, 24);

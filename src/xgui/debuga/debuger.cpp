@@ -2152,15 +2152,23 @@ void DebugWin::fillMem() {
 		if (isNext) {
 			page = next_mmu_get(comp, i);
 			int type = (page < 0xe0) ? MEM_RAM : ((i < 2) ? MEM_ROM : MEM_EXT);
+			// what a CPU read finds there now: the MMU's page, or what lies over it
 			xAdr effective = comp_get_xadr(comp, start, MEM_VIEW_READ);
-			QString source = "EXT";
-			if (effective.type == MEM_RAM) source = "SRAM";
-			else if (effective.type == MEM_ROM) source = "ROM";
-			if (effective.abs >= 0)
-				tip.append(QString("\nMMU #%0; CPU view %1 #%2").arg(gethexbyte(page), source,
-					gethexbyte(effective.abs >> 13)));
-			else
-				tip.append(QString("\nMMU #%0; CPU view %1").arg(gethexbyte(page), source));
+			xCell cell = comp_cell(comp, effective.type, effective.abs);
+			QString source;
+			switch (cell.area) {
+				case CELL_RAM: source = QString("RAM page #%0").arg(gethexbyte(cell.page)); break;
+				case CELL_ROM: source = QString("ROM %0").arg(cell.page); break;
+				case CELL_ALTROM: source = QString("alt ROM %0").arg(cell.page); break;
+				case CELL_DIVROM: source = "divMMC ROM"; break;
+				case CELL_DIV: source = QString("divMMC bank %0").arg(cell.page); break;
+				case CELL_MFROM: source = "Multiface ROM"; break;
+				case CELL_MFRAM: source = "Multiface RAM"; break;
+				default:
+					source = (effective.abs >= 0) ? "Layer 2 over bank 5/7" : "nothing (floating bus)";
+					break;
+			}
+			tip.append(QString("\nMMU #%0, CPU sees %1").arg(gethexbyte(page), source));
 			mmapType[i]->setToolTip(tip);
 			mmapPage[i]->setToolTip(tip);
 			if (mmapForced[i] != page) mmapForced[i] = -1;

@@ -42,22 +42,19 @@ QString brkGetString(xBrkPoint brk) {
 			res = QString("IO:%0 mask %1").arg(gethexword(brk.adr)).arg(gethexword(brk.mask));
 			break;
 		case BRK_MEMRAM:
-			if (brk.eadr > brk.adr) {
-				res = QString("RAM:%0-%1 [%2:%3-%4:%5]").arg(gethex6(brk.adr)).arg(gethex6(brk.eadr)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff)).arg(gethexbyte(brk.eadr >> 14)).arg(gethexword(brk.eadr & 0x3fff));
-			} else {
-				res = QString("RAM:%0 [%1:%2]").arg(gethex6(brk.adr)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff));
-			}
-			break;
 		case BRK_MEMROM:
+		case BRK_MEMSLT: {
+			// the cell in the machine's own pages: the Next's are 8K
+			const char* nm = (brk.type == BRK_MEMRAM) ? "RAM" : (brk.type == BRK_MEMROM) ? "ROM" : "SLT";
+			int mt = brk_mem_type(brk.type);
 			if (brk.eadr > brk.adr) {
-				res = QString("ROM:%0-%1 [%2:%3-%4:%5]").arg(gethex6(brk.adr)).arg(gethex6(brk.eadr)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff)).arg(gethexbyte(brk.eadr >> 14)).arg(gethexword(brk.eadr & 0x3fff));
+				res = QString("%0:%1-%2 [%3-%4]").arg(nm).arg(gethex6(brk.adr)).arg(gethex6(brk.eadr))
+					.arg(cell_text(mt, brk.adr, false)).arg(cell_text(mt, brk.eadr, false));
 			} else {
-				res = QString("ROM:%0 [%1:%2]").arg(gethex6(brk.adr)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff));
+				res = QString("%0:%1 [%2]").arg(nm).arg(gethex6(brk.adr)).arg(cell_text(mt, brk.adr, false));
 			}
 			break;
-		case BRK_MEMSLT:
-			res = QString("SLT:%0 [%1:%2]").arg(gethex6(brk.adr)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff));
-			break;
+		}
 		case BRK_MEMEXT:
 			res = QString("EXT:%0 [%1:%2]").arg(gethex6(brk.adr)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff));
 			break;
@@ -337,15 +334,6 @@ static bool brk_is_cell(int type) {
 	return (type == BRK_MEMRAM) || (type == BRK_MEMROM) || (type == BRK_MEMSLT);
 }
 
-// the memory a cell type watches
-static int brk_mem_type(int type) {
-	switch (type) {
-		case BRK_MEMRAM: return MEM_RAM;
-		case BRK_MEMROM: return MEM_ROM;
-		default: return MEM_SLOT;
-	}
-}
-
 static const char* brk_cell_name(int type) {
 	switch (type) {
 		case BRK_MEMRAM: return "RAM";
@@ -358,41 +346,56 @@ int xBrkManager::curType() {
 	return ui.brkType->itemData(ui.brkType->currentIndex()).toInt();
 }
 
+// the area a cell type's page field counts in
+static int brk_base_area(int type) {
+	switch (type) {
+		case BRK_MEMRAM: return CELL_RAM;
+		case BRK_MEMROM: return CELL_ROM;
+		default: return CELL_SLT;
+	}
+}
+
 // One address field as the type reads it. A cpu address or a port is a number
-// or a label. A cell is an offset in its page, page:offset, a label, or a cpu
-// address - which brings the page mapped there now, when it is the kind of
-// memory the type watches. *page is the page found, -1 when the field gave an
-// offset alone
-bool xBrkManager::readAdr(QString txt, int* adr, int* page) {
+// or a label. A cell is an offset in the page of the page field, page:offset (the
+// page in hex, or an area's token: ROM0, DIV3), a label, or a cpu address - which
+// brings the cell mapped there now, when it is the kind of memory the type
+// watches. *cell is that cell, -1 when the field gave an offset alone
+bool xBrkManager::readAdr(QString txt, int* adr, int* cell) {
 	int type = curType();
 	int val;
-	int lbank = -1;
-	*page = -1;
+	xAdr lab;
+	*cell = -1;
 	txt = txt.trimmed();
 	if (txt.isEmpty()) return false;
 	int colon = txt.indexOf(':');
 	if (colon > 0) {
-		bool okp;
 		bool oko;
-		int pg = txt.left(colon).toInt(&okp, 16);
 		int off = txt.mid(colon + 1).toInt(&oko, 16);
-		if (!brk_is_cell(type) || !okp || !oko || (off > 0x3fff)) return false;
-		*page = pg;
+		if (!brk_is_cell(type) || !oko) return false;
+		if (!cell_from_text(brk_mem_type(type), txt.left(colon), off, cell)) return false;
 		*adr = off;
 		return true;
 	}
-	if (!brk_list_adr(txt, &val, brk_is_cell(type) ? &lbank : NULL) || (val < 0) || (val > 0xffff)) return false;
-	*adr = val;
-	if (!brk_is_cell(type)) return true;
-	if ((lbank >= 0) && (type == BRK_MEMRAM)) {		// a label carries its page
-		*page = lbank;
-		*adr = val & 0x3fff;
+	if (!brk_list_adr(txt, &val, brk_is_cell(type) ? &lab : NULL)) return false;
+	if (!brk_is_cell(type)) {
+		*adr = val;
+		return (val >= 0) && (val <= 0xffff);
+	}
+	if (lab.type == brk_mem_type(type)) {		// a label carries its page
+		*cell = lab.abs;
+		*adr = comp_cell(conf.zx, lab.type, lab.abs).ofs;
 		return true;
 	}
-	if (val < 0x4000) return true;
+	if ((val < 0) || (val > 0xffff)) return false;
+	*adr = val;
+	if ((lab.type < 0) && (val < comp_cell_unit(conf.zx, brk_base_area(type)))) return true;
 	xAdr xa = comp_get_xadr(conf.zx, val, MEM_VIEW_READ);
-	if (xa.type == brk_mem_type(type)) *page = xa.abs >> 14;
-	*adr = val & 0x3fff;
+	if (xa.type != brk_mem_type(type)) {		// other memory there: an offset in the page field's page
+		*adr = val & (comp_cell_unit(conf.zx, brk_base_area(type)) - 1);
+		return true;
+	}
+	*cell = xa.abs;
+	*adr = comp_cell(conf.zx, xa.type, xa.abs).ofs;
 	return true;
 }
 
@@ -401,11 +404,11 @@ bool xBrkManager::readAdr(QString txt, int* adr, int* page) {
 bool xBrkManager::readRange(xBrkPoint* brk, QString* err, QLineEdit** fld) {
 	int adr;
 	int eadr;
-	int page;
-	int epage;
+	int cell;
+	int ecell;
 	bool haveEnd = !ui.leEnd->text().trimmed().isEmpty();
 	*fld = ui.leStart;
-	if (!readAdr(ui.leStart->text(), &adr, &page)) {
+	if (!readAdr(ui.leStart->text(), &adr, &cell)) {
 		*err = ui.leStart->text().trimmed().isEmpty() ? "an address is needed" : "not an address or a label";
 		return false;
 	}
@@ -415,7 +418,7 @@ bool xBrkManager::readRange(xBrkPoint* brk, QString* err, QLineEdit** fld) {
 		brk->eadr = adr;
 		brk->mask = 0xffff;
 		if (!haveEnd) return true;
-		if (!readAdr(ui.leEnd->text(), &eadr, &epage)) {
+		if (!readAdr(ui.leEnd->text(), &eadr, &ecell)) {
 			*err = "the mask is not a number";
 			return false;
 		}
@@ -423,42 +426,63 @@ bool xBrkManager::readRange(xBrkPoint* brk, QString* err, QLineEdit** fld) {
 		return true;
 	}
 	eadr = adr;
-	epage = page;
-	if (haveEnd && !readAdr(ui.leEnd->text(), &eadr, &epage)) {
+	ecell = cell;
+	if (haveEnd && !readAdr(ui.leEnd->text(), &eadr, &ecell)) {
 		*err = "not an address or a label";
 		return false;
 	}
-	if (eadr < adr) {
-		*err = "the range ends before it starts";
-		return false;
-	}
 	if (brk->type == BRK_CPUADR) {
+		if (eadr < adr) {
+			*err = "the range ends before it starts";
+			return false;
+		}
 		brk->adr = adr;
 		brk->eadr = eadr;
 		return true;
 	}
-	int pg = (page >= 0) ? page : ui.brkBank->value();
-	if ((epage >= 0) && (epage != pg)) {
+	// an offset alone is in the page the page field has, of the type's own memory
+	int mt = brk_mem_type(brk->type);
+	int pg = ui.brkBank->value();
+	if (cell < 0) {
+		*fld = ui.leStart;
+		if (!comp_cell_xadr(conf.zx, brk_base_area(brk->type), pg, adr, &mt, &cell)) {
+			*err = "the machine has no such page or offset";
+			return false;
+		}
+	}
+	xCell c0 = comp_cell(conf.zx, mt, cell);
+	if (ecell < 0) {
+		*fld = ui.leEnd;
+		if (!comp_cell_xadr(conf.zx, c0.area, c0.page, eadr, &mt, &ecell)) {
+			*err = "the offset is past the page";
+			return false;
+		}
+	}
+	xCell c1 = comp_cell(conf.zx, mt, ecell);
+	*fld = ui.leEnd;
+	if ((c1.area != c0.area) || (c1.page != c0.page)) {
 		*err = "the end is in another page";
 		return false;
 	}
-	if (pg > ui.brkBank->maximum()) {
-		*fld = ui.leStart;
-		*err = "the machine has no such page";
+	if (ecell < cell) {
+		*err = "the range ends before it starts";
 		return false;
 	}
-	brk->adr = (pg << 14) | adr;
-	brk->eadr = (pg << 14) | (eadr & 0x3fff);
+	brk->adr = cell;
+	brk->eadr = ecell;
 	return true;
 }
 
 // a cpu address typed into a cell's field moves the page to the one there
 void xBrkManager::chaStart(QString txt) {
 	int adr;
-	int page;
-	if (!brk_is_cell(curType())) return;
-	if (readAdr(txt, &adr, &page) && (page >= 0) && (page <= ui.brkBank->maximum()))
-		ui.brkBank->setValue(page);
+	int cell;
+	int type = curType();
+	if (!brk_is_cell(type)) return;
+	if (!readAdr(txt, &adr, &cell) || (cell < 0)) return;
+	xCell c = comp_cell(conf.zx, brk_mem_type(type), cell);
+	if ((c.area == brk_base_area(type)) && (c.page <= ui.brkBank->maximum()))
+		ui.brkBank->setValue(c.page);
 }
 
 // the address as it was understood, the way the condition check does it
@@ -481,8 +505,12 @@ void xBrkManager::chaAdr() {
 			res = gethexword(brk.adr);
 			if (brk.eadr > brk.adr) res.append("-").append(gethexword(brk.eadr));
 		} else {
-			res = QString("%0 %1:%2").arg(brk_cell_name(brk.type)).arg(gethexbyte(brk.adr >> 14)).arg(gethexword(brk.adr & 0x3fff));
-			if (brk.eadr > brk.adr) res.append("-").append(gethexword(brk.eadr & 0x3fff));
+			int ofs;
+			res = QString("%0 %1").arg(brk_cell_name(brk.type)).arg(cell_text(brk_mem_type(brk.type), brk.adr, false));
+			if (brk.eadr > brk.adr) {
+				cell_page_text(brk_mem_type(brk.type), brk.eadr, &ofs);
+				res.append("-").append(gethexword(ofs));
+			}
 			int cpu = comp_find_xadr(conf.zx, brk_mem_type(brk.type), brk.adr, MEM_VIEW_READ);
 			res.append((cpu < 0) ? QString(", not mapped now") : QString(", at %0 now").arg(gethexword(cpu)));
 		}
@@ -523,13 +551,8 @@ void xBrkManager::setElements(int mask) {
 void xBrkManager::setLimits(int t) {
 	Computer* comp = conf.zx;
 	int max;
-	switch (t) {
-		case BRK_MEMRAM: max = comp->mem->ramMask; break;
-		case BRK_MEMROM: max = comp->mem->romMask; break;
-		case BRK_MEMSLT: max = comp->slot->memMask; break;
-		default: max = 0x3fff; break;
-	}
-	ui.brkBank->setMaximum((max > 0x3fff) ? (max >> 14) : 0);
+	max = brk_is_cell(t) ? comp_cell_pages(comp, brk_base_area(t)) : 0;
+	ui.brkBank->setMaximum((max > 1) ? (max - 1) : 0);
 }
 
 void xBrkManager::chaType(int i) {
@@ -600,7 +623,10 @@ void xBrkManager::condHelp() {
 static QString brk_adr_text(int type, int abs) {
 	QString lab = brk_label(type, abs);
 	if (!lab.isEmpty()) return lab;
-	return gethexword((type == BRK_CPUADR) ? (abs & 0xffff) : (abs & 0x3fff));
+	if (!brk_is_cell(type)) return gethexword(abs & 0xffff);
+	// an offset in the page field's page, or page:offset for any other area
+	xCell c = comp_cell(conf.zx, brk_mem_type(type), abs);
+	return (c.area == brk_base_area(type)) ? gethexword(c.ofs) : cell_text(brk_mem_type(type), abs, false);
 }
 
 void xBrkManager::edit(xBrkPoint* sbrk) {
@@ -628,7 +654,12 @@ void xBrkManager::edit(xBrkPoint* sbrk) {
 	ui.brkLog->setChecked(obrk.log);
 	ui.brkRead->setChecked(obrk.read);
 	ui.brkWrite->setChecked(obrk.write);
-	ui.brkBank->setValue(brk_is_cell(obrk.type) ? (obrk.adr >> 14) : 0);
+	int page = 0;
+	if (brk_is_cell(obrk.type)) {
+		xCell c = comp_cell(conf.zx, brk_mem_type(obrk.type), obrk.adr);
+		if (c.area == brk_base_area(obrk.type)) page = c.page;
+	}
+	ui.brkBank->setValue(page);
 	if (!sbrk) {
 		ui.leStart->clear();
 		ui.leEnd->clear();

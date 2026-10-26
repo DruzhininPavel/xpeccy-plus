@@ -147,7 +147,12 @@ QString find_label(xAdr xadr) {
 				lab = conf.labmap[xadr.type][xadr.abs];
 			}
 		}
-		if (lab.isEmpty() && conf.labmap.contains(MEM_IO)) lab = conf.labmap[MEM_IO].value(xadr.adr);
+		// a label at a CPU address names whatever cell is there: a page view passes
+		// an offset in its adr, and the cell at that offset is not that CPU address
+		if (lab.isEmpty() && (xadr.adr >= 0) && conf.labmap.contains(MEM_IO) && conf.labmap[MEM_IO].contains(xadr.adr)) {
+			xAdr now = conf.zx ? comp_get_xadr(conf.zx, xadr.adr, MEM_VIEW_READ) : xadr;
+			if ((now.type == xadr.type) && (now.abs == xadr.abs)) lab = conf.labmap[MEM_IO].value(xadr.adr);
+		}
 	}
 	return lab;
 }
@@ -251,6 +256,23 @@ static bool labels_map_line(bool isNext, const QString& line) {
 	return true;
 }
 
+// A line of Xpeccy+'s own for memory that is not the machine's RAM pages:
+// ROM0:0123, DIV3:0010 (saveLabels). false: not one
+static bool labels_area_line(const QStringList& arr) {
+	int area, page, type, abs;
+	bool ok;
+	if (!conf.zx || !cell_token_parse(arr.at(0).toLatin1().constData(), &area, &page)) return false;
+	int ofs = arr.at(1).toInt(&ok, 16);
+	if (!ok || !comp_cell_xadr(conf.zx, area, page, ofs, &type, &abs)) return true;
+	xAdr xadr;
+	xadr.type = type;
+	xadr.abs = abs;
+	xadr.bank = abs >> 14;
+	xadr.adr = comp_find_xadr(conf.zx, type, abs, MEM_VIEW_READ);
+	add_label(xadr, arr.at(2));
+	return true;
+}
+
 // One SjASMPlus LABELSLIST or CSPECTMAP file into the set named after it, which
 // is then the one in effect. Its pages are taken as the machine in use has them.
 // 0: it could not be opened, and nothing changed.
@@ -275,6 +297,7 @@ static int labels_read(const QString& path) {
 		if (line.startsWith(":"))
 			line.prepend("FF");
 		arr = line.split(sep, X_SkipEmptyParts);
+		if ((arr.size() > 2) && labels_area_line(arr)) continue;
 		if (arr.size() > 2) {
 			bool adrOk;
 			int page = labels_page(arr.at(0));
@@ -332,11 +355,25 @@ void labels_image(const QString& image) {
 	imgSet = conf.curlabset->name;
 }
 
+// One label as a LABELSLIST line: RAM in the machine's pages, the page in decimal
+// as SjASMPlus writes it; any other memory as its area's token (ROM0:0123,
+// DIV3:0010), which only Xpeccy+ reads back; a CPU address as :ADDR. Empty: a
+// cell with no name (the SRAM behind the Next's banks 5 and 7)
+static QString labels_line(const QString& name, xAdr xadr) {
+	if (xadr.type == MEM_IO) return QString(":%0 %1\n").arg(gethexword(xadr.abs), name);
+	if (!conf.zx) return QString();
+	xCell cell = comp_cell(conf.zx, xadr.type, xadr.abs);
+	if (cell.area == CELL_RAM)
+		return QString("%0:%1 %2\n").arg(labels_page_str(cell.page), gethexword(cell.ofs), name);
+	if (cell.area == CELL_NONE) return QString();
+	char buf[16];
+	return QString("%0:%1 %2\n").arg(cell_token(cell, buf), gethexword(cell.ofs), name);
+}
+
 int saveLabels(const char* fn) {
 	int res = 1;
 	QStringList keys;
 	QString key;
-	xAdr xadr;
 	QString line;
 	QFile file;
 	QString path(fn);
@@ -350,23 +387,16 @@ int saveLabels(const char* fn) {
 			xLabelSet* set = conf.curlabset;
 			if (set) {
 				keys = set->list.keys();
+				int lost = 0;
 				foreach(key, keys) {
-					xadr = set->list.value(key);
-					if (conf.zx && (conf.zx->hw->id == HW_ZXNEXT)) {
-						if ((xadr.type == MEM_RAM) && (xadr.abs >= 0x40000) && (xadr.abs < 0x200000)) {
-							line = labels_page_str((xadr.abs - 0x40000) >> 13);
-							line.append(QString(":%0 %1\n").arg(gethexword(xadr.abs & 0x1fff), key));
-						} else {
-							int adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
-							if (adr < 0) continue;
-							line = QString(":%0 %1\n").arg(gethexword(adr), key);
-						}
+					line = labels_line(key, set->list.value(key));
+					if (line.isEmpty()) {
+						lost++;
 					} else {
-						line = (xadr.type == MEM_RAM) ? labels_page_str(xadr.abs >> 14) : "FF";
-						line.append(QString(":%0 %1\n").arg(gethexword(xadr.abs & 0x3fff), key));
+						file.write(line.toUtf8());
 					}
-					file.write(line.toUtf8());
 				}
+				if (lost) xlog(XLG_FILE, XLL_WARN, "labels: %i not saved, in memory with no name to write", lost);
 			}
 			file.close();
 		} else {

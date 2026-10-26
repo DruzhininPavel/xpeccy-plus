@@ -22,6 +22,13 @@ before that point is upstream's history and is not repeated here.
   writes them, and the Next uses its 8K pages in the listing, named breakpoints and watches.
   CPU watches follow the MMU; RAM and ROM watches read physical memory, even when it is not
   paged in. *(thanks to Serdjuk)*
+
+- **Saved labels keep the ones in ROM and divMMC**: they are written by name (`ROM0:0038`,
+  `DIV3:0010`) and load back where they were.
+- **The Next debugger counts in 8K pages**: a breakpoint's RAM cell is page:offset in the
+  pages MEMMAP shows, its ROMs and divMMC go by name (`ROM0`, `DIV3`), and the MEMMAP tooltip
+  says what the CPU sees in each slot.
+
 - **The Next debugger follows paging during an instruction**: the listing and physical
   breakpoints handle divMMC traps and Multiface NMI entry, heat maps count operands in the
   right page, and write breakpoints catch attempts to write to ROM or an unmapped window.

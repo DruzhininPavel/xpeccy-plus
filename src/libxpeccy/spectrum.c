@@ -85,6 +85,128 @@ int comp_find_xadr(Computer* comp, int type, int abs, int access) {
 	return -1;
 }
 
+static int comp_is_next(Computer* comp) {
+	return comp->hw && (comp->hw->id == HW_ZXNEXT);
+}
+
+int comp_cell_unit(Computer* comp, int area) {
+	switch (area) {
+		case CELL_RAM: return comp_is_next(comp) ? 0x2000 : 0x4000;
+		case CELL_ROM: case CELL_ALTROM: case CELL_SLT: return 0x4000;
+		case CELL_DIVROM: case CELL_DIV: case CELL_MFROM: case CELL_MFRAM: return 0x2000;
+	}
+	return 0;
+}
+
+int comp_cell_pages(Computer* comp, int area) {
+	int next = comp_is_next(comp);
+	switch (area) {
+		case CELL_RAM: return next ? 0xe0 : ((comp->mem->ramMask + 1) >> 14);
+		case CELL_ROM: return next ? 4 : ((comp->mem->romMask + 1) >> 14);
+		case CELL_ALTROM: return next ? 2 : 0;
+		case CELL_DIV: return next ? 16 : (DIV_RAM_MAX >> 13);
+		case CELL_DIVROM: return 1;
+		case CELL_MFROM: case CELL_MFRAM: return next ? 1 : 0;
+		case CELL_SLT: return comp->slot ? ((comp->slot->memMask + 1) >> 14) : 0;
+	}
+	return 0;
+}
+
+xCell comp_cell(Computer* comp, int type, int abs) {
+	xCell cell = {CELL_NONE, 0, 0, 0};
+	if (abs < 0) return cell;
+	if (comp_is_next(comp)) {
+		if (type == MEM_RAM) cell.area = next_cell(abs, &cell.page, &cell.ofs);
+	} else {
+		switch (type) {
+			case MEM_RAM: cell.area = CELL_RAM; break;
+			case MEM_ROM: cell.area = CELL_ROM; break;
+			case MEM_SLOT: cell.area = CELL_SLT; break;
+			case MEM_DIV:
+				abs %= DIV_EE_SIZE + DIV_RAM_MAX;
+				if (abs < DIV_EE_SIZE) {
+					cell.area = CELL_DIVROM;
+					cell.ofs = abs;
+				} else {
+					cell.area = CELL_DIV;
+					cell.page = (abs - DIV_EE_SIZE) >> 13;
+					cell.ofs = (abs - DIV_EE_SIZE) & 0x1fff;
+				}
+				break;
+		}
+		if ((cell.area == CELL_RAM) || (cell.area == CELL_ROM) || (cell.area == CELL_SLT)) {
+			cell.page = abs >> 14;
+			cell.ofs = abs & 0x3fff;
+		}
+	}
+	cell.unit = comp_cell_unit(comp, cell.area);
+	return cell;
+}
+
+int comp_cell_xadr(Computer* comp, int area, int page, int ofs, int* type, int* abs) {
+	int unit = comp_cell_unit(comp, area);
+	if (!unit || (page < 0) || (page >= comp_cell_pages(comp, area)) || (ofs < 0) || (ofs >= unit)) return 0;
+	if (comp_is_next(comp)) {
+		*type = MEM_RAM;
+		*abs = next_cell_abs(area, page, ofs);
+		return *abs >= 0;
+	}
+	switch (area) {
+		case CELL_RAM: *type = MEM_RAM; *abs = (page << 14) | ofs; return 1;
+		case CELL_ROM: *type = MEM_ROM; *abs = (page << 14) | ofs; return 1;
+		case CELL_SLT: *type = MEM_SLOT; *abs = (page << 14) | ofs; return 1;
+		case CELL_DIVROM: *type = MEM_DIV; *abs = ofs; return 1;
+		case CELL_DIV: *type = MEM_DIV; *abs = DIV_EE_SIZE + (page << 13) + ofs; return 1;
+	}
+	return 0;
+}
+
+static const struct {int area; const char* name;} cell_names[] = {
+	{CELL_ALTROM, "ALTROM"}, {CELL_DIVROM, "DIVROM"},	// before the names they start with
+	{CELL_ROM, "ROM"}, {CELL_DIV, "DIV"}, {CELL_MFROM, "MFROM"}, {CELL_MFRAM, "MFRAM"},
+	{CELL_SLT, "SLT"}
+};
+
+const char* cell_token(xCell cell, char* buf) {
+	buf[0] = 0;
+	for (unsigned i = 0; i < sizeof(cell_names) / sizeof(cell_names[0]); i++) {
+		if (cell_names[i].area != cell.area) continue;
+		if ((cell.area == CELL_DIVROM) || (cell.area == CELL_MFROM) || (cell.area == CELL_MFRAM))
+			strcpy(buf, cell_names[i].name);
+		else
+			sprintf(buf, "%s%i", cell_names[i].name, cell.page);
+		break;
+	}
+	return buf;
+}
+
+static int cell_prefix(const char* str, const char* name) {
+	size_t len = 0;
+	while (name[len]) {
+		char c = str[len];
+		if ((c >= 'a') && (c <= 'z')) c -= 0x20;
+		if (c != name[len]) return 0;
+		len++;
+	}
+	return (int)len;
+}
+
+int cell_token_parse(const char* str, int* area, int* page) {
+	for (unsigned i = 0; i < sizeof(cell_names) / sizeof(cell_names[0]); i++) {
+		int len = cell_prefix(str, cell_names[i].name);
+		if (!len) continue;
+		const char* num = str + len;
+		*area = cell_names[i].area;
+		*page = 0;
+		if ((*area == CELL_DIVROM) || (*area == CELL_MFROM) || (*area == CELL_MFRAM)) return *num == 0;
+		if ((*num < '0') || (*num > '9')) return 0;
+		char* end;
+		*page = (int)strtol(num, &end, 10);
+		return *end == 0;
+	}
+	return 0;
+}
+
 static int comp_dasm_read(int adr, void* ptr) {
 	return comp_peek((Computer*)ptr, adr, MEM_VIEW_READ, NULL);
 }

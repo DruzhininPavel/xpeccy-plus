@@ -723,6 +723,44 @@ static void nx_map_mem(Computer* comp) {
 	comp->vid->vidPage = (NX_RAM + (((NX.p7ffd & 8) ? 0x0e : 0x0a) << 13)) >> 14;
 }
 
+// A cell of the SRAM image by its area (CELL_*), the page in that area and the
+// offset in the page: 16K ROMs, 8K divMMC banks and RAM pages (SRAM map above)
+int next_cell(int abs, int* page, int* ofs) {
+	static const struct {int base, end, shift, area;} tab[] = {
+		{0, NX_DIVROM, 14, CELL_ROM},
+		{NX_DIVROM, NX_DIVROM + 0x2000, 13, CELL_DIVROM},
+		{NX_MFROM, NX_MFRAM, 13, CELL_MFROM},
+		{NX_MFRAM, NX_ALTROM, 13, CELL_MFRAM},
+		{NX_ALTROM, NX_DIVRAM, 14, CELL_ALTROM},
+		{NX_DIVRAM, NX_RAM, 13, CELL_DIV},
+		{NX_RAM, NX_RAM + (0xe0 << 13), 13, CELL_RAM}
+	};
+	for (unsigned i = 0; i < sizeof(tab) / sizeof(tab[0]); i++) {
+		if ((abs < tab[i].base) || (abs >= tab[i].end)) continue;
+		*page = (abs - tab[i].base) >> tab[i].shift;
+		*ofs = (abs - tab[i].base) & ((1 << tab[i].shift) - 1);
+		return tab[i].area;
+	}
+	return CELL_NONE;
+}
+
+// ...and back: -1 when the area has no such page or offset
+int next_cell_abs(int area, int page, int ofs) {
+	int base, shift, pages;
+	switch (area) {
+		case CELL_ROM: base = 0; shift = 14; pages = 4; break;
+		case CELL_DIVROM: base = NX_DIVROM; shift = 13; pages = 1; break;
+		case CELL_MFROM: base = NX_MFROM; shift = 13; pages = 1; break;
+		case CELL_MFRAM: base = NX_MFRAM; shift = 13; pages = 1; break;
+		case CELL_ALTROM: base = NX_ALTROM; shift = 14; pages = 2; break;
+		case CELL_DIV: base = NX_DIVRAM; shift = 13; pages = 16; break;
+		case CELL_RAM: base = NX_RAM; shift = 13; pages = 0xe0; break;
+		default: return -1;
+	}
+	if ((page < 0) || (page >= pages) || (ofs < 0) || (ofs >> shift)) return -1;
+	return base + (page << shift) + ofs;
+}
+
 int next_mmu_get(Computer* comp, int slot) {
 	return ((slot >= 0) && (slot < 8)) ? NX.mmu[slot] : 0xff;
 }

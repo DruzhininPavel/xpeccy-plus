@@ -313,8 +313,14 @@ void brk_trace_flush();
 void brk_trace_done(bool out = false);	// out: the spans' totals to stdout too
 extern int brk_cond_n;		// conditions not bound to an address, asked per instruction
 int brk_load_list(const char*, int* bad = NULL, bool add = false);
-// a label, #/$/0x hex or plain hex; bank is a label's ram page, else -1
-bool brk_list_adr(QString, int* adr, int* bank);
+// a label, #/$/0x hex or plain hex; cell gets a label's cell, type -1 for a number
+bool brk_list_adr(QString, int* adr, xAdr* cell);
+int brk_mem_type(int type);		// the memory a cell breakpoint type watches, MEM_*
+// a cell as page:offset - the page in hex when it is of the memory the type names,
+// else its area's token (ROM0, DIV3...), as comp_cell() has the machine's pages
+QString cell_page_text(int memType, int abs, int* ofs);
+QString cell_text(int memType, int abs, bool withType);	// "11:0123", withType "RAM:11:0123"
+bool cell_from_text(int memType, QString page, int ofs, int* abs, bool wrap = false);	// a page so written and an offset
 int brk_save_list(const char*);
 
 // hold the emulation thread while the machine is rebuilt (defined in ethread.cpp)

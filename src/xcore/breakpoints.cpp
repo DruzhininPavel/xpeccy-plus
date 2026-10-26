@@ -437,8 +437,81 @@ void brkInstallAll() {
 // The registers are taken from the cpu's own table, so this is not Z80 code:
 // a core showing another set logs that set.
 
+// == cells as text ==
+// A cell is page:offset in the pages its machine has (comp_cell): a page of the
+// memory the type names is a hex number, any other area is its token - the Next
+// keeps its ROMs and divMMC in the RAM it pages, so a RAM cell may be ROM0:0123.
+
+int brk_mem_type(int type) {
+	switch (type) {
+		case BRK_MEMRAM: return MEM_RAM;
+		case BRK_MEMROM: return MEM_ROM;
+		case BRK_MEMSLT: return MEM_SLOT;
+	}
+	return -1;
+}
+
+static int cell_base_area(int memType) {
+	switch (memType) {
+		case MEM_RAM: return CELL_RAM;
+		case MEM_ROM: return CELL_ROM;
+		case MEM_SLOT: return CELL_SLT;
+		case MEM_DIV: return CELL_DIV;
+	}
+	return CELL_NONE;
+}
+
+static const char* cell_type_name(int memType) {
+	switch (memType) {
+		case MEM_RAM: return "RAM";
+		case MEM_ROM: return "ROM";
+		case MEM_SLOT: return "SLT";
+		case MEM_DIV: return "DIV";
+	}
+	return "EXT";
+}
+
+QString cell_page_text(int memType, int abs, int* ofs) {
+	xCell cell = comp_cell(conf.zx, memType, abs);
+	*ofs = cell.ofs;
+	if (cell.area == CELL_NONE) {
+		*ofs = abs & 0x3fff;
+		return gethexbyte(abs >> 14);
+	}
+	if (cell.area == cell_base_area(memType)) return gethexbyte(cell.page);
+	char buf[16];
+	return QString(cell_token(cell, buf));
+}
+
+QString cell_text(int memType, int abs, bool withType) {
+	int ofs;
+	QString page = cell_page_text(memType, abs, &ofs);
+	QString res = QString("%0:%1").arg(page).arg(gethexword(ofs));
+	if (withType && page.at(0).isDigit()) res.prepend(QString("%0:").arg(cell_type_name(memType)));
+	return res;
+}
+
+bool cell_from_text(int memType, QString page, int ofs, int* abs, bool wrap) {
+	int area;
+	int pg;
+	int type;
+	page = page.trimmed();
+	if (page.isEmpty()) return false;
+	if (!cell_token_parse(page.toLatin1().constData(), &area, &pg)) {
+		bool ok;
+		pg = page.toInt(&ok, 16);
+		if (!ok) return false;
+		area = cell_base_area(memType);
+	}
+	if (wrap) ofs &= comp_cell_unit(conf.zx, area) - 1;
+	if (!comp_cell_xadr(conf.zx, area, pg, ofs, &type, abs)) return false;
+	return type == memType;
+}
+
 static QString brk_log_page(const char* nm, int abs) {
-	return QString("%0:%1:%2").arg(nm).arg(gethexbyte(abs >> 14)).arg(gethexword(abs & 0x3fff));
+	int type = !strcmp(nm, "RAM") ? MEM_RAM : !strcmp(nm, "ROM") ? MEM_ROM
+		: !strcmp(nm, "SLT") ? MEM_SLOT : !strcmp(nm, "DIV") ? MEM_DIV : MEM_EXT;
+	return cell_text(type, abs, true);
 }
 
 // a cpu address in the page:offset form, for whatever the machine has paged
@@ -814,11 +887,12 @@ void brk_log_hit(xBrkPoint* brk, Computer* comp) {
 
 // an address in a list file: hex, the way the file is written, or a label of
 // the set in effect. A label wins over hex, as in a condition; #, $ and 0x
-// force a number. bank gets the label's ram page, -1 for a number
-bool brk_list_adr(QString str, int* adr, int* bank) {
+// force a number. cell gets the label's cell, type -1 for a number; asked for
+// it, a label is good even when its cell is not paged in now
+bool brk_list_adr(QString str, int* adr, xAdr* cell) {
 	bool ok = false;
 	str = str.trimmed();
-	if (bank) *bank = -1;
+	if (cell) cell->type = -1;
 	if (str.isEmpty()) return false;
 	if (str.startsWith("#") || str.startsWith("$") || str.startsWith("0x", Qt::CaseInsensitive)) {
 		*adr = str_num(str, &ok);
@@ -827,11 +901,10 @@ bool brk_list_adr(QString str, int* adr, int* bank) {
 	if (!str.at(0).isDigit()) {
 		xAdr xadr = find_label(str);
 		if (xadr.type >= 0) {
-			if (bank && xadr.type == MEM_RAM) {
-				*bank = xadr.abs >> 14;
-				*adr = xadr.abs & 0x3fff;
-			} else {
-				*adr = xadr.adr;
+			*adr = xadr.adr;
+			if (cell) {
+				*cell = xadr;
+				return true;
 			}
 			return *adr >= 0;
 		}
@@ -840,20 +913,43 @@ bool brk_list_adr(QString str, int* adr, int* bank) {
 	return ok;
 }
 
-static bool parseRange(QString str, xBrkPoint* p, int* bank = NULL) {
+static bool parseRange(QString str, xBrkPoint* p) {
 	int badr;
 	int eadr;
 	QStringList splt = str.split('-', X_SkipEmptyParts);
-	if (splt.isEmpty() || !brk_list_adr(splt.first(), &badr, bank)) return false;
+	if (splt.isEmpty() || !brk_list_adr(splt.first(), &badr, NULL)) return false;
 	eadr = badr;
-	if (splt.size() > 1) {
-		int endBank;
-		if (!brk_list_adr(splt.at(1), &eadr, bank ? &endBank : NULL)) return false;
-		if (bank && (*bank >= 0) && (endBank >= 0) && (*bank != endBank)) return false;
-	}
+	if ((splt.size() > 1) && !brk_list_adr(splt.at(1), &eadr, NULL)) return false;
 	if (eadr < badr) std::swap(badr, eadr);
 	p->adr = badr;
 	p->eadr = eadr;
+	return true;
+}
+
+// a cell line's page field and its offsets, or labels in place of them (a label
+// carries its page): one page of the memory the type watches
+static bool parseCells(QString page, QString range, int memType, xBrkPoint* p) {
+	QStringList splt = range.split('-', X_SkipEmptyParts);
+	if (splt.isEmpty() || (splt.size() > 2)) return false;
+	int abs[2];
+	for (int i = 0; i < splt.size(); i++) {
+		int ofs;
+		xAdr cell;
+		if (!brk_list_adr(splt.at(i), &ofs, &cell)) return false;
+		if (cell.type >= 0) {
+			if (cell.type != memType) return false;
+			abs[i] = cell.abs;
+		} else if (!cell_from_text(memType, page, ofs, &abs[i], true)) {	// an offset past the page wraps, as it always did
+			return false;
+		}
+	}
+	if (splt.size() < 2) abs[1] = abs[0];
+	xCell c0 = comp_cell(conf.zx, memType, abs[0]);
+	xCell c1 = comp_cell(conf.zx, memType, abs[1]);
+	if ((c0.area != c1.area) || (c0.page != c1.page)) return false;
+	if (abs[1] < abs[0]) std::swap(abs[0], abs[1]);
+	p->adr = abs[0];
+	p->eadr = abs[1];
 	return true;
 }
 
@@ -927,9 +1023,6 @@ int brk_load_list(const char* fpath, int* bad, bool add) {
 	QFile file(fnam);
 	QString line;
 	QStringList list;
-	int off;
-	int page;
-	int lbank = -1;
 	int num = 0;
 	bool b0,b1;
 	if (bad) *bad = 0;
@@ -968,16 +1061,8 @@ int brk_load_list(const char* fpath, int* bad, bool add) {
 				brk.eadr &= 0xffff;
 			} else if ((list.at(0) == "ROM") || (list.at(0) == "RAM") || (list.at(0) == "SLT")) {
 				brk.type = (list.at(0) == "ROM") ? BRK_MEMROM : (list.at(0) == "RAM") ? BRK_MEMRAM : BRK_MEMSLT;
-				b0 = parseRange(list.at(2), &brk, &lbank);
-				// a ram label carries its page, which may then be left out
-				if ((brk.type == BRK_MEMRAM) && (lbank >= 0) && list.at(1).trimmed().isEmpty()) {
-					page = lbank;
-				} else {
-					page = list.at(1).toInt(&b1, 16);
-				}
-				off = (page & 0xff) << 14;
-				brk.adr = (brk.adr & 0x3fff) | off;
-				brk.eadr = (brk.eadr & 0x3fff) | off;
+				// a label carries its page, which may then be left out
+				b0 = parseCells(list.at(1), list.at(2), brk_mem_type(brk.type), &brk);
 			} else if (list.at(0) == "IRQ") {
 				brk.type = BRK_IRQ;
 			} else if (list.at(0) == "COND") {
@@ -1047,32 +1132,20 @@ int brk_save_list(const char* fpath) {
 				}
 				break;
 			case BRK_MEMRAM:
-				nm = "RAM";
-				ar1 = gethexbyte((brk.adr >> 14) & 0xff);	// 16K page
-				ar2 = gethexword(brk.adr & 0x3fff);		// adr in page
-				if (brk.eadr > brk.adr) {
-					ar2.append("-");
-					ar2.append(gethexword(brk.eadr & 0x3fff));
-				}
-				break;
 			case BRK_MEMROM:
-				nm = "ROM";
-				ar1 = gethexbyte((brk.adr >> 14) & 0xff);
-				ar2 = gethexword(brk.adr & 0x3fff);
+			case BRK_MEMSLT: {
+				// the page in the machine's own unit (the Next's 8K), or an area's token
+				int ofs;
+				nm = (brk.type == BRK_MEMRAM) ? "RAM" : (brk.type == BRK_MEMROM) ? "ROM" : "SLT";
+				ar1 = cell_page_text(brk_mem_type(brk.type), brk.adr, &ofs);
+				ar2 = gethexword(ofs);
 				if (brk.eadr > brk.adr) {
+					cell_page_text(brk_mem_type(brk.type), brk.eadr, &ofs);
 					ar2.append("-");
-					ar2.append(gethexword(brk.eadr & 0x3fff));
+					ar2.append(gethexword(ofs));
 				}
 				break;
-			case BRK_MEMSLT:
-				nm = "SLT";
-				ar1 = gethexbyte((brk.adr >> 14) & 0xff);
-				ar2 = gethexword(brk.adr & 0x3fff);
-				if (brk.eadr > brk.adr) {
-					ar2.append("-");
-					ar2.append(gethexword(brk.eadr & 0x3fff));
-				}
-				break;
+			}
 			case BRK_IRQ:
 				nm = "IRQ";
 				ar1.clear();
