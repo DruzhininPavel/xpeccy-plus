@@ -16,6 +16,7 @@ extern "C" {
 #define MEM_BRK_RAM	(0<<6)	// 00xxxxxx
 #define MEM_BRK_ROM	(1<<6)	// 01xxxxxx
 #define MEM_BRK_SLT	(2<<6)	// 10xxxxxx
+#define MEM_BRK_DIV	(3<<6)	// 11xxxxxx: a divMMC's EEPROM and SRAM
 #define MEM_BRK_TMASK	(3<<6)	// 11xxxxxx
 
 // The cartridge is a plain rom image: Interface II on the 48K, a 16K page at a

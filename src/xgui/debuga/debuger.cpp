@@ -2152,15 +2152,23 @@ void DebugWin::fillMem() {
 		if (isNext) {
 			page = next_mmu_get(comp, i);
 			int type = (page < 0xe0) ? MEM_RAM : ((i < 2) ? MEM_ROM : MEM_EXT);
+			// what a CPU read finds there now: the MMU's page, or what lies over it
 			xAdr effective = comp_get_xadr(comp, start, MEM_VIEW_READ);
-			QString source = "EXT";
-			if (effective.type == MEM_RAM) source = "SRAM";
-			else if (effective.type == MEM_ROM) source = "ROM";
-			if (effective.abs >= 0)
-				tip.append(QString("\nMMU #%0; CPU view %1 #%2").arg(gethexbyte(page), source,
-					gethexbyte(effective.abs >> 13)));
-			else
-				tip.append(QString("\nMMU #%0; CPU view %1").arg(gethexbyte(page), source));
+			xCell cell = comp_cell(comp, effective.type, effective.abs);
+			QString source;
+			switch (cell.area) {
+				case CELL_RAM: source = QString("RAM page #%0").arg(gethexbyte(cell.page)); break;
+				case CELL_ROM: source = QString("ROM %0").arg(cell.page); break;
+				case CELL_ALTROM: source = QString("alt ROM %0").arg(cell.page); break;
+				case CELL_DIVROM: source = "divMMC ROM"; break;
+				case CELL_DIV: source = QString("divMMC bank %0").arg(cell.page); break;
+				case CELL_MFROM: source = "Multiface ROM"; break;
+				case CELL_MFRAM: source = "Multiface RAM"; break;
+				default:
+					source = (effective.abs >= 0) ? "Layer 2 over bank 5/7" : "nothing (floating bus)";
+					break;
+			}
+			tip.append(QString("\nMMU #%0, CPU sees %1").arg(gethexbyte(page), source));
 			mmapType[i]->setToolTip(tip);
 			mmapPage[i]->setToolTip(tip);
 			if (mmapForced[i] != page) mmapForced[i] = -1;
@@ -2171,9 +2179,16 @@ void DebugWin::fillMem() {
 		}
 		pg = comp->mem->map[i << 6];
 		page = pg.num >> 6;
-		// a divMMC's window: the 8K bank of its SRAM at #2000
-		if (pg.type == MEM_DIV)
-			page = (((comp->mem->map[0x20].num << 8) - DIV_EE_SIZE) >> 13) & 0xff;
+		// as the debugger shows memory: a divMMC paging the last fetch armed is in
+		xAdr seen = comp_get_xadr(comp, i << 14, MEM_VIEW_READ);
+		if (seen.type == MEM_DIV) {
+			// a divMMC's window: the 8K bank of its SRAM at #2000
+			pg.type = MEM_DIV;
+			page = comp_cell(comp, MEM_DIV, comp_get_xadr(comp, 0x2000, MEM_VIEW_READ).abs).page & 0xff;
+		} else if (pg.type == MEM_DIV) {		// ...or out: the machine's own page under it
+			pg.type = seen.type;
+			page = (seen.abs >> 14) & 0xff;
+		}
 		// the machine pages whenever it likes and says nothing: a bank stays
 		// marked as forced only while the value put there is still in the map
 		if (mmapForced[i] != ((pg.type << 16) | page)) mmapForced[i] = -1;
@@ -2369,6 +2384,8 @@ void DebugWin::mapClear() {
 		if (adr < 0x80000) comp->brkRomMap[adr] &= 0x0f;
 		if (comp->slot->data && (adr <= comp->slot->memMask))
 			comp->slot->brkMap[adr] &= 0x0f;
+		if (comp->div && (adr < DIV_EE_SIZE + DIV_RAM_MAX))
+			comp->div->brkMap[adr] &= 0x0f;
 	}
 	fillDisasm();
 }
@@ -2609,6 +2626,10 @@ void DebugWin::chaCellProperty(QAction* act) {
 				bt |= MEM_BRK_ROM;
 			} else if (xadr.type == MEM_RAM) {
 				bt |= MEM_BRK_RAM;
+			} else if (xadr.type == MEM_DIV) {
+				bt |= MEM_BRK_DIV;
+				xadr.abs %= DIV_EE_SIZE + DIV_RAM_MAX;
+				xend.abs %= DIV_EE_SIZE + DIV_RAM_MAX;
 			} else {
 				bt |= MEM_BRK_SLT;
 			}

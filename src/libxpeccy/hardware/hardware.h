@@ -207,6 +207,8 @@ int next_vsync_frame_at(Computer*, long long clk28);
 void next_audio(Computer*, int* l, int* r, int* env);	// the mixer's pcm_L/R (13 bits), psg0's env_vol
 int next_mmu_get(Computer*, int);
 void next_mmu_set(Computer*, int, int);
+int next_cell(int abs, int* page, int* ofs);		// an SRAM image cell's area (CELL_*), page and offset
+int next_cell_abs(int area, int page, int ofs);		// ...and back, -1: no such cell
 // the Next for a viewer (the debugger's panel): nothing here moves the machine
 int next_nr_peek(Computer*, int reg);		// a nextreg as a read gives it, nothing run up to now first
 int next_ram(Computer*, int page, int ofs);	// a byte of 8K RAM page as the cpu reads it

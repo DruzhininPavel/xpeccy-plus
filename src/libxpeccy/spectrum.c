@@ -15,15 +15,50 @@ static int nsTime;
 static int res2;
 int res4 = 0;		// save last T synced with video (last is res2-res4)
 
-static void comp_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xadr) {
+// The map as it stands, or with FETCH as the opcode fetch at start leaves it: a
+// divMMC entry point pages the board in (or 1FF8-1FFF out) for the fetch after
+// it, #3Dxx for its own. While the debugger holds the machine, a paging the last
+// fetch armed is shown done, unless LIVE asks for the map the machine uses. The
+// machine's memory under the board is in mem->under.
+static xAdr comp_view_xadr(Computer* comp, int start, int adr, int mode) {
+	int dabs;
+	int fv = -1;
+	if (comp->div) {
+		if (mode & MEM_VIEW_FETCH) {
+			fv = div_fetch_view(comp->div, start, adr, &dabs);
+		} else if (comp->flgDBG && !(mode & MEM_VIEW_LIVE)) {
+			fv = div_fetch_view(comp->div, 0x8000, adr, &dabs);	// any fetch but #3Dxx
+		}
+	}
+	if (fv < 0) return mem_get_xadr(comp->mem, adr);
+	xAdr xa;
+	xa.adr = adr;
+	if (fv) {
+		xa.type = MEM_DIV;
+		xa.abs = dabs;
+		xa.bank = dabs >> 8;
+		return xa;
+	}
+	int page = (adr >> comp->mem->pgshift) & 0xff;
+	if (!comp->mem->ovl[page]) return mem_get_xadr(comp->mem, adr);
+	MemPage* pg = &comp->mem->under[page];
+	xa.type = pg->type;
+	xa.bank = pg->num;
+	xa.abs = (pg->num << comp->mem->pgshift) | (adr & comp->mem->pgmask);
+	return xa;
+}
+
+static void comp_mem_view_at(Computer* comp, int start, int adr, int mode, int* value, xAdr* xadr) {
 	adr &= comp->mem->busmask;
 	if (comp->hw->memView) {
 		comp->hw->memView(comp, adr, mode, value, xadr);
 		return;
 	}
-	xAdr xa = mem_get_xadr(comp->mem, adr);
+	xAdr xa = comp_view_xadr(comp, start & comp->mem->busmask, adr, mode);
 	if (xadr) *xadr = xa;
 	if (!value) return;
+	// a debugger edit: RAM always, ROM with "write to ROM", divMMC where the board
+	// lets the CPU write (not bank 3 under MAPRAM, the EEPROM only when enabled)
 	if (mode & MEM_VIEW_WRITE) {
 		switch (xa.type) {
 			case MEM_RAM:
@@ -35,7 +70,7 @@ static void comp_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* x
 				break;
 			case MEM_DIV: {
 				int fadr = xa.abs % (DIV_EE_SIZE + DIV_RAM_MAX);
-				if ((fadr >= DIV_EE_SIZE) || (mode & MEM_VIEW_ROM_WRITE)) {
+				if (div_view_writable(comp->div, adr) || (mode & MEM_VIEW_ROM_WRITE)) {
 					comp->div->data[fadr] = *value & 0xff;
 					if (fadr < DIV_EE_SIZE) comp->div->eeDirty = 1;
 				}
@@ -51,6 +86,10 @@ static void comp_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* x
 		case MEM_DIV: *value = comp->div->data[xa.abs % (DIV_EE_SIZE + DIV_RAM_MAX)]; break;
 		default: *value = 0xff; break;
 	}
+}
+
+static void comp_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xadr) {
+	comp_mem_view_at(comp, adr, adr, mode, value, xadr);
 }
 
 int comp_peek(Computer* comp, int adr, int access, xAdr* xadr) {
@@ -73,29 +112,160 @@ xAdr comp_get_xadr(Computer* comp, int adr, int access) {
 int comp_find_xadr(Computer* comp, int type, int abs, int access) {
 	if (abs < 0) return -1;
 	if (type == MEM_IO) return abs & comp->mem->busmask;
-	int adr = memFindAdr(comp->mem, type, abs);
-	if (!comp->hw->memView) return adr;
-	if (adr >= 0) {
-		xAdr cell = comp_get_xadr(comp, adr, access);
-		if ((cell.type == type) && (cell.abs == abs)) return adr;
-	}
-	for (int i = 0; i < 256; i++) {
-		adr = (i << comp->mem->pgshift) | (abs & comp->mem->pgmask);
+	if (!comp->hw->memView) return memFindAdr(comp->mem, type, abs);
+	// the one machine with a view of its own (the Next) pages everything in 8K
+	// steps, overlays included: the cell can only be at its offset in one of the
+	// eight slots. A condition naming a label asks this on every instruction.
+	for (int i = 0; i < 8; i++) {
+		int adr = (i << 13) | (abs & 0x1fff);
 		xAdr cell = comp_get_xadr(comp, adr, access);
 		if ((cell.type == type) && (cell.abs == abs)) return adr;
 	}
 	return -1;
 }
 
+static int comp_is_next(Computer* comp) {
+	return comp->hw && (comp->hw->id == HW_ZXNEXT);
+}
+
+int comp_cell_unit(Computer* comp, int area) {
+	switch (area) {
+		case CELL_RAM: return comp_is_next(comp) ? 0x2000 : 0x4000;
+		case CELL_ROM: case CELL_ALTROM: case CELL_SLT: return 0x4000;
+		case CELL_DIVROM: case CELL_DIV: case CELL_MFROM: case CELL_MFRAM: return 0x2000;
+	}
+	return 0;
+}
+
+int comp_cell_pages(Computer* comp, int area) {
+	int next = comp_is_next(comp);
+	switch (area) {
+		case CELL_RAM: return next ? 0xe0 : ((comp->mem->ramMask + 1) >> 14);
+		case CELL_ROM: return next ? 4 : ((comp->mem->romMask + 1) >> 14);
+		case CELL_ALTROM: return next ? 2 : 0;
+		case CELL_DIV: return next ? 16 : ((comp->div && comp->div->model) ? comp->div->pages : 0);	// as many as the board has
+		case CELL_DIVROM: return (next || (comp->div && comp->div->model)) ? 1 : 0;
+		case CELL_MFROM: case CELL_MFRAM: return next ? 1 : 0;
+		case CELL_SLT: return comp->slot ? ((comp->slot->memMask + 1) >> 14) : 0;
+	}
+	return 0;
+}
+
+xCell comp_cell(Computer* comp, int type, int abs) {
+	xCell cell = {CELL_NONE, 0, 0, 0};
+	if (abs < 0) return cell;
+	if (comp_is_next(comp)) {
+		if (type == MEM_RAM) cell.area = next_cell(abs, &cell.page, &cell.ofs);
+	} else {
+		switch (type) {
+			case MEM_RAM: cell.area = CELL_RAM; break;
+			case MEM_ROM: cell.area = CELL_ROM; break;
+			case MEM_SLOT: cell.area = CELL_SLT; break;
+			case MEM_DIV:
+				abs %= DIV_EE_SIZE + DIV_RAM_MAX;
+				if (abs < DIV_EE_SIZE) {
+					cell.area = CELL_DIVROM;
+					cell.ofs = abs;
+				} else {
+					cell.area = CELL_DIV;
+					cell.page = (abs - DIV_EE_SIZE) >> 13;
+					cell.ofs = (abs - DIV_EE_SIZE) & 0x1fff;
+				}
+				break;
+		}
+		if ((cell.area == CELL_RAM) || (cell.area == CELL_ROM) || (cell.area == CELL_SLT)) {
+			cell.page = abs >> 14;
+			cell.ofs = abs & 0x3fff;
+		}
+	}
+	cell.unit = comp_cell_unit(comp, cell.area);
+	return cell;
+}
+
+int comp_cell_xadr(Computer* comp, int area, int page, int ofs, int* type, int* abs) {
+	int unit = comp_cell_unit(comp, area);
+	if (!unit || (page < 0) || (page >= comp_cell_pages(comp, area)) || (ofs < 0) || (ofs >= unit)) return 0;
+	if (comp_is_next(comp)) {
+		*type = MEM_RAM;
+		*abs = next_cell_abs(area, page, ofs);
+		return *abs >= 0;
+	}
+	switch (area) {
+		case CELL_RAM: *type = MEM_RAM; *abs = (page << 14) | ofs; return 1;
+		case CELL_ROM: *type = MEM_ROM; *abs = (page << 14) | ofs; return 1;
+		case CELL_SLT: *type = MEM_SLOT; *abs = (page << 14) | ofs; return 1;
+		case CELL_DIVROM: *type = MEM_DIV; *abs = ofs; return 1;
+		case CELL_DIV: *type = MEM_DIV; *abs = DIV_EE_SIZE + (page << 13) + ofs; return 1;
+	}
+	return 0;
+}
+
+static const struct {int area; const char* name;} cell_names[] = {
+	{CELL_ALTROM, "ALTROM"}, {CELL_DIVROM, "DIVROM"},	// before the names they start with
+	{CELL_ROM, "ROM"}, {CELL_DIV, "DIV"}, {CELL_MFROM, "MFROM"}, {CELL_MFRAM, "MFRAM"},
+	{CELL_SLT, "SLT"}
+};
+
+const char* cell_token(xCell cell, char* buf) {
+	buf[0] = 0;
+	for (unsigned i = 0; i < sizeof(cell_names) / sizeof(cell_names[0]); i++) {
+		if (cell_names[i].area != cell.area) continue;
+		if ((cell.area == CELL_DIVROM) || (cell.area == CELL_MFROM) || (cell.area == CELL_MFRAM))
+			strcpy(buf, cell_names[i].name);
+		else
+			sprintf(buf, "%s%i", cell_names[i].name, cell.page);
+		break;
+	}
+	return buf;
+}
+
+static int cell_prefix(const char* str, const char* name) {
+	size_t len = 0;
+	while (name[len]) {
+		char c = str[len];
+		if ((c >= 'a') && (c <= 'z')) c -= 0x20;
+		if (c != name[len]) return 0;
+		len++;
+	}
+	return (int)len;
+}
+
+int cell_token_parse(const char* str, int* area, int* page) {
+	for (unsigned i = 0; i < sizeof(cell_names) / sizeof(cell_names[0]); i++) {
+		int len = cell_prefix(str, cell_names[i].name);
+		if (!len) continue;
+		const char* num = str + len;
+		*area = cell_names[i].area;
+		*page = 0;
+		if ((*area == CELL_DIVROM) || (*area == CELL_MFROM) || (*area == CELL_MFRAM)) return *num == 0;
+		if ((*num < '0') || (*num > '9')) return 0;
+		char* end;
+		*page = (int)strtol(num, &end, 10);
+		return *end == 0;
+	}
+	return 0;
+}
+
+typedef struct {
+	Computer* comp;
+	int start;
+} compDasmView;
+
+// every byte of the instruction, its operands included, is read in the map its
+// opcode fetch leaves: a divMMC only changes it on the next fetch
 static int comp_dasm_read(int adr, void* ptr) {
-	return comp_peek((Computer*)ptr, adr, MEM_VIEW_READ, NULL);
+	compDasmView* view = (compDasmView*)ptr;
+	int value = 0xff;
+	comp_mem_view_at(view->comp, view->start, adr, MEM_VIEW_FETCH, &value, NULL);
+	return value & 0xff;
 }
 
 xMnem compDisasm(Computer* comp, int adr, char* buf, unsigned char* bytes, int size) {
 	if (comp->hw->disasm) return comp->hw->disasm(comp, adr, buf, bytes, size);
-	xMnem mn = cpuDisasm(comp->cpu, adr, buf, comp_dasm_read, comp);
+	compDasmView view = {comp, adr};
+	xMnem mn = cpuDisasm(comp->cpu, adr, buf, comp_dasm_read, &view);
 	if (bytes) {
-		for (int i = 0; (i < size) && (i < mn.len); i++) bytes[i] = comp_dasm_read(adr + i, comp);
+		for (int i = 0; (i < size) && (i < mn.len); i++) bytes[i] = comp_dasm_read(adr + i, &view);
 	}
 	return mn;
 }
@@ -107,6 +277,7 @@ static unsigned char* comp_get_memcell_flag_ptr(Computer* comp, int adr, int acc
 		case MEM_RAM: res = comp->brkRamMap + (xadr.abs & comp->mem->ramMask); break;
 		case MEM_ROM: res = comp->brkRomMap + (xadr.abs & comp->mem->romMask); break;
 		case MEM_SLOT: if (comp->slot->brkMap) {res = comp->slot->brkMap + (xadr.abs & comp->slot->memMask);} break;
+		case MEM_DIV: if (comp->div) res = comp->div->brkMap + (xadr.abs % (DIV_EE_SIZE + DIV_RAM_MAX)); break;
 	}
 	return res;
 }
@@ -131,6 +302,11 @@ static bpChecker comp_check_bp(Computer* comp, int adr, int mask, int access) {
 					xadr.abs &= comp->slot->memMask;
 					ch.ptr = comp->slot->brkMap + xadr.abs;
 					ch.t = BRK_MEMSLT;
+				} break;
+			case MEM_DIV: if (comp->div) {
+					xadr.abs %= DIV_EE_SIZE + DIV_RAM_MAX;
+					ch.ptr = comp->div->brkMap + xadr.abs;
+					ch.t = BRK_MEMDIV;
 				} break;
 		}
 		if (ch.ptr) {
@@ -201,13 +377,17 @@ static int memrd_watched(Computer* comp, int adr, int m1) {
 	}
 	if (m1 && comp->rzx.rec.on)
 		comp->rzx.rec.fetch++;
+	// the Next pages for a fetch in its own read, after this: its view is asked
+	// for the fetch. A divMMC elsewhere has already paged for it (memrd), so the
+	// map as it stands is the fetch's
+	int access = ((m1 && comp->hw->memView) ? MEM_VIEW_FETCH : MEM_VIEW_READ) | MEM_VIEW_LIVE;
 	// only the debugger's aids want to know whether this is an instruction byte
 	unsigned isExecByte = 0;
 	if (comp->flgMAP || comp->flgHEAT || comp->flgCOND)
 		isExecByte = (cpu_get_pc(comp->cpu) - 1) == adr;
 	if (comp->flgMAP) {
 		unsigned char* fptr = comp_get_memcell_flag_ptr(comp, adr,
-			m1 ? MEM_VIEW_FETCH : MEM_VIEW_READ);
+			access);
 		if (fptr) {
 			unsigned char flag = *fptr;
 			if (isExecByte) {
@@ -225,11 +405,11 @@ static int memrd_watched(Computer* comp, int adr, int m1) {
 		// operand) whenever it lands right where PC just advanced past it; everything else
 		// is a real data read (memory operand, stack pop, etc)
 		comp_heat_hit(comp, adr, isExecByte ? HEAT_EX : HEAT_RD,
-			m1 ? MEM_VIEW_FETCH : MEM_VIEW_READ);
+			access);
 	}
 	if (comp->flgBRKMEM) {
 		bpChecker ch = comp_check_bp(comp, adr, MEM_BRK_RD,
-			m1 ? MEM_VIEW_FETCH : MEM_VIEW_READ);
+			access);
 		if (ch.t >= 0) {
 			comp->flgBRK = 1;
 			comp->brkt = ch.t;
@@ -279,10 +459,10 @@ void memwr(int adr, int val, void* ptr) {
 static void memwr_watched(Computer* comp, int adr, int val) {
 	if (comp->flgHEAT && !x_runahead) {	// an ahead frame would count every access twice
 		// writes (incl. stack push/call) are always data traffic, never execution
-		comp_heat_hit(comp, adr, HEAT_WR, MEM_VIEW_WRITE);
+		comp_heat_hit(comp, adr, HEAT_WR, MEM_VIEW_WRITE | MEM_VIEW_LIVE);
 	}
 	unsigned char* fptr = comp->flgMAP
-		? comp_get_memcell_flag_ptr(comp, adr, MEM_VIEW_WRITE) : NULL;
+		? comp_get_memcell_flag_ptr(comp, adr, MEM_VIEW_WRITE | MEM_VIEW_LIVE) : NULL;
 	if (fptr) {
 		unsigned char flag = *fptr;
 		if (!(flag & 0xf0)) {
@@ -291,7 +471,7 @@ static void memwr_watched(Computer* comp, int adr, int val) {
 		}
 	}
 	if (comp->flgBRKMEM) {
-		bpChecker ch = comp_check_bp(comp, adr, MEM_BRK_WR, MEM_VIEW_WRITE);
+		bpChecker ch = comp_check_bp(comp, adr, MEM_BRK_WR, MEM_VIEW_WRITE | MEM_VIEW_LIVE);
 		if (ch.t >= 0) {
 			comp->flgBRK = 1;
 			comp->brkt = ch.t;

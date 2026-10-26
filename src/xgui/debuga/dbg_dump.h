@@ -36,6 +36,7 @@ enum {
 	XVIEW_CPU,
 	XVIEW_RAM,
 	XVIEW_ROM,
+	XVIEW_DIV,	// divMMC's RAM, by 8K bank (the dump only)
 };
 
 class xDumpModel : public xTableModel {
@@ -125,6 +126,7 @@ class xDumpWidget : public xDockWidget {
 		QMenu* cellMenu;
 		int ramBase;
 		int romBase;
+		int pageMax;		// the page spinner's own limit, for the views that are not DIV
 		QItemDelegate* xid_addr;
 		QItemDelegate* xid_byte;
 		QItemDelegate* xid_none;

@@ -193,7 +193,7 @@ another with the arrow keys or the mouse. The same list appears in the
 ```
 
 A labels file holds one label per line: the RAM page, a colon, the address, and the name.
-On most ZX machines the pages are 16K:
+The page is a decimal number, as SjASMPlus writes it. On most ZX machines the pages are 16K:
 
 ```
 02:8010 print_score
@@ -205,18 +205,30 @@ page counts, so `02:0010` is the same label as `02:8010`. A line can also leave 
 out, as in `:8010 print_score`: the page is then 5 for an address from 4000 to 7FFF, 2 from
 8000 to BFFF and 0 from C000 to FFFF.
 
-On a ZX Spectrum Next the pages are 8K, as in SjASMPlus's `DEVICE ZXSPECTRUMNEXT`.
-`04:0010` means offset 0010 in MMU page 04, and `05:0010` means the same offset in the next
-page. Labels in the listing and physical breakpoints belong to those pages. A label used
-as a CPU address follows the current MMU mapping; when its page is not mapped, that CPU
-address is unknown. A **RAM addr** watch can still read it. A line without a page, such as
+On a ZX Spectrum Next the pages are 8K, as in SjASMPlus's `DEVICE ZXSPECTRUMNEXT`:
+`17:0010` is offset 0010 in page 17 (MMU value 11 in hex), and `223:0000` is the last page.
+Labels in the listing and physical breakpoints belong to those pages. A label used as a CPU
+address follows the current MMU mapping; when its page is not mapped, that CPU address is
+unknown. A **RAM addr** watch can still read it. A line without a page, such as
 `:8010 print_score`, keeps its CPU address regardless of paging.
+
+The pages are read the way the machine in use has them. A file made for a 128K, loaded on
+the Next, is read as 8K pages, and the event log warns about it when an offset does not fit.
+
+```{index} CSPECTMAP
+```
+
+SjASMPlus's `CSPECTMAP` file loads the same way. Its lines carry each label's address across
+all of the RAM, so a label lands on its page on any machine. Values defined with `EQU`
+are left out.
 
 ```{index} label; set
 ```
 
 **Load labels** reads a file into a set of labels named after the file, and makes that set
-the one in effect. **Save labels** writes the set in effect in the same form.
+the one in effect. **Save labels** writes the set in effect in the same form. A label in
+other memory is saved with that memory's name, as `ROM0:0038` or `DIV3:0010`, and loads
+back to the same place. Only Xpeccy+ reads such lines.
 
 Labels typed in the listing go into the set in effect, or into a new set called `noname`
 when there is none.

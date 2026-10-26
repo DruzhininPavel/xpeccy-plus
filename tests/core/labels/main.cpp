@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
 	xAdr odd = find_label("Debug.calc_char");
 	check("8K pages and SRAM base", camera.type == MEM_RAM && camera.abs == 0x48456
 		&& odd.abs == 0x4a039 && find_label("LastRAM").abs == 0x1fffff);
+	check("pages are decimal", find_label("Page17").abs == 0x40000 + 17 * 0x2000 + 0x123);
 	check("adjacent pages stay distinct", find_label("EvenPage").abs == 0x48200
 		&& find_label("OddPage").abs == 0x4a200 && find_label("LastByte").abs + 1 == find_label("NextPage").abs);
 	check("CPU label lookup", camera.adr == 0x8456 && odd.adr == 0xa039
@@ -75,6 +76,20 @@ int main(int argc, char** argv) {
 	comp->next->nr[0x12] = 0x20;
 	check("Layer 2 overlay hides an MMU page", find_label("Camera.WORLD_X").adr == -1);
 	comp->next->p123b = 0;
+	// labels the debugger puts on ROM and divMMC cells, kept by their area
+	xAdr cell = {MEM_RAM, 0, 0x0038, 0x0038};
+	add_label(cell, "RomLabel");
+	cell.abs = 0x20000 + 3 * 0x2000 + 0x10;
+	cell.adr = -1;
+	add_label(cell, "DivLabel");
+	// a CPU label names the cell at its address, not the same offset of a page
+	cell.type = MEM_IO;
+	cell.abs = cell.adr = 0x0123;
+	add_label(cell, "LowCpu");
+	next_mmu_set(comp, 0, 0xff);
+	xAdr page = {MEM_RAM, 0, 0x0123, 0x40000 + 0x30 * 0x2000 + 0x123};
+	check("CPU labels stay off page views", find_label(page).isEmpty()
+		&& find_label(comp_get_xadr(comp, 0x0123, MEM_VIEW_READ)) == "LowCpu");
 	QMap<QString, xAdr> before = conf.curlabset->list;
 	QString saved = temp.filePath("roundtrip.labels");
 	check("save Next labels", saveLabels(saved.toLocal8Bit().constData()) == 1);
@@ -83,7 +98,10 @@ int main(int argc, char** argv) {
 	QByteArray text = file.readAll();
 	file.close();
 	check("export keeps Next numbering", text.contains("04:0456 Camera.WORLD_X\n")
-		&& text.contains("05:0039 Debug.calc_char\n") && text.contains(":8123 Virtual\n"));
+		&& text.contains("05:0039 Debug.calc_char\n") && text.contains(":8123 Virtual\n")
+		&& text.contains("17:0123 Page17\n") && text.contains("223:1FFF LastRAM\n"));
+	check("export names ROM and divMMC cells", text.contains("ROM0:0038 RomLabel\n") && text.contains("DIV3:0010 DivLabel\n")
+		&& text.contains(":0123 LowCpu\n"));
 	loadLabels(saved.toLocal8Bit().constData());
 	bool same = conf.curlabset->list.size() == before.size();
 	for (auto it = before.begin(); it != before.end(); ++it) {
@@ -91,12 +109,45 @@ int main(int argc, char** argv) {
 		same &= after.type == it.value().type && after.abs == it.value().abs;
 	}
 	check("Next labels round trip", same);
+	// SjASMPlus's own output (sjasm-next.asm says how it was made)
+	check("load SjASMPlus labels", loadLabels(fixtures.filePath("sjasm-next.labels").toLocal8Bit().constData()) == 1);
+	check("SjASMPlus pages", find_label("start").abs == 0x40000 + 4 * 0x2000
+		&& find_label("lowpage").abs == 0x40000 + 10 * 0x2000
+		&& find_label("dot").abs == 0x40000 + 11 * 0x2000
+		&& find_label("p17b").abs == 0x40000 + 17 * 0x2000 + 0x123
+		&& find_label("last").abs == 0x40000 + 223 * 0x2000);
+	check("load SjASMPlus map", loadLabels(fixtures.filePath("sjasm-next.map").toLocal8Bit().constData()) == 1);
+	check("map places by linear address", find_label("P17B").abs == 0x40000 + 17 * 0x2000 + 0x123
+		&& find_label("DOT").abs == 0x40000 + 11 * 0x2000 && find_label("LAST").abs == 0x40000 + 223 * 0x2000
+		&& find_label("START").abs == 0x40000 + 4 * 0x2000);
+	check("map leaves EQU out", find_label("CONST").type < 0 && conf.curlabset->list.size() == 6);
 	compSetHardware(comp, "ZX128");
 	compReset(comp, RES_DEFAULT);
 	loadLabels(fixtures.filePath("legacy.labels").toLocal8Bit().constData());
 	xAdr legacy = find_label("print_score");
 	check("legacy 16K labels stay compatible", legacy.abs == 0x8010 && legacy.adr == 0x8010
 		&& find_label("screen_data").abs == 0x14010 && find_label("level_data").abs == 0x1a00);
+	check("16K pages: decimal, and hex from older Xpeccy+ files",
+		find_label("decimal_bank").abs == ((12 << 14) | 0x20) && find_label("old_hex_bank").abs == ((10 << 14) | 0x10));
+	loadLabels(fixtures.filePath("sjasm-128.labels").toLocal8Bit().constData());
+	check("SjASMPlus 128K labels", find_label("b7").abs == ((7 << 14) | 0x123) && find_label("b7").adr == 0xc123
+		&& find_label("scr").abs == ((5 << 14) | 0x10) && find_label("scr").adr == 0x4010);
+	loadLabels(fixtures.filePath("sjasm-128.map").toLocal8Bit().constData());
+	check("SjASMPlus 128K map", find_label("B7").abs == ((7 << 14) | 0x123) && find_label("SCR").adr == 0x4010
+		&& find_label("CONST").type < 0);
+	loadLabels(fixtures.filePath("legacy.labels").toLocal8Bit().constData());
+	xAdr rom0 = {MEM_ROM, 0, 0x0038, 0x38};	// the bench machine has no ROM file: one page
+	add_label(rom0, "RomLabel");
+	QString saved128 = temp.filePath("z128.labels");
+	saveLabels(saved128.toLocal8Bit().constData());
+	QFile f128(saved128);
+	f128.open(QIODevice::ReadOnly);
+	QByteArray text128 = f128.readAll();
+	f128.close();
+	loadLabels(saved128.toLocal8Bit().constData());
+	check("16K ROM labels by name", text128.contains("ROM0:0038 RomLabel\n") && text128.contains("02:0010 print_score\n")
+		&& find_label("RomLabel").type == MEM_ROM && find_label("RomLabel").abs == 0x38);
+	loadLabels(fixtures.filePath("legacy.labels").toLocal8Bit().constData());
 	check("legacy label expressions", !eval("print_score").err && eval("print_score").value == 0x8010);
 	while (!conf.labsets.isEmpty()) delLabelSet(conf.labsets.first()->name);
 	compDestroy(comp);

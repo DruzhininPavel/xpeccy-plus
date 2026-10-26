@@ -737,8 +737,34 @@ enum {
 	MEM_VIEW_READ = 0,
 	MEM_VIEW_WRITE = 1,
 	MEM_VIEW_FETCH = 2,
-	MEM_VIEW_ROM_WRITE = 4
+	MEM_VIEW_ROM_WRITE = 4,
+	// the map as it stands, for the machine's own accesses. Without it, while the
+	// debugger holds the machine, a divMMC paging armed by the last fetch is shown
+	// as done: the next fetch, wherever it is, does it (8 is the Next's own)
+	MEM_VIEW_LIVE = 16
 };
+
+// Physical memory by the names people use for it (labels, breakpoints, MEMMAP):
+// an area, a page in the unit the machine pages that area by, an offset in it.
+// RAM is 16K banks, but the Next's 8K pages; divMMC banks are 8K.
+enum {
+	CELL_NONE = 0,
+	CELL_RAM,
+	CELL_ROM,
+	CELL_ALTROM,	// the Next's alt ROMs
+	CELL_DIVROM,	// divMMC's ROM (EEPROM): one page
+	CELL_DIV,	// divMMC's RAM banks
+	CELL_MFROM,	// the Next's Multiface ROM and RAM: one page each
+	CELL_MFRAM,
+	CELL_SLT
+};
+
+typedef struct {
+	int area;	// CELL_*
+	int page;
+	int ofs;
+	int unit;	// the page size
+} xCell;
 
 #include "hardware/hardware.h"
 
@@ -752,6 +778,12 @@ int comp_peek(Computer*, int, int, xAdr*);
 void comp_poke(Computer*, int, int, int);
 xAdr comp_get_xadr(Computer*, int, int);
 int comp_find_xadr(Computer*, int, int, int);
+xCell comp_cell(Computer*, int type, int abs);			// a cell (MEM_* and abs) by its area
+int comp_cell_xadr(Computer*, int area, int page, int ofs, int* type, int* abs);	// ...and back, 0: no such cell
+int comp_cell_unit(Computer*, int area);			// the page size of an area
+int comp_cell_pages(Computer*, int area);			// how many pages it has, 1: no number
+const char* cell_token(xCell, char* buf);	// a named area's page as text: ROM0, DIV3, DIVROM; "" for RAM
+int cell_token_parse(const char*, int* area, int* page);	// ...and back, 0: not a named area
 // Preview one instruction and up to size raw bytes without changing the machine.
 xMnem compDisasm(Computer*, int, char*, unsigned char*, int);
 int comp_skip_ticks(Computer*, int);

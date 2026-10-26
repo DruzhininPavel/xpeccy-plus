@@ -211,6 +211,145 @@ int debugger_check(void) {
 	check("Multiface NMI fetch and physical breakpoint", ok && comp->cpu->regBC == 0x3412 && comp->next->irq.mfEnable);
 	compDestroy(comp);
 
+	// a debugger edit goes to the cell a read shows, where the machine can write
+	comp = machine();
+	{
+		unsigned char* ram = comp->mem->ramData;
+		int mmu = 0x40000 + 0x30 * 0x2000 + 0x123;
+		int l2 = 0x40000 + 0x20 * 0x2000 + 0x123;
+		next_mmu_set(comp, 0, 0x30);
+		comp->next->nr[0x12] = 0x10;		// Layer 2 in bank 16 = pages 20/21...
+		comp->next->p123b = 1;			// ...mapped for writes only, over 0000-3FFF
+		ram[mmu] = ram[l2] = 0;
+		comp_poke(comp, 0x0123, 0x55, 0);
+		ok = (ram[mmu] == 0x55) && (ram[l2] == 0);
+		comp->next->p123b = 0;
+		next_mmu_set(comp, 0, 0xff);		// ROM: only with "write to ROM"
+		int rom = comp_get_xadr(comp, 0x0123, MEM_VIEW_READ).abs;
+		ram[rom] = 0x11;
+		comp_poke(comp, 0x0123, 0x66, 0);
+		ok &= ram[rom] == 0x11;
+		comp_poke(comp, 0x0123, 0x66, 1);
+		ok &= ram[rom] == 0x66;
+		comp->next->nr[0x83] |= 1;
+		comp->next->pe3 = 0xc3;			// divMMC conmem, MAPRAM, bank 3: read only
+		int div3 = 0x20000 + 3 * 0x2000 + 0x123;
+		ram[div3] = 0x22;
+		comp_poke(comp, 0x2123, 0x77, 0);
+		ok &= ram[div3] == 0x22;
+		comp_poke(comp, 0x2123, 0x77, 1);
+		ok &= ram[div3] == 0x77;
+		comp->next->pe3 = 0x82;			// bank 2: written
+		int div2 = 0x20000 + 2 * 0x2000 + 0x123;
+		comp_poke(comp, 0x2123, 0x88, 0);
+		ok &= ram[div2] == 0x88;
+	}
+	check("edits land on the cell shown", ok);
+	compDestroy(comp);
+
+	// cells by name: the Next's RAM in 8K pages after its ROM and divMMC areas
+	comp = machine();
+	{
+		static const struct {int abs, area, page, ofs; const char* tok;} cells[] = {
+			{0x0123, CELL_ROM, 0, 0x123, "ROM0"},
+			{0xc123, CELL_ROM, 3, 0x123, "ROM3"},
+			{0x10123, CELL_DIVROM, 0, 0x123, "DIVROM"},
+			{0x14123, CELL_MFROM, 0, 0x123, "MFROM"},
+			{0x16123, CELL_MFRAM, 0, 0x123, "MFRAM"},
+			{0x1c123, CELL_ALTROM, 1, 0x123, "ALTROM1"},
+			{0x26123, CELL_DIV, 3, 0x123, "DIV3"},
+			{0x40000 + 17 * 0x2000 + 0x123, CELL_RAM, 17, 0x123, ""},
+			{0x1fffff, CELL_RAM, 223, 0x1fff, ""}
+		};
+		ok = 1;
+		for (unsigned i = 0; i < sizeof(cells) / sizeof(cells[0]); i++) {
+			xCell c = comp_cell(comp, MEM_RAM, cells[i].abs);
+			char buf[16];
+			int type, abs, area, page;
+			ok &= (c.area == cells[i].area) && (c.page == cells[i].page) && (c.ofs == cells[i].ofs);
+			ok &= !strcmp(cell_token(c, buf), cells[i].tok);
+			ok &= comp_cell_xadr(comp, c.area, c.page, c.ofs, &type, &abs) && (type == MEM_RAM) && (abs == cells[i].abs);
+			if (cells[i].tok[0]) ok &= cell_token_parse(buf, &area, &page) && (area == c.area) && (page == c.page);
+			if (!ok) fprintf(stderr, "cell %06X\n", cells[i].abs);
+		}
+		int type, abs;
+		ok &= !comp_cell_xadr(comp, CELL_RAM, 0xe0, 0, &type, &abs) && !comp_cell_xadr(comp, CELL_DIV, 3, 0x2000, &type, &abs);
+		ok &= comp_cell_pages(comp, CELL_RAM) == 0xe0 && comp_cell_unit(comp, CELL_RAM) == 0x2000;
+	}
+	compDestroy(comp);
+	comp = compCreate();
+	compSetHardware(comp, "ZX128");
+	ok &= comp_cell_pages(comp, CELL_DIV) == 0;		// no board, no pages
+	div_set_model(comp->div, DIV_MMC, 16);
+	{
+		xCell c = comp_cell(comp, MEM_RAM, (7 << 14) | 0x123);
+		int type, abs;
+		ok &= (c.area == CELL_RAM) && (c.page == 7) && (c.ofs == 0x123) && (c.unit == 0x4000);
+		c = comp_cell(comp, MEM_DIV, DIV_EE_SIZE + 3 * 0x2000 + 0x10);
+		ok &= (c.area == CELL_DIV) && (c.page == 3) && (c.ofs == 0x10);
+		ok &= comp_cell_xadr(comp, CELL_DIV, 3, 0x10, &type, &abs) && (type == MEM_DIV) && (abs == DIV_EE_SIZE + 3 * 0x2000 + 0x10);
+		c = comp_cell(comp, MEM_DIV, 0x123);
+		ok &= (c.area == CELL_DIVROM) && (c.ofs == 0x123);
+	}
+	check("cells by area and page", ok);
+	// a divMMC cell takes a breakpoint of its own on other machines
+	div_out(comp->div, 0xe3, 0x82);		// conmem, bank 2 at #2000
+	{
+		int cell = DIV_EE_SIZE + 2 * 0x2000 + 0x123;
+		comp->div->data[cell] = 0x00;		// NOP
+		comp->div->brkMap[cell] = MEM_BRK_FETCH;
+		comp->flgBRKMEM = 1;
+		comp->flgBRK = 0;
+		comp->cpu->regPC = 0x2123;
+		compExec(comp);
+		ok = comp->flgBRK && (comp->brkt == BRK_MEMDIV) && (comp->brka == cell);
+		ok &= (getBrk(comp, 0x2123) & MEM_BRK_FETCH) != 0;
+		comp->div->brkMap[cell] = 0;
+	}
+	check("divMMC cell breakpoint", ok);
+	// RST 8 has fetched at #0008: the board pages in for the next fetch, at #000B
+	div_out(comp->div, 0xe3, 0x00);		// no conmem: the automapper alone
+	div_m1(comp->div, 0x0100);		// mapcond and automap down
+	div_m1(comp->div, 0x0100);
+	div_m1(comp->div, 0x0008);		// the entry point's own fetch: still the ROM
+	{
+		unsigned char code[] = {0x3e, 0x42};	// LD A,#42 in the board's EEPROM
+		memcpy(comp->div->data + 0x000b, code, sizeof(code));
+		int mapcond = comp->div->mapcond, automap = comp->div->automap, shown = comp->div->shown;
+		unsigned char bytes[4];
+		char text[64];
+		xMnem mn = compDisasm(comp, 0x000b, text, bytes, sizeof(bytes));
+		xAdr fetch = comp_get_xadr(comp, 0x000b, MEM_VIEW_FETCH);
+		xAdr now = comp_get_xadr(comp, 0x000b, MEM_VIEW_READ);
+		ok = (mn.len == 2) && !strcmp(text, "ld a,#42") && (bytes[0] == 0x3e) && (bytes[1] == 0x42);
+		ok &= (fetch.type == MEM_DIV) && (fetch.abs == 0x000b) && (now.type != MEM_DIV);
+		ok &= (comp->div->mapcond == mapcond) && (comp->div->automap == automap) && (comp->div->shown == shown);
+		// with the debugger holding the machine, every view shows the armed paging done
+		comp->flgDBG = 1;
+		ok &= (comp_get_xadr(comp, 0x0100, MEM_VIEW_READ).type == MEM_DIV) && (comp_peek(comp, 0x000c, MEM_VIEW_READ, NULL) == 0x42);
+		ok &= comp_get_xadr(comp, 0x0100, MEM_VIEW_READ | MEM_VIEW_LIVE).type != MEM_DIV;
+		comp->flgDBG = 0;		// breakpoints are not checked while it holds the machine
+		comp->div->brkMap[0x000b] = MEM_BRK_FETCH;
+		comp->flgBRKMEM = comp->flgMAP = 1;
+		comp->flgBRK = 0;
+		comp->cpu->regPC = 0x000b;
+		compExec(comp);		// stops before it runs
+		ok &= comp->flgBRK && (comp->brkt == BRK_MEMDIV) && (comp->brka == 0x000b);
+		comp->div->brkMap[0x000b] = 0;
+		comp->flgBRK = 0;
+		comp->flgBRKMEM = 0;
+		comp->cpu->regA = 0;
+		comp->cpu->regPC = 0x000b;
+		comp->flgDBG = 1;		// a step in the debugger: the machine still reads the live map
+		compExec(comp);
+		ok &= (comp->cpu->regA == 0x42) && (comp->div->brkMap[0x000b] & DBG_VIEW_EXEC);
+		comp->flgMAP = 0;
+		comp->flgDBG = 0;
+		if (!ok) fprintf(stderr, "entry preview: '%s' len %d, fetch %d:%X, A %02X\n", text, mn.len, fetch.type, fetch.abs, comp->cpu->regA);
+	}
+	check("divMMC entry point on the PC row", ok);
+	compDestroy(comp);
+
 	comp = machine();
 	unsigned char longCode[27];
 	memset(longCode, 0xdd, 24);

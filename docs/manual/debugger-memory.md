@@ -16,8 +16,8 @@ how.
 
 ![The DUMP panel](images/dbg-dump.png)
 
-1. **View** - **CPU**, **RAM** or **ROM**, and for the last two the page, its address
-   and how much of it to show.
+1. **View** - **CPU**, **RAM**, **ROM** or **DIV**, and for the last three the page, its
+   address and how much of it to show.
 2. **Bytes per row** - **Auto**, **8/row**, **12/row** or **16/row**.
 3. **Code page** - **WIN1251**, **CP866** or **KOI8R**: how bytes from 128 to 255 show as
    letters in the text column.
@@ -71,12 +71,15 @@ as `.HL`. The labels are offered as you type, as in the listing (see
 Double-click a byte, or select it and press Enter, and type the new value: two hex digits.
 Enter writes it. The text column cannot be edited.
 
-ROM is protected: a byte in ROM is written only with **Allow ROM wr** ticked in the
-{icon}`settings` **Options** menu of the **Disasm** panel. A cartridge is never written.
+The new value goes into the byte the dump shows. RAM is always written. Memory the machine
+itself cannot write is protected: ROM, divMMC's ROM and its page 3 under MAPRAM, and on the
+Next its alternate ROM and the Multiface's ROM. Such a byte is written only with
+**Allow ROM wr** ticked in the {icon}`settings` **Options** menu of the **Disasm** panel. A
+cartridge is never written.
 
-### CPU, RAM and ROM
+### CPU, RAM, ROM and DIV
 
-```{index} memory page, DUMP panel; RAM and ROM view
+```{index} memory page, DUMP panel; RAM and ROM view, DUMP panel; DIV view
 ```
 
 **CPU** shows the 64K the CPU sees now, with whatever pages are in it. **RAM** and **ROM**
@@ -88,6 +91,10 @@ show one 16K page, whether the CPU sees it or not:
 - the size - how much of the page the dump shows, from 256 bytes to the whole 16KB.
 
 The rows then show the page and the address, as `07:C000`.
+
+**DIV** shows one 8K page of a [divMMC](disks.md#divmmc)'s RAM, whether it is paged in or
+not; on a Next, the divMMC RAM it has inside. **Pg** counts the board's pages, the address
+starts at 2000, where the board pages them in, and the size is always 8KB.
 
 ### Selecting and breakpoints
 
@@ -148,13 +155,18 @@ the number of the page.
 On a ZX Spectrum Next there are eight 8K rows instead, one for each MMU register: 0000-1FFF,
 2000-3FFF and so on. The page is the exact value of NextReg 50-57. **RAM** is a page below
 E0; a value from E0 to FF selects **ROM** in either of the first two slots and is **OFF**
-in the other six. The tooltip also gives the physical page the CPU reads after divMMC,
-Multiface, Layer 2 and ROMCS have been applied. The listing, the **CPU** dump, memory search
-and breakpoints follow that same effective view.
+in the other six. The tooltip also says what the CPU reads there after divMMC, Multiface,
+Layer 2 and ROMCS have been applied: a RAM page, a ROM, a divMMC page, the Multiface's
+memory, or nothing. The listing, the **CPU** dump, memory search and breakpoints follow that
+same view.
 
-The Next's listing previews the paging that an instruction's opcode fetches trigger,
-without changing the running machine. The **CPU** dump shows the current data-read view;
-just before a divMMC trap or a Multiface NMI entry, it can differ from the listing.
+On every machine the listing shows memory as it is now, with one exception: the row at PC
+shows the instruction the CPU will run next. If fetching it pages something in - a divMMC
+entry point, or the Next's Multiface at 0066 - that row already shows it, and a step runs
+exactly that. A divMMC entry point such as 0008 pages the board in for the instruction after
+it: stopped at 0008, the listing shows the ROM; after the step, at 000B, the listing, the
+**DUMP** and **MEMMAP** already show the board, since the next fetch brings it in whatever
+it is. Other rows show what is there now; they change when the CPU gets there.
 
 Change a row to put another page in: pick **ROM** or **RAM** and type the page number. On a
 Next, typing a value writes its 8K MMU register; picking **ROM** writes FF and **OFF** writes

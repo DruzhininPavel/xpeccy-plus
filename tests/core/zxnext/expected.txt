@@ -21,4 +21,8 @@ prefix M1 can enter automap: ok
 indexed CB final opcode is not M1: ok
 data read does not reuse cached opcode: ok
 Multiface NMI fetch and physical breakpoint: ok
+edits land on the cell shown: ok
+cells by area and page: ok
+divMMC cell breakpoint: ok
+divMMC entry point on the PC row: ok
 long prefix chain: ok

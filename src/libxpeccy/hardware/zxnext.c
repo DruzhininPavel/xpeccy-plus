@@ -580,6 +580,24 @@ static void nx_view_restore(Computer* comp, const nxMemViewState* state) {
 	NX.irq = state->irq;
 }
 
+// Whether the machine can write the cell a read of adr shows: its RAM can be
+// written whatever lies over it, anything else only if a CPU write lands there
+// too - not divMMC's ROM or its bank 3 under MAPRAM, the Multiface's ROM, a ROM
+// or the alt ROM being read
+static int nx_edit_ok(Computer* comp, int adr, const nxAccess* a) {
+	switch (a->kind) {
+		case NXM_BRAM:
+		case NXM_SHADOW:
+			return 1;
+		case NXM_SRAM: {
+			if (a->adr >= NX_RAM) return 1;
+			nxAccess w = nx_decode(comp, adr, 1);
+			return (w.kind == NXM_SRAM) && (w.adr == a->adr);
+		}
+	}
+	return 0;
+}
+
 // Only an instruction preview advances these latches; nx_disasm restores them.
 enum {NX_VIEW_STEP = 8};
 
@@ -590,8 +608,9 @@ static void nx_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xad
 		nx_nmi_fetch(comp, adr);
 		NX.dmMap = nx_dm_fetch(comp, adr);
 	}
-	int wr = (mode & MEM_VIEW_WRITE) && !(mode & MEM_VIEW_ROM_WRITE);
-	nxAccess a = nx_decode(comp, adr, wr);
+	// a value to write is a debugger edit: it goes to the cell a read shows
+	int edit = (mode & MEM_VIEW_WRITE) && value;
+	nxAccess a = nx_decode(comp, adr, (mode & MEM_VIEW_WRITE) && !edit);
 	if (mode & MEM_VIEW_FETCH) {
 		if (mode & NX_VIEW_STEP) {
 			NX.dmHeld = NX.dmMap = NX.dmNext;
@@ -621,7 +640,8 @@ static void nx_mem_view(Computer* comp, int adr, int mode, int* value, xAdr* xad
 		}
 	}
 	if (!value) return;
-	if (mode & MEM_VIEW_WRITE) {
+	if (edit) {
+		if (!(mode & MEM_VIEW_ROM_WRITE) && !nx_edit_ok(comp, adr, &a)) return;
 		switch (a.kind) {
 			case NXM_SRAM:
 			case NXM_BRAM:
@@ -721,6 +741,44 @@ static void nx_map_mem(Computer* comp) {
 	for (int s = 0; s < 8; s++)
 		nx_map_slot(comp, s, rom);
 	comp->vid->vidPage = (NX_RAM + (((NX.p7ffd & 8) ? 0x0e : 0x0a) << 13)) >> 14;
+}
+
+// A cell of the SRAM image by its area (CELL_*), the page in that area and the
+// offset in the page: 16K ROMs, 8K divMMC banks and RAM pages (SRAM map above)
+int next_cell(int abs, int* page, int* ofs) {
+	static const struct {int base, end, shift, area;} tab[] = {
+		{0, NX_DIVROM, 14, CELL_ROM},
+		{NX_DIVROM, NX_DIVROM + 0x2000, 13, CELL_DIVROM},
+		{NX_MFROM, NX_MFRAM, 13, CELL_MFROM},
+		{NX_MFRAM, NX_ALTROM, 13, CELL_MFRAM},
+		{NX_ALTROM, NX_DIVRAM, 14, CELL_ALTROM},
+		{NX_DIVRAM, NX_RAM, 13, CELL_DIV},
+		{NX_RAM, NX_RAM + (0xe0 << 13), 13, CELL_RAM}
+	};
+	for (unsigned i = 0; i < sizeof(tab) / sizeof(tab[0]); i++) {
+		if ((abs < tab[i].base) || (abs >= tab[i].end)) continue;
+		*page = (abs - tab[i].base) >> tab[i].shift;
+		*ofs = (abs - tab[i].base) & ((1 << tab[i].shift) - 1);
+		return tab[i].area;
+	}
+	return CELL_NONE;
+}
+
+// ...and back: -1 when the area has no such page or offset
+int next_cell_abs(int area, int page, int ofs) {
+	int base, shift, pages;
+	switch (area) {
+		case CELL_ROM: base = 0; shift = 14; pages = 4; break;
+		case CELL_DIVROM: base = NX_DIVROM; shift = 13; pages = 1; break;
+		case CELL_MFROM: base = NX_MFROM; shift = 13; pages = 1; break;
+		case CELL_MFRAM: base = NX_MFRAM; shift = 13; pages = 1; break;
+		case CELL_ALTROM: base = NX_ALTROM; shift = 14; pages = 2; break;
+		case CELL_DIV: base = NX_DIVRAM; shift = 13; pages = 16; break;
+		case CELL_RAM: base = NX_RAM; shift = 13; pages = 0xe0; break;
+		default: return -1;
+	}
+	if ((page < 0) || (page >= pages) || (ofs < 0) || (ofs >> shift)) return -1;
+	return base + (page << shift) + ofs;
 }
 
 int next_mmu_get(Computer* comp, int slot) {

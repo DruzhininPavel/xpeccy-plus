@@ -569,11 +569,16 @@ unsigned xexpr_eval(const xExpr& exp, Computer* comp, bool* errp, int hits, unsi
 					stk[sp] = val;
 					break;
 				case XE_LAB:
-					xadr = find_label(QString(it->name.c_str()));
+					if (it->labGen != labels_gen()) {
+						it->lab = find_label_cell(QString(it->name.c_str()));
+						it->labGen = labels_gen();
+					}
+					xadr = it->lab;
 					if (memType == MEM_RAM || memType == MEM_ROM) {
 						if (xadr.type != memType) err = true;
 						stk[sp] = xadr.abs;
 					} else {
+						xadr = label_cpu(xadr);
 						if (xadr.type < 0 || xadr.adr < 0) err = true;
 						stk[sp] = xadr.adr;
 					}

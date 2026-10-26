@@ -240,6 +240,33 @@ int div_trap_page(int page) {
 	return (page == 0x00) || (page == 0x04) || (page == 0x05) || (page == 0x1f) || (page == 0x3d);
 }
 
+// What a byte at adr is, read in the instruction whose opcode is fetched at start,
+// when div_m1() has not seen that fetch yet - nothing changes. 1: a byte of the
+// board, *abs its place in data; 0: the machine's own memory; -1: the map as it is
+int div_fetch_view(DivMMC* div, int start, int adr, int* abs) {
+	if (!div->model || (adr & 0xc000)) return -1;
+	int am = div->mapcond || ((start & 0xff00) == 0x3d00);
+	if (am == div->automap) return -1;
+	int shows = div->conmem || (am && (!div->eeWrite || div->mapram));
+	if (!shows) return 0;
+	if (adr >= 0x2000)
+		*abs = DIV_EE_SIZE + ((div->bank % div->pages) << 13) + (adr & 0x1fff);
+	else if (div->conmem || !div->mapram)
+		*abs = adr & 0x1fff;
+	else
+		*abs = DIV_EE_SIZE + (3 << 13) + (adr & 0x1fff);
+	return 1;
+}
+
+// Whether the CPU can write the board's byte it sees at adr (0000-3FFF) while the
+// board is shown (div_map): the EEPROM under conmem with J1 open, the RAM but for
+// page 3 under MAPRAM
+int div_view_writable(DivMMC* div, int adr) {
+	if ((adr & 0x3fff) < 0x2000)		// the EEPROM, or page 3 read only under MAPRAM alone
+		return div->conmem && div->eeWrite;
+	return div->conmem || !div->mapram || (div->bank != 3);
+}
+
 int div_m1_acts(DivMMC* div, int adr) {
 	if (!div->model) return 0;
 	adr &= 0xffff;
