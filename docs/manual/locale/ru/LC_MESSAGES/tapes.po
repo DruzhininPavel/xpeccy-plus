@@ -296,7 +296,7 @@ msgstr ""
 "окна: Shift+F4 (Modern)."
 
 msgid "Fast loading"
-msgstr "Быстрая загрузка"
+msgstr "Fast loading"
 
 msgid ""
 "**Fast loading** runs the machine at full speed while a loader reads the "

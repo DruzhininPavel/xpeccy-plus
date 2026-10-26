@@ -700,7 +700,7 @@ msgid "Changes take effect when you press **Apply** or {icon}`ok-apply` **OK**."
 msgstr "Los cambios surten efecto al pulsar **Apply** u {icon}`ok-apply` **OK**."
 
 msgid "Advanced settings"
-msgstr "Ajustes avanzados"
+msgstr "Advanced settings"
 
 msgid ""
 "**Machine: Advanced Settings** holds the settings of the hardware itself,"

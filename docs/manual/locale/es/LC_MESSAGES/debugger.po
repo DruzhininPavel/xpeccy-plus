@@ -513,7 +513,7 @@ msgid ""
 msgstr ""
 "Estas teclas funcionan mientras el Debugger tiene el foco. La página "
 "**Hotkeys** de **Options** las muestra bajo **Debugger** y permite "
-"cambiarlas (consulta [Atajos de teclado](hotkeys.md))."
+"cambiarlas (consulta [Hotkeys](hotkeys.md))."
 
 msgid "Action"
 msgstr "Acción"

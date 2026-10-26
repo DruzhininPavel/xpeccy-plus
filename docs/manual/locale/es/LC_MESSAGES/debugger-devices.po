@@ -158,7 +158,7 @@ msgid ""
 "**Mode** - **Auto**, **Main**, **Shadow**, **Both** or **Custom**: which "
 "screen is drawn."
 msgstr ""
-"**Modo** — **Auto**, **Main**, **Shadow**, **Both** o **Custom**: qué "
+"**Mode** — **Auto**, **Main**, **Shadow**, **Both** o **Custom**: qué "
 "pantalla se dibuja."
 
 #, python-brace-format

@@ -362,7 +362,7 @@ msgstr ""
 " uso."
 
 msgid "Auto recording"
-msgstr "Grabación automática"
+msgstr "Auto recording"
 
 msgid ""
 "**Auto recording** starts and stops a video by itself, to catch a demo or"

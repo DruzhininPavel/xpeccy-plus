@@ -399,7 +399,7 @@ msgstr ""
 "beeper**, en el grupo **ULA** de **Machine: Advanced Settings**, mezcla "
 "también en el sonido del beeper la señal que la máquina envía a la cinta,"
 " a una décima parte de volumen, como hace una máquina con ULA (consulta "
-"[Ajustes avanzados](machines.md#advanced-settings))."
+"[Advanced settings](machines.md#advanced-settings))."
 
 msgid "Recording the sound"
 msgstr "Grabar el sonido"

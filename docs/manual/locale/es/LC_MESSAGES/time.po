@@ -198,7 +198,7 @@ msgstr ""
 " muestran la velocidad fijada para ellos."
 
 msgid "Rewind"
-msgstr "Rebobinado"
+msgstr "Rewind"
 
 #, python-brace-format
 msgid ""
@@ -340,7 +340,7 @@ msgstr ""
 " barra de estado muestra el reloj siempre."
 
 msgid "Input lag"
-msgstr "Retardo de entrada"
+msgstr "Input lag"
 
 msgid ""
 "The **Input lag** group on the **Emulation** page sets how soon a key "

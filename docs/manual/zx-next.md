@@ -1,6 +1,9 @@
 # ZX Spectrum Next
 
-```{index} ZX Spectrum Next, Next; see: ZX Spectrum Next
+```{index} ZX Spectrum Next
+```
+
+```{index} see: Next; ZX Spectrum Next
 ```
 
 The **ZX Spectrum Next** is emulated from its FPGA core: the Z80N CPU at 3.5 to 28 MHz,

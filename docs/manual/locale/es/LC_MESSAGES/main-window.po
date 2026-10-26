@@ -337,7 +337,7 @@ msgid "Alt with the mouse wheel changes the volume."
 msgstr "Alt con la rueda del ratón cambia el volumen."
 
 msgid "Fullscreen"
-msgstr "Pantalla completa"
+msgstr "Fullscreen"
 
 msgid ""
 "**View > Fullscreen** hides the menu bar, the toolbar and the status bar."

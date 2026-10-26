@@ -298,7 +298,7 @@ msgstr ""
 "la ventana: Shift+F4 (Modern)."
 
 msgid "Fast loading"
-msgstr "Carga rápida"
+msgstr "Fast loading"
 
 msgid ""
 "**Fast loading** runs the machine at full speed while a loader reads the "

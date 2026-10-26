@@ -243,7 +243,7 @@ msgstr ""
 "Una tecla que es un atajo de teclado ejecuta su comando en lugar de "
 "llegar a la máquina. Qué teclas son depende del juego de atajos que uses:"
 " en Modern, Delete, Home, End e Insert son atajos, mientras que Esc se "
-"deja a la máquina como BREAK. Consulta [Atajos de teclado](hotkeys.md). "
+"deja a la máquina como BREAK. Consulta [Hotkeys](hotkeys.md). "
 "Para dar a la máquina todas las teclas, captura el teclado."
 
 msgid ""
@@ -1070,7 +1070,7 @@ msgid "Kempston"
 msgstr "Kempston"
 
 msgid "Kempston joystick"
-msgstr "joystick Kempston"
+msgstr "Kempston joystick"
 
 msgid "ALF TV Game"
 msgstr "ALF TV Game"
@@ -1124,7 +1124,7 @@ msgid "quick switch"
 msgstr "cambio rápido"
 
 msgid "Kempston mouse"
-msgstr "ratón Kempston"
+msgstr "Kempston mouse"
 
 msgid "mouse"
 msgstr "ratón"

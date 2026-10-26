@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 03:44+0200\n"
+"POT-Creation-Date: 2026-10-26 22:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -92,6 +92,16 @@ msgstr "**Slot cell**"
 msgid "the CPU uses a byte of the cartridge"
 msgstr "la CPU usa un byte del cartucho"
 
+#, fuzzy
+msgid "**divMMC cell**"
+msgstr "**ROM cell**"
+
+#, fuzzy
+msgid ""
+"the CPU uses a byte of a [divMMC](disks.md#divmmc)'s ROM or RAM, wherever"
+" that page is mapped"
+msgstr "la CPU usa un byte de la ROM, dondequiera que esté mapeada su página"
+
 msgid "**Interrupt**"
 msgstr "**Interrupt**"
 
@@ -144,6 +154,14 @@ msgstr ""
 "detiene la máquina sea cual sea la página que hay en `C000`. Un punto de "
 "interrupción en una celda de RAM se detiene solo con ese byte de esa "
 "página, en cualquier dirección de CPU en que esté mapeada la página."
+
+msgid ""
+"On a ZX Spectrum Next the pages of a RAM cell are its 8K pages, numbered "
+"as MEMMAP shows them. The Next keeps its ROMs and divMMC in that same "
+"memory, so a RAM cell can also be one of them: `ROM0:0038`, `DIV3:0010`, "
+"`ALTROM1:...`, `DIVROM:...`, `MFROM:...`, `MFRAM:...`. Its divMMC needs "
+"no **divMMC cell**."
+msgstr ""
 
 msgid "Setting breakpoints from the listing"
 msgstr "Poner puntos de interrupción desde el listado"
@@ -198,7 +216,7 @@ msgstr ""
 "teclas se pueden cambiar en la página **Hotkeys** de **Options**, como "
 "**Disasm: Breakpoint**, **Disasm: Breakpoint on read**, **Disasm: "
 "Breakpoint on write** y **Disasm: Breakpoint on CPU address** (consulta "
-"[Atajos de teclado](hotkeys.md))."
+"[Hotkeys](hotkeys.md))."
 
 #, python-brace-format
 msgid ""
@@ -340,10 +358,14 @@ msgstr ""
 "**RAM cell**: la posición en toda la RAM, después la página y el "
 "desplazamiento dentro de ella"
 
-msgid "`ROM:...`, `SLT:...`"
+#, fuzzy
+msgid "`ROM:...`, `SLT:...`, `DIV:...`"
 msgstr "`ROM:...`, `SLT:...`"
 
-msgid "**ROM cell**, **Slot cell**, written the same way"
+#, fuzzy
+msgid ""
+"**ROM cell**, **Slot cell**, **divMMC cell**, written the same way; a "
+"divMMC page is 8K, its ROM `DIVROM`"
 msgstr "**ROM cell**, **Slot cell**, escritas de la misma forma"
 
 msgid "`IRQ`"
@@ -464,9 +486,10 @@ msgstr "Qué define"
 msgid "**Type**"
 msgstr "**Type**"
 
+#, fuzzy
 msgid ""
 "the kind: **CPU address**, **I/O port**, **RAM cell**, **ROM cell**, "
-"**Slot cell**, **Interrupt**, **Condition (global)**"
+"**Slot cell**, **divMMC cell**, **Interrupt**, **Condition (global)**"
 msgstr ""
 "el tipo: **CPU address**, **I/O port**, **RAM cell**, **ROM cell**, "
 "**Slot cell**, **Interrupt**, **Condition (global)**"
@@ -474,10 +497,10 @@ msgstr ""
 msgid "**Page**"
 msgstr "**Page**"
 
-msgid "the 16K page of a RAM, ROM or slot cell, as a decimal number"
+msgid ""
+"the page of a cell, as a decimal number: 16K, but 8K for the Next's RAM "
+"and for divMMC"
 msgstr ""
-"la página de 16K de una celda de RAM, de ROM o del slot, como número "
-"decimal"
 
 msgid "**Address** ... **to**"
 msgstr "**Address** ... **to**"
@@ -551,20 +574,26 @@ msgstr "Una celda de RAM en el editor"
 msgid "A cell of RAM, ROM or the slot can be given in four ways:"
 msgstr "Una celda de RAM, de ROM o del slot se puede indicar de cuatro formas:"
 
-msgid "an offset in the page, `0000` to `3FFF`, with the page in **Page**;"
+#, fuzzy
+msgid ""
+"an offset in the page, `0000` to `3FFF` (`1FFF` for an 8K page), with the"
+" page in **Page**;"
 msgstr ""
 "un desplazamiento en la página, de `0000` a `3FFF`, con la página en "
 "**Page**;"
 
+#, fuzzy
 msgid ""
 "the page and the offset together, `05:1800`. The page is hex here, while "
-"**Page** counts in decimal;"
+"**Page** counts in decimal. Memory with a name of its own takes the name "
+"instead: `ROM0:0038`, `DIV3:0010`;"
 msgstr ""
 "la página y el desplazamiento juntos, `05:1800`. Aquí la página es "
 "hexadecimal, mientras que **Page** cuenta en decimal;"
 
+#, fuzzy
 msgid ""
-"a CPU address of `4000` or more, such as `5800`: the cell is the one "
+"a CPU address past the page size, such as `5800`: the cell is the one "
 "mapped there now, and **Page** changes to that cell's page. This works "
 "when the memory there is of the kind that **Type** names; otherwise the "
 "address is taken as an offset in **Page**;"
@@ -574,7 +603,8 @@ msgstr ""
 "Funciona cuando la memoria que hay ahí es del tipo que indica **Type**; "
 "si no, la dirección se toma como desplazamiento en **Page**;"
 
-msgid "a label. For a RAM cell the label also sets **Page**."
+#, fuzzy
+msgid "a label, which also sets **Page**."
 msgstr "una etiqueta. Para una celda de RAM, la etiqueta también fija **Page**."
 
 #, python-brace-format
@@ -1539,15 +1569,18 @@ msgstr "Qué contiene"
 msgid "1, kind"
 msgstr "1, tipo"
 
-msgid "`CPU`, `IO`, `RAM`, `ROM`, `SLT`, `IRQ` or `COND`"
+#, fuzzy
+msgid "`CPU`, `IO`, `RAM`, `ROM`, `SLT`, `DIV`, `IRQ` or `COND`"
 msgstr "`CPU`, `IO`, `RAM`, `ROM`, `SLT`, `IRQ` o `COND`"
 
 msgid "2"
 msgstr "2"
 
+#, fuzzy
 msgid ""
-"`CPU`: the address or a range; `IO`: the port; `RAM`, `ROM`, `SLT`: the "
-"page; others: empty"
+"`CPU`: the address or a range; `IO`: the port; `RAM`, `ROM`, `SLT`, "
+"`DIV`: the page in hex, or a name such as `ROM0` or `DIVROM`; others: "
+"empty"
 msgstr ""
 "`CPU`: la dirección o un rango; `IO`: el puerto; `RAM`, `ROM`, `SLT`: la "
 "página; los demás: vacío"
@@ -1555,9 +1588,10 @@ msgstr ""
 msgid "3"
 msgstr "3"
 
+#, fuzzy
 msgid ""
-"`IO`: the mask; `RAM`, `ROM`, `SLT`: the offset or a range of offsets; "
-"others: empty"
+"`IO`: the mask; `RAM`, `ROM`, `SLT`, `DIV`: the offset or a range of "
+"offsets; others: empty"
 msgstr ""
 "`IO`: la máscara; `RAM`, `ROM`, `SLT`: el desplazamiento o un rango de "
 "desplazamientos; los demás: vacío"
@@ -1599,13 +1633,14 @@ msgstr ""
 "Una línea puede terminar tras la condición; los dos últimos campos pueden"
 " estar vacíos."
 
+#, fuzzy
 msgid ""
 "An address in a list is hex without a prefix, as **Save** writes it, or a"
 " label of the labels loaded at the time: `CPU:START`, `CPU:START-DONE`. A"
 " label takes priority over hex written the same way; `#`, `$` or `0x` in "
-"front makes it a number. A RAM label carries its page, so the page field "
-"can be left empty: `RAM::SCREEN_BUF:W:CNT:`. **Save** writes the "
-"addresses as numbers."
+"front makes it a number. A label carries its page, so the page field can "
+"be left empty: `RAM::SCREEN_BUF:W:CNT:`. On the Next a RAM page is 8K, as"
+" in the editor. **Save** writes the addresses as numbers."
 msgstr ""
 "Una dirección en una lista es hexadecimal sin prefijo, tal como la "
 "escribe **Save**, o una etiqueta de las cargadas en ese momento: "
@@ -1726,11 +1761,10 @@ msgid "The **Watcher Editor** has:"
 msgstr "El **Watcher Editor** tiene:"
 
 msgid ""
-"**Type** - **CPU addr**, **RAM addr** or **ROM addr**, shown before the "
-"watch in the list;"
+"**Type** - **CPU addr** reads through the current CPU mapping; **RAM "
+"addr** and **ROM addr** read physical memory. A label in a physical watch"
+" supplies its page as well as its offset;"
 msgstr ""
-"**Type** — **CPU addr**, **RAM addr** o **ROM addr**, que se muestra "
-"delante de la vigilancia en la lista;"
 
 #, python-brace-format
 msgid ""
@@ -1756,6 +1790,12 @@ msgstr ""
 "expresión, y su valor como dirección; la segunda fila, los 13 bytes que "
 "empiezan en esa dirección. `??` significa que la expresión no se puede "
 "evaluar en ese momento."
+
+msgid ""
+"On the Next, a label in a **CPU addr** watch follows MMU paging. If its "
+"page is not mapped, the watch shows `??`; a **RAM addr** watch still "
+"reads the label's own RAM page."
+msgstr ""
 
 msgid "The watches are not kept when the program closes."
 msgstr "Las vigilancias no se conservan al cerrar el programa."
@@ -2029,6 +2069,10 @@ msgstr "ROM cell"
 msgid "Slot cell"
 msgstr "Slot cell"
 
+#, fuzzy
+msgid "divMMC cell"
+msgstr "ROM cell"
+
 msgid "Interrupt"
 msgstr "Interrupt"
 
@@ -2163,4 +2207,20 @@ msgstr "vigilancia"
 
 msgid "Watcher Editor"
 msgstr "Watcher Editor"
+
+#~ msgid "the 16K page of a RAM, ROM or slot cell, as a decimal number"
+#~ msgstr ""
+#~ "la página de 16K de una celda "
+#~ "de RAM, de ROM o del slot, "
+#~ "como número decimal"
+
+#~ msgid ""
+#~ "**Type** - **CPU addr**, **RAM addr**"
+#~ " or **ROM addr**, shown before the"
+#~ " watch in the list;"
+#~ msgstr ""
+#~ "**Type** — **CPU addr**, **RAM addr**"
+#~ " o **ROM addr**, que se muestra "
+#~ "delante de la vigilancia en la "
+#~ "lista;"
 

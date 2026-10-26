@@ -328,7 +328,7 @@ msgstr ""
 "line.md))."
 
 msgid "Reset"
-msgstr "Скидання"
+msgstr "Reset"
 
 msgid ""
 "**Machine > Reset** lists where a reset can take the machine: the ROMs it"
@@ -689,7 +689,7 @@ msgstr ""
 "apply` **OK**."
 
 msgid "Advanced settings"
-msgstr "Розширені налаштування"
+msgstr "Advanced settings"
 
 msgid ""
 "**Machine: Advanced Settings** holds the settings of the hardware itself,"

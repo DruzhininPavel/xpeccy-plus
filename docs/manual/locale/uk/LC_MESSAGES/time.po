@@ -194,7 +194,7 @@ msgstr ""
 "швидкість."
 
 msgid "Rewind"
-msgstr "Перемотування"
+msgstr "Rewind"
 
 #, python-brace-format
 msgid ""
@@ -333,7 +333,7 @@ msgstr ""
 "частоту завжди."
 
 msgid "Input lag"
-msgstr "Затримка введення"
+msgstr "Input lag"
 
 msgid ""
 "The **Input lag** group on the **Emulation** page sets how soon a key "

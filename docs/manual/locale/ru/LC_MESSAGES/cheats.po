@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Cheats"
-msgstr "Читы"
+msgstr "Cheats"
 
 msgid "![The Cheats window](images/cheats.png)"
 msgstr "![Окно Cheats](images/cheats.png)"
@@ -271,7 +271,7 @@ msgid "reset"
 msgstr "сброс"
 
 msgid "Rewind"
-msgstr "Перемотка назад"
+msgstr "Rewind"
 
 msgid "RZX"
 msgstr "RZX"

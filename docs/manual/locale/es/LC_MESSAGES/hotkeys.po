@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Hotkeys"
-msgstr "Atajos de teclado"
+msgstr "Hotkeys"
 
 msgid ""
 "A command that has a key shows it beside its name in the menu. All the "

@@ -242,7 +242,7 @@ msgstr ""
 "Клавиша, которая является горячей, выполняет свою команду вместо того, "
 "чтобы дойти до машины. Какие это клавиши, зависит от используемого набора"
 " горячих клавиш: в Modern горячие — Delete, Home, End и Insert, а Esc "
-"оставлен машине как BREAK. См. [Горячие клавиши](hotkeys.md). Чтобы "
+"оставлен машине как BREAK. См. [Hotkeys](hotkeys.md). Чтобы "
 "отдать машине все клавиши, захватите клавиатуру."
 
 msgid ""
@@ -1053,7 +1053,7 @@ msgid "Kempston"
 msgstr "Kempston"
 
 msgid "Kempston joystick"
-msgstr "джойстик Kempston"
+msgstr "Kempston joystick"
 
 msgid "ALF TV Game"
 msgstr "ALF TV Game"
@@ -1107,7 +1107,7 @@ msgid "quick switch"
 msgstr "быстрое переключение"
 
 msgid "Kempston mouse"
-msgstr "мышь Kempston"
+msgstr "Kempston mouse"
 
 msgid "mouse"
 msgstr "мышь"

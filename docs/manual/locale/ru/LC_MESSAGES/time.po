@@ -193,7 +193,7 @@ msgstr ""
 "Fast Forward показывают заданную для них скорость."
 
 msgid "Rewind"
-msgstr "Перемотка назад"
+msgstr "Rewind"
 
 #, python-brace-format
 msgid ""
@@ -333,7 +333,7 @@ msgstr ""
 "показывает частоту всегда."
 
 msgid "Input lag"
-msgstr "Задержка ввода"
+msgstr "Input lag"
 
 msgid ""
 "The **Input lag** group on the **Emulation** page sets how soon a key "

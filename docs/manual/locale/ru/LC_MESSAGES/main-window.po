@@ -334,7 +334,7 @@ msgid "Alt with the mouse wheel changes the volume."
 msgstr "Колесо мыши с нажатым Alt меняет громкость."
 
 msgid "Fullscreen"
-msgstr "Полноэкранный режим"
+msgstr "Fullscreen"
 
 msgid ""
 "**View > Fullscreen** hides the menu bar, the toolbar and the status bar."

@@ -49,7 +49,7 @@ msgid "Open"
 msgstr "Abrir"
 
 msgid "Save"
-msgstr "Guardar"
+msgstr "Save"
 
 msgid "Snapshot"
 msgstr "Instantánea"

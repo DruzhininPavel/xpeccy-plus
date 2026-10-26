@@ -329,7 +329,7 @@ msgstr ""
 " файл, вопрос пропускается (см. [Командная строка](command-line.md))."
 
 msgid "Reset"
-msgstr "Сброс"
+msgstr "Reset"
 
 msgid ""
 "**Machine > Reset** lists where a reset can take the machine: the ROMs it"
@@ -689,7 +689,7 @@ msgstr ""
 "apply` **OK**."
 
 msgid "Advanced settings"
-msgstr "Расширенные настройки"
+msgstr "Advanced settings"
 
 msgid ""
 "**Machine: Advanced Settings** holds the settings of the hardware itself,"

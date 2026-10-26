@@ -502,7 +502,7 @@ msgid ""
 msgstr ""
 "Ці клавіші працюють, коли фокус у Debugger. Сторінка **Hotkeys** вікна "
 "**Options** перелічує їх у групі **Debugger** і дає їх там змінити (див. "
-"[Гарячі клавіші](hotkeys.md))."
+"[Hotkeys](hotkeys.md))."
 
 msgid "Action"
 msgstr "Дія"
