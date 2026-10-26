@@ -11,6 +11,8 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **Leaving fullscreen after starting in it** puts the window back where it was, with
+  its title bar on the screen, instead of in the corner with the title bar above it.
 - **Fullscreen on a second monitor** fits the picture to that monitor, including when
   its resolution differs from the main display.
 - **SjASMPlus labels on the Next** use the correct 8K pages in the listing, named
@@ -19,6 +21,8 @@ before that point is upstream's history and is not repeated here.
 - **The Next debugger follows paging during an instruction**: the listing and physical
   breakpoints handle divMMC traps and Multiface NMI entry, heat maps count operands in the
   right page, and write breakpoints catch attempts to write to ROM or an unmapped window.
+- **A damaged ZIP for the Next's card** is refused as soon as a file in it grows past its
+  stated size, instead of after writing all of it to disk.
 
 ## 2026.8.1 - 2026-10-25
 

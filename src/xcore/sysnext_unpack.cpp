@@ -330,6 +330,9 @@ static bool sn_zip_data(QFile* file, const snZipEntry& entry, qint64 at, QFile* 
 	unsigned char in[65536], produced[65536];
 	// what comes out is written and counted the same way, stored or deflated
 	auto put = [&](const unsigned char* bytes, int count) -> bool {
+		// stopped at the size it states, not after: deflate can make 1000 times its size
+		if (count > entry.unpacked - written)
+			return sn_fail(err, "The ZIP entry " + entry.path + " does not unpack to the size it states");
 		if (out->write(reinterpret_cast<const char*>(bytes), count) != count)
 			return sn_fail(err, "Cannot write archive file " + entry.path);
 		crc = crc32(crc, bytes, uint(count));
