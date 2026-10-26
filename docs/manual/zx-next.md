@@ -48,22 +48,30 @@ program makes a card from the official release when the Next needs one.
 
 ![The ZX Spectrum Next SD Card window](images/next-sd-card.png)
 
-The **ZX Spectrum Next SD Card** window opens by itself the first time the Next has no card
-to start from, and from **Media > SD Card > System/Next Card...** at any time.
+The **ZX Spectrum Next SD Card** window opens by itself when the Next has no card to start
+from: the first time, or when its card was moved, deleted or has no System/Next on it. Its
+first line then says which. **Media > SD Card > System/Next Card...** opens it at any time.
 
 | Field | What it sets |
 |---|---|
-| **Card** | **New folder**, **New image** or **A card I have** |
-| **Path** | where the card goes; **...** picks the place |
+| **Path** | a card you have, or where to make a new one; the button beside it picks a **Folder...** or an **Image...** |
 | **Size** | for a new image, 1 to 16 GB; on the disk it takes only what is written to it |
-| **Release** | the System/Next release to put on the card |
+| **Release** | the System/Next release to put on a new card |
 | **From** | where the release comes from: an archive downloaded before, one beside the program, or gitlab.com, about 51 MB |
 
-**Create** downloads the release, checks it, and makes the card: a folder, `next-sd`, or an
-image, `next-sd.img`, in the settings folder by default. The release goes onto the card
-unchanged. A release with no checksum known to Xpeccy+ is marked **(not checked)**. For
-**A card I have**, the button is **Use**: pick a folder or an image that already has
-System/Next on it.
+The line under **Path** says what the window will do with it:
+
+| Path | The window |
+|---|---|
+| a folder or an image with System/Next on it | **Found**: **Use This Card** puts it in as it is |
+| a new or empty folder | **New card**: **Create Card** makes the card in it |
+| a new name ending in `.img` | **New card**: **Create Card** makes an image of the size chosen |
+| a folder with other files | leaves it alone; a link makes the card in `next-sd` inside it |
+| a file without System/Next | leaves it alone; pick another, or type a new name |
+
+**Create Card** downloads the release, checks it, and makes the card: a folder, `next-sd`, in
+the settings folder by default. The release goes onto the card unchanged. A release with no
+checksum known to Xpeccy+ is marked **(not checked)**.
 
 The new card goes in at once, and the Next starts from it. The archive is downloaded and
 unpacked inside Xpeccy+, with a progress bar and Cancel; on Linux the download uses the
