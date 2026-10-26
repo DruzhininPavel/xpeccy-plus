@@ -36,11 +36,13 @@
             pkgs.qt6.qt5compat
             pkgs.SDL2
             pkgs.zlib
+            pkgs.curl
           ];
 
           cmakeFlags = [
             "-DQTVERSION=6"
             "-DSDL1BUILD=0"
+            "-DCURL_DLOPEN=OFF"
           ];
 
           installPhase = ''

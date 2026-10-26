@@ -1,6 +1,6 @@
 // The ZX Spectrum Next's own SD card: made from a System/Next release - an archive
-// of it beside the program, else downloaded from GitLab with the system's curl -
-// as a folder or an image, or one the user has. A release known here is checked
+// of it beside the program, else downloaded from GitLab (xcore/download) - as a
+// folder or an image, or one the user has. A release known here is checked
 // before it is used; one that is not says so.
 
 #include <QApplication>
@@ -16,17 +16,15 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMenu>
-#include <QProcess>
 #include <QProgressBar>
 #include <QPushButton>
-#include <QRegularExpression>
-#include <QStandardPaths>
 #include <QVBoxLayout>
 
 #include <functional>
 
 #include "xgui.h"
 #include "../xcore/xcore.h"
+#include "../xcore/download.h"
 #include "../xcore/sysnext.h"
 
 enum {NC_FOLDER = 0, NC_IMAGE, NC_HAVE};
@@ -50,10 +48,9 @@ class xNextCard : public QDialog {
 		QDialogButtonBox* box;
 		QPushButton* btnGo;
 		QList<snRelease> rels;
-		QProcess* prc;		// the step running
-		QProcess* tagPrc;	// the tag list, looked up as the window opens
+		xDownload dl;		// the archive
+		xDownload tags;		// the tag list, looked up as the window opens
 		bool running;
-		QString tail;		// the program's last line, what a failure shows
 		QString tmp;		// <config>/sysnext.part/: the download and what it unpacks to
 		QString archive;	// the archive in use
 		QString target;		// the card being made
@@ -71,23 +68,9 @@ class xNextCard : public QDialog {
 		void verify();
 		void unpack();
 		void place();
-		void run(const QString& prog, const QStringList& args, std::function<void()> next);
-		void output(const QByteArray& chunk);
 		void fail(const QString& msg);
 		bool tick();
 };
-
-#ifdef _WIN32
-// the system's own, not one a shell put first on PATH
-static QString nc_tool(const QString& name) {
-	QString path = qEnvironmentVariable("SystemRoot") + "/System32/" + name + ".exe";
-	return QFileInfo(path).isFile() ? path : QStandardPaths::findExecutable(name);
-}
-#else
-static QString nc_tool(const QString& name) {
-	return QStandardPaths::findExecutable(name);
-}
-#endif
 
 // for a card on another disk than the config folder, where a rename cannot go
 static bool nc_copy_tree(const QString& src, const QString& dst, std::function<bool()> tick) {
@@ -113,8 +96,6 @@ xNextCard::xNextCard(QWidget* p):QDialog(p) {
 	setWindowTitle("ZX Spectrum Next SD Card");
 	own = false;
 	running = false;
-	prc = nullptr;
-	tagPrc = nullptr;
 	treeKnown = false;
 	dropArchive = false;
 	kindWas = NC_FOLDER;
@@ -194,19 +175,15 @@ xNextCard::xNextCard(QWidget* p):QDialog(p) {
 	lePath->setText(pathFor[NC_FOLDER]);
 	kindChanged();
 	// releases newer than the ones known here, if GitLab can be reached; quietly not otherwise
-	QString curl = nc_tool("curl");
-	if (!curl.isEmpty()) {
-		tagPrc = new QProcess(this);
-		connect(tagPrc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this](int code, QProcess::ExitStatus st) {
-			if ((st != QProcess::NormalExit) || code) return;
-			QString was = cbRel->currentData().toString();
-			sn_add_tags(&rels, tagPrc->readAllStandardOutput());
-			fillReleases();
-			int idx = cbRel->findData(was);
-			if (idx >= 0) cbRel->setCurrentIndex(idx);
-		});
-		tagPrc->start(curl, QStringList() << "-fsSL" << "--max-time" << "15" << sn_tags_url());
-	}
+	tags.toMemory(sn_tags_url(), 15);
+	dl_follow(this, &tags, nullptr, nullptr, [this](const dlStatus& st) {
+		if (st.state != DL_DONE) return;
+		QString was = cbRel->currentData().toString();
+		sn_add_tags(&rels, tags.data());
+		fillReleases();
+		int idx = cbRel->findData(was);
+		if (idx >= 0) cbRel->setCurrentIndex(idx);
+	});
 }
 
 void xNextCard::fillReleases() {
@@ -284,49 +261,6 @@ bool xNextCard::tick() {
 	return running;
 }
 
-void xNextCard::run(const QString& prog, const QStringList& args, std::function<void()> next) {
-	if (prog.isEmpty()) {
-		fail("Downloading needs curl, and there is none on this machine");
-		return;
-	}
-	if (prc) prc->deleteLater();
-	prc = new QProcess(this);
-	tail.clear();
-	connect(prc, &QProcess::readyReadStandardOutput, this, [this]() {output(prc->readAllStandardOutput());});
-	connect(prc, &QProcess::readyReadStandardError, this, [this]() {output(prc->readAllStandardError());});
-	connect(prc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, next](int code, QProcess::ExitStatus st) {
-		if (!running) return;		// cancelled
-		if ((st != QProcess::NormalExit) || (code != 0)) {
-			fail(tail.isEmpty() ? QString("It stopped with code %0").arg(code) : tail);
-		} else {
-			next();
-		}
-	});
-	connect(prc, &QProcess::errorOccurred, this, [this, prog](QProcess::ProcessError err) {
-		if (running && (err == QProcess::FailedToStart))
-			fail(QString("%0 does not start").arg(QFileInfo(prog).fileName()));
-	});
-	prc->start(prog, args);
-}
-
-// a percentage moves the bar, any other line is kept for a failure to show
-void xNextCard::output(const QByteArray& chunk) {
-	static QRegularExpression pct("(\\d+(?:\\.\\d+)?)%\\s*$");
-	foreach(QString line, QString::fromLocal8Bit(chunk).split(QRegularExpression("[\r\n]"), X_SkipEmptyParts)) {
-		static QRegularExpression word("[A-Za-z0-9]");
-		line = line.trimmed();
-		if (!line.contains(word)) continue;		// curl's bar before it has a figure
-		QRegularExpressionMatch m = pct.match(line);
-		if (m.hasMatch()) {
-			bar->setRange(0, 1000);
-			bar->setValue(int(m.captured(1).toDouble() * 10));
-		} else {
-			tail = line;
-			labLine->setText(line);
-		}
-	}
-}
-
 void xNextCard::go() {
 	int kind = cbKind->currentData().toInt();
 	target = QDir::cleanPath(QDir::fromNativeSeparators(lePath->text().trimmed()));
@@ -380,23 +314,27 @@ void xNextCard::go() {
 		verify();
 		return;
 	}
-	// kept in the config folder for the next card; under another name until it is whole
+	// kept in the config folder for the next card; under another name until it is whole,
+	// which a download cut short leaves for the next try to continue
 	QDir().mkpath(sn_cache_dir());
 	archive = sn_cache_dir() + sn_archive_name(rel);
 	QString part = archive + ".part";
-	QFile::remove(part);
 	lab->setText(QString("Downloading System/Next %0").arg(rel.release));
-	run(nc_tool("curl"), QStringList() << "-fL" << "--progress-bar" << "-o" << QDir::toNativeSeparators(part) << sn_archive_url(rel),
-		[this, part]() {
-			QFile::remove(archive);
-			if (!QFile::rename(part, archive)) {
-				QFile::remove(part);
-				fail("Cannot write into the config folder");
-				return;
-			}
-			dropArchive = true;
-			verify();
-		});
+	dl.toFile(sn_archive_url(rel), part);
+	dl_follow(this, &dl, bar, labLine, [this, part](const dlStatus& st) {
+		if (!running) return;		// cancelled
+		if (st.state == DL_FAIL) fail(st.error);
+		if (st.state != DL_DONE) return;
+		QFile::remove(archive);
+		if (!QFile::rename(part, archive)) {
+			QFile::remove(part);
+			fail("Cannot write into the config folder");
+			return;
+		}
+		labLine->clear();
+		dropArchive = true;
+		verify();
+	}, rel.bytes);	// GitLab makes the archive as it sends it and gives no length
 }
 
 // the archive's own checksum, when one is known: a match settles it. GitLab builds the
@@ -511,13 +449,8 @@ void xNextCard::fail(const QString& msg) {
 void xNextCard::reject() {
 	bool was = running;
 	running = false;
-	QProcess* procs[] = {prc, tagPrc};
-	for (QProcess* p : procs) {
-		if (p && (p->state() != QProcess::NotRunning)) {
-			p->kill();
-			p->waitForFinished(2000);
-		}
-	}
+	dl.cancel();
+	tags.cancel();
 	if (was && !tmp.isEmpty()) QDir(tmp).removeRecursively();
 	QDialog::reject();
 }

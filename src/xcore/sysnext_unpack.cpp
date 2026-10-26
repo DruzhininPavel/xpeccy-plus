@@ -191,7 +191,7 @@ static bool sn_pax(const QByteArray& data, QMap<QByteArray, QByteArray>* values,
 }
 
 static bool sn_unpack_tar_gz(const QString& archive, const QString& dir, QString* err,
-	std::function<bool(qint64, qint64)> tick) {
+	std::function<bool(qint64, qint64)> tick, std::function<QString(const QString&)> pick) {
 	QFile source(archive);
 	if (!source.open(QFile::ReadOnly))
 		return sn_fail(err, source.errorString());
@@ -258,7 +258,21 @@ static bool sn_unpack_tar_gz(const QString& archive, const QString& dir, QString
 			QString relative, path;
 			if (!sn_entry_path(name, &relative) || (relative == "." && type != '5'))
 				return sn_fail(err, "Unsafe path in tar archive: " + QString::fromUtf8(name));
-			if (type == '5') {
+			// only the files the caller picks, where it says
+			bool skip = false;
+			if (pick) {
+				const QString to = (type == '5') ? QString() : pick(relative);
+				skip = to.isEmpty();
+				if (!skip && !sn_entry_path(to.toUtf8(), &relative))
+					return sn_fail(err, "Unsafe path picked from tar archive: " + to);
+			}
+			if (skip) {
+				for (qint64 left = size; left; ) {
+					const int count = int(qMin<qint64>(left, sizeof(data)));
+					if (!input.get(data, count)) return false;
+					left -= count;
+				}
+			} else if (type == '5') {
 				if (size || !QDir().mkpath(root.filePath(relative)))
 					return sn_fail(err, "Cannot create archive folder " + relative);
 			} else {
@@ -398,7 +412,7 @@ static bool sn_zip_data(QFile* file, const snZipEntry& entry, qint64 at, QFile* 
 }
 
 static bool sn_unpack_zip(const QString& archive, const QString& dir, QString* err,
-	std::function<bool(qint64, qint64)> tick) {
+	std::function<bool(qint64, qint64)> tick, std::function<QString(const QString&)> pick) {
 	QFile file(archive);
 	if (!file.open(QFile::ReadOnly))
 		return sn_fail(err, file.errorString());
@@ -454,6 +468,14 @@ static bool sn_unpack_zip(const QString& archive, const QString& dir, QString* e
 		seen.insert(entry.path, true);
 		if (entry.local + SN_ZIP_LOCAL_LEN > size)
 			return sn_fail(err, "The ZIP archive is truncated");
+		// only the files the caller picks, where it says
+		if (pick) {
+			if (entry.folder) continue;
+			const QString to = pick(entry.path);
+			if (to.isEmpty()) continue;
+			if (!sn_entry_path(to.toUtf8(), &entry.path))
+				return sn_fail(err, "Unsafe path picked from ZIP archive: " + to);
+		}
 		if (!entry.folder) total += entry.unpacked;
 		entries.append(entry);
 	}
@@ -494,11 +516,11 @@ static bool sn_unpack_zip(const QString& archive, const QString& dir, QString* e
 }
 
 bool sn_unpack_archive(const QString& archive, const QString& dir, QString* err,
-	std::function<bool(qint64, qint64)> tick) {
+	std::function<bool(qint64, qint64)> tick, std::function<QString(const QString&)> pick) {
 	err->clear();
 	if (archive.endsWith(".tar.gz", Qt::CaseInsensitive))
-		return sn_unpack_tar_gz(archive, dir, err, tick);
+		return sn_unpack_tar_gz(archive, dir, err, tick, pick);
 	if (archive.endsWith(".zip", Qt::CaseInsensitive))
-		return sn_unpack_zip(archive, dir, err, tick);
+		return sn_unpack_zip(archive, dir, err, tick, pick);
 	return sn_fail(err, "This archive is neither .tar.gz nor .zip");
 }

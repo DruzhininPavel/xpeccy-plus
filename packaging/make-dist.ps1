@@ -10,7 +10,8 @@
 # cmake/windeploy.cmake.in; this script only picks a toolchain and drives cmake.
 # Build artifacts and the staged folders stay under the gitignored build/ dir.
 #
-# SDL2 comes from build\deps - run packaging\fetch-deps.ps1 once to get it.
+# SDL2 and curl's source come from build\deps - run packaging\fetch-deps.ps1 once to get
+# them; libcurl is built from it here, once per preset.
 
 param(
 	[ValidateSet('qt5-x64', 'qt6-x64', 'qt5-x86')]
@@ -94,11 +95,54 @@ Write-Host "=== $Preset -> $distName ===" -ForegroundColor Cyan
 
 if ($Clean -and (Test-Path $buildDir)) { Remove-Item $buildDir -Recurse -Force }
 
-# --- configure + build ---
-
 # cmake eats backslashes in -D values, so every path passed below must be forward-slashed
 $mingwFwd = $tc.MinGW -replace '\\', '/'
 $qtFwd = $tc.QtDir -replace '\\', '/'
+
+# --- libcurl, for the program's downloads (src/xcore/download.cpp) ---
+# Built once per preset from the source fetch-deps.ps1 checked: static, Schannel (the
+# system's TLS and certificates), HTTP and HTTPS only - nothing to ship beside the exe.
+
+$curlVer = (Get-Content (Join-Path $PSScriptRoot 'deps.json') -Raw | ConvertFrom-Json).curl.version
+$curlTgz = Join-Path $buildRoot "deps\curl-$curlVer.tar.gz"
+$curlSrc = Join-Path $buildRoot "deps\curl-$curlVer"
+$curlDir = Join-Path $buildRoot "deps\curl-$curlVer-$Preset"
+if (-not (Test-Path "$curlDir\lib\libcurl.a")) {
+	if (-not (Test-Path $curlTgz)) { throw "curl $curlVer is missing, run packaging\fetch-deps.ps1 first" }
+	if (-not (Test-Path $curlSrc)) {
+		& "$env:SystemRoot\System32\tar.exe" -xzf $curlTgz -C (Join-Path $buildRoot 'deps')
+		if ($LASTEXITCODE -ne 0) { throw 'curl: unpacking failed' }
+	}
+	$curlBuild = Join-Path $buildRoot "out\curl-$curlVer-$Preset"
+	if (Test-Path $curlBuild) { Remove-Item $curlBuild -Recurse -Force }
+	$curlArgs = @(
+		'-G', 'MinGW Makefiles'
+		'-DCMAKE_BUILD_TYPE=Release'
+		"-DCMAKE_INSTALL_PREFIX=$($curlDir -replace '\\', '/')"
+		'-DCURL_TARGET_WINDOWS_VERSION=0x0600'
+		'-DBUILD_SHARED_LIBS=OFF', '-DBUILD_STATIC_LIBS=ON'
+		'-DBUILD_CURL_EXE=OFF', '-DBUILD_TESTING=OFF', '-DBUILD_EXAMPLES=OFF'
+		'-DBUILD_LIBCURL_DOCS=OFF', '-DBUILD_MISC_DOCS=OFF', '-DENABLE_CURL_MANUAL=OFF'
+		'-DCURL_USE_SCHANNEL=ON', '-DCURL_USE_OPENSSL=OFF', '-DCURL_USE_PKGCONFIG=OFF'
+		'-DCURL_USE_LIBSSH2=OFF', '-DCURL_USE_LIBPSL=OFF', '-DUSE_NGHTTP2=OFF', '-DUSE_LIBIDN2=OFF'
+		'-DCURL_ZLIB=OFF', '-DCURL_BROTLI=OFF', '-DCURL_ZSTD=OFF'
+		'-S', $curlSrc
+		'-B', $curlBuild
+	)
+	foreach ($proto in 'DICT', 'FILE', 'FTP', 'GOPHER', 'IMAP', 'IPFS', 'LDAP', 'LDAPS', 'MQTT', 'POP3', 'RTSP', 'SMTP', 'TELNET', 'TFTP', 'WEBSOCKETS') {
+		$curlArgs += "-DCURL_DISABLE_$proto=ON"
+	}
+	Write-Host "--- curl $curlVer for $Preset ---" -ForegroundColor Cyan
+	& cmake @curlArgs
+	if ($LASTEXITCODE -ne 0) { throw 'curl: configure failed' }
+	& cmake --build $curlBuild -j $Jobs
+	if ($LASTEXITCODE -ne 0) { throw 'curl: build failed' }
+	& cmake --install $curlBuild
+	if ($LASTEXITCODE -ne 0) { throw 'curl: install failed' }
+	Remove-Item $curlBuild -Recurse -Force
+}
+
+# --- configure + build ---
 
 $cmakeArgs = @(
 	'-G', 'MinGW Makefiles'
@@ -111,6 +155,7 @@ $cmakeArgs = @(
 	"-DTRIMDEPLOY=$(if ($Full) { 'OFF' } else { 'ON' })"
 	"-DZLIB_LIBRARY=$mingwFwd/$($tc.Triple)/lib/libz.a"
 	"-DZLIB_INCLUDE_DIR=$mingwFwd/$($tc.Triple)/include"
+	"-DCURL_DIR=$($curlDir -replace '\\', '/')/lib/cmake/CURL"
 	'-S', $srcRoot
 	'-B', $buildDir
 )

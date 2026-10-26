@@ -402,6 +402,39 @@ set(LIBRARIES ${LIBRARIES} ${ZLIB_LIBRARY})
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, zlib1g (>=1.2)")
 set(CPACK_RPM_PACKAGE_DEPENDS "${CPACK_RPM_PACKAGE_DEPENDS}, zlib >= 1.2")
 
+# libcurl: the program's downloads (src/xcore/download.cpp). Windows links the static
+# Schannel build make-dist.ps1 makes, macOS the SDK's. Linux loads the system's
+# libcurl.so.4 when a download starts: linked, the binary would ask for the build
+# host's symbol versions (Debian's CURL_OPENSSL_4) and not start where they differ
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	find_package(CURL CONFIG REQUIRED)
+	set(LIBRARIES ${LIBRARIES} CURL::libcurl)
+	message(STATUS "libcurl ${CURL_VERSION} (static)")
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	find_package(CURL REQUIRED)
+	set(INCLUDIRS ${INCLUDIRS} ${CURL_INCLUDE_DIRS})
+	set(LIBRARIES ${LIBRARIES} ${CURL_LIBRARIES})
+else()
+	# a distribution's own package builds against its own libcurl and can link it
+	option(CURL_DLOPEN "Load libcurl.so.4 at run time instead of linking it" ON)
+	if(CURL_DLOPEN)
+		find_path(CURL_INCLUDE_DIR curl/curl.h)
+		if(NOT CURL_INCLUDE_DIR)
+			message(FATAL_ERROR "curl/curl.h not found: install libcurl's development package")
+		endif()
+		add_definitions(-DXP_CURL_DLOPEN)
+		set(INCLUDIRS ${INCLUDIRS} ${CURL_INCLUDE_DIR})
+		set(LIBRARIES ${LIBRARIES} ${CMAKE_DL_LIBS})
+	else()
+		find_package(CURL REQUIRED)
+		set(INCLUDIRS ${INCLUDIRS} ${CURL_INCLUDE_DIRS})
+		set(LIBRARIES ${LIBRARIES} ${CURL_LIBRARIES})
+	endif()
+	set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libcurl4 | libcurl4t64")
+	set(CPACK_RPM_PACKAGE_DEPENDS "${CPACK_RPM_PACKAGE_DEPENDS}, libcurl")
+endif()
+
 # FreeType: the on-screen keyboard's lettering. Our own copy on every platform, so
 # the keyboard comes out the same everywhere (thirdparty/freetype/README.xpeccy.md)
 
@@ -484,6 +517,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		${CMAKE_SOURCE_DIR}/LICENSE_FREETYPE
 		${CMAKE_SOURCE_DIR}/LICENSE_LIBERATION
 		${CMAKE_SOURCE_DIR}/LICENSE_ICONS
+		${CMAKE_SOURCE_DIR}/LICENSE_CURL
 		${CMAKE_SOURCE_DIR}/README.md
 		${CMAKE_SOURCE_DIR}/CHANGELOG.md
 		DESTINATION ${BUNDLE_RES}/doc
@@ -541,6 +575,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 		${CMAKE_SOURCE_DIR}/LICENSE_FREETYPE
 		${CMAKE_SOURCE_DIR}/LICENSE_LIBERATION
 		${CMAKE_SOURCE_DIR}/LICENSE_ICONS
+		${CMAKE_SOURCE_DIR}/LICENSE_CURL
 		${CMAKE_SOURCE_DIR}/README.md
 		${CMAKE_SOURCE_DIR}/CHANGELOG.md
 		DESTINATION share/doc/${PROJECT_NAME}
@@ -566,6 +601,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		${CMAKE_SOURCE_DIR}/LICENSE_FREETYPE
 		${CMAKE_SOURCE_DIR}/LICENSE_LIBERATION
 		${CMAKE_SOURCE_DIR}/LICENSE_ICONS
+		${CMAKE_SOURCE_DIR}/LICENSE_CURL
 		DESTINATION .
 	)
 	if(MANUAL_DIR)

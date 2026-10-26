@@ -4,6 +4,11 @@
 		"sha256": "F15CFF5FCA62EC9381A016EF1D42A95C638CD72D2F226BA5781C76FE43DBD1AC",
 		"source": "SDL2-devel-<version>-mingw.zip from https://github.com/libsdl-org/SDL/releases"
 	},
+	"curl": {
+		"version": "8.23.0",
+		"sha256": "E3DE77CFA6367083C776A26647FC9F633B538C06C3BAA73D931A252AC8F72B49",
+		"source": "curl-<version>.tar.gz from https://curl.se/download/, built per preset by make-dist.ps1"
+	},
 	"sysnext": {
 		"release": "24.11",
 		"tag": "system/next_24.11",
