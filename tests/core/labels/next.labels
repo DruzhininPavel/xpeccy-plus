@@ -2,7 +2,8 @@
 05:0039 Debug.calc_char
 04:1FFF LastByte
 05:0000 NextPage
-DF:1FFF LastRAM
+223:1FFF LastRAM
 :8123 Virtual
 04:0200 EvenPage
 05:0200 OddPage
+17:0123 Page17

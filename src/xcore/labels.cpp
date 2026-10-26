@@ -153,13 +153,91 @@ xAdr find_label(QString nm) {
 	return xadr;
 }
 
-// One sjasmplus LABELSLIST file into the set named after it, which is then
-// the one in effect. 0: it could not be opened, and nothing changed.
+// The page of a LABELSLIST line. SjASMPlus writes it in decimal; a page with a
+// hex digit in it comes from Xpeccy+ before 2026.8.2, which wrote hex. FF and an
+// empty page (":ADDR") are a CPU address: -2. -1: not a page.
+static int labels_page(const QString& str) {
+	if (str.isEmpty() || (str.compare("FF", Qt::CaseInsensitive) == 0)) return -2;
+	bool ok;
+	int page = str.toInt(&ok, 10);
+	if (!ok) page = str.toInt(&ok, 16);
+	return (ok && (page >= 0)) ? page : -1;
+}
+
+// ...and back, the way SjASMPlus writes it
+static QString labels_page_str(int page) {
+	return QString("%1").arg(page, 2, 10, QChar('0'));
+}
+
+// A label at RAM page:offset, in the pages the machine in use has: the Next's
+// 8K pages (in its SRAM image, after the ROM and divMMC areas), 16K banks elsewhere
+static void labels_add_ram(bool isNext, int page, int ofs, const QString& name) {
+	xAdr xadr;
+	xadr.type = MEM_RAM;
+	if (isNext) {
+		if ((page < 0) || (page >= 0xe0)) return;
+		xadr.abs = 0x40000 + (page << 13) + (ofs & 0x1fff);
+		xadr.bank = xadr.abs >> 14;
+		xadr.adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
+	} else {
+		xadr.bank = page;
+		xadr.abs = (page << 14) | (ofs & 0x3fff);
+		switch (page) {		// where a 128K sees it
+			case 0x05: xadr.adr = 0x4000 | (ofs & 0x3fff); break;
+			case 0x02: xadr.adr = 0x8000 | (ofs & 0x3fff); break;
+			default: xadr.adr = 0xc000 | (ofs & 0x3fff); break;
+		}
+	}
+	add_label(xadr, name);
+}
+
+// A label at a CPU address: the Next keeps it there whatever is paged in, other
+// machines take it into the 128K's bank behind it
+static void labels_add_cpu(bool isNext, int adr, const QString& name) {
+	if (isNext) {
+		xAdr xadr;
+		xadr.type = MEM_IO;
+		xadr.abs = adr;
+		xadr.adr = adr;
+		xadr.bank = -1;
+		add_label(xadr, name);
+		return;
+	}
+	static const int bank[4] = {0, 5, 2, 0};
+	labels_add_ram(false, bank[(adr >> 14) & 3], adr, name);
+}
+
+static bool labels_hex(const QString& str, int len, int* val) {
+	bool ok;
+	*val = str.toInt(&ok, 16);
+	return ok && (str.size() == len);
+}
+
+// A SjASMPlus CSPECTMAP line: "logical linear type name", the linear address over
+// the device's RAM - page * page size + offset, so it needs no page size to place.
+// Only labels (type 00) and ROM / no-device ones (03, a CPU address) are kept;
+// EQU, DEFL and STRUCT values are not places. false: not a map line.
+static bool labels_map_line(bool isNext, const QString& line) {
+	QStringList arr = line.simplified().split(' ');
+	int logical, linear, type;
+	if ((arr.size() < 4) || !labels_hex(arr.at(0), 8, &logical) || !labels_hex(arr.at(1), 8, &linear)
+			|| !labels_hex(arr.at(2), 2, &type))
+		return false;
+	if (type == 0) {
+		if (isNext) labels_add_ram(true, linear >> 13, linear & 0x1fff, arr.at(3));
+		else labels_add_ram(false, linear >> 14, linear & 0x3fff, arr.at(3));
+	} else if (type == 3) {
+		labels_add_cpu(isNext, logical & 0xffff, arr.at(3));
+	}
+	return true;
+}
+
+// One SjASMPlus LABELSLIST or CSPECTMAP file into the set named after it, which
+// is then the one in effect. Its pages are taken as the machine in use has them.
+// 0: it could not be opened, and nothing changed.
 static int labels_read(const QString& path) {
 	QString line;
-	QString name;
 	QStringList arr;
-	xAdr xadr;
 	QFile file(path);
 	if (!file.open(QFile::ReadOnly)) return 0;
 	bool isNext = conf.zx && (conf.zx->hw->id == HW_ZXNEXT);
@@ -171,65 +249,29 @@ static int labels_read(const QString& path) {
 #else
 	static const QRegExp sep("[: \t\r\n]");
 #endif
+	int wide = 0;		// offsets past 8K: a 16K-page file
 	while(!file.atEnd()) {
 		line = file.readLine();
+		if (labels_map_line(isNext, line)) continue;
 		if (line.startsWith(":"))
 			line.prepend("FF");
 		arr = line.split(sep, X_SkipEmptyParts);
 		if (arr.size() > 2) {
-			bool pageOk, adrOk;
-			xadr.type = MEM_RAM;
-			xadr.bank = arr.at(0).toInt(&pageOk, 16);
-			xadr.adr = arr.at(1).toInt(&adrOk, 16);
-			if (!pageOk || !adrOk || (xadr.adr < 0) || (xadr.adr > 0xffff)) continue;
-			if (isNext) {
-				if (xadr.bank == 0xff) {
-					xadr.type = MEM_IO;
-					xadr.abs = xadr.adr;
-					xadr.bank = -1;
-				} else {
-					if ((xadr.bank < 0) || (xadr.bank >= 0xe0)) continue;
-					// SjASMPlus uses 8K Next RAM pages; ramData includes the ROM/SRAM area before them.
-					xadr.abs = 0x40000 + (xadr.bank << 13) + (xadr.adr & 0x1fff);
-					xadr.bank = xadr.abs >> 14;
-					xadr.adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
-				}
-				add_label(xadr, arr.at(2));
-				continue;
+			bool adrOk;
+			int page = labels_page(arr.at(0));
+			int adr = arr.at(1).toInt(&adrOk, 16);
+			if ((page == -1) || !adrOk || (adr < 0) || (adr > 0xffff)) continue;
+			if (page == -2) {
+				labels_add_cpu(isNext, adr, arr.at(2));
+			} else {
+				if (adr > 0x1fff) wide++;
+				labels_add_ram(isNext, page, adr, arr.at(2));
 			}
-			if (xadr.bank == 0xff) {
-				switch (xadr.adr & 0xc000) {
-					case 0x0000: xadr.bank = 0; break;
-					case 0x4000: xadr.bank = 5; break;
-					case 0x8000: xadr.bank = 2; break;
-					case 0xc000: xadr.bank = 0; break;
-				}
-			}
-			xadr.adr &= 0x3fff;
-			xadr.abs = (xadr.bank << 14) | xadr.adr;
-			name = arr.at(2);
-			switch (xadr.bank) {
-				case 0xff:
-					xadr.type = -1;		// cpu
-					xadr.bank = -1;
-					break;
-				case 0x05:
-					xadr.adr |= 0x4000;
-					break;
-				case 0x02:
-					xadr.adr |= 0x8000;
-					break;
-				default:
-					xadr.adr |= 0xc000;
-					break;
-			}
-			//if (xadr.bank > 0)
-			//	xadr.bank = xadr.abs >> 8;
-			add_label(xadr, name);
-			//
 		}
 	}
 	xlog(XLG_FILE, XLL_INFO, "labels from %s", path.toLocal8Bit().constData());
+	if (isNext && wide)
+		xlog(XLG_FILE, XLL_WARN, "labels: %i offsets past 8K, the file has 16K pages - read as the Next's 8K ones", wide);
 	return 1;
 }
 
@@ -293,7 +335,7 @@ int saveLabels(const char* fn) {
 					xadr = set->list.value(key);
 					if (conf.zx && (conf.zx->hw->id == HW_ZXNEXT)) {
 						if ((xadr.type == MEM_RAM) && (xadr.abs >= 0x40000) && (xadr.abs < 0x200000)) {
-							line = gethexbyte((xadr.abs - 0x40000) >> 13);
+							line = labels_page_str((xadr.abs - 0x40000) >> 13);
 							line.append(QString(":%0 %1\n").arg(gethexword(xadr.abs & 0x1fff), key));
 						} else {
 							int adr = comp_find_xadr(conf.zx, xadr.type, xadr.abs, MEM_VIEW_READ);
@@ -301,7 +343,7 @@ int saveLabels(const char* fn) {
 							line = QString(":%0 %1\n").arg(gethexword(adr), key);
 						}
 					} else {
-						line = (xadr.type == MEM_RAM) ? gethexbyte(xadr.abs >> 14) : "FF";
+						line = (xadr.type == MEM_RAM) ? labels_page_str(xadr.abs >> 14) : "FF";
 						line.append(QString(":%0 %1\n").arg(gethexword(xadr.abs & 0x3fff), key));
 					}
 					file.write(line.toUtf8());

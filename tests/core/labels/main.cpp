@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
 	xAdr odd = find_label("Debug.calc_char");
 	check("8K pages and SRAM base", camera.type == MEM_RAM && camera.abs == 0x48456
 		&& odd.abs == 0x4a039 && find_label("LastRAM").abs == 0x1fffff);
+	check("pages are decimal", find_label("Page17").abs == 0x40000 + 17 * 0x2000 + 0x123);
 	check("adjacent pages stay distinct", find_label("EvenPage").abs == 0x48200
 		&& find_label("OddPage").abs == 0x4a200 && find_label("LastByte").abs + 1 == find_label("NextPage").abs);
 	check("CPU label lookup", camera.adr == 0x8456 && odd.adr == 0xa039
@@ -83,7 +84,8 @@ int main(int argc, char** argv) {
 	QByteArray text = file.readAll();
 	file.close();
 	check("export keeps Next numbering", text.contains("04:0456 Camera.WORLD_X\n")
-		&& text.contains("05:0039 Debug.calc_char\n") && text.contains(":8123 Virtual\n"));
+		&& text.contains("05:0039 Debug.calc_char\n") && text.contains(":8123 Virtual\n")
+		&& text.contains("17:0123 Page17\n") && text.contains("223:1FFF LastRAM\n"));
 	loadLabels(saved.toLocal8Bit().constData());
 	bool same = conf.curlabset->list.size() == before.size();
 	for (auto it = before.begin(); it != before.end(); ++it) {
@@ -91,12 +93,33 @@ int main(int argc, char** argv) {
 		same &= after.type == it.value().type && after.abs == it.value().abs;
 	}
 	check("Next labels round trip", same);
+	// SjASMPlus's own output (sjasm-next.asm says how it was made)
+	check("load SjASMPlus labels", loadLabels(fixtures.filePath("sjasm-next.labels").toLocal8Bit().constData()) == 1);
+	check("SjASMPlus pages", find_label("start").abs == 0x40000 + 4 * 0x2000
+		&& find_label("lowpage").abs == 0x40000 + 10 * 0x2000
+		&& find_label("dot").abs == 0x40000 + 11 * 0x2000
+		&& find_label("p17b").abs == 0x40000 + 17 * 0x2000 + 0x123
+		&& find_label("last").abs == 0x40000 + 223 * 0x2000);
+	check("load SjASMPlus map", loadLabels(fixtures.filePath("sjasm-next.map").toLocal8Bit().constData()) == 1);
+	check("map places by linear address", find_label("P17B").abs == 0x40000 + 17 * 0x2000 + 0x123
+		&& find_label("DOT").abs == 0x40000 + 11 * 0x2000 && find_label("LAST").abs == 0x40000 + 223 * 0x2000
+		&& find_label("START").abs == 0x40000 + 4 * 0x2000);
+	check("map leaves EQU out", find_label("CONST").type < 0 && conf.curlabset->list.size() == 6);
 	compSetHardware(comp, "ZX128");
 	compReset(comp, RES_DEFAULT);
 	loadLabels(fixtures.filePath("legacy.labels").toLocal8Bit().constData());
 	xAdr legacy = find_label("print_score");
 	check("legacy 16K labels stay compatible", legacy.abs == 0x8010 && legacy.adr == 0x8010
 		&& find_label("screen_data").abs == 0x14010 && find_label("level_data").abs == 0x1a00);
+	check("16K pages: decimal, and hex from older Xpeccy+ files",
+		find_label("decimal_bank").abs == ((12 << 14) | 0x20) && find_label("old_hex_bank").abs == ((10 << 14) | 0x10));
+	loadLabels(fixtures.filePath("sjasm-128.labels").toLocal8Bit().constData());
+	check("SjASMPlus 128K labels", find_label("b7").abs == ((7 << 14) | 0x123) && find_label("b7").adr == 0xc123
+		&& find_label("scr").abs == ((5 << 14) | 0x10) && find_label("scr").adr == 0x4010);
+	loadLabels(fixtures.filePath("sjasm-128.map").toLocal8Bit().constData());
+	check("SjASMPlus 128K map", find_label("B7").abs == ((7 << 14) | 0x123) && find_label("SCR").adr == 0x4010
+		&& find_label("CONST").type < 0);
+	loadLabels(fixtures.filePath("legacy.labels").toLocal8Bit().constData());
 	check("legacy label expressions", !eval("print_score").err && eval("print_score").value == 0x8010);
 	while (!conf.labsets.isEmpty()) delLabelSet(conf.labsets.first()->name);
 	compDestroy(comp);

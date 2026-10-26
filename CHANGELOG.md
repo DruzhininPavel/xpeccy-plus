@@ -9,13 +9,19 @@ before that point is upstream's history and is not repeated here.
 
 ## Unreleased
 
+### Added
+
+- **SjASMPlus `CSPECTMAP` files load as labels**, alongside `LABELSLIST`: each label is
+  placed by its physical address, so it lands on the right page on any machine.
+
 ### Fixed
 
 - **Fullscreen on a second monitor** fits the picture to that monitor, including when
   its resolution differs from the main display.
-- **SjASMPlus labels on the Next** use the correct 8K pages in the listing, named
-  breakpoints and watches. CPU watches follow the MMU; RAM and ROM watches read physical
-  memory, even when it is not paged in.
+- **SjASMPlus labels** land on their pages: page numbers are read in decimal, as SjASMPlus
+  writes them, and the Next uses its 8K pages in the listing, named breakpoints and watches.
+  CPU watches follow the MMU; RAM and ROM watches read physical memory, even when it is not
+  paged in. *(thanks to Serdjuk)*
 - **The Next debugger follows paging during an instruction**: the listing and physical
   breakpoints handle divMMC traps and Multiface NMI entry, heat maps count operands in the
   right page, and write breakpoints catch attempts to write to ROM or an unmapped window.
