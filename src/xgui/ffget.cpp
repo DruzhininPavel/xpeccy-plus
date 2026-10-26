@@ -153,7 +153,7 @@ QString xFfGet::offer() {
 #ifdef _WIN32
 	return head + tr("Download a release of the build at "
 		"<a href=\"https://github.com/BtbN/FFmpeg-Builds\">github.com/BtbN/FFmpeg-Builds</a> "
-		"(about 190&nbsp;MB, GPL) into the config folder?") + "<br><br>"
+		"(about 185&nbsp;MB, GPL) into the config folder?") + "<br><br>"
 		+ tr("The latest release is built for the newest graphics drivers: with an older one, the "
 		"card encoders (NVENC, AMF, QSV) may not run. The previous release works with older drivers "
 		"and records just as well.");

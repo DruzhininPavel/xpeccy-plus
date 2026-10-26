@@ -180,11 +180,12 @@ bool ffmpeg_get(QWidget* parent);
 bool next_card_dialog(QWidget* parent, QString* path, bool* own);
 
 // a download (xcore/download.h) followed on a bar and a line, "45 of 190 MB";
-// done(status) once it has ended, whichever way. bar and line may be null
+// done(status) once it has ended, whichever way. bar and line may be null; expect is
+// the size known beforehand, for a server that does not say it
 class xDownload;
 struct dlStatus;
 class QProgressBar;
-void dl_follow(QObject* owner, xDownload* dl, QProgressBar* bar, QLabel* line, std::function<void(const dlStatus&)> done);
+void dl_follow(QObject* owner, xDownload* dl, QProgressBar* bar, QLabel* line, std::function<void(const dlStatus&)> done, qint64 expect = 0);
 
 // a text that shortens in the middle to the width it gets, whole in its tooltip
 class xElideLabel : public QLabel {

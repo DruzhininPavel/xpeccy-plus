@@ -334,7 +334,7 @@ void xNextCard::go() {
 		labLine->clear();
 		dropArchive = true;
 		verify();
-	});
+	}, rel.bytes);	// GitLab makes the archive as it sends it and gives no length
 }
 
 // the archive's own checksum, when one is known: a match settles it. GitLab builds the
