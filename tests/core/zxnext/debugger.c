@@ -307,6 +307,47 @@ int debugger_check(void) {
 		comp->div->brkMap[cell] = 0;
 	}
 	check("divMMC cell breakpoint", ok);
+	// RST 8 has fetched at #0008: the board pages in for the next fetch, at #000B
+	div_out(comp->div, 0xe3, 0x00);		// no conmem: the automapper alone
+	div_m1(comp->div, 0x0100);		// mapcond and automap down
+	div_m1(comp->div, 0x0100);
+	div_m1(comp->div, 0x0008);		// the entry point's own fetch: still the ROM
+	{
+		unsigned char code[] = {0x3e, 0x42};	// LD A,#42 in the board's EEPROM
+		memcpy(comp->div->data + 0x000b, code, sizeof(code));
+		int mapcond = comp->div->mapcond, automap = comp->div->automap, shown = comp->div->shown;
+		unsigned char bytes[4];
+		char text[64];
+		xMnem mn = compDisasm(comp, 0x000b, text, bytes, sizeof(bytes));
+		xAdr fetch = comp_get_xadr(comp, 0x000b, MEM_VIEW_FETCH);
+		xAdr now = comp_get_xadr(comp, 0x000b, MEM_VIEW_READ);
+		ok = (mn.len == 2) && !strcmp(text, "ld a,#42") && (bytes[0] == 0x3e) && (bytes[1] == 0x42);
+		ok &= (fetch.type == MEM_DIV) && (fetch.abs == 0x000b) && (now.type != MEM_DIV);
+		ok &= (comp->div->mapcond == mapcond) && (comp->div->automap == automap) && (comp->div->shown == shown);
+		// with the debugger holding the machine, every view shows the armed paging done
+		comp->flgDBG = 1;
+		ok &= (comp_get_xadr(comp, 0x0100, MEM_VIEW_READ).type == MEM_DIV) && (comp_peek(comp, 0x000c, MEM_VIEW_READ, NULL) == 0x42);
+		ok &= comp_get_xadr(comp, 0x0100, MEM_VIEW_READ | MEM_VIEW_LIVE).type != MEM_DIV;
+		comp->flgDBG = 0;		// breakpoints are not checked while it holds the machine
+		comp->div->brkMap[0x000b] = MEM_BRK_FETCH;
+		comp->flgBRKMEM = comp->flgMAP = 1;
+		comp->flgBRK = 0;
+		comp->cpu->regPC = 0x000b;
+		compExec(comp);		// stops before it runs
+		ok &= comp->flgBRK && (comp->brkt == BRK_MEMDIV) && (comp->brka == 0x000b);
+		comp->div->brkMap[0x000b] = 0;
+		comp->flgBRK = 0;
+		comp->flgBRKMEM = 0;
+		comp->cpu->regA = 0;
+		comp->cpu->regPC = 0x000b;
+		comp->flgDBG = 1;		// a step in the debugger: the machine still reads the live map
+		compExec(comp);
+		ok &= (comp->cpu->regA == 0x42) && (comp->div->brkMap[0x000b] & DBG_VIEW_EXEC);
+		comp->flgMAP = 0;
+		comp->flgDBG = 0;
+		if (!ok) fprintf(stderr, "entry preview: '%s' len %d, fetch %d:%X, A %02X\n", text, mn.len, fetch.type, fetch.abs, comp->cpu->regA);
+	}
+	check("divMMC entry point on the PC row", ok);
 	compDestroy(comp);
 
 	comp = machine();

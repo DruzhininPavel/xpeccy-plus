@@ -247,8 +247,19 @@ int dasmrd(int adr, void* ptr) {
 	return res;
 }
 
+// The listing shows memory as it is now. Only the row at PC is the instruction
+// the CPU will run, with whatever its own fetch pages in (a divMMC trap, the
+// Multiface's NMI entry) - stepping runs exactly that row.
+static bool dasm_is_pc(Computer* comp, int adr) {
+	return (mode == XVIEW_CPU) && ((adr & 0xffff) == cpu_get_pc(comp->cpu));
+}
+
+static int dasm_access(Computer* comp, int adr) {
+	return dasm_is_pc(comp, adr) ? MEM_VIEW_FETCH : MEM_VIEW_READ;
+}
+
 static xMnem dasm_mnem(Computer* comp, int adr, char* buf, QByteArray* bytes = NULL) {
-	if (mode != XVIEW_CPU) {
+	if (!dasm_is_pc(comp, adr)) {
 		xMnem mn = cpuDisasm(comp->cpu, adr, buf, dasmrd, comp);
 		if (bytes) {
 			bytes->resize(mn.len);
@@ -425,7 +436,7 @@ int dasmSome(Computer* comp, int adr, dasmData& drow) {
 	drow.label.clear();
 	drow.bytes.clear();
 	drow.adr = adr;
-	drow.flag = (mode == XVIEW_CPU) ? getBrkView(comp, adr, MEM_VIEW_FETCH) : getBrk(comp, adr);
+	drow.flag = (mode == XVIEW_CPU) ? getBrkView(comp, adr, dasm_access(comp, adr)) : getBrk(comp, adr);
 	drow.oflag = 0;
 	drow.oadr = -1;
 	switch(drow.flag & 0xf0) {
@@ -481,8 +492,8 @@ QList<dasmData> getDisasm(Computer* comp, int& adr) {
 			drow.ispc = ((xadr.type == pct) && (abs == xadr.abs)) ? 1 : 0;
 			break;
 		default:
-			xadr = dasm_xadr(comp, adr, MEM_VIEW_FETCH);
-			drow.flag = getBrkView(comp, xadr.adr, MEM_VIEW_FETCH);
+			xadr = dasm_xadr(comp, adr, dasm_access(comp, adr));
+			drow.flag = getBrkView(comp, xadr.adr, dasm_access(comp, adr));
 			drow.ispc = ((xadr.type == pct) && (abs == xadr.abs)) ? 1 : 0;
 			drow.issel = ((adr >= blockStart) && (adr <= blockEnd)) ? 1 : 0;
 			break;

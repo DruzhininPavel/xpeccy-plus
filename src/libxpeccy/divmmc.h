@@ -101,6 +101,10 @@ void div_snap_clear(DivMMC*);
 
 // an opcode fetch at adr, before its byte is read: 1 when the map changed
 int div_m1(DivMMC*, int adr);
+// ...and for a viewer, before it: what a byte of the instruction fetched at start
+// reads once that fetch has paged (1 the board's byte at *abs, 0 the machine's, -1 as now)
+int div_fetch_view(DivMMC*, int start, int adr, int* abs);
+int div_view_writable(DivMMC*, int adr);	// the CPU can write the board's byte it sees at adr
 // whether a fetch at adr would change anything (the fast paths ask first)
 int div_m1_acts(DivMMC*, int adr);
 // a delayed switch waits for the next fetch

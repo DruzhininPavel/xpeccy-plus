@@ -41,9 +41,10 @@ before that point is upstream's history and is not repeated here.
 - **Debugger edits change the byte that is shown** wherever the machine can write it; ROM,
   divMMC's ROM and its bank 3 under MAPRAM take an edit only with "Allow ROM wr" on.
 
-- **The Next debugger follows paging during an instruction**: the listing and physical
-  breakpoints handle divMMC traps and Multiface NMI entry, heat maps count operands in the
-  right page, and write breakpoints catch attempts to write to ROM or an unmapped window.
+- **The debugger follows paging during an instruction**: once a divMMC entry point has run,
+  on any machine, the listing, dump and MEMMAP show the board paged in, and the PC row and
+  fetch breakpoints see what the Next's Multiface NMI pages in; the Next's heat map counts operands in the right page, and write
+  breakpoints catch attempts to write to ROM or an unmapped window.
 
 ## 2026.8.1 - 2026-10-25
 

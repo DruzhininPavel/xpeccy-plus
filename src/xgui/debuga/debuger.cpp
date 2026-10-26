@@ -2179,9 +2179,16 @@ void DebugWin::fillMem() {
 		}
 		pg = comp->mem->map[i << 6];
 		page = pg.num >> 6;
-		// a divMMC's window: the 8K bank of its SRAM at #2000
-		if (pg.type == MEM_DIV)
-			page = (((comp->mem->map[0x20].num << 8) - DIV_EE_SIZE) >> 13) & 0xff;
+		// as the debugger shows memory: a divMMC paging the last fetch armed is in
+		xAdr seen = comp_get_xadr(comp, i << 14, MEM_VIEW_READ);
+		if (seen.type == MEM_DIV) {
+			// a divMMC's window: the 8K bank of its SRAM at #2000
+			pg.type = MEM_DIV;
+			page = comp_cell(comp, MEM_DIV, comp_get_xadr(comp, 0x2000, MEM_VIEW_READ).abs).page & 0xff;
+		} else if (pg.type == MEM_DIV) {		// ...or out: the machine's own page under it
+			pg.type = seen.type;
+			page = (seen.abs >> 14) & 0xff;
+		}
 		// the machine pages whenever it likes and says nothing: a bank stays
 		// marked as forced only while the value put there is still in the map
 		if (mmapForced[i] != ((pg.type << 16) | page)) mmapForced[i] = -1;

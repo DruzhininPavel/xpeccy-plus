@@ -737,7 +737,11 @@ enum {
 	MEM_VIEW_READ = 0,
 	MEM_VIEW_WRITE = 1,
 	MEM_VIEW_FETCH = 2,
-	MEM_VIEW_ROM_WRITE = 4
+	MEM_VIEW_ROM_WRITE = 4,
+	// the map as it stands, for the machine's own accesses. Without it, while the
+	// debugger holds the machine, a divMMC paging armed by the last fetch is shown
+	// as done: the next fetch, wherever it is, does it (8 is the Next's own)
+	MEM_VIEW_LIVE = 16
 };
 
 // Physical memory by the names people use for it (labels, breakpoints, MEMMAP):
