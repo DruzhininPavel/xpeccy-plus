@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Menu bar"
-msgstr "Menu bar"
+msgstr "Barra de menús"
 
 msgid "Menu"
 msgstr "Menú"
@@ -108,7 +108,7 @@ msgstr ""
 "Un comando que tiene tecla la muestra en el menú. Las teclas se fijan en "
 "la página **Hotkeys** de **Options**. En pantalla completa la barra de "
 "menús está oculta hasta que el puntero se queda en el borde superior de "
-"la pantalla (consulta [Fullscreen](main-window.md#fullscreen))."
+"la pantalla (consulta [Pantalla completa](main-window.md#fullscreen))."
 
 msgid "Each menu has a page of its own, in the order of the menu bar:"
 msgstr "Cada menú tiene una página propia, en el orden de la barra de menús:"

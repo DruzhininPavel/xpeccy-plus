@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "CPU panel"
-msgstr "CPU panel"
+msgstr "Панель CPU"
 
 msgid "![The CPU panel](images/dbg-cpu.png)"
 msgstr "![Панель CPU](images/dbg-cpu.png)"
@@ -51,7 +51,7 @@ msgstr ""
 "підсвічується лише половина A регістра AF."
 
 msgid "Changing registers"
-msgstr "Changing registers"
+msgstr "Зміна регістрів"
 
 msgid ""
 "Click a value and type over it in hex. The change takes effect at once. "
@@ -84,7 +84,7 @@ msgstr ""
 " панелі **DUMP**."
 
 msgid "Layouts"
-msgstr "Layouts"
+msgstr "Компонування"
 
 msgid ""
 "Right-click the panel's title bar to choose how the registers are laid "

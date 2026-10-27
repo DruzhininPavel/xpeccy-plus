@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Tape panel"
-msgstr "Tape panel"
+msgstr "Panel Tape"
 
 msgid "![The Tape panel](images/dbg-tape.png)"
 msgstr "![El panel Tape](images/dbg-tape.png)"
@@ -91,7 +91,7 @@ msgid ""
 msgstr ""
 "Úsalo mientras avanzas paso a paso por un cargador, para ver qué pulso "
 "está leyendo y qué viene después. La cinta en sí se maneja desde el "
-"**Tape Player** (consulta [Tapes](tapes.md))."
+"**Tape Player** (consulta [Cintas](tapes.md))."
 
 msgid "tape signal"
 msgstr "señal de la cinta"

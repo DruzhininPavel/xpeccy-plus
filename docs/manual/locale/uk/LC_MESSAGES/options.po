@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Options"
-msgstr "Options"
+msgstr "Опції"
 
 msgid ""
 "**File > Options...** opens the settings. The pages are listed on the "

@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Toolbar"
-msgstr "Toolbar"
+msgstr "Панель інструментів"
 
 #, python-brace-format
 msgid ""
@@ -97,7 +97,7 @@ msgstr ""
 "миші над зображенням теж змінює гучність."
 
 msgid "The buttons"
-msgstr "The buttons"
+msgstr "Кнопки"
 
 msgid ""
 "**Buttons** in the toolbar's right-click menu lists every command that "
@@ -115,7 +115,7 @@ msgid "Buttons"
 msgstr "Кнопки"
 
 msgid "[File menu](files.md), [Favorites menu](favorites.md)"
-msgstr "[File menu](files.md), [Favorites menu](favorites.md)"
+msgstr "[Меню File](files.md), [Меню Favorites](favorites.md)"
 
 msgid ""
 "**Open...**, **Favorites**, **Reload**, **Save...**, **Save Changed "
@@ -125,7 +125,7 @@ msgstr ""
 "Disks**, **Options...**"
 
 msgid "[Capture menu](capture.md)"
-msgstr "[Capture menu](capture.md)"
+msgstr "[Меню Capture](capture.md)"
 
 msgid ""
 "**Screenshot**, **Record Video**, **Record Sound to WAV...**, "
@@ -135,19 +135,19 @@ msgstr ""
 "**Record...** (RZX), **RZX Player**"
 
 msgid "[Machine menu](machines.md)"
-msgstr "[Machine menu](machines.md)"
+msgstr "[Меню Machine](machines.md)"
 
 msgid "**Model**, **Reset**, **NMI**, **Turbo Mode**"
 msgstr "**Model**, **Reset**, **NMI**, **Turbo Mode**"
 
 msgid "[Speed and time](time.md)"
-msgstr "[Speed and time](time.md)"
+msgstr "[Швидкість і час](time.md)"
 
 msgid "**Pause**, **Fast Mode**, **Fast Forward**, **Slow Motion**, **Rewind**"
 msgstr "**Pause**, **Fast Mode**, **Fast Forward**, **Slow Motion**, **Rewind**"
 
 msgid "[Media menu](media.md)"
-msgstr "[Media menu](media.md)"
+msgstr "[Меню Media](media.md)"
 
 msgid ""
 "**Tape Play/Stop**, **Tape Record/Stop**, **Tape Player**, **Disk "
@@ -157,7 +157,7 @@ msgstr ""
 "Manager**, **Cartridge**, **divMMC**, **SD Card**, **Drives**"
 
 msgid "[View menu](view.md)"
-msgstr "[View menu](view.md)"
+msgstr "[Меню View](view.md)"
 
 msgid ""
 "**Fullscreen**, **Keep Aspect Ratio in Fullscreen**, **Size**, "
@@ -167,13 +167,13 @@ msgstr ""
 "**Shaders**, **ZX Palette**, **Virtual Keyboard**"
 
 msgid "[Input menu](input.md)"
-msgstr "[Input menu](input.md)"
+msgstr "[Меню Input](input.md)"
 
 msgid "**Grab Keyboard**, **Grab Mouse**, **Keymap**, **Gamepads**"
 msgstr "**Grab Keyboard**, **Grab Mouse**, **Keymap**, **Gamepads**"
 
 msgid "[Tools menu](tools.md)"
-msgstr "[Tools menu](tools.md)"
+msgstr "[Меню Tools](tools.md)"
 
 msgid "**Cheats...**, **Debugger**, **Screen**, **Sound Chips**"
 msgstr "**Cheats...**, **Debugger**, **Screen**, **Sound Chips**"
@@ -204,7 +204,7 @@ msgid ""
 msgstr ""
 "**Rewind** не має пункту меню: перемотування триває, поки кнопку або її "
 "клавішу утримують. Кнопки часу працюють так само, як їхні клавіші; див. "
-"[How the keys work](time.md#how-the-keys-work)."
+"[Як працюють клавіші](time.md#how-the-keys-work)."
 
 msgid "toolbar"
 msgstr "панель інструментів"

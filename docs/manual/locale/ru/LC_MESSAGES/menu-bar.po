@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Menu bar"
-msgstr "Menu bar"
+msgstr "Строка меню"
 
 msgid "Menu"
 msgstr "Меню"
@@ -106,7 +106,7 @@ msgstr ""
 "Команда, у которой есть клавиша, показывает её в меню. Клавиши задаются "
 "на странице **Hotkeys** окна **Options**. В полноэкранном режиме строка "
 "меню скрыта, пока указатель не задержится у верхнего края экрана (см. "
-"[Fullscreen](main-window.md#fullscreen))."
+"[Полноэкранный режим](main-window.md#fullscreen))."
 
 msgid "Each menu has a page of its own, in the order of the menu bar:"
 msgstr "У каждого меню своя страница, в порядке строки меню:"

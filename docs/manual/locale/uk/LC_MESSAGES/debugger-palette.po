@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Palette panel"
-msgstr "Palette panel"
+msgstr "Панель Palette"
 
 msgid "![The Palette panel](images/dbg-palette.png)"
 msgstr "![Панель Palette](images/dbg-palette.png)"
@@ -56,7 +56,7 @@ msgid ""
 "](debugger-zx-evo.md#the-palette-tab))."
 msgstr ""
 "На ZX Evolution цієї панелі немає: кольори показує вкладка **Palette** "
-"панелі **ZX Evo** (див. [The Palette tab](debugger-zx-evo.md#the-palette-"
+"панелі **ZX Evo** (див. [Вкладка Palette](debugger-zx-evo.md#the-palette-"
 "tab))."
 
 msgid ""

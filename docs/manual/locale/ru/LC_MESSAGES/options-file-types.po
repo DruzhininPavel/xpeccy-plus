@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "File types page"
-msgstr "File types page"
+msgstr "Раздел File types"
 
 msgid "![The File types page](images/options-filetypes.png)"
 msgstr "![Страница File types](images/options-filetypes.png)"
@@ -44,7 +44,7 @@ msgid ""
 "**Options** sets this for each format."
 msgstr ""
 "Что нужно файлу и на какую машину он переключает, объяснено в разделе "
-"[Run a program](getting-started.md#run-a-program). Страница **File "
+"[Запуск программы](getting-started.md#run-a-program). Страница **File "
 "types** окна **Options** задаёт это для каждого формата."
 
 msgid "The **General** group at the top of the page:"

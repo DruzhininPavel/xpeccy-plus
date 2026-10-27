@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "ZX Evo panel"
-msgstr "ZX Evo panel"
+msgstr "Panel ZX Evo"
 
 msgid "![The ZX Evo panel in its own window, on TSConf](images/dbg-evo-regs.png)"
 msgstr ""
@@ -120,7 +120,7 @@ msgstr ""
 "próxima vez."
 
 msgid "The Registers tab"
-msgstr "The Registers tab"
+msgstr "La pestaña Registers"
 
 msgid ""
 "The **Registers** tab lists the TSConf registers, the ones a program sets"
@@ -182,7 +182,7 @@ msgid ""
 msgstr ""
 "**FMAddr** en el grupo **Memory** indica dónde empiezan las tres partes "
 "de la ventana FMAPS: CRAM, SFILE y los registros. El volcado marca los "
-"mismos bytes: consulta [The FMAPS window on TSConf](debugger-memory.md"
+"mismos bytes: consulta [La ventana FMAPS en TSConf](debugger-memory.md"
 "#the-fmaps-window-on-tsconf)."
 
 msgid ""
@@ -190,10 +190,10 @@ msgid ""
 "DMA tab](#the-dma-tab)."
 msgstr ""
 "El grupo **DMA** es el mismo que hay arriba en la pestaña **DMA**: "
-"consulta [The DMA tab](#the-dma-tab)."
+"consulta [La pestaña DMA](#the-dma-tab)."
 
 msgid "Hiding layers"
-msgstr "Hiding layers"
+msgstr "Ocultar capas"
 
 msgid ""
 "TSConf builds its picture from six layers. The switches in the **Show** "
@@ -303,7 +303,7 @@ msgstr ""
 "el Debugger, hasta que las vuelvas a marcar."
 
 msgid "The Sprites tab"
-msgstr "The Sprites tab"
+msgstr "La pestaña Sprites"
 
 msgid "![The Sprites tab](images/dbg-evo-sprites.png)"
 msgstr "![La pestaña Sprites](images/dbg-evo-sprites.png)"
@@ -385,7 +385,7 @@ msgstr ""
 "sprite para cambiar cuánto espacio tiene cada uno."
 
 msgid "The Tiles tab"
-msgstr "The Tiles tab"
+msgstr "La pestaña Tiles"
 
 msgid "![The Tiles tab](images/dbg-evo-tiles.png)"
 msgstr "![La pestaña Tiles](images/dbg-evo-tiles.png)"
@@ -512,7 +512,7 @@ msgstr ""
 "hexadecimal."
 
 msgid "The Palette tab"
-msgstr "The Palette tab"
+msgstr "La pestaña Palette"
 
 msgid ""
 "On TSConf the **Palette** tab shows the 256 colors of the palette memory,"
@@ -602,7 +602,7 @@ msgstr ""
 "partir de 24."
 
 msgid "The DMA tab"
-msgstr "The DMA tab"
+msgstr "La pestaña DMA"
 
 msgid ""
 "The **DMA** tab shows the DMA of TSConf, which copies memory and fills it"
@@ -711,7 +711,7 @@ msgstr ""
 "fotograma, y cuánto tarda."
 
 msgid "The Ports tab"
-msgstr "The Ports tab"
+msgstr "La pestaña Ports"
 
 msgid ""
 "On BaseConf the **Ports** tab shows the ports that set the memory and the"
@@ -751,7 +751,7 @@ msgstr ""
 "`4F`, `6F` y `8F`."
 
 msgid "The ZX Evolution window"
-msgstr "The ZX Evolution window"
+msgstr "La ventana ZX Evolution"
 
 #, python-brace-format
 msgid ""

@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Toolbar"
-msgstr "Toolbar"
+msgstr "Barra de herramientas"
 
 #, python-brace-format
 msgid ""
@@ -95,7 +95,7 @@ msgstr ""
 " la rueda del ratón sobre la imagen también cambia el volumen."
 
 msgid "The buttons"
-msgstr "The buttons"
+msgstr "Los botones"
 
 msgid ""
 "**Buttons** in the toolbar's right-click menu lists every command that "
@@ -113,7 +113,7 @@ msgid "Buttons"
 msgstr "Botones"
 
 msgid "[File menu](files.md), [Favorites menu](favorites.md)"
-msgstr "[File menu](files.md), [Favorites menu](favorites.md)"
+msgstr "[Menú File](files.md), [Menú Favorites](favorites.md)"
 
 msgid ""
 "**Open...**, **Favorites**, **Reload**, **Save...**, **Save Changed "
@@ -123,7 +123,7 @@ msgstr ""
 "Disks**, **Options...**"
 
 msgid "[Capture menu](capture.md)"
-msgstr "[Capture menu](capture.md)"
+msgstr "[Menú Capture](capture.md)"
 
 msgid ""
 "**Screenshot**, **Record Video**, **Record Sound to WAV...**, "
@@ -133,19 +133,19 @@ msgstr ""
 "**Record...** (RZX), **RZX Player**"
 
 msgid "[Machine menu](machines.md)"
-msgstr "[Machine menu](machines.md)"
+msgstr "[Menú Machine](machines.md)"
 
 msgid "**Model**, **Reset**, **NMI**, **Turbo Mode**"
 msgstr "**Model**, **Reset**, **NMI**, **Turbo Mode**"
 
 msgid "[Speed and time](time.md)"
-msgstr "[Speed and time](time.md)"
+msgstr "[Velocidad y tiempo](time.md)"
 
 msgid "**Pause**, **Fast Mode**, **Fast Forward**, **Slow Motion**, **Rewind**"
 msgstr "**Pause**, **Fast Mode**, **Fast Forward**, **Slow Motion**, **Rewind**"
 
 msgid "[Media menu](media.md)"
-msgstr "[Media menu](media.md)"
+msgstr "[Menú Media](media.md)"
 
 msgid ""
 "**Tape Play/Stop**, **Tape Record/Stop**, **Tape Player**, **Disk "
@@ -155,7 +155,7 @@ msgstr ""
 "Manager**, **Cartridge**, **divMMC**, **SD Card**, **Drives**"
 
 msgid "[View menu](view.md)"
-msgstr "[View menu](view.md)"
+msgstr "[Menú View](view.md)"
 
 msgid ""
 "**Fullscreen**, **Keep Aspect Ratio in Fullscreen**, **Size**, "
@@ -165,13 +165,13 @@ msgstr ""
 "**Shaders**, **ZX Palette**, **Virtual Keyboard**"
 
 msgid "[Input menu](input.md)"
-msgstr "[Input menu](input.md)"
+msgstr "[Menú Input](input.md)"
 
 msgid "**Grab Keyboard**, **Grab Mouse**, **Keymap**, **Gamepads**"
 msgstr "**Grab Keyboard**, **Grab Mouse**, **Keymap**, **Gamepads**"
 
 msgid "[Tools menu](tools.md)"
-msgstr "[Tools menu](tools.md)"
+msgstr "[Menú Tools](tools.md)"
 
 msgid "**Cheats...**, **Debugger**, **Screen**, **Sound Chips**"
 msgstr "**Cheats...**, **Debugger**, **Screen**, **Sound Chips**"
@@ -202,7 +202,7 @@ msgid ""
 msgstr ""
 "**Rewind** no tiene elemento de menú: funciona mientras se mantiene "
 "pulsado el botón o su tecla. Los botones de tiempo funcionan como sus "
-"teclas; consulta [How the keys work](time.md#how-the-keys-work)."
+"teclas; consulta [Cómo funcionan las teclas](time.md#how-the-keys-work)."
 
 msgid "toolbar"
 msgstr "barra de herramientas"

@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Tapes"
-msgstr "Tapes"
+msgstr "Cintas"
 
 msgid ""
 "The machine has a tape recorder: it plays a tape image into the machine's"
@@ -32,7 +32,7 @@ msgstr ""
 "cintas `.tap`, `.tzx` y `.wav`, y guarda `.tap` y `.wav`."
 
 msgid "Putting a tape in"
-msgstr "Putting a tape in"
+msgstr "Poner una cinta"
 
 msgid ""
 "Open a tape like any other file: **File > Open...**, a drop onto the "
@@ -42,8 +42,8 @@ msgid ""
 msgstr ""
 "Abre una cinta como cualquier otro archivo: **File > Open...**, "
 "soltándola sobre la ventana, **Recent** o **Favorites**. Run reinicia la "
-"máquina y carga la cinta; Mount solo la pone (consulta [Run a program"
-"](getting-started.md#run-a-program))."
+"máquina y carga la cinta; Mount solo la pone (consulta [Ejecutar un "
+"programa](getting-started.md#run-a-program))."
 
 #, python-brace-format
 msgid ""
@@ -56,7 +56,7 @@ msgstr ""
 "por ella."
 
 msgid "The Tape Player"
-msgstr "The Tape Player"
+msgstr "La ventana Tape Player"
 
 msgid "![The Tape Player](images/tape-player.png)"
 msgstr "![El Tape Player](images/tape-player.png)"
@@ -86,16 +86,16 @@ msgid ""
 "{icon}`save_all` **Save the tape to a file** - see [Saving a "
 "tape](#saving-a-tape);"
 msgstr ""
-"{icon}`save_all` **Save the tape to a file** — consulta [Saving a "
-"tape](#saving-a-tape);"
+"{icon}`save_all` **Save the tape to a file** — consulta [Guardar una "
+"cinta](#saving-a-tape);"
 
 #, python-brace-format
 msgid ""
 "{icon}`wav` **Export the tape as a WAV recording** - see [Export to WAV"
 "](#export-to-wav);"
 msgstr ""
-"{icon}`wav` **Export the tape as a WAV recording** — consulta [Export to "
-"WAV](#export-to-wav);"
+"{icon}`wav` **Export the tape as a WAV recording** — consulta [Exportar a"
+" WAV](#export-to-wav);"
 
 #, python-format
 msgid ""
@@ -145,7 +145,7 @@ msgstr ""
 "guardó."
 
 msgid "The block list"
-msgstr "The block list"
+msgstr "La lista de bloques"
 
 msgid "Each row is one block of the tape:"
 msgstr "Cada fila es un bloque de la cinta:"
@@ -228,7 +228,7 @@ msgid ""
 "to-a-disk);"
 msgstr ""
 "{icon}`floppy` **Copy the block to a disk as a TR-DOS file** — abre un "
-"menú de las unidades, consulta [Copying a block to a disk](#copying-a"
+"menú de las unidades, consulta [Copiar un bloque a un disco](#copying-a"
 "-block-to-a-disk);"
 
 #, python-brace-format
@@ -244,7 +244,7 @@ msgid "{icon}`cancel` **Delete the block**."
 msgstr "{icon}`cancel` **Delete the block**."
 
 msgid "Playing"
-msgstr "Playing"
+msgstr "Reproducción"
 
 #, python-brace-format
 msgid ""
@@ -354,7 +354,7 @@ msgstr ""
 "carga con ella, desactiva **Edge detection**."
 
 msgid "Recording"
-msgstr "Recording"
+msgstr "Grabación"
 
 #, python-brace-format
 msgid ""
@@ -377,7 +377,7 @@ msgstr ""
 "la ROM no necesita grabación: sus bloques van a la cinta al instante."
 
 msgid "Saving a tape"
-msgstr "Saving a tape"
+msgstr "Guardar una cinta"
 
 #, python-brace-format
 msgid ""
@@ -412,7 +412,7 @@ msgstr ""
 "game.tap has been changed. Do you want to save it?**"
 
 msgid "WAV files"
-msgstr "WAV files"
+msgstr "Archivos WAV"
 
 msgid ""
 "A `.wav` file opens as a tape. Standard blocks in it are decoded into "
@@ -429,7 +429,7 @@ msgstr ""
 " 192000 Hz."
 
 msgid "Export to WAV"
-msgstr "Export to WAV"
+msgstr "Exportar a WAV"
 
 #, python-brace-format
 msgid ""
@@ -472,7 +472,7 @@ msgstr ""
 " usa."
 
 msgid "Copying a block to a disk"
-msgstr "Copying a block to a disk"
+msgstr "Copiar un bloque a un disco"
 
 #, python-brace-format
 msgid ""
@@ -511,7 +511,7 @@ msgstr ""
 " Manager** (consulta [Disk Manager](disks.md#disk-manager))."
 
 msgid "The tape in the status bar"
-msgstr "The tape in the status bar"
+msgstr "La cinta en la barra de estado"
 
 #, python-brace-format
 msgid ""
@@ -523,9 +523,9 @@ msgid ""
 msgstr ""
 "La barra de estado muestra la luz {icon}`tapeGreen` de la cinta, el "
 "bloque que se reproduce y cuánto ha avanzado la cinta en él, con los "
-"comandos del magnetófono en el clic derecho: consulta [Status bar](main-"
-"window.md#status-bar). La luz sigue ahí sin cinta, atenuada, y un clic "
-"sobre ella abre el **Tape Player**."
+"comandos del magnetófono en el clic derecho: consulta [Barra de estado"
+"](main-window.md#status-bar). La luz sigue ahí sin cinta, atenuada, y un "
+"clic sobre ella abre el **Tape Player**."
 
 msgid ""
 "With the status bar hidden, a light over the picture blinks while the "

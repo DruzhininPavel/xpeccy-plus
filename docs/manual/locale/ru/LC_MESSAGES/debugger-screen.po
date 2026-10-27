@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Screen panel"
-msgstr "Screen panel"
+msgstr "Панель Screen"
 
 msgid "![The Screen panel](images/dbg-screen.png)"
 msgstr "![Панель Screen](images/dbg-screen.png)"
@@ -74,7 +74,7 @@ msgstr ""
 "выглядел бы экран ZX в этом месте памяти."
 
 msgid "Which screen"
-msgstr "Which screen"
+msgstr "Какой экран"
 
 msgid "Button"
 msgstr "Кнопка"
@@ -149,7 +149,7 @@ msgstr ""
 "экран."
 
 msgid "How it is drawn"
-msgstr "How it is drawn"
+msgstr "Как рисуется"
 
 msgid "Setting"
 msgstr "Настройка"
@@ -202,7 +202,7 @@ msgid "dims every other 8 x 8 cell, so the character cells can be counted"
 msgstr "затемняет каждое второе знакоместо 8 x 8, чтобы их можно было сосчитать"
 
 msgid "Finding a dot"
-msgstr "Finding a dot"
+msgstr "Поиск точки"
 
 msgid "Move the mouse over the picture. The readout shows:"
 msgstr "Наведите мышь на изображение. Показания:"
@@ -282,10 +282,10 @@ msgstr ""
 "мышью."
 
 msgid "Examples"
-msgstr "Examples"
+msgstr "Примеры"
 
 msgid "See which screen a 128K program draws to"
-msgstr "See which screen a 128K program draws to"
+msgstr "Посмотреть, на какой экран рисует программа для 128K"
 
 msgid ""
 "A 128K has two screens, in RAM pages 5 and 7. Many programs draw on the "
@@ -330,7 +330,7 @@ msgid "Both screens of a 128K"
 msgstr "Оба экрана 128K"
 
 msgid "Find the bytes behind a spot on the screen"
-msgstr "Find the bytes behind a spot on the screen"
+msgstr "Найти байты, стоящие за местом на экране"
 
 msgid "Open the Debugger and click the **Screen** tab."
 msgstr "Откройте Debugger и щёлкните вкладку **Screen**."
@@ -358,10 +358,10 @@ msgid ""
 " stop the machine when the program draws there (see [Breakpoints panel"
 "](debugger-breakpoints.md))."
 msgstr ""
-"Зная адрес, посмотрите этот байт на панели **DUMP** (см. [DUMP panel"
+"Зная адрес, посмотрите этот байт на панели **DUMP** (см. [Панель DUMP"
 "](debugger-memory.md)) или поставьте на него точку останова **Write**, "
-"чтобы машина остановилась, когда программа рисует там (см. [Breakpoints "
-"panel](debugger-breakpoints.md))."
+"чтобы машина остановилась, когда программа рисует там (см. [Панель "
+"Breakpoints](debugger-breakpoints.md))."
 
 msgid "shadow screen"
 msgstr "теневой экран"

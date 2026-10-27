@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Xpeccy+ Manual"
-msgstr "Xpeccy+ Manual"
+msgstr "Посібник Xpeccy+"
 
 msgid ""
 "Xpeccy+ is an emulator of the ZX Spectrum and its clones, with a debugger"

@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Sound page"
-msgstr "Sound page"
+msgstr "Розділ Sound"
 
 msgid "![The Sound page](images/options-sound.png)"
 msgstr "![Сторінка Sound](images/options-sound.png)"
@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Звук іде від власних звукових пристроїв машини — біпера, стрічки та тих "
 "звукових чипів і карт, що вона має. Які пристрої має машина, задають на "
-"сторінці **Machine** вікна **Options** (див. [Sound devices](options-"
+"сторінці **Machine** вікна **Options** (див. [Звукові пристрої](options-"
 "machine.md#sound-devices)); як звук відтворюється і наскільки гучно "
 "звучить кожен пристрій — на сторінці **Sound**."
 
@@ -161,7 +161,7 @@ msgid "The **Sound** page is the same for every machine."
 msgstr "Сторінка **Sound** однакова для всіх машин."
 
 msgid "Beeper"
-msgstr "Beeper"
+msgstr "Біпер"
 
 msgid ""
 "The beeper is the machine's own speaker, and every machine has it. Its "
@@ -179,14 +179,14 @@ msgstr ""
 "#advanced-settings))."
 
 msgid "Recording the sound"
-msgstr "Recording the sound"
+msgstr "Запис звуку"
 
 msgid ""
 "**Capture > Record Sound to WAV...** writes what you hear to a file; see "
 "[Capture menu](capture.md)."
 msgstr ""
 "**Capture > Record Sound to WAV...** записує те, що ви чуєте, у файл; "
-"див. [Capture menu](capture.md)."
+"див. [Меню Capture](capture.md)."
 
 msgid "sound"
 msgstr "звук"

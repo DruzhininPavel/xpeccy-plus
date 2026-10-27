@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Tools menu"
-msgstr "Tools menu"
+msgstr "Menú Tools"
 
 msgid ""
 "The **Tools** menu holds the windows for looking into the machine and "
@@ -45,7 +45,7 @@ msgid ""
 " see [Debugger](debugger.md)."
 msgstr ""
 "{icon}`bug` **Debugger** — detiene la máquina y muestra lo que hay "
-"dentro; consulta [Debugger](debugger.md)."
+"dentro; consulta [Depurador](debugger.md)."
 
 #, python-brace-format
 msgid ""
@@ -53,7 +53,7 @@ msgid ""
 "machine runs; see [Watcher](debugger-watcher.md)."
 msgstr ""
 "{icon}`objective` **Watcher** — registros y memoria, seguidos mientras la"
-" máquina funciona; consulta [Watcher](debugger-watcher.md)."
+" máquina funciona; consulta [Ventana Watcher](debugger-watcher.md)."
 
 #, python-brace-format
 msgid ""
@@ -64,7 +64,7 @@ msgstr ""
 "del Debugger en ventanas propias, descritos más abajo."
 
 msgid "Screen and Sound Chips windows"
-msgstr "Screen and Sound Chips windows"
+msgstr "Ventanas Screen y Sound Chips"
 
 msgid "![The Screen window](images/dbg-screen-window.png)"
 msgstr "![La ventana Screen](images/dbg-screen-window.png)"

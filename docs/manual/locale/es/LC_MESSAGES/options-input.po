@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Input page"
-msgstr "Input page"
+msgstr "Sección Input"
 
 msgid "![The Input page](images/options-input.png)"
 msgstr "![La página Input](images/options-input.png)"
@@ -35,5 +35,5 @@ msgid ""
 msgstr ""
 "El mapa de teclado; los mandos de **Player 1** y **Player 2**, con el "
 "botón **Gamepads...** que abre su ventana; y **Game bindings**. Consulta "
-"[Input menu](input.md)."
+"[Menú Input](input.md)."
 

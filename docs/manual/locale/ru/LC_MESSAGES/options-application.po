@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Application page"
-msgstr "Application page"
+msgstr "Раздел Application"
 
 msgid "![The Application page](images/options-application.png)"
 msgstr "![Страница Application](images/options-application.png)"
@@ -51,7 +51,7 @@ msgstr ""
 
 #, python-brace-format
 msgid "{icon}`star` **Manage favorites...** - see [Favorites menu](favorites.md)."
-msgstr "{icon}`star` **Manage favorites...** — см. [Favorites menu](favorites.md)."
+msgstr "{icon}`star` **Manage favorites...** — см. [Меню Favorites](favorites.md)."
 
 #, python-brace-format
 msgid ""
@@ -108,9 +108,9 @@ msgid ""
 "command line, the question is skipped (see [Command line](command-"
 "line.md))."
 msgstr ""
-"При первом запуске программа спрашивает (см. [The first start](getting-"
+"При первом запуске программа спрашивает (см. [Первый запуск](getting-"
 "started.md#the-first-start)). Когда в командной строке указаны машина или"
-" файл, вопрос пропускается (см. [Command line](command-line.md))."
+" файл, вопрос пропускается (см. [Командная строка](command-line.md))."
 
 msgid "Listen port"
 msgstr "Listen port"

@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Right-click menu"
-msgstr "Right-click menu"
+msgstr "Menú del clic derecho"
 
 msgid "![The menu over the picture](images/menu-picture.png)"
 msgstr "![El menú sobre la imagen](images/menu-picture.png)"
@@ -62,7 +62,7 @@ msgid "{icon}`fileopen` **Open...**, {icon}`star` **Favorites**"
 msgstr "{icon}`fileopen` **Open...**, {icon}`star` **Favorites**"
 
 msgid "[File menu](files.md), [Favorites menu](favorites.md)"
-msgstr "[File menu](files.md), [Favorites menu](favorites.md)"
+msgstr "[Menú File](files.md), [Menú Favorites](favorites.md)"
 
 #, python-brace-format
 msgid ""
@@ -73,21 +73,21 @@ msgstr ""
 "{icon}`shutdown` **Reset**"
 
 msgid "[Machine menu](machines.md)"
-msgstr "[Machine menu](machines.md)"
+msgstr "[Menú Machine](machines.md)"
 
 #, python-brace-format
 msgid "{icon}`vkeys` **Keymap**"
 msgstr "{icon}`vkeys` **Keymap**"
 
 msgid "[Input menu](input.md)"
-msgstr "[Input menu](input.md)"
+msgstr "[Menú Input](input.md)"
 
 #, python-brace-format
 msgid "{icon}`crt` **Shaders**, {icon}`palette` **ZX Palette**"
 msgstr "{icon}`crt` **Shaders**, {icon}`palette` **ZX Palette**"
 
 msgid "[View menu](view.md)"
-msgstr "[View menu](view.md)"
+msgstr "[Menú View](view.md)"
 
 #, python-brace-format
 msgid ""
@@ -100,14 +100,14 @@ msgstr ""
 "{icon}`tape` **Tape Player**"
 
 msgid "[Media menu](media.md)"
-msgstr "[Media menu](media.md)"
+msgstr "[Menú Media](media.md)"
 
 #, python-brace-format
 msgid "{icon}`video` **RZX Player**"
 msgstr "{icon}`video` **RZX Player**"
 
 msgid "[Capture menu](capture.md)"
-msgstr "[Capture menu](capture.md)"
+msgstr "[Menú Capture](capture.md)"
 
 #, python-brace-format
 msgid "**Grab Keyboard**, {icon}`gamepad` **Gamepads**"
@@ -122,14 +122,14 @@ msgid "{icon}`bug` **Tools**"
 msgstr "{icon}`bug` **Tools**"
 
 msgid "[Tools menu](tools.md)"
-msgstr "[Tools menu](tools.md)"
+msgstr "[Menú Tools](tools.md)"
 
 #, python-brace-format
 msgid "{icon}`other` **Options...**"
 msgstr "{icon}`other` **Options...**"
 
 msgid "[Options](options.md)"
-msgstr "[Options](options.md)"
+msgstr "[Opciones](options.md)"
 
 msgid ""
 "A menu that has nothing for the running machine is not shown: **Disk "

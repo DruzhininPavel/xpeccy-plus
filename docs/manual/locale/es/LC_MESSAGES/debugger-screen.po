@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Screen panel"
-msgstr "Screen panel"
+msgstr "Panel Screen"
 
 msgid "![The Screen panel](images/dbg-screen.png)"
 msgstr "![El panel Screen](images/dbg-screen.png)"
@@ -76,7 +76,7 @@ msgstr ""
 "lugar de la memoria."
 
 msgid "Which screen"
-msgstr "Which screen"
+msgstr "Qué pantalla"
 
 msgid "Button"
 msgstr "Botón"
@@ -153,7 +153,7 @@ msgstr ""
 "la pantalla más tarde."
 
 msgid "How it is drawn"
-msgstr "How it is drawn"
+msgstr "Cómo se dibuja"
 
 msgid "Setting"
 msgstr "Ajuste"
@@ -208,7 +208,7 @@ msgstr ""
 " carácter"
 
 msgid "Finding a dot"
-msgstr "Finding a dot"
+msgstr "Encontrar un punto"
 
 msgid "Move the mouse over the picture. The readout shows:"
 msgstr "Mueve el ratón sobre la imagen. La lectura muestra:"
@@ -289,10 +289,10 @@ msgstr ""
 "otra vez al ratón."
 
 msgid "Examples"
-msgstr "Examples"
+msgstr "Ejemplos"
 
 msgid "See which screen a 128K program draws to"
-msgstr "See which screen a 128K program draws to"
+msgstr "Ver en qué pantalla dibuja un programa de 128K"
 
 msgid ""
 "A 128K has two screens, in RAM pages 5 and 7. Many programs draw on the "
@@ -339,7 +339,7 @@ msgid "Both screens of a 128K"
 msgstr "Las dos pantallas de un 128K"
 
 msgid "Find the bytes behind a spot on the screen"
-msgstr "Find the bytes behind a spot on the screen"
+msgstr "Encontrar los bytes que hay detrás de un punto de la pantalla"
 
 msgid "Open the Debugger and click the **Screen** tab."
 msgstr "Abre el Debugger y haz clic en la pestaña **Screen**."
@@ -368,9 +368,9 @@ msgid ""
 "](debugger-breakpoints.md))."
 msgstr ""
 "Con la dirección a mano, mira el byte en el panel **DUMP** (consulta "
-"[DUMP panel](debugger-memory.md)), o pon en él un punto de interrupción "
+"[Panel DUMP](debugger-memory.md)), o pon en él un punto de interrupción "
 "**Write** para detener la máquina cuando el programa dibuje ahí (consulta"
-" [Breakpoints panel](debugger-breakpoints.md))."
+" [Panel Breakpoints](debugger-breakpoints.md))."
 
 msgid "shadow screen"
 msgstr "pantalla sombra"

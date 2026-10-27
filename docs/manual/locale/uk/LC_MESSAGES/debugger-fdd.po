@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "FDD panel"
-msgstr "FDD panel"
+msgstr "Панель FDD"
 
 msgid "![The FDD panel](images/dbg-fdd.png)"
 msgstr "![Панель FDD](images/dbg-fdd.png)"
@@ -79,7 +79,7 @@ msgstr ""
 "дані секторів — колір **Data**, а контрольні суми — колір **CRC**. Без "
 "диска в дисководі кожен байт читається як `FF`. Панель не можна "
 "редагувати; щоб змінити файли на диску, скористайтеся **Disk Manager** "
-"(див. [Floppy disks](disks.md))."
+"(див. [Дискети](disks.md))."
 
 msgid ""
 "Use it to see how a disk is laid out: how many sectors a track has, how "

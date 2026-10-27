@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Media menu"
-msgstr "Media menu"
+msgstr "Menú Media"
 
 msgid ""
 "A machine can have floppy drives, hard disks, an SD card or a cartridge "
@@ -44,7 +44,7 @@ msgid "{icon}`tape` **Tape Player**, **Tape Play/Stop**, **Tape Record/Stop**"
 msgstr "{icon}`tape` **Tape Player**, **Tape Play/Stop**, **Tape Record/Stop**"
 
 msgid "[Tapes](tapes.md)"
-msgstr "[Tapes](tapes.md)"
+msgstr "[Cintas](tapes.md)"
 
 #, python-brace-format
 msgid ""
@@ -55,7 +55,7 @@ msgstr ""
 "Disk Access**"
 
 msgid "[Floppy disks](disks.md)"
-msgstr "[Floppy disks](disks.md)"
+msgstr "[Disquetes](disks.md)"
 
 #, python-brace-format
 msgid "{icon}`cartrige` **Cartridge**"
@@ -76,10 +76,10 @@ msgid "{icon}`sdcard` **SD Card**, {icon}`hdd` **Drives**"
 msgstr "{icon}`sdcard` **SD Card**, {icon}`hdd` **Drives**"
 
 msgid "[SD cards and hard disks](sd-hdd.md)"
-msgstr "[SD cards and hard disks](sd-hdd.md)"
+msgstr "[Tarjetas SD y discos duros](sd-hdd.md)"
 
 msgid "Which machine has what"
-msgstr "Which machine has what"
+msgstr "Qué tiene cada máquina"
 
 msgid "Machine"
 msgstr "Machine"
@@ -187,13 +187,14 @@ msgid ""
 "board**. A Beta Disk cannot be added to the +2A and +3."
 msgstr ""
 "A una máquina sin interfaz de disco propia se le puede añadir una. Abre "
-"la [Machine page](options-machine.md) de **Options** y elígela en la fila"
-" **Disk**: **None**, **Beta Disk (WD1793)** o **+3 (uPD765)**. La fila "
-"**Hard disk** hace lo mismo para una interfaz IDE: **NemoIDE**, **NemoIDE"
-" A8**, **NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** o **Profi**. Una "
-"interfaz que forma parte de la placa de la máquina no se puede cambiar: "
-"la lista aparece desactivada y su descripción emergente dice **Built into"
-" this board**. No se puede añadir una Beta Disk al +2A ni al +3."
+"la [sección Machine](options-machine.md) de **Options** y elígela en la "
+"fila **Disk**: **None**, **Beta Disk (WD1793)** o **+3 (uPD765)**. La "
+"fila **Hard disk** hace lo mismo para una interfaz IDE: **NemoIDE**, "
+"**NemoIDE A8**, **NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** o "
+"**Profi**. Una interfaz que forma parte de la placa de la máquina no se "
+"puede cambiar: la lista aparece desactivada y su descripción emergente "
+"dice **Built into this board**. No se puede añadir una Beta Disk al +2A "
+"ni al +3."
 
 msgid "Cartridge"
 msgstr "Cartridge"

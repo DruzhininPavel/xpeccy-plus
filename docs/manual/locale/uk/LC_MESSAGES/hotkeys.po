@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Hotkeys page"
-msgstr "Hotkeys page"
+msgstr "Розділ Hotkeys"
 
 msgid "![The Hotkeys page](images/options-hotkeys.png)"
 msgstr "![Сторінка Hotkeys](images/options-hotkeys.png)"
@@ -34,7 +34,7 @@ msgid ""
 " own. See [Hotkeys page](hotkeys.md)."
 msgstr ""
 "Клавіші кожної команди, у наборі Modern чи Classic або у вашому власному."
-" Див. [Hotkeys page](hotkeys.md)."
+" Див. [Розділ Hotkeys](hotkeys.md)."
 
 msgid ""
 "A command that has a key shows it beside its name in the menu. All the "
@@ -49,7 +49,7 @@ msgstr ""
 "нею користуватися."
 
 msgid "Modern, Classic and Custom"
-msgstr "Modern, Classic and Custom"
+msgstr "Modern, Classic і Custom"
 
 msgid ""
 "Two sets of keys come with the program. Pick one in the **Preset** list "
@@ -122,7 +122,7 @@ msgstr ""
 "розкладкою, увімкненою в системі, Alt+M — однаково Alt+M."
 
 msgid "Change a key"
-msgstr "Change a key"
+msgstr "Зміна клавіші"
 
 msgid ""
 "The table on the **Hotkeys** page has three columns: **Action**, **Key** "
@@ -211,7 +211,7 @@ msgstr ""
 "повертає Custom до набору, з якого його створено."
 
 msgid "Find a key"
-msgstr "Find a key"
+msgstr "Пошук клавіші"
 
 msgid ""
 "Type in the search box to see only the actions whose name, group or key "
@@ -230,7 +230,7 @@ msgstr ""
 " побачили, що ця клавіша робить."
 
 msgid "How the keys behave"
-msgstr "How the keys behave"
+msgstr "Як поводяться клавіші"
 
 msgid ""
 "**Grab Keyboard.** While the keyboard is grabbed, every key goes to the "
@@ -269,7 +269,7 @@ msgstr ""
 " в один із трьох способів, що задаються на сторінці **Emulation** вікна "
 "**Options**: **Toggle**, **Hold** або **Tap or hold** (типово): коротке "
 "натискання вмикає чи вимикає режим, довше тримає його ввімкненим лише "
-"поки клавішу утримують. Див. [Speed and time](time.md)."
+"поки клавішу утримують. Див. [Швидкість і час](time.md)."
 
 msgid ""
 "**Shift and Ctrl.** A hotkey's own Shift or Ctrl is not passed to the "
@@ -337,7 +337,7 @@ msgstr ""
 "перевіряйте клавішу там. Таблиці нижче наводять клавіші Windows і Linux."
 
 msgid "All the keys"
-msgstr "All the keys"
+msgstr "Усі клавіші"
 
 msgid ""
 "A dash means no key. Where an action has two keys, both are given. In a "
@@ -736,7 +736,7 @@ msgid "Alt+A"
 msgstr "Alt+A"
 
 msgid "Debugger keys"
-msgstr "Debugger keys"
+msgstr "Клавіші налагоджувача"
 
 msgid ""
 "These work in the **Debugger** window. **Options**, **Open**, **Save**, "

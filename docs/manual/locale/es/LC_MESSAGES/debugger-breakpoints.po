@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Breakpoints panel"
-msgstr "Breakpoints panel"
+msgstr "Panel Breakpoints"
 
 msgid ""
 "A breakpoint tells the machine to stop at a place or on an event: when "
@@ -39,8 +39,9 @@ msgstr ""
 "punto de interrupción también puede contar sus visitas, guardar la "
 "pantalla o escribir una línea en el registro de puntos de interrupción, y"
 " dos de ellos pueden medir el tiempo del código que hay entre ambos. La "
-"ventana [Watcher](debugger-watcher.md) y los [watched ports](debugger-"
-"memmap.md#watched-ports) muestran valores mientras la máquina funciona."
+"[ventana Watcher](debugger-watcher.md) y los [puertos vigilados"
+"](debugger-memmap.md#watched-ports) muestran valores mientras la máquina "
+"funciona."
 
 msgid ""
 "Breakpoints work while the machine runs. A step taken in the Debugger "
@@ -49,10 +50,11 @@ msgid ""
 msgstr ""
 "Los puntos de interrupción funcionan mientras la máquina está en marcha. "
 "Un paso dado en el Debugger no se detiene en un punto de interrupción "
-"(consulta [Running and stepping](debugger.md#running-and-stepping))."
+"(consulta [Ejecutar y avanzar paso a paso](debugger.md#running-and-"
+"stepping))."
 
 msgid "Kinds of breakpoint"
-msgstr "Kinds of breakpoint"
+msgstr "Tipos de punto de interrupción"
 
 msgid "Kind"
 msgstr "Tipo"
@@ -169,7 +171,7 @@ msgstr ""
 "`MFROM:...`, `MFRAM:...`. Su divMMC no necesita **divMMC cell**."
 
 msgid "Setting breakpoints from the listing"
-msgstr "Setting breakpoints from the listing"
+msgstr "Poner puntos de interrupción desde el listado"
 
 msgid ""
 "The quickest way is to press a key on a line of the **Disasm** listing. "
@@ -221,7 +223,7 @@ msgstr ""
 "teclas se pueden cambiar en la página **Hotkeys** de **Options**, como "
 "**Disasm: Breakpoint**, **Disasm: Breakpoint on read**, **Disasm: "
 "Breakpoint on write** y **Disasm: Breakpoint on CPU address** (consulta "
-"[Hotkeys page](hotkeys.md))."
+"[Sección Hotkeys](hotkeys.md))."
 
 #, python-brace-format
 msgid ""
@@ -247,7 +249,7 @@ msgid ""
 msgstr ""
 "En el volcado de memoria, el menú del clic derecho tiene **Fetch break**,"
 " **Read break** y **Write break** para el byte bajo el cursor (consulta "
-"[DUMP panel](debugger-memory.md))."
+"[Panel DUMP](debugger-memory.md))."
 
 msgid ""
 "**Debugger: Stop here** - F4 (Modern), F9 (Classic) - lets the machine "
@@ -256,10 +258,10 @@ msgid ""
 msgstr ""
 "**Debugger: Stop here** — F4 (Modern), F9 (Classic) — deja que la máquina"
 " funcione hasta llegar a la línea bajo el cursor, sin un punto de "
-"interrupción en la lista (consulta [Disasm panel](debugger-code.md))."
+"interrupción en la lista (consulta [Panel Disasm](debugger-code.md))."
 
 msgid "The Breakpoints panel"
-msgstr "The Breakpoints panel"
+msgstr "El panel Breakpoints"
 
 msgid "![The Breakpoints panel](images/dbg-brk-panel.png)"
 msgstr "![El panel Breakpoints](images/dbg-brk-panel.png)"
@@ -455,7 +457,7 @@ msgid ""
 " the span measured (see [Spans](#spans))."
 msgstr ""
 "Deja el ratón sobre la fila de un punto de interrupción que abre un tramo"
-" para ver lo que midió el tramo (consulta [Spans](#spans))."
+" para ver lo que midió el tramo (consulta [Tramos](#spans))."
 
 msgid ""
 "The list is not kept when the program closes. Save it to a file to use it"
@@ -465,7 +467,7 @@ msgstr ""
 "para volver a usarla."
 
 msgid "The Breakpoint Editor"
-msgstr "The Breakpoint Editor"
+msgstr "La ventana Breakpoint Editor"
 
 msgid "![The Breakpoint Editor](images/dbg-brk-editor.png)"
 msgstr "![El Breakpoint Editor](images/dbg-brk-editor.png)"
@@ -527,7 +529,7 @@ msgid "**Span**"
 msgstr "**Span**"
 
 msgid "**None**, **Opens a span** or **Closes a span**, see [Spans](#spans)"
-msgstr "**None**, **Opens a span** o **Closes a span**, consulta [Spans](#spans)"
+msgstr "**None**, **Opens a span** o **Closes a span**, consulta [Tramos](#spans)"
 
 msgid "**Condition**"
 msgstr "**Condition**"
@@ -557,7 +559,7 @@ msgstr ""
 "vez que se dispara, y qué escribir en ella"
 
 msgid "Addresses"
-msgstr "Addresses"
+msgstr "Direcciones"
 
 msgid ""
 "The **Address** fields take a hex number, with or without `#`, `$` or "
@@ -642,7 +644,7 @@ msgstr ""
 "Spectrum."
 
 msgid "Condition and Log"
-msgstr "Condition and Log"
+msgstr "Condition y Log"
 
 #, python-brace-format
 msgid ""
@@ -686,7 +688,7 @@ msgstr ""
 "contadores y lo que ha medido su tramo."
 
 msgid "Conditions"
-msgstr "Conditions"
+msgstr "Condiciones"
 
 msgid ""
 "A condition is an expression in the style of C. It is checked when the "
@@ -699,7 +701,7 @@ msgstr ""
 " para falso."
 
 msgid "Operators"
-msgstr "Operators"
+msgstr "Operadores"
 
 msgid ""
 "From the one that binds tightest to the loosest; operators in one row "
@@ -810,7 +812,7 @@ msgstr ""
 "palabra en memoria se lee con el byte bajo primero, como la lee el Z80."
 
 msgid "Operands"
-msgstr "Operands"
+msgstr "Operandos"
 
 msgid "Operand"
 msgstr "Operando"
@@ -1003,7 +1005,7 @@ msgid ""
 "breakpoint, see [Spans](#spans)"
 msgstr ""
 "ciclos (T-states) desde que se abrió el tramo, o desde la visita anterior"
-" a este punto de interrupción, consulta [Spans](#spans)"
+" a este punto de interrupción, consulta [Tramos](#spans)"
 
 msgid ""
 "A port is 16 bits wide, and the Spectrum decodes only part of it. `IN` "
@@ -1048,7 +1050,7 @@ msgstr ""
 " del fotograma simplemente nunca se alcanza."
 
 msgid "Before or after the instruction"
-msgstr "Before or after the instruction"
+msgstr "Antes o después de la instrucción"
 
 msgid ""
 "On a **Fetch** breakpoint the registers are read before the instruction "
@@ -1105,7 +1107,7 @@ msgstr ""
 "medir, como en la primera visita, y en una condición global."
 
 msgid "Good to know"
-msgstr "Good to know"
+msgstr "Conviene saber"
 
 msgid ""
 "An address holds one breakpoint, so it has one condition. Join several "
@@ -1124,7 +1126,7 @@ msgstr ""
 "desapercibido."
 
 msgid "Examples"
-msgstr "Examples"
+msgstr "Ejemplos"
 
 msgid "Condition"
 msgstr "Condición"
@@ -1219,7 +1221,7 @@ msgstr ""
 "12000 T"
 
 msgid "Global conditions and On change"
-msgstr "Global conditions and On change"
+msgstr "Condiciones globales y On change"
 
 msgid ""
 "A breakpoint of type **Condition (global)** has no address. Its "
@@ -1256,7 +1258,7 @@ msgstr ""
 "cada una realiza entonces su propia acción."
 
 msgid "Actions"
-msgstr "Actions"
+msgstr "Acciones"
 
 msgid "Action"
 msgstr "Acción"
@@ -1294,11 +1296,11 @@ msgid ""
 msgstr ""
 "Un volcado de pantalla va a la carpeta de capturas de pantalla (el "
 "**Output** del grupo **Screenshots** en la página **Video** de "
-"**Options**, consulta [Screenshots](capture.md#screenshots)), con un "
-"nombre según la hora, como `xpeccy_153012_250_0.scr`."
+"**Options**, consulta [Capturas de pantalla](capture.md#screenshots)), "
+"con un nombre según la hora, como `xpeccy_153012_250_0.scr`."
 
 msgid "Spans"
-msgstr "Spans"
+msgstr "Tramos"
 
 msgid ""
 "Two breakpoints can time the code between them. Set **Span** of the first"
@@ -1399,7 +1401,7 @@ msgstr ""
 "borra."
 
 msgid "The breakpoint log"
-msgstr "The breakpoint log"
+msgstr "El registro de puntos de interrupción"
 
 msgid ""
 "Tick **Log** in the **Breakpoint Editor** and every time the breakpoint "
@@ -1551,7 +1553,7 @@ msgid "An expression that cannot be worked out at that moment is written as `?`.
 msgstr "Una expresión que no se puede evaluar en ese momento se escribe como `?`."
 
 msgid "Breakpoint files"
-msgstr "Breakpoint files"
+msgstr "Archivos de puntos de interrupción"
 
 #, python-brace-format
 msgid ""
@@ -1697,11 +1699,11 @@ msgstr ""
 "Las etiquetas indicadas con `-l` se cargan primero, esté donde esté `-l` "
 "en la línea de comandos. Junto con `--bench`, estas opciones ejecutan una"
 " prueba desde un script sin ventana; la ejecución termina en el primer "
-"punto de interrupción con la acción **Debugger** (consulta [Running with "
-"no window](command-line.md#running-with-no-window))."
+"punto de interrupción con la acción **Debugger** (consulta [Ejecución sin"
+" ventana](command-line.md#running-with-no-window))."
 
 msgid "Stop when the program writes to the screen"
-msgstr "Stop when the program writes to the screen"
+msgstr "Detenerse cuando el programa escribe en la pantalla"
 
 #, python-brace-format
 msgid ""
@@ -1737,7 +1739,7 @@ msgstr ""
 "la línea encima del cursor."
 
 msgid "Stop when the border color changes"
-msgstr "Stop when the border color changes"
+msgstr "Detenerse cuando cambia el color del borde"
 
 msgid "The border color is set by an OUT to the ULA's port, `FE`."
 msgstr "El color del borde se establece con un OUT al puerto de la ULA, `FE`."
@@ -1771,7 +1773,7 @@ msgstr ""
 "rojo, pon `(VAL & 7) == 2` en **Condition**."
 
 msgid "Log every call to a routine without stopping"
-msgstr "Log every call to a routine without stopping"
+msgstr "Registrar cada llamada a una rutina sin detenerse"
 
 msgid ""
 "In the Debugger, put the cursor on the first line of the routine and "
@@ -1812,7 +1814,7 @@ msgstr ""
 "lista lo muestra."
 
 msgid "Stop when A is 0 at a given address"
-msgstr "Stop when A is 0 at a given address"
+msgstr "Detenerse cuando A vale 0 en una dirección concreta"
 
 msgid "Put the cursor on the line in the listing and press Shift+Space."
 msgstr "Pon el cursor en la línea del listado y pulsa Shift+Space."
@@ -1840,7 +1842,7 @@ msgstr ""
 "instrucción, la primera vez que A vale 0 ahí."
 
 msgid "Stop on the 50th pass"
-msgstr "Stop on the 50th pass"
+msgstr "Detenerse en la pasada 50"
 
 msgid "Make a breakpoint on the line as above."
 msgstr "Crea un punto de interrupción en la línea como antes."
@@ -1857,7 +1859,7 @@ msgstr ""
 "cuenta."
 
 msgid "Time a routine"
-msgstr "Time a routine"
+msgstr "Medir el tiempo de una rutina"
 
 msgid ""
 "Here the routine starts at the label `START`, and `DONE` is the last "
@@ -1908,7 +1910,7 @@ msgstr ""
 "11400` en **Condition**. La máquina se detiene al final de esa pasada."
 
 msgid "Check a program from a script"
-msgstr "Check a program from a script"
+msgstr "Comprobar un programa desde un script"
 
 msgid ""
 "The same two breakpoints, as a file `timing.xbrk`, with the labels of the"

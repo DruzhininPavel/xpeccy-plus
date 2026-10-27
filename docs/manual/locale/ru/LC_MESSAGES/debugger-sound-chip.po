@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Sound Chip panel"
-msgstr "Sound Chip panel"
+msgstr "Панель Sound Chip"
 
 msgid "![The Sound Chip panel](images/dbg-sound.png)"
 msgstr "![Панель Sound Chip](images/dbg-sound.png)"
@@ -79,7 +79,7 @@ msgstr ""
 "**FM**. У машины без звуковой микросхемы вкладок нет."
 
 msgid "The PSG page"
-msgstr "The PSG page"
+msgstr "Страница PSG"
 
 msgid ""
 "**Regs** shows the 16 registers in two rows: `#00` holds registers 0 to "
@@ -192,7 +192,7 @@ msgstr ""
 "чтобы восемь форм можно было различить."
 
 msgid "The FM page"
-msgstr "The FM page"
+msgstr "Страница FM"
 
 msgid "The FM page shows the FM part of a YM2203 chip. Across the top:"
 msgstr "Страница FM показывает FM-часть микросхемы YM2203. Вверху:"
@@ -262,7 +262,7 @@ msgstr ""
 "выход."
 
 msgid "Wave and Beeper"
-msgstr "Wave and Beeper"
+msgstr "Wave и Beeper"
 
 msgid ""
 "The wave box at the bottom shows the sound the machine puts out, all "
@@ -305,10 +305,10 @@ msgid "**Beeper** is a bar of the beeper's level."
 msgstr "**Beeper** — полоса уровня бипера."
 
 msgid "Example"
-msgstr "Example"
+msgstr "Пример"
 
 msgid "Watch the AY registers while music plays"
-msgstr "Watch the AY registers while music plays"
+msgstr "Следить за регистрами AY, пока играет музыка"
 
 msgid "Choose **ZX Spectrum 128K** and pick **128 BASIC** in its menu."
 msgstr "Выберите **ZX Spectrum 128K** и в его меню выберите **128 BASIC**."

@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Hotkeys page"
-msgstr "Hotkeys page"
+msgstr "Sección Hotkeys"
 
 msgid "![The Hotkeys page](images/options-hotkeys.png)"
 msgstr "![La página Hotkeys](images/options-hotkeys.png)"
@@ -33,7 +33,7 @@ msgid ""
 " own. See [Hotkeys page](hotkeys.md)."
 msgstr ""
 "Las teclas de cada comando, en el preajuste Modern o Classic o en uno "
-"tuyo. Consulta [Hotkeys page](hotkeys.md)."
+"tuyo. Consulta [Sección Hotkeys](hotkeys.md)."
 
 msgid ""
 "A command that has a key shows it beside its name in the menu. All the "
@@ -48,7 +48,7 @@ msgstr ""
 "tecla para usarla."
 
 msgid "Modern, Classic and Custom"
-msgstr "Modern, Classic and Custom"
+msgstr "Modern, Classic y Custom"
 
 msgid ""
 "Two sets of keys come with the program. Pick one in the **Preset** list "
@@ -121,7 +121,7 @@ msgstr ""
 "cirílica u otra activada en el sistema, Alt+M sigue siendo Alt+M."
 
 msgid "Change a key"
-msgstr "Change a key"
+msgstr "Cambiar una tecla"
 
 msgid ""
 "The table on the **Hotkeys** page has three columns: **Action**, **Key** "
@@ -213,7 +213,7 @@ msgstr ""
 "cambios y devuelve Custom al juego del que se hizo."
 
 msgid "Find a key"
-msgstr "Find a key"
+msgstr "Buscar una tecla"
 
 msgid ""
 "Type in the search box to see only the actions whose name, group or key "
@@ -233,7 +233,7 @@ msgstr ""
 "que veas qué hace esa tecla."
 
 msgid "How the keys behave"
-msgstr "How the keys behave"
+msgstr "Cómo se comportan las teclas"
 
 msgid ""
 "**Grab Keyboard.** While the keyboard is grabbed, every key goes to the "
@@ -272,8 +272,8 @@ msgstr ""
 "uno de una de tres formas, fijada en la página **Emulation** de "
 "**Options**: **Toggle**, **Hold** o **Tap or hold** (por defecto): una "
 "pulsación corta activa o desactiva el modo, una más larga lo mantiene "
-"activo solo mientras se mantiene la tecla. Consulta [Speed and "
-"time](time.md)."
+"activo solo mientras se mantiene la tecla. Consulta [Velocidad y "
+"tiempo](time.md)."
 
 msgid ""
 "**Shift and Ctrl.** A hotkey's own Shift or Ctrl is not passed to the "
@@ -343,7 +343,7 @@ msgstr ""
 "Linux."
 
 msgid "All the keys"
-msgstr "All the keys"
+msgstr "Todas las teclas"
 
 msgid ""
 "A dash means no key. Where an action has two keys, both are given. In a "
@@ -742,7 +742,7 @@ msgid "Alt+A"
 msgstr "Alt+A"
 
 msgid "Debugger keys"
-msgstr "Debugger keys"
+msgstr "Teclas del depurador"
 
 msgid ""
 "These work in the **Debugger** window. **Options**, **Open**, **Save**, "

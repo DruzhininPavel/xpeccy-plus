@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Tape panel"
-msgstr "Tape panel"
+msgstr "Панель Tape"
 
 msgid "![The Tape panel](images/dbg-tape.png)"
 msgstr "![Панель Tape](images/dbg-tape.png)"
@@ -87,7 +87,7 @@ msgid ""
 msgstr ""
 "Користуйтеся панеллю, коли покроково проходите завантажувач, щоб бачити, "
 "який імпульс він читає і що буде далі. Самою стрічкою керують з **Tape "
-"Player** (див. [Tapes](tapes.md))."
+"Player** (див. [Стрічки](tapes.md))."
 
 msgid "tape signal"
 msgstr "сигнал стрічки"

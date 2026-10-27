@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Breakpoints panel"
-msgstr "Breakpoints panel"
+msgstr "Панель Breakpoints"
 
 msgid ""
 "A breakpoint tells the machine to stop at a place or on an event: when "
@@ -38,8 +38,8 @@ msgstr ""
 "пам'яті, звертається до порту, отримує переривання або коли вираз стає "
 "істинним. Замість зупинки точка зупинки може також рахувати свої "
 "влучання, зберігати екран або писати рядок у журнал точок зупинки, а дві "
-"точки можуть вимірювати час виконання коду між ними. Вікно [Watcher"
-"](debugger-watcher.md) і [watched ports](debugger-memmap.md#watched-"
+"точки можуть вимірювати час виконання коду між ними. [Вікно Watcher"
+"](debugger-watcher.md) і [відстежувані порти](debugger-memmap.md#watched-"
 "ports) показують значення, поки машина працює."
 
 msgid ""
@@ -48,11 +48,11 @@ msgid ""
 "#running-and-stepping))."
 msgstr ""
 "Точки зупинки діють, поки машина працює. Крок, зроблений у Debugger, на "
-"точці зупинки не зупиняється (див. [Running and stepping](debugger.md"
-"#running-and-stepping))."
+"точці зупинки не зупиняється (див. [Виконання й покрокове "
+"проходження](debugger.md#running-and-stepping))."
 
 msgid "Kinds of breakpoint"
-msgstr "Kinds of breakpoint"
+msgstr "Види точок зупинки"
 
 msgid "Kind"
 msgstr "Вид"
@@ -169,7 +169,7 @@ msgstr ""
 "його divMMC **divMMC cell** не потрібна."
 
 msgid "Setting breakpoints from the listing"
-msgstr "Setting breakpoints from the listing"
+msgstr "Встановлення точок зупинки з лістингу"
 
 msgid ""
 "The quickest way is to press a key on a line of the **Disasm** listing. "
@@ -220,7 +220,8 @@ msgstr ""
 "Рядок із точкою зупинки виділено іншим кольором. Клавіші можна змінити на"
 " сторінці **Hotkeys** вікна **Options** як **Disasm: Breakpoint**, "
 "**Disasm: Breakpoint on read**, **Disasm: Breakpoint on write** і "
-"**Disasm: Breakpoint on CPU address** (див. [Hotkeys page](hotkeys.md))."
+"**Disasm: Breakpoint on CPU address** (див. [Розділ "
+"Hotkeys](hotkeys.md))."
 
 #, python-brace-format
 msgid ""
@@ -244,7 +245,7 @@ msgid ""
 "panel](debugger-memory.md))."
 msgstr ""
 "У дампі пам'яті меню правої кнопки має **Fetch break**, **Read break** і "
-"**Write break** для байта під курсором (див. [DUMP panel](debugger-"
+"**Write break** для байта під курсором (див. [Панель DUMP](debugger-"
 "memory.md))."
 
 msgid ""
@@ -254,10 +255,10 @@ msgid ""
 msgstr ""
 "**Debugger: Stop here** — F4 (Modern), F9 (Classic) — дає машині "
 "працювати, доки вона не дійде до рядка під курсором, без точки зупинки у "
-"списку (див. [Disasm panel](debugger-code.md))."
+"списку (див. [Панель Disasm](debugger-code.md))."
 
 msgid "The Breakpoints panel"
-msgstr "The Breakpoints panel"
+msgstr "Панель Breakpoints"
 
 msgid "![The Breakpoints panel](images/dbg-brk-panel.png)"
 msgstr "![Панель Breakpoints](images/dbg-brk-panel.png)"
@@ -447,7 +448,7 @@ msgid ""
 " the span measured (see [Spans](#spans))."
 msgstr ""
 "Наведіть мишу на рядок точки зупинки, що відкриває інтервал, щоб "
-"побачити, що виміряв інтервал (див. [Spans](#spans))."
+"побачити, що виміряв інтервал (див. [Інтервали](#spans))."
 
 msgid ""
 "The list is not kept when the program closes. Save it to a file to use it"
@@ -457,7 +458,7 @@ msgstr ""
 "щоб використати знову."
 
 msgid "The Breakpoint Editor"
-msgstr "The Breakpoint Editor"
+msgstr "Вікно Breakpoint Editor"
 
 msgid "![The Breakpoint Editor](images/dbg-brk-editor.png)"
 msgstr "![Breakpoint Editor](images/dbg-brk-editor.png)"
@@ -519,7 +520,7 @@ msgid "**Span**"
 msgstr "**Span**"
 
 msgid "**None**, **Opens a span** or **Closes a span**, see [Spans](#spans)"
-msgstr "**None**, **Opens a span** або **Closes a span**, див. [Spans](#spans)"
+msgstr "**None**, **Opens a span** або **Closes a span**, див. [Інтервали](#spans)"
 
 msgid "**Condition**"
 msgstr "**Condition**"
@@ -550,7 +551,7 @@ msgstr ""
 " що в ньому писати"
 
 msgid "Addresses"
-msgstr "Addresses"
+msgstr "Адреси"
 
 msgid ""
 "The **Address** fields take a hex number, with or without `#`, `$` or "
@@ -632,7 +633,7 @@ msgstr ""
 " відповідає ULA Spectrum."
 
 msgid "Condition and Log"
-msgstr "Condition and Log"
+msgstr "Condition і Log"
 
 #, python-brace-format
 msgid ""
@@ -674,7 +675,7 @@ msgstr ""
 "зберігаються."
 
 msgid "Conditions"
-msgstr "Conditions"
+msgstr "Умови"
 
 msgid ""
 "A condition is an expression in the style of C. It is checked when the "
@@ -686,7 +687,7 @@ msgstr ""
 "оператори дають 1 для істини і 0 для хибності."
 
 msgid "Operators"
-msgstr "Operators"
+msgstr "Оператори"
 
 msgid ""
 "From the one that binds tightest to the loosest; operators in one row "
@@ -797,7 +798,7 @@ msgstr ""
 "читається молодшим байтом уперед, як його читає Z80."
 
 msgid "Operands"
-msgstr "Operands"
+msgstr "Операнди"
 
 msgid "Operand"
 msgstr "Операнд"
@@ -888,7 +889,7 @@ msgstr ""
 "число завжди потребує префікса."
 
 msgid "Variables"
-msgstr "Variables"
+msgstr "Змінні"
 
 msgid ""
 "These variables hold the last memory or port access of the instruction. "
@@ -987,7 +988,7 @@ msgid ""
 "breakpoint, see [Spans](#spans)"
 msgstr ""
 "такти від відкриття інтервалу або від попереднього влучання цієї точки "
-"зупинки, див. [Spans](#spans)"
+"зупинки, див. [Інтервали](#spans)"
 
 msgid ""
 "A port is 16 bits wide, and the Spectrum decodes only part of it. `IN` "
@@ -1032,7 +1033,7 @@ msgstr ""
 "просто ніколи не досягається."
 
 msgid "Before or after the instruction"
-msgstr "Before or after the instruction"
+msgstr "До чи після інструкції"
 
 msgid ""
 "On a **Fetch** breakpoint the registers are read before the instruction "
@@ -1087,7 +1088,7 @@ msgstr ""
 "немає від чого міряти, як-от на першому влучанні, і на глобальній умові."
 
 msgid "Good to know"
-msgstr "Good to know"
+msgstr "Варто знати"
 
 msgid ""
 "An address holds one breakpoint, so it has one condition. Join several "
@@ -1105,7 +1106,7 @@ msgstr ""
 " що вже не завантажена, спрацьовує, щоб помилка не лишилася непоміченою."
 
 msgid "Examples"
-msgstr "Examples"
+msgstr "Приклади"
 
 msgid "Condition"
 msgstr "Умова"
@@ -1194,7 +1195,7 @@ msgid "on a breakpoint that closes a span: the span took more than 12000 T"
 msgstr "на точці зупинки, що закриває інтервал: інтервал тривав понад 12000 T"
 
 msgid "Global conditions and On change"
-msgstr "Global conditions and On change"
+msgstr "Глобальні умови та On change"
 
 msgid ""
 "A breakpoint of type **Condition (global)** has no address. Its "
@@ -1230,7 +1231,7 @@ msgstr ""
 "кожна виконує свою дію."
 
 msgid "Actions"
-msgstr "Actions"
+msgstr "Дії"
 
 msgid "Action"
 msgstr "Дія"
@@ -1267,12 +1268,12 @@ msgid ""
 "`xpeccy_153012_250_0.scr`."
 msgstr ""
 "Дамп екрана потрапляє в папку знімків екрана (**Output** групи "
-"**Screenshots** на сторінці **Video** вікна **Options**, див. "
-"[Screenshots](capture.md#screenshots)) з іменем за часом, як-от "
+"**Screenshots** на сторінці **Video** вікна **Options**, див. [Знімки "
+"екрана](capture.md#screenshots)) з іменем за часом, як-от "
 "`xpeccy_153012_250_0.scr`."
 
 msgid "Spans"
-msgstr "Spans"
+msgstr "Інтервали"
 
 msgid ""
 "Two breakpoints can time the code between them. Set **Span** of the first"
@@ -1373,7 +1374,7 @@ msgstr ""
 "**Reset counter** у меню правої кнопки списку очищає їх."
 
 msgid "The breakpoint log"
-msgstr "The breakpoint log"
+msgstr "Журнал точок зупинки"
 
 msgid ""
 "Tick **Log** in the **Breakpoint Editor** and every time the breakpoint "
@@ -1519,7 +1520,7 @@ msgid "An expression that cannot be worked out at that moment is written as `?`.
 msgstr "Вираз, який у цей момент неможливо обчислити, записується як `?`."
 
 msgid "Breakpoint files"
-msgstr "Breakpoint files"
+msgstr "Файли точок зупинки"
 
 #, python-brace-format
 msgid ""
@@ -1662,10 +1663,10 @@ msgstr ""
 "Мітки з `-l` завантажуються першими, хоч де `-l` стоїть у командному "
 "рядку. Разом із `--bench` ці параметри запускають тест зі скрипту без "
 "вікна; прогін закінчується на першій точці зупинки з дією **Debugger** "
-"(див. [Running with no window](command-line.md#running-with-no-window))."
+"(див. [Запуск без вікна](command-line.md#running-with-no-window))."
 
 msgid "Stop when the program writes to the screen"
-msgstr "Stop when the program writes to the screen"
+msgstr "Зупинитися, коли програма пише на екран"
 
 #, python-brace-format
 msgid ""
@@ -1700,7 +1701,7 @@ msgstr ""
 "інструкції, яка записала; у лістингу це зазвичай рядок над курсором."
 
 msgid "Stop when the border color changes"
-msgstr "Stop when the border color changes"
+msgstr "Зупинитися, коли змінюється колір бордюру"
 
 msgid "The border color is set by an OUT to the ULA's port, `FE`."
 msgstr "Колір бордюру задається інструкцією OUT у порт ULA, `FE`."
@@ -1734,7 +1735,7 @@ msgstr ""
 "`(VAL & 7) == 2` у **Condition**."
 
 msgid "Log every call to a routine without stopping"
-msgstr "Log every call to a routine without stopping"
+msgstr "Записувати кожен виклик підпрограми в журнал без зупинки"
 
 msgid ""
 "In the Debugger, put the cursor on the first line of the routine and "
@@ -1774,7 +1775,7 @@ msgstr ""
 " правої кнопки списку показує його."
 
 msgid "Stop when A is 0 at a given address"
-msgstr "Stop when A is 0 at a given address"
+msgstr "Зупинитися, коли A дорівнює 0 на певній адресі"
 
 msgid "Put the cursor on the line in the listing and press Shift+Space."
 msgstr "Поставте курсор на рядок у лістингу і натисніть Shift+Space."
@@ -1800,7 +1801,7 @@ msgstr ""
 "уперше дорівнює 0."
 
 msgid "Stop on the 50th pass"
-msgstr "Stop on the 50th pass"
+msgstr "Зупинитися на 50-му проході"
 
 msgid "Make a breakpoint on the line as above."
 msgstr "Створіть точку зупинки на рядку, як описано вище."
@@ -1816,7 +1817,7 @@ msgstr ""
 "counter** у меню правої кнопки списку починає відлік наново."
 
 msgid "Time a routine"
-msgstr "Time a routine"
+msgstr "Виміряти час підпрограми"
 
 msgid ""
 "Here the routine starts at the label `START`, and `DONE` is the last "
@@ -1867,7 +1868,7 @@ msgstr ""
 "**Condition**. Машина зупиниться в кінці такого проходу."
 
 msgid "Check a program from a script"
-msgstr "Check a program from a script"
+msgstr "Перевірити програму зі скрипту"
 
 msgid ""
 "The same two breakpoints, as a file `timing.xbrk`, with the labels of the"

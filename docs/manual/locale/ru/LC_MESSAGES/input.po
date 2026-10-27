@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Input menu"
-msgstr "Input menu"
+msgstr "Меню Input"
 
 msgid ""
 "Type on the PC keyboard and the machine gets the keys. A gamepad, or a "
@@ -35,12 +35,12 @@ msgstr ""
 "Печатайте на клавиатуре PC — и машина получает клавиши. Джойстиком может "
 "быть геймпад или несколько клавиш клавиатуры PC; мышь PC может быть мышью"
 " Kempston. В меню **Input** — команды для всего этого: **Grab Keyboard**,"
-" **Grab Mouse**, **Keymap** и **Gamepads**. Их настройки — на странице "
-"[Input page](options-input.md) окна **Options**, а интерфейсы джойстика и"
-" мыши у машины — на её странице [Machine page](options-machine.md)."
+" **Grab Mouse**, **Keymap** и **Gamepads**. Их настройки — в [разделе "
+"Input](options-input.md) окна **Options**, а интерфейсы джойстика и мыши "
+"у машины — в её [разделе Machine](options-machine.md)."
 
 msgid "The keyboard"
-msgstr "The keyboard"
+msgstr "Клавиатура"
 
 msgid ""
 "The Spectrum keys are where they are on the PC: letters, digits, Space "
@@ -247,8 +247,8 @@ msgstr ""
 "Клавиша, которая является горячей, выполняет свою команду вместо того, "
 "чтобы дойти до машины. Какие это клавиши, зависит от используемого набора"
 " горячих клавиш: в Modern горячие — Delete, Home, End и Insert, а Esc "
-"оставлен машине как BREAK. См. [Hotkeys page](hotkeys.md). Чтобы отдать "
-"машине все клавиши, захватите клавиатуру."
+"оставлен машине как BREAK. См. [Раздел Hotkeys](hotkeys.md). Чтобы отдать"
+" машине все клавиши, захватите клавиатуру."
 
 msgid ""
 "On Windows and Linux a key is recognized by its place on the keyboard, "
@@ -260,7 +260,7 @@ msgstr ""
 "системе кириллица или другая раскладка ничего не меняет."
 
 msgid "Keymaps"
-msgstr "Keymaps"
+msgstr "Раскладки"
 
 msgid ""
 "A keymap says which PC key presses which Spectrum key. Pick one in "
@@ -309,7 +309,7 @@ msgstr ""
 "Default или раскладку 128K."
 
 msgid "Your own keymap"
-msgstr "Your own keymap"
+msgstr "Своя раскладка"
 
 msgid ""
 "A keymap is a text file with the extension `.map`, put in the `keymaps` "
@@ -319,7 +319,7 @@ msgid ""
 "is used instead of that one."
 msgstr ""
 "Раскладка — это текстовый файл с расширением `.map` в папке `keymaps` "
-"папки настроек (см. [Where the settings are](getting-started.md#where-"
+"папки настроек (см. [Где хранятся настройки](getting-started.md#where-"
 "the-settings-are)). Она появится в меню **Keymap**, когда меню откроется "
 "в следующий раз. Файл с именем встроенной раскладки используется вместо "
 "неё."
@@ -416,7 +416,7 @@ msgstr ""
 "когда клавиатура захвачена и отпущена."
 
 msgid "Machines with a keyboard of their own"
-msgstr "Machines with a keyboard of their own"
+msgstr "Машины со своей клавиатурой"
 
 msgid ""
 "**Profi.** A Profi has a PC-style keyboard of its own. With the keyboard "
@@ -449,7 +449,7 @@ msgstr ""
 " как у машины, если программа не просит другой набор."
 
 msgid "Joysticks"
-msgstr "Joysticks"
+msgstr "Джойстики"
 
 msgid ""
 "The joystick interface of the machine is set on the **Machine** page of "
@@ -632,7 +632,7 @@ msgstr ""
 "засчитывалось. У игрока на клавиатуре стика нет, и настройка недоступна."
 
 msgid "Setting up a row"
-msgstr "Setting up a row"
+msgstr "Настройка строки"
 
 #, python-brace-format
 msgid ""
@@ -701,7 +701,7 @@ msgstr ""
 "apply` **OK** сохраняет изменения."
 
 msgid "Saving the bindings"
-msgstr "Saving the bindings"
+msgstr "Сохранение назначений"
 
 #, python-brace-format
 msgid ""
@@ -757,7 +757,7 @@ msgstr ""
 "Esc или закрытие вопроса отменяют изменение."
 
 msgid "Quick switch"
-msgstr "Quick switch"
+msgstr "Быстрое переключение"
 
 msgid ""
 "**Input > Gamepads** also lists the joysticks for player 1, with the "
@@ -776,7 +776,7 @@ msgstr ""
 "которая открывает окно."
 
 msgid "Mouse"
-msgstr "Mouse"
+msgstr "Мышь"
 
 #, python-brace-format
 msgid ""

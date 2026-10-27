@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Screen panel"
-msgstr "Screen panel"
+msgstr "Панель Screen"
 
 msgid "![The Screen panel](images/dbg-screen.png)"
 msgstr "![Панель Screen](images/dbg-screen.png)"
@@ -76,7 +76,7 @@ msgstr ""
 "вигляд мав би екран ZX у цьому місці пам'яті."
 
 msgid "Which screen"
-msgstr "Which screen"
+msgstr "Який екран"
 
 msgid "Button"
 msgstr "Кнопка"
@@ -149,7 +149,7 @@ msgstr ""
 "що вона потім копіює на екран."
 
 msgid "How it is drawn"
-msgstr "How it is drawn"
+msgstr "Як воно малюється"
 
 msgid "Setting"
 msgstr "Параметр"
@@ -204,7 +204,7 @@ msgstr ""
 "порахувати"
 
 msgid "Finding a dot"
-msgstr "Finding a dot"
+msgstr "Пошук точки"
 
 msgid "Move the mouse over the picture. The readout shows:"
 msgstr "Наведіть мишу на зображення. Показники містять:"
@@ -283,10 +283,10 @@ msgstr ""
 "Наведіть мишу знову на зображення, щоб показники знову стежили за мишею."
 
 msgid "Examples"
-msgstr "Examples"
+msgstr "Приклади"
 
 msgid "See which screen a 128K program draws to"
-msgstr "See which screen a 128K program draws to"
+msgstr "Побачити, на який екран малює програма 128K"
 
 msgid ""
 "A 128K has two screens, in RAM pages 5 and 7. Many programs draw on the "
@@ -331,7 +331,7 @@ msgid "Both screens of a 128K"
 msgstr "Обидва екрани 128K"
 
 msgid "Find the bytes behind a spot on the screen"
-msgstr "Find the bytes behind a spot on the screen"
+msgstr "Знайти байти, що стоять за місцем на екрані"
 
 msgid "Open the Debugger and click the **Screen** tab."
 msgstr "Відкрийте Debugger і клацніть вкладку **Screen**."
@@ -359,9 +359,9 @@ msgid ""
 " stop the machine when the program draws there (see [Breakpoints panel"
 "](debugger-breakpoints.md))."
 msgstr ""
-"Маючи адресу, перегляньте байт на панелі **DUMP** (див. [DUMP panel"
+"Маючи адресу, перегляньте байт на панелі **DUMP** (див. [Панель DUMP"
 "](debugger-memory.md)) або встановіть на нього точку зупинки **Write**, "
-"щоб зупинити машину, коли програма малює там (див. [Breakpoints panel"
+"щоб зупинити машину, коли програма малює там (див. [Панель Breakpoints"
 "](debugger-breakpoints.md))."
 
 msgid "shadow screen"

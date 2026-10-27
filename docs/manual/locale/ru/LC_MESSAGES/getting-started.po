@@ -21,10 +21,10 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Getting started"
-msgstr "Getting started"
+msgstr "Начало работы"
 
 msgid "Download"
-msgstr "Download"
+msgstr "Где взять"
 
 msgid ""
 "Every release is on the [releases page](https://github.com/dotkoval"
@@ -111,7 +111,7 @@ msgstr ""
 "Xpeccy+ и нажмите **Все равно открыть**."
 
 msgid "The first start"
-msgstr "The first start"
+msgstr "Первый запуск"
 
 msgid "The first start asks which machine to run:"
 msgstr "При первом запуске программа спрашивает, какую машину запускать:"
@@ -133,7 +133,7 @@ msgid ""
 msgstr "Ответ можно поменять позже на странице **Application** окна **Options**."
 
 msgid "Run a program"
-msgstr "Run a program"
+msgstr "Запуск программы"
 
 msgid "Open a file in any of these ways:"
 msgstr "Откройте файл любым из способов:"
@@ -212,7 +212,7 @@ msgid "or one machine that always opens this kind of file."
 msgstr "или одна машина, на которой всегда открываются файлы этого типа."
 
 msgid "Where the settings are"
-msgstr "Where the settings are"
+msgstr "Где хранятся настройки"
 
 msgid "Folder"
 msgstr "Папка"
@@ -248,7 +248,7 @@ msgstr ""
 "программу с другой папкой настроек, запустите её с `--confdir <folder>`."
 
 msgid "This manual"
-msgstr "This manual"
+msgstr "Это руководство"
 
 msgid ""
 "**Help > Manual** opens this manual from the program's own files, so it "

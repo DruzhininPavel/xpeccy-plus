@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Speed and time"
-msgstr "Speed and time"
+msgstr "Скорость и время"
 
 #, python-brace-format
 msgid ""
@@ -36,8 +36,7 @@ msgstr ""
 " В меню **Machine** есть команды, которые это меняют: **Pause**, **Fast "
 "Mode**, **Slow Motion** и **Fast Forward**. Те же команды, а также {icon"
 "}`time-rewind` **Rewind**, есть на правом краю панели инструментов. Их "
-"настройки — на странице [Emulation page](options-emulation.md) окна "
-"**Options**."
+"настройки — в [разделе Emulation](options-emulation.md) окна **Options**."
 
 msgid "Pause"
 msgstr "Pause"
@@ -123,7 +122,7 @@ msgstr ""
 "режим, пока машина на паузе, нельзя."
 
 msgid "Slow Motion and Fast Forward"
-msgstr "Slow Motion and Fast Forward"
+msgstr "Slow Motion и Fast Forward"
 
 msgid ""
 "**Machine > Slow Motion** runs the whole machine slower, picture and "
@@ -153,7 +152,7 @@ msgid "A sign in the top right corner of the picture shows which mode is on."
 msgstr "Знак в правом верхнем углу изображения показывает, какой режим включён."
 
 msgid "How the keys work"
-msgstr "How the keys work"
+msgstr "Как работают клавиши"
 
 msgid ""
 "The **Slow Motion**, **Fast Forward** and **Fast Mode, no limit** rows of"
@@ -285,7 +284,7 @@ msgstr ""
 "изображение её перескакивает."
 
 msgid "The Speed slider and Turbo Mode"
-msgstr "The Speed slider and Turbo Mode"
+msgstr "Ползунок Speed и Turbo Mode"
 
 msgid ""
 "Two more controls change how fast the machine runs, and both are "
@@ -330,8 +329,8 @@ msgid ""
 "status bar shows the clock all the time."
 msgstr ""
 "Пока CPU работает не на своей базовой частоте, индикатор **CPU clock** "
-"может показывать эту частоту поверх изображения (см. [Indicators on the "
-"picture](options-appearance.md#indicators-on-the-picture)). Строка "
+"может показывать эту частоту поверх изображения (см. [Индикаторы на "
+"изображении](options-appearance.md#indicators-on-the-picture)). Строка "
 "состояния показывает частоту всегда."
 
 msgid "speed"

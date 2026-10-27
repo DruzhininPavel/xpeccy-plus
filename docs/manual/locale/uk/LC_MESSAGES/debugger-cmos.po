@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "CMOS panel"
-msgstr "CMOS panel"
+msgstr "Панель CMOS"
 
 msgid "![The CMOS panel](images/dbg-cmos.png)"
 msgstr "![Панель CMOS](images/dbg-cmos.png)"

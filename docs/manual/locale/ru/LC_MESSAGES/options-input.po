@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Input page"
-msgstr "Input page"
+msgstr "Раздел Input"
 
 msgid "![The Input page](images/options-input.png)"
 msgstr "![Страница Input](images/options-input.png)"
@@ -36,5 +36,5 @@ msgid ""
 msgstr ""
 "Раскладка; геймпады **Player 1** и **Player 2** с кнопкой "
 "**Gamepads...**, которая открывает их окно; и **Game bindings**. См. "
-"[Input menu](input.md)."
+"[Меню Input](input.md)."
 

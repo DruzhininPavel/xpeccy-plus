@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Heat map panel"
-msgstr "Heat map panel"
+msgstr "Panel Heat map"
 
 msgid "![The Heat map panel](images/dbg-heatmap.png)"
 msgstr "![El panel Heat map](images/dbg-heatmap.png)"

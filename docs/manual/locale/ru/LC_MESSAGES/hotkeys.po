@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Hotkeys page"
-msgstr "Hotkeys page"
+msgstr "Раздел Hotkeys"
 
 msgid "![The Hotkeys page](images/options-hotkeys.png)"
 msgstr "![Страница Hotkeys](images/options-hotkeys.png)"
@@ -34,7 +34,7 @@ msgid ""
 " own. See [Hotkeys page](hotkeys.md)."
 msgstr ""
 "Клавиши всех команд, в наборе Modern или Classic или в вашем собственном."
-" См. [Hotkeys page](hotkeys.md)."
+" См. [Раздел Hotkeys](hotkeys.md)."
 
 msgid ""
 "A command that has a key shows it beside its name in the menu. All the "
@@ -49,7 +49,7 @@ msgstr ""
 "назначьте ему клавишу, чтобы им пользоваться."
 
 msgid "Modern, Classic and Custom"
-msgstr "Modern, Classic and Custom"
+msgstr "Modern, Classic и Custom"
 
 msgid ""
 "Two sets of keys come with the program. Pick one in the **Preset** list "
@@ -123,7 +123,7 @@ msgstr ""
 "кириллица или другая раскладка, Alt+M остаётся Alt+M."
 
 msgid "Change a key"
-msgstr "Change a key"
+msgstr "Изменение клавиши"
 
 msgid ""
 "The table on the **Hotkeys** page has three columns: **Action**, **Key** "
@@ -214,7 +214,7 @@ msgstr ""
 "возвращает Custom к набору, из которого он сделан."
 
 msgid "Find a key"
-msgstr "Find a key"
+msgstr "Поиск клавиши"
 
 msgid ""
 "Type in the search box to see only the actions whose name, group or key "
@@ -233,7 +233,7 @@ msgstr ""
 "видно, что эта клавиша делает."
 
 msgid "How the keys behave"
-msgstr "How the keys behave"
+msgstr "Как ведут себя клавиши"
 
 msgid ""
 "**Grab Keyboard.** While the keyboard is grabbed, every key goes to the "
@@ -271,7 +271,7 @@ msgstr ""
 "каждая одним из трёх способов, заданным на странице **Emulation** окна "
 "**Options**: **Toggle**, **Hold** или **Tap or hold** (по умолчанию): "
 "короткое нажатие включает или выключает режим, более долгое держит его "
-"включённым только пока клавиша нажата. См. [Speed and time](time.md)."
+"включённым только пока клавиша нажата. См. [Скорость и время](time.md)."
 
 msgid ""
 "**Shift and Ctrl.** A hotkey's own Shift or Ctrl is not passed to the "
@@ -339,7 +339,7 @@ msgstr ""
 "сверяйте клавишу там. В таблицах ниже клавиши для Windows и Linux."
 
 msgid "All the keys"
-msgstr "All the keys"
+msgstr "Все клавиши"
 
 msgid ""
 "A dash means no key. Where an action has two keys, both are given. In a "
@@ -738,7 +738,7 @@ msgid "Alt+A"
 msgstr "Alt+A"
 
 msgid "Debugger keys"
-msgstr "Debugger keys"
+msgstr "Клавиши отладчика"
 
 msgid ""
 "These work in the **Debugger** window. **Options**, **Open**, **Save**, "

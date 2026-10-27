@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Media menu"
-msgstr "Media menu"
+msgstr "Меню Media"
 
 msgid ""
 "A machine can have floppy drives, hard disks, an SD card or a cartridge "
@@ -45,7 +45,7 @@ msgid "{icon}`tape` **Tape Player**, **Tape Play/Stop**, **Tape Record/Stop**"
 msgstr "{icon}`tape` **Tape Player**, **Tape Play/Stop**, **Tape Record/Stop**"
 
 msgid "[Tapes](tapes.md)"
-msgstr "[Tapes](tapes.md)"
+msgstr "[Стрічки](tapes.md)"
 
 #, python-brace-format
 msgid ""
@@ -56,7 +56,7 @@ msgstr ""
 "Disk Access**"
 
 msgid "[Floppy disks](disks.md)"
-msgstr "[Floppy disks](disks.md)"
+msgstr "[Дискети](disks.md)"
 
 #, python-brace-format
 msgid "{icon}`cartrige` **Cartridge**"
@@ -77,10 +77,10 @@ msgid "{icon}`sdcard` **SD Card**, {icon}`hdd` **Drives**"
 msgstr "{icon}`sdcard` **SD Card**, {icon}`hdd` **Drives**"
 
 msgid "[SD cards and hard disks](sd-hdd.md)"
-msgstr "[SD cards and hard disks](sd-hdd.md)"
+msgstr "[SD-картки й жорсткі диски](sd-hdd.md)"
 
 msgid "Which machine has what"
-msgstr "Which machine has what"
+msgstr "Що є в якої машини"
 
 msgid "Machine"
 msgstr "Machine"
@@ -188,7 +188,7 @@ msgid ""
 "board**. A Beta Disk cannot be added to the +2A and +3."
 msgstr ""
 "Машині без власного дискового інтерфейсу його можна додати. Відкрийте "
-"[Machine page](options-machine.md) вікна **Options** і виберіть його в "
+"[розділ Machine](options-machine.md) вікна **Options** і виберіть його в "
 "рядку **Disk**: **None**, **Beta Disk (WD1793)** або **+3 (uPD765)**. "
 "Рядок **Hard disk** робить те саме для інтерфейсу IDE: **NemoIDE**, "
 "**NemoIDE A8**, **NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** або "

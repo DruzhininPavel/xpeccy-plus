@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "ZX Next panel"
-msgstr "ZX Next panel"
+msgstr "Panel ZX Next"
 
 msgid "![The ZX Next panel in its own window](images/dbg-next-regs.png)"
 msgstr "![El panel ZX Next en su propia ventana](images/dbg-next-regs.png)"
@@ -50,7 +50,7 @@ msgid ""
 msgstr ""
 "Como el panel ZX Evo, pasa a una ventana propia, **ZX Next**, con "
 "{icon}`display` **Show in its own window**, y la ventana sigue a la "
-"máquina mientras está en marcha (consulta [The ZX Evolution window"
+"máquina mientras está en marcha (consulta [La ventana ZX Evolution"
 "](debugger-zx-evo.md#the-zx-evolution-window))."
 
 msgid "Registers"

@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Speed and time"
-msgstr "Speed and time"
+msgstr "Velocidad y tiempo"
 
 #, python-brace-format
 msgid ""
@@ -36,7 +36,7 @@ msgstr ""
 "cambian: **Pause**, **Fast Mode**, **Slow Motion** y **Fast Forward**. "
 "Los mismos comandos, y también {icon}`time-rewind` **Rewind**, están en "
 "el extremo derecho de la barra de herramientas. Sus ajustes están en la "
-"[Emulation page](options-emulation.md) de **Options**."
+"[sección Emulation](options-emulation.md) de **Options**."
 
 msgid "Pause"
 msgstr "Pause"
@@ -123,7 +123,7 @@ msgstr ""
 "modo rápido no se puede iniciar mientras la máquina está en pausa."
 
 msgid "Slow Motion and Fast Forward"
-msgstr "Slow Motion and Fast Forward"
+msgstr "Slow Motion y Fast Forward"
 
 msgid ""
 "**Machine > Slow Motion** runs the whole machine slower, picture and "
@@ -156,7 +156,7 @@ msgstr ""
 "está activo."
 
 msgid "How the keys work"
-msgstr "How the keys work"
+msgstr "Cómo funcionan las teclas"
 
 msgid ""
 "The **Slow Motion**, **Fast Forward** and **Fast Mode, no limit** rows of"
@@ -290,7 +290,7 @@ msgstr ""
 " imagen la salta."
 
 msgid "The Speed slider and Turbo Mode"
-msgstr "The Speed slider and Turbo Mode"
+msgstr "El control deslizante Speed y Turbo Mode"
 
 msgid ""
 "Two more controls change how fast the machine runs, and both are "
@@ -338,7 +338,7 @@ msgid ""
 msgstr ""
 "Mientras la CPU funciona a un reloj distinto de su reloj base, el "
 "indicador **CPU clock** puede mostrar ese reloj sobre la imagen (consulta"
-" [Indicators on the picture](options-appearance.md#indicators-on-the-"
+" [Indicadores sobre la imagen](options-appearance.md#indicators-on-the-"
 "picture)). La barra de estado muestra el reloj siempre."
 
 msgid "speed"

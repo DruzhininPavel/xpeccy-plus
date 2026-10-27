@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "STACK panel"
-msgstr "STACK panel"
+msgstr "Panel STACK"
 
 msgid "![The STACK panel](images/dbg-stack.png)"
 msgstr "![El panel STACK](images/dbg-stack.png)"

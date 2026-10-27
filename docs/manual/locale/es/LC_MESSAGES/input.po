@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Input menu"
-msgstr "Input menu"
+msgstr "Menú Input"
 
 msgid ""
 "Type on the PC keyboard and the machine gets the keys. A gamepad, or a "
@@ -35,12 +35,12 @@ msgstr ""
 "unas cuantas teclas del teclado del PC, puede hacer de joystick; el ratón"
 " del PC puede ser un ratón Kempston. El menú **Input** tiene los comandos"
 " para todo esto: **Grab Keyboard**, **Grab Mouse**, **Keymap** y "
-"**Gamepads**. Sus ajustes están en la [Input page](options-input.md) de "
-"**Options**, y las interfaces de joystick y ratón de la máquina, en su "
-"[Machine page](options-machine.md)."
+"**Gamepads**. Sus ajustes están en la [sección Input](options-input.md) "
+"de **Options**, y las interfaces de joystick y ratón de la máquina, en su"
+" [sección Machine](options-machine.md)."
 
 msgid "The keyboard"
-msgstr "The keyboard"
+msgstr "El teclado"
 
 msgid ""
 "The Spectrum keys are where they are on the PC: letters, digits, Space "
@@ -248,8 +248,8 @@ msgstr ""
 "Una tecla que es un atajo de teclado ejecuta su comando en lugar de "
 "llegar a la máquina. Qué teclas son depende del juego de atajos que uses:"
 " en Modern, Delete, Home, End e Insert son atajos, mientras que Esc se "
-"deja a la máquina como BREAK. Consulta [Hotkeys page](hotkeys.md). Para "
-"dar a la máquina todas las teclas, captura el teclado."
+"deja a la máquina como BREAK. Consulta [Sección Hotkeys](hotkeys.md). "
+"Para dar a la máquina todas las teclas, captura el teclado."
 
 msgid ""
 "On Windows and Linux a key is recognized by its place on the keyboard, "
@@ -261,7 +261,7 @@ msgstr ""
 "distribución cirílica u otra activada en el sistema no cambia nada."
 
 msgid "Keymaps"
-msgstr "Keymaps"
+msgstr "Mapas de teclado"
 
 msgid ""
 "A keymap says which PC key presses which Spectrum key. Pick one in "
@@ -310,7 +310,7 @@ msgstr ""
 "Shift: usa allí Default o el de 128K."
 
 msgid "Your own keymap"
-msgstr "Your own keymap"
+msgstr "Tu propio mapa de teclado"
 
 msgid ""
 "A keymap is a text file with the extension `.map`, put in the `keymaps` "
@@ -320,8 +320,8 @@ msgid ""
 "is used instead of that one."
 msgstr ""
 "Un mapa de teclado es un archivo de texto con la extensión `.map`, puesto"
-" en la carpeta `keymaps` de la carpeta de ajustes (consulta [Where the "
-"settings are](getting-started.md#where-the-settings-are)). Aparece en el "
+" en la carpeta `keymaps` de la carpeta de ajustes (consulta [Dónde están "
+"los ajustes](getting-started.md#where-the-settings-are)). Aparece en el "
 "menú **Keymap** la próxima vez que se abre el menú. Un archivo con el "
 "nombre de un mapa incorporado se usa en lugar de este."
 
@@ -419,7 +419,7 @@ msgstr ""
 "se captura y se suelta el teclado."
 
 msgid "Machines with a keyboard of their own"
-msgstr "Machines with a keyboard of their own"
+msgstr "Máquinas con teclado propio"
 
 msgid ""
 "**Profi.** A Profi has a PC-style keyboard of its own. With the keyboard "
@@ -642,7 +642,7 @@ msgstr ""
 "aparece en gris."
 
 msgid "Setting up a row"
-msgstr "Setting up a row"
+msgstr "Configurar una fila"
 
 #, python-brace-format
 msgid ""
@@ -711,7 +711,7 @@ msgstr ""
 "}`ok-apply` **OK** guarda los cambios."
 
 msgid "Saving the bindings"
-msgstr "Saving the bindings"
+msgstr "Guardar las asignaciones"
 
 #, python-brace-format
 msgid ""
@@ -768,7 +768,7 @@ msgstr ""
 "{icon}`cancel` **Cancel**, Esc o cerrar la pregunta deshacen el cambio."
 
 msgid "Quick switch"
-msgstr "Quick switch"
+msgstr "Cambio rápido"
 
 msgid ""
 "**Input > Gamepads** also lists the joysticks for player 1, with the "
@@ -787,7 +787,7 @@ msgstr ""
 "la ventana."
 
 msgid "Mouse"
-msgstr "Mouse"
+msgstr "Ratón"
 
 #, python-brace-format
 msgid ""

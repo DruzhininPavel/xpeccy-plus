@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Video page"
-msgstr "Video page"
+msgstr "Розділ Video"
 
 msgid "![The Video page](images/options-video.png)"
 msgstr "![Сторінка Video](images/options-video.png)"
@@ -45,18 +45,20 @@ msgstr ""
 "**Palette Editor**, **Shader**, а праворуч масштаб вікна (від **Scale "
 "x1** до **Scale x6**), **Fullscreen**, **Keep ratio** і **Gray scale**. "
 "Масштаб, **Fullscreen**, **Keep ratio**, палітра й шейдер — ті самі "
-"налаштування, що в меню **View**; див. [View menu](view.md)."
+"налаштування, що в меню **View**; див. [Меню View](view.md)."
 
 msgid "**Anti-flicker** - see [Anti-flicker](#anti-flicker)."
 msgstr "**Anti-flicker** — див. [Anti-flicker](#anti-flicker)."
 
 msgid "**Screenshots** - see [Screenshots](#screenshots)."
-msgstr "**Screenshots** — див. [Screenshots](#screenshots)."
+msgstr "**Screenshots** — див. [Група Screenshots](#screenshots)."
 
 msgid ""
 "**Recording** - video recording through FFmpeg. See "
 "[Recording](#recording)."
-msgstr "**Recording** — запис відео через FFmpeg. Див. [Recording](#recording)."
+msgstr ""
+"**Recording** — запис відео через FFmpeg. Див. [Група "
+"Recording](#recording)."
 
 msgid "Anti-flicker"
 msgstr "Anti-flicker"
@@ -170,7 +172,7 @@ msgid "Anti-flicker is not applied in fast mode."
 msgstr "Усунення мерехтіння не застосовується у швидкому режимі."
 
 msgid "Screenshots"
-msgstr "Screenshots"
+msgstr "Група Screenshots"
 
 msgid "The **Screenshots** group on the **Video** page of **Options**:"
 msgstr "Група **Screenshots** на сторінці **Video** вікна **Options**:"
@@ -232,7 +234,7 @@ msgstr ""
 "в іншому відеорежимі в них не вміщається."
 
 msgid "Recording"
-msgstr "Recording"
+msgstr "Група Recording"
 
 msgid "The **Recording** group on the **Video** page of **Options**:"
 msgstr "Група **Recording** на сторінці **Video** вікна **Options**:"
@@ -270,7 +272,7 @@ msgid ""
 msgstr "**Output** — папка для відео; типово це системна папка відео."
 
 msgid "**FFmpeg** - see [Getting FFmpeg](capture.md#getting-ffmpeg)."
-msgstr "**FFmpeg** — див. [Getting FFmpeg](capture.md#getting-ffmpeg)."
+msgstr "**FFmpeg** — див. [Як отримати FFmpeg](capture.md#getting-ffmpeg)."
 
 msgid ""
 "The size and frame rate of the video are shown beside these settings. The"
@@ -446,7 +448,7 @@ msgstr ""
 "`ram`, `reset` або адреса, наприклад `==#6000` чи `\">=#8000\"`."
 
 msgid "They hold for that run only. See [Command line](command-line.md)."
-msgstr "Вони діють лише на цей запуск. Див. [Command line](command-line.md)."
+msgstr "Вони діють лише на цей запуск. Див. [Командний рядок](command-line.md)."
 
 msgid "Intensity"
 msgstr "Intensity"

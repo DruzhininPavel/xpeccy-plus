@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Video page"
-msgstr "Video page"
+msgstr "Sección Video"
 
 msgid "![The Video page](images/options-video.png)"
 msgstr "![La página Video](images/options-video.png)"
@@ -44,21 +44,21 @@ msgstr ""
 "**Palette Editor**, **Shader**, y a la derecha la escala de la ventana "
 "(de **Scale x1** a **Scale x6**), **Fullscreen**, **Keep ratio** y **Gray"
 " scale**. La escala, **Fullscreen**, **Keep ratio**, la paleta y el "
-"shader son los mismos ajustes que en el menú **View**; consulta [View "
-"menu](view.md)."
+"shader son los mismos ajustes que en el menú **View**; consulta [Menú "
+"View](view.md)."
 
 msgid "**Anti-flicker** - see [Anti-flicker](#anti-flicker)."
 msgstr "**Anti-flicker** — consulta [Anti-flicker](#anti-flicker)."
 
 msgid "**Screenshots** - see [Screenshots](#screenshots)."
-msgstr "**Screenshots** — consulta [Screenshots](#screenshots)."
+msgstr "**Screenshots** — consulta [Grupo Screenshots](#screenshots)."
 
 msgid ""
 "**Recording** - video recording through FFmpeg. See "
 "[Recording](#recording)."
 msgstr ""
-"**Recording** — grabación de vídeo mediante FFmpeg. Consulta "
-"[Recording](#recording)."
+"**Recording** — grabación de vídeo mediante FFmpeg. Consulta [Grupo "
+"Recording](#recording)."
 
 msgid "Anti-flicker"
 msgstr "Anti-flicker"
@@ -176,7 +176,7 @@ msgid "Anti-flicker is not applied in fast mode."
 msgstr "El anti-flicker no se aplica en el modo rápido."
 
 msgid "Screenshots"
-msgstr "Screenshots"
+msgstr "Grupo Screenshots"
 
 msgid "The **Screenshots** group on the **Video** page of **Options**:"
 msgstr "El grupo **Screenshots** de la página **Video** de **Options**:"
@@ -240,7 +240,7 @@ msgstr ""
 "una imagen hecha en otro modo de vídeo no cabe en ellos."
 
 msgid "Recording"
-msgstr "Recording"
+msgstr "Grupo Recording"
 
 msgid "The **Recording** group on the **Video** page of **Options**:"
 msgstr "El grupo **Recording** de la página **Video** de **Options**:"
@@ -280,7 +280,7 @@ msgstr ""
 "de tu sistema."
 
 msgid "**FFmpeg** - see [Getting FFmpeg](capture.md#getting-ffmpeg)."
-msgstr "**FFmpeg** — consulta [Getting FFmpeg](capture.md#getting-ffmpeg)."
+msgstr "**FFmpeg** — consulta [Obtener FFmpeg](capture.md#getting-ffmpeg)."
 
 msgid ""
 "The size and frame rate of the video are shown beside these settings. The"
@@ -460,7 +460,9 @@ msgstr ""
 "`\">=#8000\"`."
 
 msgid "They hold for that run only. See [Command line](command-line.md)."
-msgstr "Solo valen para esa ejecución. Consulta [Command line](command-line.md)."
+msgstr ""
+"Solo valen para esa ejecución. Consulta [Línea de comandos](command-"
+"line.md)."
 
 msgid "Intensity"
 msgstr "Intensity"

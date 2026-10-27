@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Input page"
-msgstr "Input page"
+msgstr "Розділ Input"
 
 msgid "![The Input page](images/options-input.png)"
 msgstr "![Сторінка Input](images/options-input.png)"
@@ -35,6 +35,6 @@ msgid ""
 "See [Input menu](input.md)."
 msgstr ""
 "Карта клавіш; геймпади **Player 1** і **Player 2** з кнопкою "
-"**Gamepads...**, що відкриває їхнє вікно; і **Game bindings**. Див. "
-"[Input menu](input.md)."
+"**Gamepads...**, що відкриває їхнє вікно; і **Game bindings**. Див. [Меню"
+" Input](input.md)."
 

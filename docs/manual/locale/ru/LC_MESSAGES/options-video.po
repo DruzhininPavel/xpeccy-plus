@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Video page"
-msgstr "Video page"
+msgstr "Раздел Video"
 
 msgid "![The Video page](images/options-video.png)"
 msgstr "![Страница Video](images/options-video.png)"
@@ -45,18 +45,20 @@ msgstr ""
 "**Palette Editor**, **Shader**, а справа масштаб окна (от **Scale x1** до"
 " **Scale x6**), **Fullscreen**, **Keep ratio** и **Gray scale**. Масштаб,"
 " **Fullscreen**, **Keep ratio**, палитра и шейдер — те же настройки, что "
-"в меню **View**; см. [View menu](view.md)."
+"в меню **View**; см. [Меню View](view.md)."
 
 msgid "**Anti-flicker** - see [Anti-flicker](#anti-flicker)."
 msgstr "**Anti-flicker** — см. [Anti-flicker](#anti-flicker)."
 
 msgid "**Screenshots** - see [Screenshots](#screenshots)."
-msgstr "**Screenshots** — см. [Screenshots](#screenshots)."
+msgstr "**Screenshots** — см. [Группа Screenshots](#screenshots)."
 
 msgid ""
 "**Recording** - video recording through FFmpeg. See "
 "[Recording](#recording)."
-msgstr "**Recording** — запись видео через FFmpeg. См. [Recording](#recording)."
+msgstr ""
+"**Recording** — запись видео через FFmpeg. См. [Группа "
+"Recording](#recording)."
 
 msgid "Anti-flicker"
 msgstr "Anti-flicker"
@@ -170,7 +172,7 @@ msgid "Anti-flicker is not applied in fast mode."
 msgstr "В быстром режиме подавление мерцания не применяется."
 
 msgid "Screenshots"
-msgstr "Screenshots"
+msgstr "Группа Screenshots"
 
 msgid "The **Screenshots** group on the **Video** page of **Options**:"
 msgstr "Группа **Screenshots** на странице **Video** окна **Options**:"
@@ -232,7 +234,7 @@ msgstr ""
 "изображение в другом видеорежиме в них не помещается."
 
 msgid "Recording"
-msgstr "Recording"
+msgstr "Группа Recording"
 
 msgid "The **Recording** group on the **Video** page of **Options**:"
 msgstr "Группа **Recording** на странице **Video** окна **Options**:"
@@ -270,7 +272,7 @@ msgid ""
 msgstr "**Output** — папка для видео; изначально — системная папка видео."
 
 msgid "**FFmpeg** - see [Getting FFmpeg](capture.md#getting-ffmpeg)."
-msgstr "**FFmpeg** — см. [Getting FFmpeg](capture.md#getting-ffmpeg)."
+msgstr "**FFmpeg** — см. [Где взять FFmpeg](capture.md#getting-ffmpeg)."
 
 msgid ""
 "The size and frame rate of the video are shown beside these settings. The"
@@ -445,7 +447,9 @@ msgstr ""
 "запуск: `ram`, `reset` или адрес, например `==#6000` или `\">=#8000\"`."
 
 msgid "They hold for that run only. See [Command line](command-line.md)."
-msgstr "Они действуют только на этот запуск. См. [Command line](command-line.md)."
+msgstr ""
+"Они действуют только на этот запуск. См. [Командная строка](command-"
+"line.md)."
 
 msgid "Intensity"
 msgstr "Intensity"

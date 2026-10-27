@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Favorites menu"
-msgstr "Favorites menu"
+msgstr "Меню Favorites"
 
 msgid ""
 "The **Favorites** menu keeps a list of files you open often. At the top "

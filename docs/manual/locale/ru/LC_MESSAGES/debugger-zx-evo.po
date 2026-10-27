@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "ZX Evo panel"
-msgstr "ZX Evo panel"
+msgstr "Панель ZX Evo"
 
 msgid "![The ZX Evo panel in its own window, on TSConf](images/dbg-evo-regs.png)"
 msgstr "![Панель ZX Evo в отдельном окне, на TSConf](images/dbg-evo-regs.png)"
@@ -115,7 +115,7 @@ msgstr ""
 "действует на все списки панели и сохраняется до следующего раза."
 
 msgid "The Registers tab"
-msgstr "The Registers tab"
+msgstr "Вкладка Registers"
 
 msgid ""
 "The **Registers** tab lists the TSConf registers, the ones a program sets"
@@ -175,18 +175,18 @@ msgid ""
 "fmaps-window-on-tsconf)."
 msgstr ""
 "**FMAddr** в группе **Memory** показывает, где начинаются три части окна "
-"FMAPS: CRAM, SFILE и регистры. Дамп отмечает те же байты: см. [The FMAPS "
-"window on TSConf](debugger-memory.md#the-fmaps-window-on-tsconf)."
+"FMAPS: CRAM, SFILE и регистры. Дамп отмечает те же байты: см. [Окно FMAPS"
+" на TSConf](debugger-memory.md#the-fmaps-window-on-tsconf)."
 
 msgid ""
 "The **DMA** group is the same as at the top of the **DMA** tab: see [The "
 "DMA tab](#the-dma-tab)."
 msgstr ""
-"Группа **DMA** — та же, что вверху вкладки **DMA**: см. [The DMA tab"
+"Группа **DMA** — та же, что вверху вкладки **DMA**: см. [Вкладка DMA"
 "](#the-dma-tab)."
 
 msgid "Hiding layers"
-msgstr "Hiding layers"
+msgstr "Скрытие слоёв"
 
 msgid ""
 "TSConf builds its picture from six layers. The switches in the **Show** "
@@ -294,7 +294,7 @@ msgstr ""
 " вы снова их не отметите."
 
 msgid "The Sprites tab"
-msgstr "The Sprites tab"
+msgstr "Вкладка Sprites"
 
 msgid "![The Sprites tab](images/dbg-evo-sprites.png)"
 msgstr "![Вкладка Sprites](images/dbg-evo-sprites.png)"
@@ -376,7 +376,7 @@ msgstr ""
 "каждый."
 
 msgid "The Tiles tab"
-msgstr "The Tiles tab"
+msgstr "Вкладка Tiles"
 
 msgid "![The Tiles tab](images/dbg-evo-tiles.png)"
 msgstr "![Вкладка Tiles](images/dbg-evo-tiles.png)"
@@ -502,7 +502,7 @@ msgstr ""
 "от одной линии тайла до следующей, в шестнадцатеричном виде."
 
 msgid "The Palette tab"
-msgstr "The Palette tab"
+msgstr "Вкладка Palette"
 
 msgid ""
 "On TSConf the **Palette** tab shows the 256 colors of the palette memory,"
@@ -589,7 +589,7 @@ msgstr ""
 "**VDAC_MODE** 0 уровень имеет полную яркость начиная с 24."
 
 msgid "The DMA tab"
-msgstr "The DMA tab"
+msgstr "Вкладка DMA"
 
 msgid ""
 "The **DMA** tab shows the DMA of TSConf, which copies memory and fills it"
@@ -697,7 +697,7 @@ msgstr ""
 "течение кадра и сколько это занимает."
 
 msgid "The Ports tab"
-msgstr "The Ports tab"
+msgstr "Вкладка Ports"
 
 msgid ""
 "On BaseConf the **Ports** tab shows the ports that set the memory and the"
@@ -735,7 +735,7 @@ msgstr ""
 "цвет бордюра, виртуальные дисководы и порты `2F`, `4F`, `6F` и `8F`."
 
 msgid "The ZX Evolution window"
-msgstr "The ZX Evolution window"
+msgstr "Окно ZX Evolution"
 
 #, python-brace-format
 msgid ""

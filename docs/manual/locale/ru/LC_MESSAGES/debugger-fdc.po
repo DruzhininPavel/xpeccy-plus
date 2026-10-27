@@ -21,7 +21,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 msgid "FDC panel"
-msgstr "FDC panel"
+msgstr "Панель FDC"
 
 msgid "![The FDC panel](images/dbg-fdc.png)"
 msgstr "![Панель FDC](images/dbg-fdc.png)"
@@ -39,7 +39,7 @@ msgid ""
 msgstr ""
 "Панель **FDC** показывает контроллер дисковода в левом и среднем столбцах"
 " и дисковод, с которым он работает, в правом. Она есть только на машине с"
-" дисковым интерфейсом (см. [Floppy disks](disks.md)). Все числа "
+" дисковым интерфейсом (см. [Дискеты](disks.md)). Все числа "
 "шестнадцатеричные; флаг — 1 или 0. На рисунке Fire 'n Ice (n-Discovery, "
 "2003) загружается с диска TR-DOS: контроллер читает сектор, команда 80."
 
