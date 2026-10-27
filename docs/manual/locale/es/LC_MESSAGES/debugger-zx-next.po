@@ -1,0 +1,270 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "ZX Next panel"
+msgstr "Panel ZX Next"
+
+msgid "![The ZX Next panel in its own window](images/dbg-next-regs.png)"
+msgstr "![El panel ZX Next en su propia ventana](images/dbg-next-regs.png)"
+
+msgid "The ZX Next panel in its own window"
+msgstr "El panel ZX Next en su propia ventana"
+
+msgid ""
+"The **ZX Next** panel shows what the hardware of the ZX Spectrum Next is "
+"set to. It is there only on the **ZX Spectrum Next**, on a tab beside "
+"**Breakpoints**, and has seven tabs: **Registers**, **Sprites**, "
+"**Copper**, **Layers**, **Tilemap**, **Palette** and **DMA**. A value "
+"that changed since the last step is in the **Changed** color."
+msgstr ""
+"El panel **ZX Next** muestra cómo está configurado el hardware del ZX "
+"Spectrum Next. Solo está en el **ZX Spectrum Next**, en una pestaña junto"
+" a **Breakpoints**, y tiene siete pestañas: **Registers**, **Sprites**, "
+"**Copper**, **Layers**, **Tilemap**, **Palette** y **DMA**. Un valor que "
+"ha cambiado desde el último paso aparece en el color **Changed**."
+
+#, python-brace-format
+msgid ""
+"Like the ZX Evo panel, it moves into a window of its own, **ZX Next**, "
+"with {icon}`display` **Show in its own window**, and the window follows "
+"the machine while it runs (see [The ZX Evolution window](debugger-zx-"
+"evo.md#the-zx-evolution-window))."
+msgstr ""
+"Como el panel ZX Evo, pasa a una ventana propia, **ZX Next**, con "
+"{icon}`display` **Show in its own window**, y la ventana sigue a la "
+"máquina mientras está en marcha (consulta [La ventana ZX Evolution"
+"](debugger-zx-evo.md#the-zx-evolution-window))."
+
+msgid "Registers"
+msgstr "Registers"
+
+msgid ""
+"The **Registers** tab lists the Next's registers in groups: **Machine**, "
+"**Memory**, **Video**, **Clip and scroll**, **Interrupts**, **Copper**, "
+"**Sound** and **UART**."
+msgstr ""
+"La pestaña **Registers** lista los registros del Next por grupos: "
+"**Machine**, **Memory**, **Video**, **Clip and scroll**, **Interrupts**, "
+"**Copper**, **Sound** y **UART**."
+
+msgid "Column"
+msgstr "Columna"
+
+msgid "What it shows"
+msgstr "Qué muestra"
+
+msgid "**Reg**"
+msgstr "**Reg**"
+
+msgid "the number of the Next register, or the port, such as `7FFD`"
+msgstr "el número del registro del Next, o el puerto, como `7FFD`"
+
+msgid "**Name**"
+msgstr "**Name**"
+
+msgid "its name, such as **CPU speed** or **MMU 0**"
+msgstr "su nombre, como **CPU speed** o **MMU 0**"
+
+msgid "**Value**"
+msgstr "**Value**"
+
+msgid "the value, in hex"
+msgstr "el valor, en hexadecimal"
+
+msgid "**Means**"
+msgstr "**Means**"
+
+msgid "what the value sets, such as `28 MHz` or `page 0A, bank 5 low`"
+msgstr "qué configura el valor, como `28 MHz` o `page 0A, bank 5 low`"
+
+msgid ""
+"Besides the Next registers, the list has the ports and the state behind "
+"them: the 128K, +3 and Pentagon paging ports, the layer 2 port, the "
+"divMMC and the Multiface, the four CTC channels, the AY select and the "
+"DACs, and the speed of each UART. Tick **All 256, as a read gives them** "
+"to see every Next register, by number, as a program reads it."
+msgstr ""
+"Además de los registros del Next, la lista tiene los puertos y el estado "
+"que hay tras ellos: los puertos de paginación de 128K, +3 y Pentagon, el "
+"puerto de layer 2, el divMMC y el Multiface, los cuatro canales del CTC, "
+"la selección de AY y los DAC, y la velocidad de cada UART. Marca **All "
+"256, as a read gives them** para ver todos los registros del Next, por "
+"número, tal como los lee un programa."
+
+msgid "Sprites"
+msgstr "Sprites"
+
+msgid ""
+"The **Sprites** tab lists the 128 sprites. **Visible only**, ticked by "
+"default, leaves out the ones that are not shown, and those that are "
+"listed but not drawn are grayed."
+msgstr ""
+"La pestaña **Sprites** lista los 128 sprites. **Visible only**, marcada "
+"por defecto, deja fuera los que no se muestran, y los que están en la "
+"lista pero no se dibujan aparecen en gris."
+
+msgid "**#**"
+msgstr "**#**"
+
+msgid "the number of the sprite"
+msgstr "el número del sprite"
+
+msgid "**X**, **Y**"
+msgstr "**X**, **Y**"
+
+msgid "where it is"
+msgstr "dónde está"
+
+msgid "**Pattern**"
+msgstr "**Pattern**"
+
+msgid "its pattern; `a` or `b` after the number for the halves of a 4-bit pattern"
+msgstr ""
+"su patrón; `a` o `b` tras el número para las mitades de un patrón de 4 "
+"bits"
+
+msgid "**Pal**"
+msgstr "**Pal**"
+
+msgid "its palette offset"
+msgstr "su desplazamiento de paleta"
+
+msgid "**Scale**"
+msgstr "**Scale**"
+
+msgid "`1x1` to `8x8`"
+msgstr "`1x1` to `8x8`"
+
+msgid "**Flags**"
+msgstr "**Flags**"
+
+msgid "`4-bit`; `XM`, `YM` mirrored; `ROT` rotated"
+msgstr "`4-bit`; `XM`, `YM` reflejado; `ROT` girado"
+
+msgid "**Anchor**"
+msgstr "**Anchor**"
+
+msgid "the anchor a relative sprite belongs to, unified or composite"
+msgstr "el ancla a la que pertenece un sprite relativo, unificado o compuesto"
+
+msgid ""
+"Click a sprite to see it under the list, as large as the room allows, "
+"with what it is, where and in which colors."
+msgstr ""
+"Haz clic en un sprite para verlo bajo la lista, tan grande como permita "
+"el espacio, con lo que es, dónde está y en qué colores."
+
+msgid "Copper"
+msgstr "Copper"
+
+msgid ""
+"The **Copper** tab shows the copper's 1024 instructions: **Addr**, "
+"**Word** and **Instruction** (`WAIT`, `MOVE`, `NOOP`, `HALT`). The line "
+"at the top says how the copper runs, where its PC is and where a "
+"program's writes go. The row at the PC is lit; with **Follow PC** ticked "
+"the list follows it."
+msgstr ""
+"La pestaña **Copper** muestra las 1024 instrucciones del copper: "
+"**Addr**, **Word** e **Instruction** (`WAIT`, `MOVE`, `NOOP`, `HALT`). La"
+" línea de arriba dice cómo funciona el copper, dónde está su PC y adónde "
+"van las escrituras de un programa. La fila del PC está resaltada; con "
+"**Follow PC** marcado, la lista la sigue."
+
+msgid "Layers"
+msgstr "Layers"
+
+msgid ""
+"The **Layers** tab draws one picture from memory, as it is, with no "
+"scroll: layer 2 from its active or its shadow bank, the ULA screen in "
+"bank 5 or 7, the LoRes screen, or the sprite patterns, 8-bit or 4-bit. "
+"The column on the right says what the layer is set to; move the mouse "
+"over the picture for the dot, its address and its color. A checker shows "
+"the transparent color. In the sprite patterns, the ones used by visible "
+"sprites are outlined."
+msgstr ""
+"La pestaña **Layers** dibuja una imagen de la memoria, tal cual, sin "
+"desplazamiento: layer 2 desde su banco activo o su banco sombra, la "
+"pantalla de la ULA en el banco 5 o 7, la pantalla LoRes o los patrones de"
+" sprites, de 8 o de 4 bits. La columna de la derecha dice cómo está "
+"configurada la capa; mueve el ratón sobre la imagen para ver el punto, su"
+" dirección y su color. Un damero muestra el color transparente. En los "
+"patrones de sprites, los que usan los sprites visibles aparecen "
+"recuadrados."
+
+msgid "Tilemap"
+msgstr "Tilemap"
+
+msgid ""
+"The **Tilemap** tab draws the whole tile map, with no scroll (**Map**), "
+"or the tile definitions (**Tiles**) in the colors of **Palette offset**. "
+"Move the mouse over it to see the cell, its address, tile, attribute, "
+"colors and flips."
+msgstr ""
+"La pestaña **Tilemap** dibuja el mapa de tiles entero, sin desplazamiento"
+" (**Map**), o las definiciones de los tiles (**Tiles**) en los colores de"
+" **Palette offset**. Mueve el ratón sobre él para ver la celda, su "
+"dirección, el tile, el atributo, los colores y los volteos."
+
+msgid "Palette"
+msgstr "Palette"
+
+msgid ""
+"The **Palette** tab shows one of the eight palettes, 256 colors in a 16 "
+"by 16 grid: first and second for the ULA, layer 2, the sprites and the "
+"tilemap. **(in use)** marks the ones the layers use now. The index that "
+"register 40 points at, where register 43 writes, is framed with a dashed "
+"line. Move the mouse over a color, or click it, to see its index, value, "
+"red, green and blue levels, RGB, layer 2 priority and the layers that use"
+" it."
+msgstr ""
+"La pestaña **Palette** muestra una de las ocho paletas, 256 colores en "
+"una cuadrícula de 16 por 16: primera y segunda para la ULA, layer 2, los "
+"sprites y el mapa de tiles. **(in use)** señala las que usan ahora las "
+"capas. El índice al que apunta el registro 40, donde escribe el registro "
+"43, está enmarcado con una línea discontinua. Mueve el ratón sobre un "
+"color, o haz clic en él, para ver su índice, su valor, sus niveles de "
+"rojo, verde y azul, RGB, la prioridad de layer 2 y las capas que lo usan."
+
+msgid "DMA"
+msgstr "DMA"
+
+msgid ""
+"The **DMA** tab shows the DMA: under **Set up**, the port it was written "
+"through (Z80 DMA or zxnDMA), the direction, ports A and B, the length, "
+"the mode and the prescaler; under **State**, whether it runs and holds "
+"the bus, its status, the source, destination and counter now, and whether"
+" a register is half written."
+msgstr ""
+"La pestaña **DMA** muestra el DMA: en **Set up**, el puerto por el que se"
+" programó (Z80 DMA o zxnDMA), el sentido, los puertos A y B, la longitud,"
+" el modo y el preescalador; en **State**, si está en marcha y ocupa el "
+"bus, su estado, el origen, el destino y el contador en ese momento, y si "
+"un registro está escrito a medias."
+
+msgid "ZX Spectrum Next"
+msgstr "ZX Spectrum Next"
+
+msgid "Debugger panel"
+msgstr "panel del Debugger"
+
+msgid "ZX Next window"
+msgstr "ventana ZX Next"
+

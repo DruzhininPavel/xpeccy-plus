@@ -46,7 +46,7 @@ menu (see [Run a program](getting-started.md#run-a-program)), unless `-m` names 
 machine.
 
 If **Options** is set to ask for the machine at start, naming a file or a machine here
-skips the **Start Machine** question (see [Machine at start](machines.md#machine-at-start)).
+skips the **Start Machine** question (see [Machine at start](options-application.md#machine-at-start)).
 
 ## Machine and media
 
@@ -234,7 +234,7 @@ code is in `%errorlevel%`.
 - `--video-autostart AT`, `--video-autostop AT` - when the automatic recording starts and
   stops.
 
-See [Screenshots and recording](capture.md) for what each one does.
+See [Capture menu](capture.md) for what each one does.
 
 ## Logging
 

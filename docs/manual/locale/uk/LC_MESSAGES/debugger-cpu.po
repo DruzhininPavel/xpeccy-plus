@@ -1,0 +1,159 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "CPU panel"
+msgstr "Панель CPU"
+
+msgid "![The CPU panel](images/dbg-cpu.png)"
+msgstr "![Панель CPU](images/dbg-cpu.png)"
+
+msgid "The CPU panel"
+msgstr "Панель CPU"
+
+msgid ""
+"The **CPU** panel shows the Z80 registers: PC, AF, BC, DE, HL, SP, the "
+"alternate set AF', BC', DE', HL', then IX, IY, IR, IM and the interrupt "
+"switches IFF1 and IFF2. Under them are the flags S, Z, 5, H, 3, P, N and "
+"C."
+msgstr ""
+"Панель **CPU** показує регістри Z80: PC, AF, BC, DE, HL, SP, "
+"альтернативний набір AF', BC', DE', HL', далі IX, IY, IR, IM і перемикачі"
+" переривань IFF1 та IFF2. Під ними — прапорці S, Z, 5, H, 3, P, N і C."
+
+msgid ""
+"A register that changed in the last step is marked in the **Changed** "
+"color of the **Debugger** page of **Options**. With **Split pairs** on, "
+"only the byte that changed is marked: after an instruction that changes "
+"only A, only the A half of AF lights up."
+msgstr ""
+"Регістр, що змінився за останній крок, позначено кольором **Changed** зі "
+"сторінки **Debugger** вікна **Options**. Коли ввімкнено **Split pairs**, "
+"позначено лише байт, що змінився: після інструкції, яка змінює тільки A, "
+"підсвічується лише половина A регістра AF."
+
+msgid "Changing registers"
+msgstr "Зміна регістрів"
+
+msgid ""
+"Click a value and type over it in hex. The change takes effect at once. "
+"In a value field:"
+msgstr ""
+"Клацніть значення й введіть нове поверх нього в шістнадцятковому вигляді."
+" Зміна діє одразу. У полі значення:"
+
+msgid "Up and Down, or the mouse wheel, add or subtract 1;"
+msgstr "Up і Down або коліщатко миші додають чи віднімають 1;"
+
+msgid "PgUp and PgDn add or subtract 256;"
+msgstr "PgUp і PgDn додають чи віднімають 256;"
+
+msgid "X switches the field between hex and decimal."
+msgstr "X перемикає поле між шістнадцятковим і десятковим виглядом."
+
+msgid "IFF1 and IFF2 are check boxes. Tick or untick a flag to change it in F."
+msgstr ""
+"IFF1 та IFF2 показано як поля позначок. Щоб змінити прапорець у F, "
+"поставте або зніміть його позначку."
+
+msgid ""
+"Click the name of a register to see, in the listing, the code at the "
+"address the register holds. Right-click the name to see that address in "
+"the **DUMP** panel."
+msgstr ""
+"Клацніть назву регістра, щоб побачити в лістингу код за адресою, яку "
+"містить регістр. Клацніть назву правою кнопкою, щоб побачити цю адресу на"
+" панелі **DUMP**."
+
+msgid "Layouts"
+msgstr "Компонування"
+
+msgid ""
+"Right-click the panel's title bar to choose how the registers are laid "
+"out. A small dot in the corner of a title bar shows that the panel has "
+"such a menu."
+msgstr ""
+"Клацніть правою кнопкою заголовок панелі, щоб вибрати, як розміщено "
+"регістри. Маленька крапка в куті заголовка означає, що панель має таке "
+"меню."
+
+msgid "![The registers layout menu](images/dbg-cpu-menu.png)"
+msgstr "![Меню компонування регістрів](images/dbg-cpu-menu.png)"
+
+msgid "The registers layout menu"
+msgstr "Меню компонування регістрів"
+
+msgid ""
+"**Auto** (the default) - one column when the panel is narrow, two when it"
+" is wide enough. **Auto** also uses two columns when two panels stand "
+"side by side under the **CPU** panel."
+msgstr ""
+"**Auto** (типово) — один стовпець, коли панель вузька, два, коли вона "
+"достатньо широка. **Auto** також використовує два стовпці, коли під "
+"панеллю **CPU** поруч стоять дві панелі."
+
+msgid "**1 column** - a register on each line."
+msgstr "**1 column** — по регістру в рядку."
+
+msgid ""
+"**2 columns** - two on a line, each beside its pair: AF beside AF', PC "
+"beside SP."
+msgstr ""
+"**2 columns** — по два в рядку, кожен поруч зі своєю парою: AF поруч з "
+"AF', PC поруч з SP."
+
+msgid ""
+"**Wide** - a column for each kind: AF, BC, DE, HL; the alternate set; PC,"
+" SP, IX, IY; and IR, IM, IFF1, IFF2. The flags are one more column beside"
+" them, under the title **Flags**."
+msgstr ""
+"**Wide** — стовпець для кожного виду: AF, BC, DE, HL; альтернативний "
+"набір; PC, SP, IX, IY; та IR, IM, IFF1, IFF2. Прапорці — ще один стовпець"
+" поруч, під заголовком **Flags**."
+
+msgid ""
+"**Split pairs** - mark only the byte that changed, as above. On by "
+"default."
+msgstr ""
+"**Split pairs** — позначати лише байт, що змінився, як описано вище. "
+"Типово ввімкнено."
+
+msgid "![The CPU panel in the Wide layout](images/dbg-cpu-wide.png)"
+msgstr "![Панель CPU у компонуванні Wide](images/dbg-cpu-wide.png)"
+
+msgid "The CPU panel in the Wide layout"
+msgstr "Панель CPU у компонуванні Wide"
+
+msgid "register"
+msgstr "регістр"
+
+msgid "flag"
+msgstr "прапорець"
+
+msgid "changing"
+msgstr "зміна"
+
+msgid "layout"
+msgstr "компонування"
+
+msgid "Split pairs"
+msgstr "Split pairs"
+

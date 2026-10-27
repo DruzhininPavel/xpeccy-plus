@@ -1,0 +1,846 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "ZX Evo panel"
+msgstr "Panel ZX Evo"
+
+msgid "![The ZX Evo panel in its own window, on TSConf](images/dbg-evo-regs.png)"
+msgstr ""
+"![El panel ZX Evo en su propia ventana, en TSConf](images/dbg-evo-"
+"regs.png)"
+
+msgid "The ZX Evo panel in its own window, on TSConf"
+msgstr "El panel ZX Evo en su propia ventana, en TSConf"
+
+msgid "**Tabs** - the pages of the panel; which there are depends on the machine."
+msgstr "**Pestañas** — las páginas del panel; cuáles hay depende de la máquina."
+
+msgid "**Layers hidden** - shown while a TSConf layer is kept out of the picture."
+msgstr ""
+"**Layers hidden** — se muestra mientras una capa de TSConf está fuera de "
+"la imagen."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**ZX Evolution** window; in this picture the button is pressed in, as the"
+" panel is in the window."
+msgstr ""
+"{icon}`display` **Show in its own window** — lleva el panel a la ventana "
+"**ZX Evolution**; en esta imagen el botón está pulsado, porque el panel "
+"está en la ventana."
+
+msgid "**Show** - the six layer switches of TSConf."
+msgstr "**Show** — los seis interruptores de capa de TSConf."
+
+msgid "**Register list** - the registers in groups, each with what it means."
+msgstr ""
+"**Lista de registros** — los registros en grupos, cada uno con lo que "
+"significa."
+
+msgid ""
+"The pictures show the panel in its own window, with Uwol: Quest for Money"
+" (The Mojon Twins, TSConf version by Blade and Shiru) on its first level,"
+" and layer **S2** switched off."
+msgstr ""
+"Las imágenes muestran el panel en su propia ventana, con Uwol: Quest for "
+"Money (The Mojon Twins, versión TSConf de Blade y Shiru) en su primer "
+"nivel, y la capa **S2** desactivada."
+
+msgid ""
+"The **ZX Evo** panel shows what the video and memory hardware of a ZX "
+"Evolution is set to. It is there only on the **ZX Evolution (TSConf)** "
+"and **ZX Evolution (BaseConf)** machines, on a tab beside "
+"**Breakpoints**. Its tab shows the NedoPC logo, and its title bar says "
+"**ZX Evo**."
+msgstr ""
+"El panel **ZX Evo** muestra cómo está configurado el hardware de vídeo y "
+"de memoria de un ZX Evolution. Solo está en las máquinas **ZX Evolution "
+"(TSConf)** y **ZX Evolution (BaseConf)**, en una pestaña junto a "
+"**Breakpoints**. Su pestaña muestra el logotipo de NedoPC, y su barra de "
+"título dice **ZX Evo**."
+
+msgid "Machine"
+msgstr "Machine"
+
+msgid "Tabs"
+msgstr "Pestañas"
+
+msgid "**ZX Evolution (TSConf)**"
+msgstr "**ZX Evolution (TSConf)**"
+
+msgid "**Registers**, **Sprites**, **Tiles**, **Palette**, **DMA**"
+msgstr "**Registers**, **Sprites**, **Tiles**, **Palette**, **DMA**"
+
+msgid "**ZX Evolution (BaseConf)**"
+msgstr "**ZX Evolution (BaseConf)**"
+
+msgid "**Ports**, **Palette**"
+msgstr "**Ports**, **Palette**"
+
+msgid ""
+"In the lists of registers a value that changed since the last step is in "
+"the **Changed** color, as in the **CPU** panel."
+msgstr ""
+"En las listas de registros, un valor que ha cambiado desde el último paso"
+" aparece en el color **Changed**, como en el panel **CPU**."
+
+msgid ""
+"Right-click a list of registers, or its header, and choose **In words** "
+"or **Field names**. **In words** says in the last column, **Means**, what"
+" a value sets. **Field names** names the bit fields instead, the way the "
+"TSConf and BaseConf documents name them, for example `VM=ZX "
+"RRES=256x192`, and the column is called **Fields**. The choice applies to"
+" every list of the panel and is remembered for the next time."
+msgstr ""
+"Haz clic derecho en una lista de registros, o en su cabecera, y elige "
+"**In words** o **Field names**. **In words** dice en la última columna, "
+"**Means**, qué configura un valor. **Field names** nombra en su lugar los"
+" campos de bits, como los nombran los documentos de TSConf y BaseConf, "
+"por ejemplo `VM=ZX RRES=256x192`, y la columna se llama **Fields**. La "
+"elección vale para todas las listas del panel y se recuerda para la "
+"próxima vez."
+
+msgid "The Registers tab"
+msgstr "La pestaña Registers"
+
+msgid ""
+"The **Registers** tab lists the TSConf registers, the ones a program sets"
+" through the ports that end in AF. They are in five groups: **Video**, "
+"**Tiles and sprites**, **Memory**, **System** and **DMA**."
+msgstr ""
+"La pestaña **Registers** lista los registros de TSConf, los que un "
+"programa fija mediante los puertos que terminan en AF. Están en cinco "
+"grupos: **Video**, **Tiles and sprites**, **Memory**, **System** y "
+"**DMA**."
+
+msgid "Column"
+msgstr "Columna"
+
+msgid "What it shows"
+msgstr "Qué muestra"
+
+msgid "**Port**"
+msgstr "**Port**"
+
+msgid "the port the register is written through, such as `00AF`"
+msgstr "el puerto a través del cual se escribe el registro, como `00AF`"
+
+msgid "**Register**"
+msgstr "**Register**"
+
+msgid "the name of the register, such as **VConfig**"
+msgstr "el nombre del registro, como **VConfig**"
+
+msgid "**Value**"
+msgstr "**Value**"
+
+msgid "the value, in hex"
+msgstr "el valor, en hexadecimal"
+
+msgid "**Means**"
+msgstr "**Means**"
+
+msgid "what the value sets"
+msgstr "qué configura el valor"
+
+msgid ""
+"Some registers, such as **VConfig**, **VPage**, **PalSel** and "
+"**GXOffs**, take a new value only at the start of the next line. While a "
+"new value waits, **Value** shows the value in use and the value that "
+"comes next, as in `00 > 01`, and **Means** describes the value that comes"
+" next."
+msgstr ""
+"Algunos registros, como **VConfig**, **VPage**, **PalSel** y **GXOffs**, "
+"solo toman un valor nuevo al comienzo de la línea siguiente. Mientras un "
+"valor nuevo espera, **Value** muestra el valor en uso y el valor que "
+"viene, como en `00 > 01`, y **Means** describe el valor que viene."
+
+msgid ""
+"**FMAddr** in the **Memory** group gives where the three parts of the "
+"FMAPS window start: CRAM, SFILE and the registers. The dump marks the "
+"same bytes: see [The FMAPS window on TSConf](debugger-memory.md#the-"
+"fmaps-window-on-tsconf)."
+msgstr ""
+"**FMAddr** en el grupo **Memory** indica dónde empiezan las tres partes "
+"de la ventana FMAPS: CRAM, SFILE y los registros. El volcado marca los "
+"mismos bytes: consulta [La ventana FMAPS en TSConf](debugger-memory.md"
+"#the-fmaps-window-on-tsconf)."
+
+msgid ""
+"The **DMA** group is the same as at the top of the **DMA** tab: see [The "
+"DMA tab](#the-dma-tab)."
+msgstr ""
+"El grupo **DMA** es el mismo que hay arriba en la pestaña **DMA**: "
+"consulta [La pestaña DMA](#the-dma-tab)."
+
+msgid "Hiding layers"
+msgstr "Ocultar capas"
+
+msgid ""
+"TSConf builds its picture from six layers. The switches in the **Show** "
+"row at the top of the **Registers** tab hide each layer and show it "
+"again:"
+msgstr ""
+"TSConf forma su imagen con seis capas. Los interruptores de la fila "
+"**Show**, arriba en la pestaña **Registers**, ocultan cada capa y la "
+"vuelven a mostrar:"
+
+msgid "Switch"
+msgstr "Interruptor"
+
+msgid "Layer"
+msgstr "Capa"
+
+msgid "**S0**"
+msgstr "**S0**"
+
+msgid "the sprites under tile layer 0"
+msgstr "los sprites bajo la capa de tiles 0"
+
+msgid "**T0**"
+msgstr "**T0**"
+
+msgid "tile layer 0"
+msgstr "capa de tiles 0"
+
+msgid "**S1**"
+msgstr "**S1**"
+
+msgid "the sprites between the tile layers"
+msgstr "los sprites entre las capas de tiles"
+
+msgid "**T1**"
+msgstr "**T1**"
+
+msgid "tile layer 1"
+msgstr "capa de tiles 1"
+
+msgid "**S2**"
+msgstr "**S2**"
+
+msgid "the sprites over both tile layers"
+msgstr "los sprites sobre las dos capas de tiles"
+
+msgid "**Bitmap**"
+msgstr "**Bitmap**"
+
+msgid "the bitmap screen"
+msgstr "la pantalla de mapa de bits"
+
+msgid ""
+"Use them to find which layer draws something on the screen, or to see "
+"what a layer covers."
+msgstr ""
+"Úsalos para averiguar qué capa dibuja algo en la pantalla, o para ver qué"
+" tapa una capa."
+
+msgid ""
+"A switch changes only what you see. The program runs exactly as before, "
+"with the same timing and the same memory, whether a layer is hidden or "
+"not."
+msgstr ""
+"Un interruptor solo cambia lo que ves. El programa funciona exactamente "
+"igual que antes, con la misma temporización y la misma memoria, esté "
+"oculta una capa o no."
+
+msgid ""
+"While the machine runs, the change shows from the next line on. While the"
+" machine is stopped in the Debugger, the main window draws the frame "
+"again at once with the layers as they are now set, as far as the machine "
+"had drawn it."
+msgstr ""
+"Mientras la máquina funciona, el cambio se ve a partir de la línea "
+"siguiente. Mientras la máquina está detenida en el Debugger, la ventana "
+"principal vuelve a dibujar el fotograma al momento con las capas tal como"
+" están ahora, hasta donde la máquina lo había dibujado."
+
+msgid ""
+"To draw the frame again, the machine runs it once more from a snapshot "
+"taken at its start. When that cannot be done, a note under the switches "
+"says why: **Shown from the next frame:** followed by the reason, such as "
+"**the tape or a disk command is running** or **an RZX is playing or "
+"recording**. The layers then change when the machine runs again. These "
+"snapshots are taken only after the Debugger or the **ZX Evolution** "
+"window has been open on TSConf once, so at the first stop there may be "
+"none yet: the reason is then **no snapshot of the frame before**."
+msgstr ""
+"Para volver a dibujar el fotograma, la máquina lo ejecuta otra vez desde "
+"una instantánea tomada a su inicio. Cuando eso no es posible, una nota "
+"bajo los interruptores dice por qué: **Shown from the next frame:** "
+"seguido del motivo, como **the tape or a disk command is running** o **an"
+" RZX is playing or recording**. Las capas cambian entonces cuando la "
+"máquina vuelve a funcionar. Estas instantáneas solo se toman después de "
+"que el Debugger o la ventana **ZX Evolution** hayan estado abiertos una "
+"vez en TSConf, así que en la primera parada puede no haber ninguna "
+"todavía: el motivo es entonces **no snapshot of the frame before**."
+
+msgid ""
+"While any layer is hidden, **Layers hidden** shows at the top of the "
+"panel, on every tab. The layers stay hidden after you close the Debugger,"
+" until you tick them again."
+msgstr ""
+"Mientras haya alguna capa oculta, **Layers hidden** aparece arriba en el "
+"panel, en todas las pestañas. Las capas siguen ocultas después de cerrar "
+"el Debugger, hasta que las vuelvas a marcar."
+
+msgid "The Sprites tab"
+msgstr "La pestaña Sprites"
+
+msgid "![The Sprites tab](images/dbg-evo-sprites.png)"
+msgstr "![La pestaña Sprites](images/dbg-evo-sprites.png)"
+
+msgid "The **Sprites** tab lists the 85 sprites of TSConf, a row each."
+msgstr "La pestaña **Sprites** lista los 85 sprites de TSConf, uno por fila."
+
+msgid "**#**"
+msgstr "**#**"
+
+msgid "the number of the sprite, 0 to 84"
+msgstr "el número del sprite, de 0 a 84"
+
+msgid "**Layer**"
+msgstr "**Layer**"
+
+msgid ""
+"the layer it is on: **S0**, **S1** or **S2**; `-` after the third layer "
+"has ended"
+msgstr ""
+"la capa en la que está: **S0**, **S1** o **S2**; `-` cuando ya ha "
+"terminado la tercera capa"
+
+msgid "**X**, **Y**"
+msgstr "**X**, **Y**"
+
+msgid "where it is, in dots"
+msgstr "dónde está, en puntos"
+
+msgid "**Size**"
+msgstr "**Size**"
+
+msgid "its width and height in dots, such as `16x16`"
+msgstr "su anchura y altura en puntos, como `16x16`"
+
+msgid "**Tile**"
+msgstr "**Tile**"
+
+msgid "the number of its tile in the sprite graphics"
+msgstr "el número de su tile en los gráficos de sprites"
+
+msgid "**Pal**"
+msgstr "**Pal**"
+
+msgid "the palette row its colors come from, 0 to 15"
+msgstr "la fila de la paleta de la que vienen sus colores, de 0 a 15"
+
+msgid "**Flags**"
+msgstr "**Flags**"
+
+msgid ""
+"`ACT` active; `XF`, `YF` flipped across or down; `LEAP` the next sprite "
+"is on the next layer"
+msgstr ""
+"`ACT` activo; `XF`, `YF` volteado en horizontal o en vertical; `LEAP` el "
+"sprite siguiente está en la capa siguiente"
+
+msgid ""
+"A sprite that is not drawn, because it is not active or comes after the "
+"third layer, is grayed. **Active only**, ticked by default, leaves the "
+"sprites that are not active out of the list."
+msgstr ""
+"Un sprite que no se dibuja, porque no está activo o viene después de la "
+"tercera capa, aparece en gris. **Active only**, marcado por defecto, deja"
+" fuera de la lista los sprites que no están activos."
+
+msgid ""
+"Click a sprite to see it under the list, in the colors it has now and as "
+"large as the room allows. The dots that are transparent show a checker. "
+"Beside the sprite are its size and place, the row and column of its tile "
+"in the sprite graphics page, and the colors of its palette row. Drag the "
+"line between the list and the sprite to change how much room each gets."
+msgstr ""
+"Haz clic en un sprite para verlo bajo la lista, con los colores que tiene"
+" ahora y tan grande como permita el espacio. Los puntos transparentes "
+"muestran un damero. Junto al sprite están su tamaño y su posición, la "
+"fila y la columna de su tile en la página de gráficos de sprites, y los "
+"colores de su fila de la paleta. Arrastra la línea entre la lista y el "
+"sprite para cambiar cuánto espacio tiene cada uno."
+
+msgid "The Tiles tab"
+msgstr "La pestaña Tiles"
+
+msgid "![The Tiles tab](images/dbg-evo-tiles.png)"
+msgstr "![La pestaña Tiles](images/dbg-evo-tiles.png)"
+
+msgid ""
+"The **Tiles** tab draws a tile map or a page of tile graphics, 512 x 512 "
+"dots: 64 x 64 tiles of 8 x 8 dots. Choose what it draws in the list at "
+"the top left:"
+msgstr ""
+"La pestaña **Tiles** dibuja un mapa de tiles o una página de gráficos de "
+"tiles, de 512 x 512 puntos: 64 x 64 tiles de 8 x 8 puntos. Elige qué "
+"dibuja en la lista de arriba a la izquierda:"
+
+msgid ""
+"**Map, layer 0** and **Map, layer 1** - the tile map of a tile layer, "
+"drawn with its tiles and colors. A box in the **Header** color outlines "
+"the part of the map the picture shows. Where that part runs past an edge "
+"of the map it goes on at the other edge, so the box can be in two or four"
+" pieces."
+msgstr ""
+"**Map, layer 0** y **Map, layer 1** — el mapa de tiles de una capa de "
+"tiles, dibujado con sus tiles y colores. Un recuadro en el color "
+"**Header** rodea la parte del mapa que muestra la imagen. Donde esa parte"
+" sobrepasa un borde del mapa, continúa por el borde opuesto, así que el "
+"recuadro puede quedar en dos o cuatro trozos."
+
+msgid ""
+"**Graphics** - a page of tile graphics with all its 4096 tiles in order. "
+"**Page** is the RAM page it starts at, in hex; its arrows step by 8, the "
+"length of a graphics page. **Palette** is the palette row the tiles are "
+"drawn with, 0 to 15. Both are grayed out while a map is shown."
+msgstr ""
+"**Graphics** — una página de gráficos de tiles con sus 4096 tiles en "
+"orden. **Page** es la página de RAM en la que empieza, en hexadecimal; "
+"sus flechas avanzan de 8 en 8, la longitud de una página de gráficos. "
+"**Palette** es la fila de la paleta con la que se dibujan los tiles, de 0"
+" a 15. Ambos aparecen en gris mientras se muestra un mapa."
+
+msgid ""
+"**T0G**, **T1G** and **SG** switch to **Graphics** and set **Page** to "
+"the page that **T0GPage**, **T1GPage** or **SGPage** points at."
+msgstr ""
+"**T0G**, **T1G** y **SG** pasan a **Graphics** y ponen en **Page** la "
+"página a la que apunta **T0GPage**, **T1GPage** o **SGPage**."
+
+msgid ""
+"A checker shows where nothing is drawn: a dot of color 0, which is "
+"transparent, and on a map a cell with tile 0 on a layer that does not "
+"draw tile 0."
+msgstr ""
+"Un damero muestra dónde no se dibuja nada: un punto de color 0, que es "
+"transparente, y en un mapa una celda con el tile 0 en una capa que no "
+"dibuja el tile 0."
+
+msgid ""
+"Move the mouse over the picture to see the cell or the tile under it in "
+"the column on the right. For a map:"
+msgstr ""
+"Mueve el ratón sobre la imagen para ver la celda o el tile que hay debajo"
+" en la columna de la derecha. Para un mapa:"
+
+msgid "Row"
+msgstr "Fila"
+
+msgid "**TMPage**"
+msgstr "**TMPage**"
+
+msgid "the page the tile maps are in"
+msgstr "la página en la que están los mapas de tiles"
+
+msgid "**Cell**"
+msgstr "**Cell**"
+
+msgid "the cell, across and down, 0 to 63"
+msgstr "la celda, en horizontal y en vertical, de 0 a 63"
+
+msgid "**Address**"
+msgstr "**Address**"
+
+msgid "where the cell's entry is: page and offset, in hex"
+msgstr "dónde está la entrada de la celda: página y desplazamiento, en hexadecimal"
+
+msgid "**Entry**"
+msgstr "**Entry**"
+
+msgid "the entry, in hex"
+msgstr "la entrada, en hexadecimal"
+
+msgid "the tile it holds"
+msgstr "el tile que contiene"
+
+msgid "**Row**, **Column**"
+msgstr "**Row**, **Column**"
+
+msgid "where that tile is in the graphics page"
+msgstr "dónde está ese tile en la página de gráficos"
+
+msgid "**Colors**"
+msgstr "**Colors**"
+
+msgid "the 16 colors the cell is drawn with, such as `10..1F`"
+msgstr "los 16 colores con los que se dibuja la celda, como `10..1F`"
+
+msgid "**Flip**"
+msgstr "**Flip**"
+
+msgid "`XF`, `YF`, or `-` when the tile is not flipped"
+msgstr "`XF`, `YF`, o `-` cuando el tile no está volteado"
+
+msgid "**Hole**"
+msgstr "**Hole**"
+
+msgid "**yes** when the cell is not drawn and the layer under it shows through"
+msgstr "**yes** cuando la celda no se dibuja y se ve la capa de debajo"
+
+msgid ""
+"For a graphics page the column shows the **Page**, the **Tile** with its "
+"**Row** and **Column**, the **Address** of the tile's first line, and the"
+" **Line step**: the bytes from one line of a tile to the next, in hex."
+msgstr ""
+"Para una página de gráficos, la columna muestra la **Page**, el **Tile** "
+"con su **Row** y **Column**, la **Address** de la primera línea del tile "
+"y el **Line step**: los bytes de una línea de un tile a la siguiente, en "
+"hexadecimal."
+
+msgid "The Palette tab"
+msgstr "La pestaña Palette"
+
+msgid ""
+"On TSConf the **Palette** tab shows the 256 colors of the palette memory,"
+" 16 to a row. The rows are named by their first color, `00` to `F0`, and "
+"the columns `0` to `F`. On BaseConf it shows the 16 palette cells in one "
+"row."
+msgstr ""
+"En TSConf la pestaña **Palette** muestra los 256 colores de la memoria de"
+" paleta, 16 por fila. Las filas llevan el nombre de su primer color, de "
+"`00` a `F0`, y las columnas de `0` a `F`. En BaseConf muestra las 16 "
+"celdas de paleta en una fila."
+
+msgid ""
+"The columns **B**, **T0**, **T1** and **S** on the right of the TSConf "
+"grid mark the rows that the bitmap, tile layer 0, tile layer 1 and the "
+"sprites take their colors from now. The color of the border is framed "
+"with a dashed line."
+msgstr ""
+"Las columnas **B**, **T0**, **T1** y **S** a la derecha de la cuadrícula "
+"de TSConf marcan las filas de las que toman ahora sus colores el mapa de "
+"bits, la capa de tiles 0, la capa de tiles 1 y los sprites. El color del "
+"borde está enmarcado con una línea discontinua."
+
+msgid ""
+"Move the mouse over a color to see it in the column beside the grid. "
+"Click a color to keep it there while the mouse is elsewhere; it is framed"
+" in white and black."
+msgstr ""
+"Mueve el ratón sobre un color para verlo en la columna junto a la "
+"cuadrícula. Haz clic en un color para mantenerlo ahí mientras el ratón "
+"está en otro sitio; queda enmarcado en blanco y negro."
+
+msgid "**Index**"
+msgstr "**Index**"
+
+msgid "the number of the color, in hex"
+msgstr "el número del color, en hexadecimal"
+
+msgid "**CRAM**"
+msgstr "**CRAM**"
+
+msgid "on TSConf, its address in the palette memory"
+msgstr "en TSConf, su dirección en la memoria de paleta"
+
+msgid "**Word**"
+msgstr "**Word**"
+
+msgid "on TSConf, the word that holds it, in hex"
+msgstr "en TSConf, la palabra que lo contiene, en hexadecimal"
+
+msgid "**#FF**"
+msgstr "**#FF**"
+
+msgid "on BaseConf, the byte written for this cell through port FF"
+msgstr "en BaseConf, el byte escrito para esta celda mediante el puerto FF"
+
+msgid "**R**, **G**, **B**"
+msgstr "**R**, **G**, **B**"
+
+msgid "the red, green and blue levels"
+msgstr "los niveles de rojo, verde y azul"
+
+msgid "**VDAC_MODE**"
+msgstr "**VDAC_MODE**"
+
+msgid "on TSConf, the top bit of the word"
+msgstr "en TSConf, el bit más alto de la palabra"
+
+msgid "**RGB**"
+msgstr "**RGB**"
+
+msgid "the color as it is shown, in hex"
+msgstr "el color tal como se muestra, en hexadecimal"
+
+msgid "**Used by**"
+msgstr "**Used by**"
+
+msgid "the layers whose row it is in, and **border** for the border color"
+msgstr "las capas en cuya fila está, y **border** para el color del borde"
+
+msgid ""
+"On TSConf the levels go from 0 to 31. As the note under the grid says, "
+"with **VDAC_MODE** 0 a level is at full brightness from 24 on."
+msgstr ""
+"En TSConf los niveles van de 0 a 31. Como dice la nota bajo la "
+"cuadrícula, con **VDAC_MODE** a 0 un nivel tiene el brillo máximo a "
+"partir de 24."
+
+msgid "The DMA tab"
+msgstr "La pestaña DMA"
+
+msgid ""
+"The **DMA** tab shows the DMA of TSConf, which copies memory and fills it"
+" without the CPU. At the top are its registers:"
+msgstr ""
+"La pestaña **DMA** muestra el DMA de TSConf, que copia y rellena memoria "
+"sin la CPU. Arriba están sus registros:"
+
+msgid "Register"
+msgstr "Registro"
+
+msgid "**DMASAddr**, **DMADAddr**"
+msgstr "**DMASAddr**, **DMADAddr**"
+
+msgid "the source and the destination: page and offset, in hex"
+msgstr "el origen y el destino: página y desplazamiento, en hexadecimal"
+
+msgid "**DMALen**"
+msgstr "**DMALen**"
+
+msgid "the length of a burst, in words"
+msgstr "la longitud de una ráfaga, en palabras"
+
+msgid "**DMANum**"
+msgstr "**DMANum**"
+
+msgid "the number of bursts"
+msgstr "el número de ráfagas"
+
+msgid "**DMACtrl**"
+msgstr "**DMACtrl**"
+
+msgid "the kind of transfer, such as `RAM > RAM` or `RAM > CRAM`, and its options"
+msgstr "el tipo de transferencia, como `RAM > RAM` o `RAM > CRAM`, y sus opciones"
+
+msgid "**DMAStatus**"
+msgstr "**DMAStatus**"
+
+msgid "**running** or **idle**"
+msgstr "**running** o **idle**"
+
+msgid "**Source now**, **Dest now**, **Done**"
+msgstr "**Source now**, **Dest now**, **Done**"
+
+msgid "while a transfer runs, how far it has got"
+msgstr "mientras se ejecuta una transferencia, hasta dónde ha llegado"
+
+msgid ""
+"The address registers get their new values only when a transfer ends, so "
+"while one runs, **Source now** and **Dest now** show where it is and "
+"**Done** which burst and word it is at."
+msgstr ""
+"Los registros de dirección solo reciben sus valores nuevos cuando termina"
+" una transferencia, así que mientras una se ejecuta, **Source now** y "
+"**Dest now** muestran dónde está y **Done** en qué ráfaga y palabra va."
+
+msgid ""
+"Under them, **Started this frame and the last** lists each transfer the "
+"program started in the frame the machine is in and in the frame before:"
+msgstr ""
+"Debajo, **Started this frame and the last** lista cada transferencia que "
+"el programa inició en el fotograma en que está la máquina y en el "
+"anterior:"
+
+msgid "**Frame**"
+msgstr "**Frame**"
+
+msgid "**this** or **last**"
+msgstr "**this** o **last**"
+
+msgid "**Line:dot**"
+msgstr "**Line:dot**"
+
+msgid "where the beam was when it started"
+msgstr "dónde estaba el haz cuando empezó"
+
+msgid "**Transfer**"
+msgstr "**Transfer**"
+
+msgid "the kind of transfer"
+msgstr "el tipo de transferencia"
+
+msgid "**From**, **To**"
+msgstr "**From**, **To**"
+
+msgid "words per burst x bursts, such as `256 x 4`"
+msgstr "palabras por ráfaga x ráfagas, como `256 x 4`"
+
+msgid "**Took**"
+msgstr "**Took**"
+
+msgid ""
+"how long it took, in T-states and in lines; **running** while it is not "
+"done; **cut short** when the program started the next transfer before it "
+"ended"
+msgstr ""
+"cuánto tardó, en ciclos (T-states) y en líneas; **running** mientras no "
+"ha terminado; **cut short** cuando el programa inició la transferencia "
+"siguiente antes de que terminara"
+
+msgid ""
+"Use it to see when a program moves its graphics during the frame, and how"
+" long it takes."
+msgstr ""
+"Úsalo para ver cuándo mueve un programa sus gráficos durante el "
+"fotograma, y cuánto tarda."
+
+msgid "The Ports tab"
+msgstr "La pestaña Ports"
+
+msgid ""
+"On BaseConf the **Ports** tab shows the ports that set the memory and the"
+" screen, in four groups:"
+msgstr ""
+"En BaseConf la pestaña **Ports** muestra los puertos que configuran la "
+"memoria y la pantalla, en cuatro grupos:"
+
+msgid "**Ports** - `7FFD`, `EFF7`, `77` and `BF`, each with what it sets."
+msgstr "**Ports** — `7FFD`, `EFF7`, `77` y `BF`, cada uno con lo que configura."
+
+msgid ""
+"**Windows** - the four 16K windows of the CPU's memory, `#0000` to "
+"`#C000`, with the RAM or ROM page in each."
+msgstr ""
+"**Windows** — las cuatro ventanas de 16K de la memoria de la CPU, de "
+"`#0000` a `#C000`, con la página de RAM o de ROM de cada una."
+
+msgid ""
+"**Pager** - the eight pager registers, two for each window, written "
+"through ports `0FF7`, `4FF7`, `8FF7` and `CFF7`. One of each pair is used"
+" while the ROM signal is off (**ROM=0**), the other while it is on "
+"(**ROM=1**); a `*` marks the ones in use now."
+msgstr ""
+"**Pager** — los ocho registros del paginador, dos por cada ventana, "
+"escritos mediante los puertos `0FF7`, `4FF7`, `8FF7` y `CFF7`. Uno de "
+"cada par se usa mientras la señal ROM está desactivada (**ROM=0**), el "
+"otro mientras está activada (**ROM=1**); un `*` marca los que están en "
+"uso ahora."
+
+msgid ""
+"**System** - the DOS and NMI state, the CPU clock, the trap address, the "
+"border color, the virtual drives and ports `2F`, `4F`, `6F` and `8F`."
+msgstr ""
+"**System** — el estado de DOS y NMI, el reloj de la CPU, la dirección de "
+"trampa, el color del borde, las unidades virtuales y los puertos `2F`, "
+"`4F`, `6F` y `8F`."
+
+msgid "The ZX Evolution window"
+msgstr "La ventana ZX Evolution"
+
+#, python-brace-format
+msgid ""
+"The button at the top right of the panel, {icon}`display` **Show in its "
+"own window**, moves the panel into a window of its own, **ZX Evolution**."
+" In the window the button is pressed in; click it again, or close the "
+"window, to put the panel back in the Debugger. While the panel is out, "
+"its tab in the Debugger says so, with a **Bring it back** button. Unlike "
+"the **Screen** and **Sound Chips** windows, this one has no command in "
+"the **Tools** menu."
+msgstr ""
+"El botón de arriba a la derecha del panel, {icon}`display` **Show in its "
+"own window**, lleva el panel a una ventana propia, **ZX Evolution**. En "
+"la ventana el botón está pulsado; haz clic en él otra vez, o cierra la "
+"ventana, para devolver el panel al Debugger. Mientras el panel está "
+"fuera, su pestaña en el Debugger lo indica, con un botón **Bring it "
+"back**. A diferencia de las ventanas **Screen** y **Sound Chips**, esta "
+"no tiene comando en el menú **Tools**."
+
+msgid ""
+"The window works without the Debugger: it follows the machine while the "
+"machine runs, once a frame (in fast mode, once in ten frames), and its "
+"layer switches work as in the panel. The window keeps its place and size,"
+" and a window that was open when you quit opens again at the next start. "
+"On a machine that is not a ZX Evolution it shows **Nothing to show on "
+"this machine**."
+msgstr ""
+"La ventana funciona sin el Debugger: sigue a la máquina mientras la "
+"máquina está en marcha, una vez por fotograma (en modo rápido, una vez "
+"cada diez fotogramas), y sus interruptores de capa funcionan como en el "
+"panel. La ventana conserva su posición y su tamaño, y una ventana que "
+"estaba abierta al salir se vuelve a abrir en el siguiente arranque. En "
+"una máquina que no es un ZX Evolution muestra **Nothing to show on this "
+"machine**."
+
+msgid "ZX Evolution"
+msgstr "ZX Evolution"
+
+msgid "Debugger panel"
+msgstr "panel del Debugger"
+
+msgid "TSConf"
+msgstr "TSConf"
+
+msgid "BaseConf"
+msgstr "BaseConf"
+
+msgid "registers"
+msgstr "registros"
+
+msgid "layers"
+msgstr "capas"
+
+msgid "layer"
+msgstr "capa"
+
+msgid "hiding"
+msgstr "ocultar"
+
+msgid "Layers hidden"
+msgstr "Layers hidden"
+
+msgid "sprites"
+msgstr "sprites"
+
+msgid "sprite"
+msgstr "sprite"
+
+msgid "tiles"
+msgstr "tiles"
+
+msgid "tile map"
+msgstr "mapa de tiles"
+
+msgid "palette"
+msgstr "paleta"
+
+msgid "DMA"
+msgstr "DMA"
+
+msgid "ports"
+msgstr "puertos"
+
+msgid "pager"
+msgstr "paginador"
+
+msgid "ZX Evolution window"
+msgstr "ventana ZX Evolution"
+
+msgid "Show in its own window"
+msgstr "Show in its own window"
+

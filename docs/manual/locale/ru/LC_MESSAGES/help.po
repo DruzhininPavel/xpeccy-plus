@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Help menu"
+msgstr "Меню Help"
+
+msgid ""
+"**Manual** - this manual, from the program's own files; see [This manual"
+"](getting-started.md#this-manual)."
+msgstr ""
+"**Manual** — это руководство, из файлов самой программы; см. [Это "
+"руководство](getting-started.md#this-manual)."
+
+msgid "**Project Page** - the project's page on GitHub, in your browser."
+msgstr "**Project Page** — страница проекта на GitHub, в браузере."
+
+msgid "**What's New** - the list of changes of every version."
+msgstr "**What's New** — список изменений каждой версии."
+
+msgid ""
+"**Report a Problem** - the page where problems are reported. Say which "
+"version you run (it is in **About**), on which system, and what you did; "
+"a log helps too (see [Application page](options-application.md))."
+msgstr ""
+"**Report a Problem** — страница, где сообщают о проблемах. Укажите версию"
+" (она есть в **About**), систему и что вы делали; журнал тоже поможет "
+"(см. [Раздел Application](options-application.md))."
+
+msgid ""
+"**About Xpeccy+** - the version, the versions of Qt and SDL it was built "
+"with, and the terms of the parts that come with it. On macOS it is in the"
+" application menu."
+msgstr ""
+"**About Xpeccy+** — версия, версии Qt и SDL, с которыми она собрана, и "
+"условия частей, которые идут с ней. В macOS этот пункт — в меню "
+"программы."
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Manual"
+msgstr "Manual"
+
+msgid "Project Page"
+msgstr "Project Page"
+
+msgid "What's New"
+msgstr "What's New"
+
+msgid "Report a Problem"
+msgstr "Report a Problem"
+
+msgid "About"
+msgstr "About"
+

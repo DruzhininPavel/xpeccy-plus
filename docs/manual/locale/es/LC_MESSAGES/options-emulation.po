@@ -1,0 +1,108 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Emulation page"
+msgstr "Sección Emulation"
+
+msgid "![The Emulation page](images/options-emulation.png)"
+msgstr "![La página Emulation](images/options-emulation.png)"
+
+msgid "The Emulation page"
+msgstr "La página Emulation"
+
+msgid ""
+"**Input lag** - **Low latency** and **Run ahead**. See [Input lag"
+"](#input-lag)."
+msgstr ""
+"**Input lag** — **Low latency** y **Run ahead**. Consulta [Input lag"
+"](#input-lag)."
+
+msgid ""
+"**Speed and rewind** - how far back rewind goes, how the keys of Slow "
+"Motion, Fast Forward and Fast Mode work, and what Fast Mode shows. See "
+"[Speed and time](time.md)."
+msgstr ""
+"**Speed and rewind** — hasta dónde llega el rebobinado, cómo funcionan "
+"las teclas de cámara lenta, avance rápido y modo rápido, y qué muestra el"
+" modo rápido. Consulta [Velocidad y tiempo](time.md)."
+
+msgid ""
+"**Folder as a disk** - whether a folder used as a card or a disk takes "
+"what the machine writes, and where a file it deletes there goes. See "
+"[Writing to a folder](sd-hdd.md#writing-to-a-folder)."
+msgstr ""
+"**Folder as a disk** — si una carpeta usada como tarjeta o disco recibe "
+"lo que escribe la máquina, y adónde va un archivo que la máquina borra "
+"allí. Consulta [Escribir en una carpeta](sd-hdd.md#writing-to-a-folder)."
+
+msgid "Input lag"
+msgstr "Input lag"
+
+msgid ""
+"The **Input lag** group on the **Emulation** page sets how soon a key "
+"press shows on the screen."
+msgstr ""
+"El grupo **Input lag** de la página **Emulation** define lo pronto que "
+"una pulsación de tecla se ve en la pantalla."
+
+msgid ""
+"**Low latency** shows each frame as soon as it is made. In a window the "
+"desktop still holds each frame back by one more frame; in fullscreen that"
+" delay is skipped too, but menus then flicker as they open. With **Low "
+"latency** off, frames are buffered, for smoother motion. It is on by "
+"default."
+msgstr ""
+"**Low latency** muestra cada fotograma en cuanto se genera. En una "
+"ventana, el escritorio aún retiene cada fotograma un fotograma más; en "
+"pantalla completa también se evita ese retraso, pero entonces los menús "
+"parpadean al abrirse. Con **Low latency** desactivado, los fotogramas "
+"pasan por un búfer, para un movimiento más suave. Está activado por "
+"defecto."
+
+msgid ""
+"**Run ahead** makes keys respond sooner by one or two frames. Each frame,"
+" the program emulates that many frames further, shows the picture from "
+"there, and goes back. So you see the result of a key press a frame or two"
+" earlier than the machine itself would show it. The cost is CPU time - "
+"the frames are emulated more than once - and the sound stays a frame "
+"behind the picture. **Off** is the default. Run ahead does nothing while "
+"an RZX recording plays, in Fast Mode and Fast Forward, while the machine "
+"is paused, and while you rewind."
+msgstr ""
+"**Run ahead** hace que las teclas respondan uno o dos fotogramas antes. "
+"En cada fotograma, el programa emula esa cantidad de fotogramas por "
+"delante, muestra la imagen de ahí y vuelve atrás. Así ves el resultado de"
+" una pulsación uno o dos fotogramas antes de lo que lo mostraría la "
+"propia máquina. El coste es tiempo de CPU — los fotogramas se emulan más "
+"de una vez — y el sonido queda un fotograma por detrás de la imagen. "
+"**Off** es el valor por defecto. Run ahead no hace nada mientras se "
+"reproduce una grabación RZX, en modo rápido y en avance rápido, mientras "
+"la máquina está en pausa y mientras rebobinas."
+
+msgid "input lag"
+msgstr "retardo de entrada"
+
+msgid "Low latency"
+msgstr "Low latency"
+
+msgid "Run ahead"
+msgstr "Run ahead"
+

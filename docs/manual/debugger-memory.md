@@ -1,10 +1,10 @@
-# Memory
+# DUMP panel
 
 The Debugger shows memory byte by byte in the **DUMP** panel, and the bytes the registers
-point at in **REG-DUMP**. **MEMMAP** shows which memory pages the CPU sees, and lets you
-page in others. The tools around them find bytes, fill memory, show it as pictures, save it
-to a file and load it back, and the **Heat map** shows which memory the program uses and
-how.
+point at in **REG-DUMP**. The tools around them find bytes, fill memory, show it as pictures,
+save it to a file and load it back. Which memory pages the CPU sees is in the
+[MEMMAP panel](debugger-memmap.md), and which memory the program uses and how in the
+[Heat map panel](debugger-heatmap.md).
 
 ## The DUMP panel
 
@@ -92,7 +92,7 @@ show one 16K page, whether the CPU sees it or not:
 
 The rows then show the page and the address, as `07:C000`.
 
-**DIV** shows one 8K page of a [divMMC](disks.md#divmmc)'s RAM, whether it is paged in or
+**DIV** shows one 8K page of a [divMMC](divmmc.md)'s RAM, whether it is paged in or
 not; on a Next, the divMMC RAM it has inside. **Pg** counts the board's pages, the address
 starts at 2000, where the board pages them in, and the size is always 8KB.
 
@@ -110,7 +110,7 @@ the other block commands of the listing (see
 
 A right-click on a byte opens a menu of **Fetch break**, **Read break** and **Write break**:
 tick one to stop the machine when the CPU runs, reads or writes that byte. See
-[Breakpoints and watching](debugger-breakpoints.md).
+[Breakpoints panel](debugger-breakpoints.md).
 
 ### The FMAPS window on TSConf
 
@@ -125,7 +125,7 @@ there, since a read never reaches the window; a write by the program goes to the
 also to the palette, the sprite descriptors or a TSConf register. Hold the mouse over a
 byte to see which: `FMAPS: CRAM, color #02`, `FMAPS: SFILE, sprite 3`,
 `FMAPS: port #15AF`. The **MEMMAP** row `FM` says where the window is: see
-[The MEMMAP panel](debugger.md#the-memmap-panel).
+[MEMMAP panel](debugger-memmap.md).
 
 ## REG-DUMP
 
@@ -139,54 +139,6 @@ register that can point into memory - PC, BC, DE, HL, SP, BC', DE', HL', IX and 
 row starts with the register and its value, `HL (5CB0):`, and goes on with the bytes from
 that address, as many as fit. It changes with every step, so you see at once what an
 instruction is about to read. It cannot be edited.
-
-## MEMMAP
-
-```{index} MEMMAP panel; paging in, Restore mapping, paging
-```
-
-![The MEMMAP panel](images/dbg-memmap.png)
-
-On most machines the four rows at the top of the **MEMMAP** panel are the four 16K windows
-of the CPU's memory: 0000-3FFF, 4000-7FFF, 8000-BFFF and C000-FFFF. Hold the mouse over a
-row to see its addresses. Each row says what is in that window now, **ROM** or **RAM**, and
-the number of the page.
-
-On a ZX Spectrum Next there are eight 8K rows instead, one for each MMU register: 0000-1FFF,
-2000-3FFF and so on. The page is the exact value of NextReg 50-57. **RAM** is a page below
-E0; a value from E0 to FF selects **ROM** in either of the first two slots and is **OFF**
-in the other six. The tooltip also says what the CPU reads there after divMMC, Multiface,
-Layer 2 and ROMCS have been applied: a RAM page, a ROM, a divMMC page, the Multiface's
-memory, or nothing. The listing, the **CPU** dump, memory search and breakpoints follow that
-same view.
-
-On every machine the listing shows memory as it is now, with one exception: the row at PC
-shows the instruction the CPU will run next. If fetching it pages something in - a divMMC
-entry point, or the Next's Multiface at 0066 - that row already shows it, and a step runs
-exactly that. A divMMC entry point such as 0008 pages the board in for the instruction after
-it: stopped at 0008, the listing shows the ROM; after the step, at 000B, the listing, the
-**DUMP** and **MEMMAP** already show the board, since the next fetch brings it in whatever
-it is. Other rows show what is there now; they change when the CPU gets there.
-
-Change a row to put another page in: pick **ROM** or **RAM** and type the page number. On a
-Next, typing a value writes its 8K MMU register; picking **ROM** writes FF and **OFF** writes
-FF to one of the six slots that can be unmapped. The **DUMP**, the listing and the CPU itself
-then see that page there. A window you changed has
-its type in bold and its page number highlighted. The page stays there until the program
-itself pages that window.
-
-Right-click the rows, or the **MEMMAP** title, and choose **Restore mapping** to put back
-all four windows, or all eight Next MMU registers, as they were when the Debugger opened.
-
-On other ZX machines, while a [divMMC](disks.md#divmmc) has its memory in the first 16K
-window, that row says **DIV** and the number of the board's 8K RAM page at `#2000`. The
-board pages it by itself, so this row cannot be changed then.
-
-On TSConf a fifth row, `FM`, shows where the FMAPS window is (see
-[The FMAPS window on TSConf](#the-fmaps-window-on-tsconf)).
-
-The rest of the panel - ports, signals, frames and the beam - is described in
-[The Debugger](debugger.md).
 
 ## Memory Finder
 
@@ -296,50 +248,6 @@ loaded at, C000 at first, and **Length** and **End** show how far the file reach
 that would run past FFFF is moved down to end there. {icon}`ok-apply` **OK** writes the file
 into the memory the CPU sees, ROM only with **Allow ROM wr** ticked.
 
-## Heat map
-
-```{index} Heat map, Heat map; CSV export, Collect
-```
-
-![The Heat map panel](images/dbg-heatmap.png)
-
-1. What the picture covers - **CPU**, **RAM** or **ROM** - and the page for the last two.
-2. The counter shown - **All**, **Read**, **Write** or **Exec**.
-3. **Collect**, and the buttons that {icon}`refresh` reset the counters and
-   {icon}`save_all` export them.
-4. The picture.
-5. The address under the mouse, and the legend with its counts.
-
-The **Heat map** counts, for every byte of RAM and ROM, how many times the program has
-read it, written it and run it. Click the **Heat map** tab, under the **DUMP**, and tick
-**Collect**:
-counting starts and goes on while the machine runs, also with the Debugger closed, until
-you untick it. With **Collect** off the picture says **collecting is off**.
-
-Each counter has its color: **Read** green, **Write** red, **Exec** blue. A byte nothing
-has touched is gray. With **All**, each cell takes the color of the counter that wins:
-blue when it was run more often than read and written together, else red when written
-more than read, else green. **Exec** counts every byte the CPU reads as part of an
-instruction, operands included; **Read** counts only the data it reads.
-
-So the picture reads like a map of the program: blue is code, red is what it changes - the
-screen, the variables, the stack - and green is what it only reads, such as graphics,
-fonts and tables.
-
-**CPU** shows the 64K the CPU sees now as four squares, one for each 16K window, with one
-cell for 4 bytes. **RAM** and **ROM** show one 16K page, with one cell for each byte, and
-scroll when the panel is too small.
-
-Hold the mouse over a cell to see its address, the memory and page it is in, and its
-counts: **Read:**, **Write:**, **Exec:**. Double-click a cell and the listing goes there,
-if the CPU can see that memory now.
-
-The {icon}`refresh` button with the circular arrows resets all counters, after asking.
-Loading a snapshot resets them too. The {icon}`save_all` button beside it saves all counters
-to a CSV file: one line per byte of RAM and then of ROM, with the columns
-`type,page,offset,read,write,exec`, untouched bytes included, for a spreadsheet or a script
-of your own.
-
 ## Example: find where the score is kept
 
 1. Play the game until the score shows a number you can recognize, such as 150.
@@ -354,7 +262,7 @@ of your own.
 If the text is not found, the game keeps the score in another form. Try the number as
 bytes: `01:50` for 150 kept as decimal digits two to a byte, or `96:00` for 150 as a word,
 low byte first. To find the code that adds the points, put a **Write break** on the score
-(see [Breakpoints and watching](debugger-breakpoints.md)).
+(see [Breakpoints panel](debugger-breakpoints.md)).
 
 ## Example: save the screen memory to a file
 
@@ -365,7 +273,7 @@ low byte first. To find the code that adds the points, put a **Write break** on 
    `picture.scr`.
 
 The file holds the 6912 bytes of the screen, the picture and then its colors, in the same
-layout as a `.scr` screenshot (see [Screenshots and recording](capture.md)).
+layout as a `.scr` screenshot (see [Capture menu](capture.md)).
 
 The second screen of a 128K is in RAM page 7. To save it, put page 7 in the C000 window in
 **MEMMAP** and save from C000 instead; **Restore mapping** puts the memory back.

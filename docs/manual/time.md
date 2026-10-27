@@ -6,8 +6,8 @@
 The machine normally runs at the speed of the real one, about 50 frames a second. The
 **Machine** menu has the commands that change that: **Pause**, **Fast Mode**,
 **Slow Motion** and **Fast Forward**. The same commands, and {icon}`time-rewind` **Rewind**
-too, are at the right end of the toolbar. Their settings are on the **Emulation** page of
-**Options**.
+too, are at the right end of the toolbar. Their settings are on the
+[Emulation page](options-emulation.md) of **Options**.
 
 ## Pause
 
@@ -124,7 +124,7 @@ of a tape is not kept either: when you rewind, the picture jumps over it.
 ```
 
 Two more controls change how fast the machine runs, and both are described in
-[Turbo and speed](machines.md#turbo-and-speed):
+[Turbo Mode](machines.md#turbo-mode) and [Speed](options-machine.md#speed):
 
 - **Machine > Turbo Mode** is the board's own turbo, a part of the machine like on the
   real one. A program can switch it by itself.
@@ -139,35 +139,5 @@ sound included, as if time ran faster.
 
 While the CPU runs at a clock other than its base clock, the **CPU clock** indicator can
 show that clock over the picture (see
-[Indicators on the picture](picture.md#indicators-on-the-picture)). The status bar shows the
+[Indicators on the picture](options-appearance.md#indicators-on-the-picture)). The status bar shows the
 clock all the time.
-
-## Input lag
-
-```{index} input lag, Low latency, Run ahead
-```
-
-The **Input lag** group on the **Emulation** page sets how soon a key press shows on the
-screen.
-
-**Low latency** shows each frame as soon as it is made. In a window the desktop still
-holds each frame back by one more frame; in fullscreen that delay is skipped too, but menus
-then flicker as they open. With **Low latency** off, frames are buffered, for smoother
-motion. It is on by default.
-
-**Run ahead** makes keys respond sooner by one or two frames. Each frame, the program
-emulates that many frames further, shows the picture from there, and goes back. So you
-see the result of a key press a frame or two earlier than the machine itself would show
-it. The cost is CPU time - the frames are emulated more than once - and the sound stays
-a frame behind the picture. **Off** is the default. Run ahead does nothing while an RZX
-recording plays, in Fast Mode and Fast Forward, while the machine is paused, and while
-you rewind.
-
-## Frames per second
-
-```{index} FPS, frames per second
-```
-
-The status bar shows how many frames a second the machine actually runs at. With the
-status bar hidden, tick **FPS** in the **Indicators** group on the **Appearance** page of
-**Options** to see the number in the top right corner of the picture.

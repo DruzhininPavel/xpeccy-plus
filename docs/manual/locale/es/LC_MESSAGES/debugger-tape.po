@@ -1,0 +1,98 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Tape panel"
+msgstr "Panel Tape"
+
+msgid "![The Tape panel](images/dbg-tape.png)"
+msgstr "![El panel Tape](images/dbg-tape.png)"
+
+msgid "The Tape panel"
+msgstr "El panel Tape"
+
+msgid ""
+"The **Tape** panel draws the tape signal around the place the tape is at."
+" The red vertical line is the current position: on its left is the signal"
+" that has played, on its right what comes next. The picture covers about "
+"two milliseconds of tape at the machine's speed. In the picture Exolon is"
+" loading, with fast loading off."
+msgstr ""
+"El panel **Tape** dibuja la señal de la cinta alrededor del punto en que "
+"está la cinta. La línea vertical roja es la posición actual: a su "
+"izquierda está la señal que ya ha sonado, a su derecha lo que viene "
+"después. La imagen abarca unos dos milisegundos de cinta a la velocidad "
+"de la máquina. En la imagen se está cargando Exolon, con la carga rápida "
+"desactivada."
+
+msgid "Field"
+msgstr "Campo"
+
+msgid "What it shows"
+msgstr "Qué muestra"
+
+msgid "**Pos**"
+msgstr "**Pos**"
+
+msgid ""
+"the number of the pulse in the current block; `--` while the tape is "
+"stopped"
+msgstr ""
+"el número del pulso en el bloque actual; `--` mientras la cinta está "
+"parada"
+
+msgid "**Current**"
+msgstr "**Current**"
+
+msgid "how much of the current pulse is left; empty while the tape is stopped"
+msgstr "cuánto queda del pulso actual; vacío mientras la cinta está parada"
+
+msgid "**State**"
+msgstr "**State**"
+
+msgid "**play**, **rec** or **stop**"
+msgstr "**play**, **rec** o **stop**"
+
+msgid "**Tape in**"
+msgstr "**Tape in**"
+
+msgid "the level the tape plays into the machine's EAR input"
+msgstr "el nivel que la cinta envía a la entrada EAR de la máquina"
+
+msgid "**Tape out**"
+msgstr "**Tape out**"
+
+msgid "the bit the machine sends to the tape: the bar is full while it is 1"
+msgstr ""
+"el bit que la máquina envía a la cinta: la barra está llena mientras vale"
+" 1"
+
+msgid ""
+"Use it while you step through a loader, to see which pulse it is reading "
+"and what comes next. The tape itself is controlled from the **Tape "
+"Player** (see [Tapes](tapes.md))."
+msgstr ""
+"Úsalo mientras avanzas paso a paso por un cargador, para ver qué pulso "
+"está leyendo y qué viene después. La cinta en sí se maneja desde el "
+"**Tape Player** (consulta [Cintas](tapes.md))."
+
+msgid "tape signal"
+msgstr "señal de la cinta"
+

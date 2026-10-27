@@ -1,4 +1,4 @@
-# Breakpoints and watching
+# Breakpoints panel
 
 ```{index} breakpoint
 ```
@@ -10,7 +10,8 @@ A breakpoint tells the machine to stop at a place or on an event: when the CPU r
 instruction at an address, reads or writes a memory cell, uses a port, gets an interrupt,
 or when an expression comes true. Instead of stopping, a breakpoint can also count its
 hits, save the screen or write a line to the breakpoint log, and two of them can time the
-code between them. The **Watcher** window and the watched ports show values while the machine runs.
+code between them. The [Watcher](debugger-watcher.md) window and the
+[watched ports](debugger-memmap.md#watched-ports) show values while the machine runs.
 
 Breakpoints work while the machine runs. A step taken in the Debugger does not stop on a
 breakpoint (see [Running and stepping](debugger.md#running-and-stepping)).
@@ -27,7 +28,7 @@ breakpoint (see [Running and stepping](debugger.md#running-and-stepping)).
 | **RAM cell** | the CPU uses a byte of RAM, wherever that page is mapped |
 | **ROM cell** | the CPU uses a byte of ROM, wherever that page is mapped |
 | **Slot cell** | the CPU uses a byte of the cartridge |
-| **divMMC cell** | the CPU uses a byte of a [divMMC](disks.md#divmmc)'s ROM or RAM, wherever that page is mapped |
+| **divMMC cell** | the CPU uses a byte of a [divMMC](divmmc.md)'s ROM or RAM, wherever that page is mapped |
 | **Interrupt** | the CPU gets an interrupt request |
 | **Condition (global)** | an expression comes true; no address |
 
@@ -72,7 +73,7 @@ presets:
 A line with a breakpoint is drawn in a different color. The keys can be changed on the
 **Hotkeys** page of **Options**, as **Disasm: Breakpoint**, **Disasm: Breakpoint on read**,
 **Disasm: Breakpoint on write** and **Disasm: Breakpoint on CPU address** (see
-[Hotkeys](hotkeys.md)).
+[Hotkeys page](hotkeys.md)).
 
 The {icon}`stop` **Breakpoints** button over the listing has **Fetch break**, **Read break**
 and **Write break**, and so has **Breakpoints** in the right-click menu of the listing.
@@ -81,11 +82,11 @@ cursor, and make a memory cell breakpoint. To select a block, drag over the line
 left button.
 
 In the memory dump, the right-click menu has **Fetch break**, **Read break** and
-**Write break** for the byte under the cursor (see [Memory](debugger-memory.md)).
+**Write break** for the byte under the cursor (see [DUMP panel](debugger-memory.md)).
 
 **Debugger: Stop here** - F4 (Modern), F9 (Classic) - lets the machine run until it gets
 to the line under the cursor, without a breakpoint in the list (see
-[Code and labels](debugger-code.md)).
+[Disasm panel](debugger-code.md)).
 
 ## The Breakpoints panel
 
@@ -588,58 +589,6 @@ The labels given with `-l` are loaded first, wherever `-l` stands on the command
 Together with `--bench`, these options run a test from a script with no window; the run ends
 on the first breakpoint with the action **Debugger** (see
 [Running with no window](command-line.md#running-with-no-window)).
-
-## The Watcher
-
-```{index} Watcher, watch
-```
-
-![The Watcher](images/dbg-watcher.png)
-
-The **Watcher** window shows the registers and some places in memory, and follows them
-while the machine runs. Open it with **Tools > Watcher** in the main window, or
-**Watcher** under the {icon}`other` **Tools** button over the listing.
-
-1. **CPU** - the registers.
-2. **MEMORY** - the watches, two rows each.
-3. The four memory banks, from `#0000` to `#C000`: ROM or RAM, and the page.
-
-In the picture the game Exolon runs, with a file of labels for it. `AMMO` is its ammo
-counter: the first byte, `63`, is 99 rounds. `VITORC + 0x60` is the second frame of its
-hero's sprite. `SP` is the stack, and `[SP]` the code the routine will return to.
-`0x3D00` is the start of the font in ROM.
-
-Right-click the **MEMORY** list and choose **Add watcher** to add a watch, or
-**Delete watcher** to remove the selected one. Double-click a watch to change it.
-
-
-```{index} Watcher Editor
-```
-
-![The Watcher Editor](images/dbg-watcher-editor.png)
-
-The **Watcher Editor** has:
-
-- **Type** - **CPU addr** reads through the current CPU mapping; **RAM addr** and **ROM addr**
-  read physical memory. A label in a physical watch supplies its page as well as its offset;
-- **Expression** - an address, in the same syntax as a condition (see
-  [Conditions](#conditions)): `HL`, `0x5C3A`, `IX + 5`, `[0x5C53]`, a label. The
-  {icon}`label` button beside it opens the list of labels; a label picked there goes into
-  the field.
-
-{icon}`checkbox` **OK** accepts the watch only when the expression is right. The first row
-of a watch shows its type and expression, and its value as an address; the second row the
-13 bytes that start at that address. `??` means the expression cannot be worked out at the moment.
-
-On the Next, a label in a **CPU addr** watch follows MMU paging. If its page is not mapped,
-the watch shows `??`; a **RAM addr** watch still reads the label's own RAM page.
-
-The watches are not kept when the program closes.
-
-## Watched ports
-
-The **PORTS** block of the **MEMMAP** panel shows the last value on the ports you choose.
-See [Watched ports](debugger.md#watched-ports).
 
 ## Examples
 

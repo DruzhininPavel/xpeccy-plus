@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Favorites menu"
+msgstr "Меню Favorites"
+
+msgid ""
+"The **Favorites** menu keeps a list of files you open often. At the top "
+"it offers the file named in the window title: **Add \"name\"...** puts it"
+" on the list, **Remove \"name\"** takes it off. Below are your favorites;"
+" pick one to open it. **Organize...** opens the **Favorites** window."
+msgstr ""
+"Меню **Favorites** тримає список файлів, які ви часто відкриваєте. Угорі "
+"воно пропонує файл, названий у заголовку вікна: **Add \"name\"...** додає"
+" його до списку, **Remove \"name\"** прибирає зі списку. Нижче — ваші "
+"обрані; виберіть один, щоб відкрити його. **Organize...** відкриває вікно"
+" **Favorites**."
+
+#, python-brace-format
+msgid ""
+"When you add a favorite, you are asked for its **Name** (the text in the "
+"menu) and its **Path**. The {icon}`fileopen` button beside **Path** picks"
+" the file in the file dialog."
+msgstr ""
+"Коли ви додаєте обраний файл, програма питає його **Name** (текст у меню)"
+" і **Path**. Кнопка {icon}`fileopen` поруч із **Path** вибирає файл у "
+"файловому діалозі."
+
+#, python-brace-format
+msgid ""
+"The **Favorites** window lists every favorite with its name and file. "
+"Double-click a row to change it. The buttons beside the list {icon}`add` "
+"add a file, move the selected one {icon}`arrow-up` up or {icon}`arrow-"
+"down` down, and {icon}`cancel` remove it. The same window opens from "
+"{icon}`star` **Manage favorites...** on the **Application** page of "
+"**Options**."
+msgstr ""
+"Вікно **Favorites** показує всі обрані файли з назвами й файлами. Двічі "
+"клацніть рядок, щоб його змінити. Кнопки поруч зі списком: {icon}`add` "
+"додати файл, перемістити виділений {icon}`arrow-up` вгору чи {icon"
+"}`arrow-down` вниз і {icon}`cancel` видалити його. Те саме вікно "
+"відкривається з {icon}`star` **Manage favorites...** на сторінці "
+"**Application** вікна **Options**."
+
+msgid ""
+"The **Add to Favorites** hotkey adds the file in use and asks the same "
+"questions. It has no key until you give it one on the **Hotkeys** page of"
+" **Options**."
+msgstr ""
+"Гаряча клавіша **Add to Favorites** додає відкритий файл і ставить ті "
+"самі питання. Клавіші для неї немає, доки ви не задасте її на сторінці "
+"**Hotkeys** вікна **Options**."
+
+msgid "Favorites"
+msgstr "Favorites"
+
+msgid "Add to Favorites"
+msgstr "Add to Favorites"
+
+msgid "Manage favorites"
+msgstr "Manage favorites"
+

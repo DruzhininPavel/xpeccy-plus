@@ -18,10 +18,30 @@ A paragraph whose English changed only in its `{icon}` roles (a button got anoth
 an icon was put before a name) is not: `update` makes the same change in its translations.
 
 **Translating.** Fill `msgstr` of each entry; remove `#, fuzzy` once an entry is right.
-Names of windows, menus and buttons stay as on screen - the program itself is English.
 A new language: `python tools/manual.py update --add xx` (the ISO 639-1 code, the one
 the system reports - Ukrainian is `uk`), and its name and title in `LANG_NAMES` and
 `TITLES` of `conf.py`. Help > Manual and the Pages front page pick it by that code.
+
+**What stays English.** The program is English only, so the reader must find on screen
+exactly the words the manual names. Every name the program shows - menus and their items,
+windows, panels, tabs, Options pages, groups, buttons, check boxes, messages - stays
+English: in bold, in index terms and in headings. A heading is translated, and the name
+in it stays as the program shows it: **File menu** is «Меню File», **Video page** is
+«Раздел Video», **CPU panel** is «Панель CPU»; a heading that is only such a name
+(**Reset**, **Border**, **Input lag**) is left as it is. A heading that names a topic is
+translated whole (Getting started, The first start, Options, Debugger). A link that names
+a section takes the section's translated heading, in the form the sentence needs.
+Translate the names a picture's legend gives to parts of a window (toolbar, scrollbar,
+listing) unless the program shows them as text, and name the operating system's own
+windows as that system does in the reader's language. The rest is prose and is
+translated.
+
+**Where a thing is described.** The pages follow the program: the menu bar, a page per
+menu, the toolbar, the right-click menu, Options with a page per page, the command line, the
+Debugger with a page per panel. A command is described once, on the page of the menu it is
+in; the toolbar and the right-click menu link there. A setting is described on its Options
+page, and the menu's page links to it. A new menu, Options page or panel gets a page of its
+own in the same place.
 
 **Commits.** A change to the program that the reader sees changes its English chapter and
 pictures in the same branch, but in a commit of its own, `manual: ...`, never in a commit

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 03:44+0200\n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -19,8 +19,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "Hotkeys"
-msgstr "Atajos de teclado"
+msgid "Hotkeys page"
+msgstr "Sección Hotkeys"
+
+msgid "![The Hotkeys page](images/options-hotkeys.png)"
+msgstr "![La página Hotkeys](images/options-hotkeys.png)"
+
+msgid "The Hotkeys page"
+msgstr "La página Hotkeys"
+
+msgid ""
+"The keys of every command, in the Modern or Classic preset or one of your"
+" own. See [Hotkeys page](hotkeys.md)."
+msgstr ""
+"Las teclas de cada comando, en el preajuste Modern o Classic o en uno "
+"tuyo. Consulta [Sección Hotkeys](hotkeys.md)."
 
 msgid ""
 "A command that has a key shows it beside its name in the menu. All the "
@@ -729,7 +742,7 @@ msgid "Alt+A"
 msgstr "Alt+A"
 
 msgid "Debugger keys"
-msgstr "Teclas del Debugger"
+msgstr "Teclas del depurador"
 
 msgid ""
 "These work in the **Debugger** window. **Options**, **Open**, **Save**, "
@@ -1006,7 +1019,4 @@ msgstr "tecla Cmd"
 
 msgid "list of all"
 msgstr "lista completa"
-
-#~ msgid "Debug"
-#~ msgstr "Debug"
 

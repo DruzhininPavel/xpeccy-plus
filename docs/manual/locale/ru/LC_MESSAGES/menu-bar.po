@@ -1,0 +1,116 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Menu bar"
+msgstr "Строка меню"
+
+msgid "Menu"
+msgstr "Меню"
+
+msgid "What is in it"
+msgstr "Что в нём"
+
+msgid "**File**"
+msgstr "**File**"
+
+msgid "open and save files, recent files, quick save and load, **Options**"
+msgstr ""
+"открыть и сохранить файлы, недавние файлы, быстрое сохранение и загрузка,"
+" **Options**"
+
+msgid "**View**"
+msgstr "**View**"
+
+msgid ""
+"window size, border, fullscreen, shaders and palette, toolbar and status "
+"bar, virtual keyboard, input overlay"
+msgstr ""
+"размер окна, бордюр, полноэкранный режим, шейдеры и палитра, панель "
+"инструментов и строка состояния, виртуальная клавиатура, индикация ввода"
+
+msgid "**Favorites**"
+msgstr "**Favorites**"
+
+msgid "files you keep at hand"
+msgstr "файлы, которые всегда под рукой"
+
+msgid "**Machine**"
+msgstr "**Machine**"
+
+msgid ""
+"which machine runs, reset, turbo, pause, fast mode, slow motion, fast "
+"forward, rewind"
+msgstr ""
+"какая машина работает, сброс, турбо, пауза, быстрый режим, замедление, "
+"перемотка вперёд и назад"
+
+msgid "**Input**"
+msgstr "**Input**"
+
+msgid "keyboard and mouse grab, keymaps, gamepads"
+msgstr "захват клавиатуры и мыши, раскладки, геймпады"
+
+msgid "**Media**"
+msgstr "**Media**"
+
+msgid ""
+"tape player, disk manager, floppy drives, fast disk access, divMMC, "
+"cartridge, SD card, hard disks"
+msgstr ""
+"магнитофон, менеджер дисков, дисководы, быстрый доступ к дискам, divMMC, "
+"картридж, SD-карта, жёсткие диски"
+
+msgid "**Capture**"
+msgstr "**Capture**"
+
+msgid "screenshots, video and sound recording, RZX"
+msgstr "снимки экрана, запись видео и звука, RZX"
+
+msgid "**Tools**"
+msgstr "**Tools**"
+
+msgid "**Cheats**, the **Debugger** and its windows"
+msgstr "**Cheats**, **Debugger** и его окна"
+
+msgid "**Help**"
+msgstr "**Help**"
+
+msgid "this manual, the project page, what is new, reporting a problem"
+msgstr "это руководство, страница проекта, что нового, сообщить о проблеме"
+
+msgid ""
+"A command that has a key shows it in the menu. The keys are set on the "
+"**Hotkeys** page of **Options**. In fullscreen the menu bar is hidden "
+"until the pointer stays at the top edge of the screen (see [Fullscreen"
+"](main-window.md#fullscreen))."
+msgstr ""
+"Команда, у которой есть клавиша, показывает её в меню. Клавиши задаются "
+"на странице **Hotkeys** окна **Options**. В полноэкранном режиме строка "
+"меню скрыта, пока указатель не задержится у верхнего края экрана (см. "
+"[Полноэкранный режим](main-window.md#fullscreen))."
+
+msgid "Each menu has a page of its own, in the order of the menu bar:"
+msgstr "У каждого меню своя страница, в порядке строки меню:"
+
+msgid "menu bar"
+msgstr "строка меню"
+

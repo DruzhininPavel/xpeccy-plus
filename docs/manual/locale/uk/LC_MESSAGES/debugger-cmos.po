@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "CMOS panel"
+msgstr "Панель CMOS"
+
+msgid "![The CMOS panel](images/dbg-cmos.png)"
+msgstr "![Панель CMOS](images/dbg-cmos.png)"
+
+msgid "The CMOS panel"
+msgstr "Панель CMOS"
+
+msgid ""
+"The **CMOS** panel shows the 256 bytes of the clock chip's memory, eight "
+"to a row. The number at the start of a row is the address of its first "
+"byte. It is on a tab beside **DUMP**, and only on a machine that has a "
+"clock chip:"
+msgstr ""
+"Панель **CMOS** показує 256 байтів пам'яті мікросхеми годинника, по вісім"
+" у рядку. Число на початку рядка — адреса його першого байта. Вона "
+"розташована на вкладці поруч із **DUMP** і є лише на машині з мікросхемою"
+" годинника:"
+
+msgid "**ZX Evolution (BaseConf)** and **ZX Evolution (TSConf)**;"
+msgstr "**ZX Evolution (BaseConf)** і **ZX Evolution (TSConf)**;"
+
+msgid "**Pentagon 1024 SL**;"
+msgstr "**Pentagon 1024 SL**;"
+
+msgid "**Profi v5**;"
+msgstr "**Profi v5**;"
+
+msgid ""
+"any machine with the **SMUC** hard disk interface, such as the **Scorpion"
+" ZS 256 Turbo+**."
+msgstr ""
+"будь-яка машина з інтерфейсом жорсткого диска **SMUC**, як-от **Scorpion "
+"ZS 256 Turbo+**."
+
+msgid "Double-click a byte and type a new value in hex to change it."
+msgstr ""
+"Двічі клацніть байт і введіть нове значення в шістнадцятковому вигляді, "
+"щоб змінити його."
+
+msgid ""
+"The time and date in bytes 00 to 09 are not kept here. When the machine "
+"reads them, it gets the time of your computer's clock, so the panel shows"
+" only what a program wrote there. The settings a BIOS keeps in the clock "
+"chip are in the bytes from 0E on."
+msgstr ""
+"Час і дата в байтах від 00 до 09 тут не зберігаються. Коли машина їх "
+"читає, вона отримує час годинника вашого комп'ютера, тож панель показує "
+"лише те, що туди записала програма. Налаштування, які BIOS зберігає в "
+"мікросхемі годинника, розташовані в байтах від 0E і далі."
+
+msgid "Use it to see which settings a BIOS has stored, or to change one by hand."
+msgstr ""
+"Користуйтеся нею, щоб побачити, які налаштування зберіг BIOS, або змінити"
+" одне з них вручну."
+
+msgid "clock chip"
+msgstr "мікросхема годинника"
+
+msgid "RTC"
+msgstr "RTC"
+

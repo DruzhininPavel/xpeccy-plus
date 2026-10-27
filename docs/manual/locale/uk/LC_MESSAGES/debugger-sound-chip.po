@@ -1,0 +1,370 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Sound Chip panel"
+msgstr "Панель Sound Chip"
+
+msgid "![The Sound Chip panel](images/dbg-sound.png)"
+msgstr "![Панель Sound Chip](images/dbg-sound.png)"
+
+msgid "The Sound Chip panel"
+msgstr "Панель Sound Chip"
+
+msgid "**Chips** - a tab for each sound chip of the machine."
+msgstr "**Мікросхеми** — по вкладці для кожної звукової мікросхеми машини."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Sound Chips** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносить панель у вікно "
+"**Sound Chips**."
+
+msgid "**Regs** - the 16 registers of the chip."
+msgstr "**Regs** — 16 регістрів мікросхеми."
+
+msgid ""
+"**Channels** - the tone channels A, B and C, the noise N and the envelope"
+" E."
+msgstr "**Канали** — тональні канали A, B і C, шум N та обвідна E."
+
+msgid "**Envelope** - the shape of the envelope."
+msgstr "**Обвідна** — форма обвідної."
+
+msgid ""
+"**Wave** - the peak level, the time span, and the **Fit** and **Log** "
+"check boxes."
+msgstr ""
+"**Wave** — піковий рівень, відрізок часу і поля позначок **Fit** та "
+"**Log**."
+
+msgid "**Beeper** - the level of the beeper."
+msgstr "**Beeper** — рівень біпера."
+
+msgid "**Wave box** - the sound the machine puts out."
+msgstr "**Осцилограма** — звук, який видає машина."
+
+msgid ""
+"In the picture the title tune of Cybernoid (Dave Rogers, Hewson, 1988) "
+"plays."
+msgstr ""
+"На зображенні грає мелодія із заставки Cybernoid (Dave Rogers, Hewson, "
+"1988)."
+
+msgid ""
+"The tabs are named **PSG1**, **PSG2** and so on, one for each AY or YM "
+"chip: a TurboSound machine has two. A chip with an FM part, as in "
+"TurboSound FM, has an **FM** tab beside its **PSG** tab. A machine with "
+"no sound chip has no tabs."
+msgstr ""
+"Вкладки називаються **PSG1**, **PSG2** і так далі, по одній на кожну "
+"мікросхему AY або YM: машина з TurboSound має дві. Мікросхема з "
+"FM-частиною, як у TurboSound FM, має вкладку **FM** поруч зі своєю "
+"вкладкою **PSG**. Машина без звукової мікросхеми не має вкладок."
+
+msgid "The PSG page"
+msgstr "Сторінка PSG"
+
+msgid ""
+"**Regs** shows the 16 registers in two rows: `#00` holds registers 0 to "
+"7, `#08` holds registers 8 to 15. Click a register and type a new value "
+"in hex. The value goes to the chip as if a program wrote it with an OUT "
+"to the chip's port, so the rest of the page changes with it."
+msgstr ""
+"**Regs** показує 16 регістрів у два рядки: `#00` містить регістри від 0 "
+"до 7, `#08` — регістри від 8 до 15. Клацніть регістр і введіть нове "
+"значення в шістнадцятковому вигляді. Значення потрапляє в мікросхему так,"
+" ніби програма записала його інструкцією OUT у порт мікросхеми, тож решта"
+" сторінки змінюється разом із ним."
+
+msgid "The table below it shows the same registers by channel:"
+msgstr "Таблиця під ним показує ті самі регістри за каналами:"
+
+msgid "Column"
+msgstr "Стовпець"
+
+msgid "What it shows"
+msgstr "Що показує"
+
+msgid "**Period**"
+msgstr "**Period**"
+
+msgid ""
+"the tone period of A, B and C (up to FFF), the noise period of N (up to "
+"1F), the envelope period of E (up to FFFF)"
+msgstr ""
+"період тону A, B і C (до FFF), період шуму N (до 1F), період обвідної E "
+"(до FFFF)"
+
+msgid "**Vol**"
+msgstr "**Vol**"
+
+msgid ""
+"the volume of A, B and C, 0 to F; on the E row, the level the envelope is"
+" at now"
+msgstr "гучність A, B і C, від 0 до F; у рядку E — поточний рівень обвідної"
+
+msgid "**Mixer**"
+msgstr "**Mixer**"
+
+msgid ""
+"what the channel mixes: `T` tone, `N` noise, `E` the envelope in place of"
+" the volume; `-` for off"
+msgstr ""
+"що змішує канал: `T` — тон, `N` — шум, `E` — обвідна замість гучності; "
+"`-` — вимкнено"
+
+msgid "**Lev**"
+msgstr "**Lev**"
+
+msgid "how loud the channel is, as a bar"
+msgstr "наскільки гучний канал, у вигляді смуги"
+
+msgid "**State**"
+msgstr "**State**"
+
+msgid "the output of the tone or noise generator, 0 or 1"
+msgstr "вихід генератора тону або шуму, 0 або 1"
+
+msgid "**Mute**"
+msgstr "**Mute**"
+
+msgid "tick to silence the channel"
+msgstr "позначте, щоб заглушити канал"
+
+msgid ""
+"**Period** and **Vol** can be changed as the registers can: click and "
+"type in hex."
+msgstr ""
+"**Period** і **Vol** можна змінювати так само, як регістри: клацніть і "
+"введіть шістнадцяткове значення."
+
+msgid ""
+"**Lev** is green, amber near the top and red at the end. While the "
+"machine runs, the bar shows the loudest level of the channel since the "
+"last refresh. While the machine stands still, the bar and the number on "
+"it show exactly what the channel puts out at that moment."
+msgstr ""
+"**Lev** зелена, бурштинова біля верху і червона наприкінці. Поки машина "
+"працює, смуга показує найбільшу гучність каналу від останнього оновлення."
+" Коли машина стоїть, смуга і число на ній показують точно те, що канал "
+"видає в цей момент."
+
+msgid ""
+"**State** is shown only while the machine stands still. A tone generator "
+"flips much too fast to be read while the machine runs, so the column "
+"shows `-` then."
+msgstr ""
+"**State** показується лише тоді, коли машина стоїть. Генератор тону "
+"перемикається надто швидко, щоб його можна було прочитати під час роботи "
+"машини, тож тоді стовпець показує `-`."
+
+msgid ""
+"**Mute** silences a channel without touching the chip: the program goes "
+"on writing the same registers, and the other channels play as before. Use"
+" it to pick one voice out of a tune."
+msgstr ""
+"**Mute** глушить канал, не чіпаючи мікросхеми: програма й далі пише ті "
+"самі регістри, а інші канали грають, як і раніше. Так можна виділити один"
+" голос із мелодії."
+
+msgid ""
+"The E row draws the envelope shape set in register 13: two cycles of it, "
+"so the eight shapes can be told apart."
+msgstr ""
+"Рядок E малює форму обвідної, задану в регістрі 13: два її періоди, щоб "
+"вісім форм можна було розрізнити."
+
+msgid "The FM page"
+msgstr "Сторінка FM"
+
+msgid "The FM page shows the FM part of a YM2203 chip. Across the top:"
+msgstr "Сторінка FM показує FM-частину мікросхеми YM2203. Угорі:"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "**Timer A**, **Timer B**"
+msgstr "**Timer A**, **Timer B**"
+
+msgid "the timer values in hex, and **on** or **off**"
+msgstr "значення таймерів у шістнадцятковому вигляді і **on** або **off**"
+
+msgid "**Ch3**"
+msgstr "**Ch3**"
+
+msgid "the mode of channel 3: **off**, **special** or **CSM**"
+msgstr "режим каналу 3: **off**, **special** або **CSM**"
+
+msgid "**1**, **2**, **3**"
+msgstr "**1**, **2**, **3**"
+
+msgid "tabs for the three FM channels"
+msgstr "вкладки трьох FM-каналів"
+
+msgid "**off**"
+msgstr "**off**"
+
+msgid "tick to silence this FM channel"
+msgstr "позначте, щоб заглушити цей FM-канал"
+
+msgid "**Alg**, **Fb**"
+msgstr "**Alg**, **Fb**"
+
+msgid "the algorithm and the feedback of the channel"
+msgstr "алгоритм і зворотний зв'язок каналу"
+
+msgid "**Bk/Fq**"
+msgstr "**Bk/Fq**"
+
+msgid "the block and frequency of the channel"
+msgstr "блок і частота каналу"
+
+msgid "**Out**"
+msgstr "**Out**"
+
+msgid "the channel's output now"
+msgstr "поточний вихід каналу"
+
+msgid ""
+"Under them is a row for each operator, **Op1** to **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** and "
+"**EG** are the operator's register fields: click one and type a new value"
+" in hex. **St** is the state of the operator's envelope (**OFF**, "
+"**ATK**, **DEC**, **SUS** or **REL**), **Bk/Fq** its block and frequency,"
+" and **Lev** its envelope level, where a bigger number is louder. A `*` "
+"in the last column marks the operators that reach the output in the "
+"channel's algorithm."
+msgstr ""
+"Під ними — рядок для кожного оператора, від **Op1** до **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** і **EG** "
+"— поля регістрів оператора: клацніть одне з них і введіть нове значення в"
+" шістнадцятковому вигляді. **St** — стан обвідної оператора (**OFF**, "
+"**ATK**, **DEC**, **SUS** або **REL**), **Bk/Fq** — його блок і частота, "
+"а **Lev** — рівень його обвідної, де більше число означає гучніше. `*` в "
+"останньому стовпці позначає оператори, що потрапляють на вихід в "
+"алгоритмі каналу."
+
+msgid "Wave and Beeper"
+msgstr "Wave і Beeper"
+
+msgid ""
+"The wave box at the bottom shows the sound the machine puts out, all "
+"sources mixed: the sound chips, the beeper and the rest. While the "
+"machine runs it holds the last 40 milliseconds, enough to see a tune "
+"move. While the machine stands still it holds the last 2 milliseconds, "
+"fine enough to count the edges of a beeper routine one step at a time."
+msgstr ""
+"Осцилограма внизу показує звук, який видає машина, з усіма джерелами "
+"разом: звуковими мікросхемами, біпером та іншими. Поки машина працює, "
+"вона містить останні 40 мілісекунд — достатньо, щоб бачити рух мелодії. "
+"Коли машина стоїть, вона містить останні 2 мілісекунди — досить детально,"
+" щоб покроково рахувати фронти біперної підпрограми."
+
+msgid ""
+"The number beside **Wave** is the highest level in the box, in hex, "
+"followed by the time the box holds. The scale at the left marks the "
+"levels."
+msgstr ""
+"Число поруч із **Wave** — найвищий рівень в осцилограмі в "
+"шістнадцятковому вигляді, а за ним час, який охоплює осцилограма. Шкала "
+"ліворуч позначає рівні."
+
+msgid ""
+"**Fit** - centers the wave and scales the box to it, so quiet sound fills"
+" the box too. With **Fit** off, the box keeps one fixed scale."
+msgstr ""
+"**Fit** — центрує хвилю і масштабує осцилограму під неї, тож тихий звук "
+"теж заповнює осцилограму. Коли **Fit** вимкнено, осцилограма тримає одну "
+"фіксовану шкалу."
+
+msgid ""
+"**Log** - draws the wave on a curve, so a quiet tune is still visible "
+"beside a loud one."
+msgstr "**Log** — малює хвилю на кривій, тож тиху мелодію видно поруч із гучною."
+
+msgid "**Beeper** is a bar of the beeper's level."
+msgstr "**Beeper** — смуга рівня біпера."
+
+msgid "Example"
+msgstr "Приклад"
+
+msgid "Watch the AY registers while music plays"
+msgstr "Стежити за регістрами AY, поки грає музика"
+
+msgid "Choose **ZX Spectrum 128K** and pick **128 BASIC** in its menu."
+msgstr "Виберіть **ZX Spectrum 128K** і виберіть **128 BASIC** у його меню."
+
+msgid ""
+"Choose **Tools > Sound Chips**. The **Sound Chips** window opens on "
+"**PSG1**."
+msgstr ""
+"Виберіть **Tools > Sound Chips**. Вікно **Sound Chips** відкриється на "
+"**PSG1**."
+
+msgid "Type `PLAY \"cdefgab\"` and press Enter."
+msgstr "Введіть `PLAY \"cdefgab\"` і натисніть Enter."
+
+msgid ""
+"Watch channel A: its **Period** changes with each note, its **Mixer** "
+"starts with `T` for the tone, and its **Lev** bar rises and falls. The "
+"wave box shows the square wave of the tone."
+msgstr ""
+"Стежте за каналом A: його **Period** змінюється з кожною нотою, його "
+"**Mixer** починається з `T` для тону, а його смуга **Lev** піднімається й"
+" опускається. Осцилограма показує прямокутну хвилю тону."
+
+msgid ""
+"Tick **Mute** on the A row and play again: the registers still change "
+"with each note, but you hear nothing."
+msgstr ""
+"Позначте **Mute** у рядку A і зіграйте знову: регістри й далі змінюються "
+"з кожною нотою, але ви нічого не чуєте."
+
+msgid "Untick **Mute** to hear the channel again."
+msgstr "Зніміть позначку **Mute**, щоб знову почути канал."
+
+msgid "AY"
+msgstr "AY"
+
+msgid "registers"
+msgstr "регістри"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "FM"
+msgstr "FM"
+
+msgid "YM2203"
+msgstr "YM2203"
+
+msgid "wave box"
+msgstr "осцилограма"
+
+msgid "beeper"
+msgstr "біпер"
+
+msgid "level"
+msgstr "рівень"
+

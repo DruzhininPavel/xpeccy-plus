@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Help menu"
+msgstr "Menú Help"
+
+msgid ""
+"**Manual** - this manual, from the program's own files; see [This manual"
+"](getting-started.md#this-manual)."
+msgstr ""
+"**Manual** — este manual, desde los propios archivos del programa; "
+"consulta [Este manual](getting-started.md#this-manual)."
+
+msgid "**Project Page** - the project's page on GitHub, in your browser."
+msgstr "**Project Page** — la página del proyecto en GitHub, en tu navegador."
+
+msgid "**What's New** - the list of changes of every version."
+msgstr "**What's New** — la lista de cambios de cada versión."
+
+msgid ""
+"**Report a Problem** - the page where problems are reported. Say which "
+"version you run (it is in **About**), on which system, and what you did; "
+"a log helps too (see [Application page](options-application.md))."
+msgstr ""
+"**Report a Problem** — la página donde se informa de los problemas. "
+"Indica qué versión usas (está en **About**), en qué sistema y qué "
+"hiciste; un registro también ayuda (consulta [Sección Application"
+"](options-application.md))."
+
+msgid ""
+"**About Xpeccy+** - the version, the versions of Qt and SDL it was built "
+"with, and the terms of the parts that come with it. On macOS it is in the"
+" application menu."
+msgstr ""
+"**About Xpeccy+** — la versión, las versiones de Qt y SDL con las que se "
+"compiló y las condiciones de las partes que lo acompañan. En macOS está "
+"en el menú de la aplicación."
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Manual"
+msgstr "Manual"
+
+msgid "Project Page"
+msgstr "Project Page"
+
+msgid "What's New"
+msgstr "What's New"
+
+msgid "Report a Problem"
+msgstr "Report a Problem"
+
+msgid "About"
+msgstr "About"
+

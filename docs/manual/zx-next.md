@@ -1,6 +1,9 @@
 # ZX Spectrum Next
 
-```{index} ZX Spectrum Next, Next; see: ZX Spectrum Next
+```{index} ZX Spectrum Next
+```
+
+```{index} see: Next; ZX Spectrum Next
 ```
 
 The **ZX Spectrum Next** is emulated from its FPGA core: the Z80N CPU at 3.5 to 28 MHz,
@@ -21,8 +24,8 @@ line it is `-m zxnext`.
 
 The Next sets its own CPU speed, 3.5, 7, 14 or 28 MHz, as programs ask, so
 **Turbo** has no steps on it. The Next mixes its three chips itself, so the
-**Stereo** setting of the PSG is grayed out (see [Sound](sound.md)). The picture always
-shows at least the **full** border (see [Picture](picture.md)).
+**Stereo** setting of the PSG is grayed out (see [Sound page](options-sound.md)). The picture always
+shows at least the **full** border (see [View menu](view.md)).
 
 ```{index} ZX Spectrum Next; reset, Hard Reset; ZX Spectrum Next, NMI; ZX Spectrum Next
 ```
@@ -88,12 +91,12 @@ instead. A card without System/Next is put aside while the Next runs, the messag
 machine. **Media > SD Card > Eject** on the Next puts its own card back.
 
 The **SD Card** menu has the same items as on the ZX Evolution: **Open Image...**,
-**Open Folder...**, **Eject** and **Write Protect** (see [SD card](disks.md#sd-card)). The
+**Open Folder...**, **Eject** and **Write Protect** (see [SD card](sd-hdd.md#sd-card)). The
 `--sdcard` option of the command line sets the card too.
 
 **Writing.** A card made here takes what NextZXOS writes, with no question. A folder of
 your own follows the **Folder as a disk** settings and asks the first time (see
-[Writing to a folder](disks.md#writing-to-a-folder)); an image is written to directly.
+[Writing to a folder](sd-hdd.md#writing-to-a-folder)); an image is written to directly.
 
 The card's `config.ini` and `menu.ini` choose the ROMs, and `config.ini`'s `timing=` the
 video timing, VGA 0 or VGA 1. Its other settings are not read.
@@ -104,7 +107,7 @@ video timing, VGA 0 or VGA 1. Its other settings are not read.
 ```
 
 Open `.nex` programs and `.snx` snapshots as any file: by **File > Open**, by dropping them
-on the window, or on the command line (see [Files](files.md)). They need the Next, and on
+on the window, or on the command line (see [File menu](files.md)). They need the Next, and on
 another machine Xpeccy+ switches to it. On the Next, `.sna` and `.z80` snapshots of the
 48K, the 128K and the Pentagon open the same way; snapshots of other machines switch to
 a machine that runs them.
@@ -163,12 +166,12 @@ are not emulated.
 
 The virtual keyboard has three Next skins: **Next (Black)**, **Next (White)** and
 **Next (Magenta)**. With **By machine** on, the Next gets the one of the tone picked last
-(see [Virtual Keyboard](input.md#virtual-keyboard)). Its arrows, EDIT, DELETE and the
+(see [Virtual Keyboard](view.md#virtual-keyboard)). Its arrows, EDIT, DELETE and the
 other keys of the Next's own row press those keys, not a key with a shift.
 
 The Next has two joystick ports. Its firmware sets the left one to Kempston 1 and the right
 one to Sinclair 1; a program may change them. Player 1's gamepad is the left joystick, and
-the mouse is the Next's Kempston mouse, with its wheel (see [Input](input.md)).
+the mouse is the Next's Kempston mouse, with its wheel (see [Input menu](input.md)).
 
 ## Wi-Fi and serial ports
 
@@ -178,7 +181,7 @@ the mouse is the Next's Kempston mouse, with its wheel (see [Input](input.md)).
 The Next has two UARTs: one to the ESP-01 Wi-Fi module, one to the Raspberry Pi's
 connector. The **ESP UART** and **Pi UART** rows on the **Machine** page of **Options**
 say what is on each, and are shown only for the Next (see
-[The Machine page](machines.md#the-machine-page)).
+[Machine page](options-machine.md)).
 
 | Choice | Meaning |
 |---|---|
@@ -211,7 +214,7 @@ the settings folder. Until it is set, it shows the computer's time.
 ## In the Debugger
 
 The Debugger has a **ZX Next** panel for the Next's registers, sprites, copper, layers,
-tilemap, palettes and DMA: see [ZX Next](debugger-devices.md#zx-next). The **Palette**
+tilemap, palettes and DMA: see [ZX Next panel](debugger-zx-next.md). The **Palette**
 panel is there too; **CMOS**, **FDC** and **FDD** are not.
 
 ## Not emulated yet
@@ -225,4 +228,4 @@ panel is there too; **CMOS**, **FDC** and **FDD** are not.
 - the board's function keys and its DRIVE button;
 - video timings other than VGA 0 and VGA 1, and the settings of `config.ini` other than
   the ROMs and the timing;
-- **Look ahead** of the adaptive anti-flicker modes (see [Picture](picture.md)).
+- **Look ahead** of the adaptive anti-flicker modes (see [View menu](view.md)).

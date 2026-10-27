@@ -1,0 +1,136 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "File types page"
+msgstr "Раздел File types"
+
+msgid "![The File types page](images/options-filetypes.png)"
+msgstr "![Страница File types](images/options-filetypes.png)"
+
+msgid "The File types page"
+msgstr "Страница File types"
+
+msgid ""
+"What opening a tape or a disk does - run it, mount it, or ask - and "
+"whether the media in the drives come back at the next start. The table "
+"says which machine each kind of file opens on."
+msgstr ""
+"Что делает открытие ленты или диска — запуск, вставку или вопрос — и "
+"возвращаются ли носители в дисководы при следующем запуске. Таблица "
+"говорит, на какой машине открывается каждый вид файлов."
+
+msgid ""
+"What a file needs and which machine it switches to are explained in [Run "
+"a program](getting-started.md#run-a-program). The **File types** page of "
+"**Options** sets this for each format."
+msgstr ""
+"Что нужно файлу и на какую машину он переключает, объяснено в разделе "
+"[Запуск программы](getting-started.md#run-a-program). Страница **File "
+"types** окна **Options** задаёт это для каждого формата."
+
+msgid "The **General** group at the top of the page:"
+msgstr "Группа **General** вверху страницы:"
+
+msgid ""
+"**Run opened media**, **Mount opened media** or **Ask: run or mount** - "
+"what opening a tape or a disk does. **Ask** shows the **Open Media** "
+"question; ticking **Remember my choice** there saves your answer in this "
+"setting."
+msgstr ""
+"**Run opened media**, **Mount opened media** или **Ask: run or mount** — "
+"что делает открытие ленты или диска. **Ask** показывает вопрос **Open "
+"Media**; флажок **Remember my choice** в нём сохраняет ваш ответ в этой "
+"настройке."
+
+msgid ""
+"**Remember mounted media** - the tape and the disks in the drives are "
+"opened again at the next start."
+msgstr ""
+"**Remember mounted media** — лента и диски в дисководах снова открываются"
+" при следующем запуске."
+
+msgid "The **File types** group has a row per format:"
+msgstr "В группе **File types** — строка на каждый формат:"
+
+msgid "**Format** - the kind of file."
+msgstr "**Format** — вид файла."
+
+msgid ""
+"**Needs** - what a machine must have to run it: **any machine**, **Beta "
+"Disk (TR-DOS)**, **+3 disk drive**, **TSConf**, **ZX Spectrum Next**, "
+"**read from the file** (a `.z80` or `.sna` names its model), **exactly "
+"the one it was taken on** (SZX) or **exactly the one it was recorded on**"
+" (RZX)."
+msgstr ""
+"**Needs** — что должно быть у машины, чтобы его запустить: **any "
+"machine**, **Beta Disk (TR-DOS)**, **+3 disk drive**, **TSConf**, **ZX "
+"Spectrum Next**, **read from the file** (`.z80` или `.sna` называет свою "
+"модель), **exactly the one it was taken on** (SZX) или **exactly the one "
+"it was recorded on** (RZX)."
+
+msgid ""
+"**Opened on** - **Auto**, **Ask**, **Keep current**, or one machine from "
+"the list."
+msgstr ""
+"**Opened on** — **Auto**, **Ask**, **Keep current** или одна машина из "
+"списка."
+
+msgid ""
+"A tape runs on any machine, so its rows have no **Ask**: **Auto** in "
+"these rows only switches back to your own machine after another file "
+"switched away from it. A machine picked in **Opened on** is used for "
+"every file of that format that it can run. **Restore defaults** sets "
+"every row back to **Auto**."
+msgstr ""
+"Лента работает на любой машине, поэтому в её строках нет **Ask**: "
+"**Auto** в этих строках только возвращает вашу машину после того, как "
+"другой файл переключил с неё. Машина, выбранная в **Opened on**, "
+"используется для каждого файла этого формата, который она может "
+"запустить. **Restore defaults** возвращает всем строкам **Auto**."
+
+msgid ""
+"Only a file that is about to run can switch the machine: a snapshot "
+"always, a tape or a disk only when it is run, and a disk only from drive "
+"A."
+msgstr ""
+"Переключить машину может только файл, который сейчас запустится: снапшот "
+"— всегда, лента или диск — только при запуске, и диск — только из "
+"дисковода A."
+
+msgid "machine"
+msgstr "машина"
+
+msgid "switched by a file"
+msgstr "переключение по файлу"
+
+msgid "Opened on"
+msgstr "Opened on"
+
+msgid "Run opened media"
+msgstr "Run opened media"
+
+msgid "Mount opened media"
+msgstr "Mount opened media"
+
+msgid "Remember mounted media"
+msgstr "Remember mounted media"
+

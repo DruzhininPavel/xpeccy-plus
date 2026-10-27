@@ -1,9 +1,13 @@
-# Files and snapshots
+# File menu
+
+```{index} File menu
+```
 
 Xpeccy+ opens snapshots, tapes, disks, cartridges and RZX recordings, and saves snapshots,
-tapes and disks. This chapter is about the **File** and **Favorites** menus, snapshots, and
-how the machine a file runs on is chosen. Tapes and disks have chapters of their own:
-[Tapes](tapes.md) and [Disks and drives](disks.md).
+tapes and disks. The **File** menu opens and saves them, keeps the quick save, and opens
+**Options**. Tapes and disks have pages of their own under the **Media** menu:
+[Tapes](tapes.md) and [Floppy disks](disks.md). Which machine a file runs on is set on the
+[File types page](options-file-types.md).
 
 ## File formats
 
@@ -37,7 +41,7 @@ file types of the open dialog. A drive with no disk gets a new, formatted one fi
 **RAW file to disk** is a choice of file type in the open dialog. It writes any file onto
 the disk in drive A as a TR-DOS file, in parts if the file is long.
 
-Screenshots, video and sound files are in [Screenshots and recording](capture.md).
+Screenshots, video and sound files are in [Capture menu](capture.md).
 
 ## Opening a file
 
@@ -175,63 +179,6 @@ after a restart too, from the file. The message "nothing quick saved" means this
 **File > Undo Quick Load** takes back the last quick load and returns to where you were.
 Use it again to redo the quick load.
 
-## Which machine opens a file
-
-```{index} File types page, machine; switched by a file, Opened on, Run opened media, Mount opened media, Remember mounted media
-```
-
-What a file needs and which machine it switches to are explained in
-[Run a program](getting-started.md#run-a-program). The **File types** page of **Options**
-sets this for each format.
-
-The **General** group at the top of the page:
-
-- **Run opened media**, **Mount opened media** or **Ask: run or mount** - what opening a
-  tape or a disk does. **Ask** shows the **Open Media** question; ticking
-  **Remember my choice** there saves your answer in this setting.
-- **Remember mounted media** - the tape and the disks in the drives are opened again at the
-  next start.
-
-The **File types** group has a row per format:
-
-- **Format** - the kind of file.
-- **Needs** - what a machine must have to run it: **any machine**, **Beta Disk (TR-DOS)**,
-  **+3 disk drive**, **TSConf**, **ZX Spectrum Next**, **read from the file** (a `.z80` or `.sna` names its
-  model), **exactly the one it was taken on** (SZX) or **exactly the one it was recorded
-  on** (RZX).
-- **Opened on** - **Auto**, **Ask**, **Keep current**, or one machine from the list.
-
-A tape runs on any machine, so its rows have no **Ask**: **Auto** in these rows only
-switches back to your own machine after another file switched away from it. A machine
-picked in **Opened on**
-is used for every file of that format that it can run. **Restore defaults** sets every
-row back to **Auto**.
-
-Only a file that is about to run can switch the machine: a snapshot always, a tape or a disk
-only when it is run, and a disk only from drive A.
-
-## Favorites
-
-```{index} Favorites, Add to Favorites, Manage favorites
-```
-
-The **Favorites** menu keeps a list of files you open often. At the top it offers the file
-named in the
-window title: **Add "name"...** puts it on the list, **Remove "name"** takes it off. Below
-are your favorites; pick one to open it. **Organize...** opens the **Favorites** window.
-
-When you add a favorite, you are asked for its **Name** (the text in the menu) and its
-**Path**. The {icon}`fileopen` button beside **Path** picks the file in the file dialog.
-
-The **Favorites** window lists every favorite with its name and file. Double-click a row
-to change it. The buttons beside the list {icon}`add` add a file, move the selected one
-{icon}`arrow-up` up or {icon}`arrow-down` down, and {icon}`cancel` remove it. The same
-window opens from {icon}`star` **Manage favorites...** on the **Application** page of
-**Options**.
-
-The **Add to Favorites** hotkey adds the file in use and asks the same questions. It has no
-key until you give it one on the **Hotkeys** page of **Options**.
-
 ## RZX recordings
 
 ```{index} RZX, RZX Player
@@ -241,3 +188,13 @@ An `.rzx` file is a recording of a whole session, played back exactly. Opening o
 it in the **RZX Player**, on exactly the machine it was recorded on. See
 [Playing an RZX](capture.md#playing-an-rzx) and
 [Recording an RZX](capture.md#recording-an-rzx).
+
+## Options and Exit
+
+```{index} Exit
+```
+
+**File > Options...** opens the settings; see [Options](options.md). **File > Exit** closes
+the program (on macOS it is **Quit** in the application menu). Before it closes, it asks
+about every changed disk and tape, and with **Confirm exit** on the **Application** page of
+**Options** it asks first whether to close at all.

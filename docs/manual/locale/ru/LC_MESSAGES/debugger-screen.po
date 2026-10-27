@@ -1,0 +1,386 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Screen panel"
+msgstr "Панель Screen"
+
+msgid "![The Screen panel](images/dbg-screen.png)"
+msgstr "![Панель Screen](images/dbg-screen.png)"
+
+msgid "The Screen panel"
+msgstr "Панель Screen"
+
+msgid ""
+"**Mode** - **Auto**, **Main**, **Shadow**, **Both** or **Custom**: which "
+"screen is drawn."
+msgstr ""
+"**Mode** — **Auto**, **Main**, **Shadow**, **Both** или **Custom**: какой"
+" экран рисуется."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Screen** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносит панель в окно "
+"**Screen**."
+
+msgid ""
+"**Picture** - the screen, with a strip of the border color around it and "
+"its name above it."
+msgstr ""
+"**Изображение** — экран с полосой цвета бордюра вокруг и его названием "
+"сверху."
+
+msgid ""
+"**View** - the zoom and four check boxes that change how the picture is "
+"drawn."
+msgstr "**Вид** — масштаб и четыре флажка, меняющие то, как рисуется изображение."
+
+msgid "**Readout** - where the dot under the mouse is and which bytes hold it."
+msgstr "**Показания** — где точка под мышью и в каких байтах она хранится."
+
+msgid "**Page** and **Offset** - only in **Custom** mode: which memory to draw."
+msgstr "**Page** и **Offset** — только в режиме **Custom**: какую память рисовать."
+
+msgid ""
+"The panel draws a ZX screen of 256 x 192 dots from memory: 6144 bytes of "
+"pixels and 768 bytes of attributes, in the standard layout. It draws that"
+" layout whatever video mode the machine is in, so it always shows what a "
+"ZX screen at that place in memory would look like."
+msgstr ""
+"Панель рисует из памяти экран ZX 256 x 192 точки: 6144 байта пикселей и "
+"768 байт атрибутов в стандартном расположении. Она рисует это "
+"расположение в любом видеорежиме машины, поэтому всегда показывает, как "
+"выглядел бы экран ZX в этом месте памяти."
+
+msgid "Which screen"
+msgstr "Какой экран"
+
+msgid "Button"
+msgstr "Кнопка"
+
+msgid "What it draws"
+msgstr "Что рисует"
+
+msgid "**Auto**"
+msgstr "**Auto**"
+
+msgid ""
+"the screen the machine is showing now; it follows a program that flips "
+"between two screens"
+msgstr ""
+"экран, который машина показывает сейчас; следит за программой, "
+"переключающей два экрана"
+
+msgid "**Main**"
+msgstr "**Main**"
+
+msgid "the normal screen, RAM page 5"
+msgstr "обычный экран, страница RAM 5"
+
+msgid "**Shadow**"
+msgstr "**Shadow**"
+
+msgid "the second screen of a 128K, RAM page 7"
+msgstr "второй экран 128K, страница RAM 7"
+
+msgid "**Both**"
+msgstr "**Both**"
+
+msgid "page 5 and page 7 side by side, or one above the other in a tall panel"
+msgstr "страницы 5 и 7 рядом или одна над другой в высокой панели"
+
+msgid "**Custom**"
+msgstr "**Custom**"
+
+msgid "any 16K page, from any offset in it"
+msgstr "любая 16K-страница с любого смещения в ней"
+
+msgid ""
+"**Shadow** and **Both** are grayed out on a machine with no page 7, such "
+"as the 48K."
+msgstr ""
+"**Shadow** и **Both** недоступны на машине без страницы 7, например на "
+"48K."
+
+msgid ""
+"The name above a picture says where it comes from: **Main (5)**, **Shadow"
+" (7)**, or **Page** with a number for any other page. In **Custom** mode "
+"it is **Custom** with the page number. The name of the screen the machine"
+" is showing is in the **Header** color of the **Debugger** page of "
+"**Options**; the other one is plain."
+msgstr ""
+"Название над изображением говорит, откуда оно: **Main (5)**, **Shadow "
+"(7)** или **Page** с номером для любой другой страницы. В режиме "
+"**Custom** это **Custom** с номером страницы. Название экрана, который "
+"показывает машина, выделено цветом **Header** со страницы **Debugger** "
+"окна **Options**; другое — обычным."
+
+msgid ""
+"In **Custom** mode, type the page into **Page** and the place in the page"
+" where the screen starts into **Offset**, both in hex. **Offset** goes "
+"from 0000 to 3FFF. Use **Custom** to look at a picture a program keeps "
+"elsewhere in memory, for example one it copies to the screen later."
+msgstr ""
+"В режиме **Custom** введите страницу в **Page**, а место в странице, где "
+"начинается экран, в **Offset**, оба шестнадцатеричными. **Offset** — от "
+"0000 до 3FFF. С **Custom** можно посмотреть картинку, которую программа "
+"хранит в другом месте памяти, например ту, что она позже скопирует на "
+"экран."
+
+msgid "How it is drawn"
+msgstr "Как рисуется"
+
+msgid "Setting"
+msgstr "Настройка"
+
+msgid "What it does"
+msgstr "Что делает"
+
+msgid "**Zoom Fit**"
+msgstr "**Zoom Fit**"
+
+msgid ""
+"fills the panel; when there is room, each dot takes a whole number of "
+"pixels"
+msgstr ""
+"заполняет панель; когда места хватает, каждая точка занимает целое число "
+"пикселей"
+
+msgid "**Zoom x1** to **Zoom x4**"
+msgstr "от **Zoom x1** до **Zoom x4**"
+
+msgid "a fixed number of pixels per dot"
+msgstr "фиксированное число пикселей на точку"
+
+msgid "**no pixels**"
+msgstr "**no pixels**"
+
+msgid ""
+"attributes only: each cell is its paper color with a small dot of ink in "
+"the middle"
+msgstr ""
+"только атрибуты: каждое знакоместо закрашено цветом фона с маленькой "
+"точкой цвета чернил посередине"
+
+msgid "**no colors**"
+msgstr "**no colors**"
+
+msgid "pixels only, white on black"
+msgstr "только пиксели, белым по чёрному"
+
+msgid "**no flash**"
+msgstr "**no flash**"
+
+msgid "holds flashing cells still; grayed out while ULA+ is in use"
+msgstr "останавливает мигающие знакоместа; недоступно, пока используется ULA+"
+
+msgid "**show grid**"
+msgstr "**show grid**"
+
+msgid "dims every other 8 x 8 cell, so the character cells can be counted"
+msgstr "затемняет каждое второе знакоместо 8 x 8, чтобы их можно было сосчитать"
+
+msgid "Finding a dot"
+msgstr "Поиск точки"
+
+msgid "Move the mouse over the picture. The readout shows:"
+msgstr "Наведите мышь на изображение. Показания:"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "What it shows"
+msgstr "Что показывает"
+
+msgid "**XY:**"
+msgstr "**XY:**"
+
+msgid ""
+"the dot, in pixels from the top left corner: 0 to 255 across, 0 to 191 "
+"down"
+msgstr ""
+"точка в пикселях от левого верхнего угла: от 0 до 255 по горизонтали, от "
+"0 до 191 по вертикали"
+
+msgid "**Char:**"
+msgstr "**Char:**"
+
+msgid "the character cell, 0 to 31 across, 0 to 23 down"
+msgstr "знакоместо, от 0 до 31 по горизонтали, от 0 до 23 по вертикали"
+
+msgid "**Screen:**"
+msgstr "**Screen:**"
+
+msgid ""
+"the address of the byte that holds the dot, and after it the bit: `.7` is"
+" the leftmost dot of the byte"
+msgstr ""
+"адрес байта, в котором точка, а после него бит: `.7` — самая левая точка "
+"байта"
+
+msgid "**Attr:**"
+msgstr "**Attr:**"
+
+msgid "the address of the attribute byte that colors the dot's cell"
+msgstr "адрес байта атрибутов, который раскрашивает знакоместо точки"
+
+msgid ""
+"The addresses are the ones the CPU uses. The addresses of page 5 start at"
+" 4000, where this page always is in memory. The addresses of any other "
+"page start at C000, where a 128K pages it in."
+msgstr ""
+"Адреса — те, что использует CPU. Адреса страницы 5 начинаются с 4000, где"
+" эта страница всегда стоит в памяти. Адреса любой другой страницы "
+"начинаются с C000, куда её подключает 128K."
+
+msgid ""
+"Click the picture to hold the readout on a dot: the cell is marked, and "
+"the numbers stay while you move the mouse away. Click again to let go."
+msgstr ""
+"Щёлкните изображение, чтобы закрепить показания на точке: знакоместо "
+"отмечается, а числа остаются, когда вы уводите мышь. Щёлкните снова, "
+"чтобы отпустить."
+
+msgid ""
+"Right-click the picture for **Copy screen address** and **Copy attribute "
+"address**. They copy the address of the dot under the mouse, or of the "
+"held dot, as four hex digits."
+msgstr ""
+"Щёлкните изображение правой кнопкой, чтобы выбрать **Copy screen "
+"address** и **Copy attribute address**. Они копируют адрес точки под "
+"мышью или закреплённой точки четырьмя шестнадцатеричными цифрами."
+
+msgid ""
+"The readout works the other way too: type an address into **Screen:** or "
+"**Attr:** and the cell it belongs to is marked on the picture. Move the "
+"mouse back over the picture to make the readout follow the mouse again."
+msgstr ""
+"Показания работают и наоборот: введите адрес в **Screen:** или **Attr:**,"
+" и знакоместо, к которому он относится, отметится на изображении. "
+"Наведите мышь обратно на изображение, чтобы показания снова следовали за "
+"мышью."
+
+msgid "Examples"
+msgstr "Примеры"
+
+msgid "See which screen a 128K program draws to"
+msgstr "Посмотреть, на какой экран рисует программа для 128K"
+
+msgid ""
+"A 128K has two screens, in RAM pages 5 and 7. Many programs draw on the "
+"screen that is not shown and then flip, so that the picture never shows "
+"half drawn."
+msgstr ""
+"У 128K два экрана, в страницах RAM 5 и 7. Многие программы рисуют на "
+"экран, который не показывается, а потом переключают экраны, чтобы "
+"изображение никогда не было видно недорисованным."
+
+msgid "Choose a 128K machine and load the program."
+msgstr "Выберите машину 128K и загрузите программу."
+
+msgid "Choose **Tools > Screen**. The **Screen** window opens."
+msgstr "Выберите **Tools > Screen**. Откроется окно **Screen**."
+
+msgid "Click **Both**. The window shows **Main (5)** and **Shadow (7)** together."
+msgstr "Щёлкните **Both**. Окно покажет **Main (5)** и **Shadow (7)** вместе."
+
+msgid ""
+"Let the program run. The name of the screen the machine shows is in the "
+"**Header** color; when the program flips, the other name takes that "
+"color."
+msgstr ""
+"Дайте программе поработать. Название экрана, который показывает машина, "
+"окрашено цветом **Header**; когда программа переключает экраны, этот цвет"
+" переходит к другому названию."
+
+msgid ""
+"You see the hidden screen being drawn while the other one is shown. Click"
+" **Auto** to see only the screen the machine shows, the way the main "
+"window does."
+msgstr ""
+"Вы видите, как рисуется скрытый экран, пока показывается другой. Щёлкните"
+" **Auto**, чтобы видеть только экран, который показывает машина, как в "
+"главном окне."
+
+msgid "![Both screens of a 128K](images/dbg-example-screens.png)"
+msgstr "![Оба экрана 128K](images/dbg-example-screens.png)"
+
+msgid "Both screens of a 128K"
+msgstr "Оба экрана 128K"
+
+msgid "Find the bytes behind a spot on the screen"
+msgstr "Найти байты, стоящие за местом на экране"
+
+msgid "Open the Debugger and click the **Screen** tab."
+msgstr "Откройте Debugger и щёлкните вкладку **Screen**."
+
+msgid ""
+"Move the mouse onto the spot and click: the cell is marked and the "
+"readout stays on it."
+msgstr ""
+"Наведите мышь на это место и щёлкните: знакоместо отмечается, и показания"
+" остаются на нём."
+
+msgid ""
+"Read **Screen:** for the byte of pixels and **Attr:** for its colors, for"
+" example `#4000` and `#5800` for the top left corner."
+msgstr ""
+"Прочитайте **Screen:** — байт пикселей и **Attr:** — его цвета, например "
+"`#4000` и `#5800` для левого верхнего угла."
+
+msgid "Right-click the picture and choose **Copy screen address**."
+msgstr "Щёлкните изображение правой кнопкой и выберите **Copy screen address**."
+
+msgid ""
+"With the address in hand, look at the byte in the **DUMP** panel (see "
+"[DUMP panel](debugger-memory.md)), or set a **Write** breakpoint on it to"
+" stop the machine when the program draws there (see [Breakpoints panel"
+"](debugger-breakpoints.md))."
+msgstr ""
+"Зная адрес, посмотрите этот байт на панели **DUMP** (см. [Панель DUMP"
+"](debugger-memory.md)) или поставьте на него точку останова **Write**, "
+"чтобы машина остановилась, когда программа рисует там (см. [Панель "
+"Breakpoints](debugger-breakpoints.md))."
+
+msgid "shadow screen"
+msgstr "теневой экран"
+
+msgid "which screen"
+msgstr "какой экран"
+
+msgid "zoom"
+msgstr "масштаб"
+
+msgid "screen address"
+msgstr "адрес экрана"
+
+msgid "attribute address"
+msgstr "адрес атрибутов"
+
+msgid "Copy screen address"
+msgstr "Copy screen address"
+
+msgid "Copy attribute address"
+msgstr "Copy attribute address"
+

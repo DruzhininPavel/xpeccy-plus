@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Tools menu"
+msgstr "Меню Tools"
+
+msgid ""
+"The **Tools** menu holds the windows for looking into the machine and "
+"changing it. The right-click menu over the picture has the same list "
+"under **Tools**."
+msgstr ""
+"Меню **Tools** содержит окна, чтобы заглянуть внутрь машины и что-то в "
+"ней поменять. В меню правого щелчка по изображению тот же список — в "
+"**Tools**."
+
+#, python-brace-format
+msgid ""
+"{icon}`cheats` **Cheats...** - trainers and pokes for the program that "
+"runs; see [Cheats](cheats.md)."
+msgstr ""
+"{icon}`cheats` **Cheats...** — трейнеры и POKE для запущенной программы; "
+"см. [Cheats](cheats.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`bug` **Debugger** - stops the machine and shows what is inside it;"
+" see [Debugger](debugger.md)."
+msgstr ""
+"{icon}`bug` **Debugger** — останавливает машину и показывает, что у неё "
+"внутри; см. [Отладчик](debugger.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`objective` **Watcher** - registers and memory, followed while the "
+"machine runs; see [Watcher](debugger-watcher.md)."
+msgstr ""
+"{icon}`objective` **Watcher** — регистры и память, за которыми окно "
+"следит, пока машина работает; см. [Окно Watcher](debugger-watcher.md)."
+
+#, python-brace-format
+msgid ""
+"{icon}`rulers` **Screen** and {icon}`note` **Sound Chips** - two panels "
+"of the Debugger in windows of their own, described below."
+msgstr ""
+"{icon}`rulers` **Screen** и {icon}`note` **Sound Chips** — две панели "
+"Debugger в отдельных окнах, описаны ниже."
+
+msgid "Screen and Sound Chips windows"
+msgstr "Окна Screen и Sound Chips"
+
+msgid "![The Screen window](images/dbg-screen-window.png)"
+msgstr "![Окно Screen](images/dbg-screen-window.png)"
+
+msgid "The Screen window"
+msgstr "Окно Screen"
+
+msgid "![The Sound Chips window](images/dbg-sound-window.png)"
+msgstr "![Окно Sound Chips](images/dbg-sound-window.png)"
+
+msgid "The Sound Chips window"
+msgstr "Окно Sound Chips"
+
+msgid ""
+"**Tools > Screen** and **Tools > Sound Chips** move the **Screen** and "
+"**Sound Chip** panels out of the Debugger into windows of their own. The "
+"same command again puts the panel back. In the Classic preset the keys "
+"are Alt+S and Alt+A; the Modern preset has no keys for them."
+msgstr ""
+"**Tools > Screen** и **Tools > Sound Chips** выносят панели **Screen** и "
+"**Sound Chip** из Debugger в отдельные окна. Та же команда ещё раз "
+"возвращает панель обратно. В наборе Classic для них есть клавиши Alt+S и "
+"Alt+A; в наборе Modern клавиш нет."
+
+#, python-brace-format
+msgid ""
+"The button at the top right of each panel, {icon}`display` **Show in its "
+"own window**, does the same. In the window it is pressed in; click it "
+"again, or close the window, to put the panel back in the Debugger. While "
+"the panel is out, its tab in the Debugger says so, with a **Bring it "
+"back** or **Bring them back** button."
+msgstr ""
+"Кнопка справа вверху каждой панели, {icon}`display` **Show in its own "
+"window**, делает то же самое. В окне она нажата; щёлкните её снова или "
+"закройте окно, чтобы вернуть панель в Debugger. Пока панель вынесена, её "
+"вкладка в Debugger сообщает об этом и показывает кнопку **Bring it back**"
+" или **Bring them back**."
+
+msgid ""
+"The windows work without the Debugger: they follow the machine while the "
+"machine runs, one picture a frame (in fast mode, one in ten frames). The "
+"settings are the same as in the panel. Each window keeps its place and "
+"size, and a window that was open when you quit opens again at the next "
+"start."
+msgstr ""
+"Окна работают без Debugger: они следят за машиной, пока машина работает, "
+"одно изображение за кадр (в быстром режиме — одно за десять кадров). "
+"Настройки те же, что на панели. Каждое окно запоминает своё место и "
+"размер, а окно, открытое при выходе, снова открывается при следующем "
+"запуске."
+
+msgid "Tools"
+msgstr "Tools"
+
+msgid "Screen window"
+msgstr "окно Screen"
+
+msgid "Sound Chips window"
+msgstr "окно Sound Chips"
+
+msgid "Show in its own window"
+msgstr "Show in its own window"
+

@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "STACK panel"
+msgstr "Panel STACK"
+
+msgid "![The STACK panel](images/dbg-stack.png)"
+msgstr "![El panel STACK](images/dbg-stack.png)"
+
+msgid "The STACK panel"
+msgstr "El panel STACK"
+
+msgid ""
+"Each line of the **STACK** panel is a word in memory, starting near the "
+"address SP holds. The shaded line is the word at SP, named by its "
+"address. The lines above and below it are named by their distance from "
+"SP: `-02:`, `+02:`, `+04:` and so on. The panel shows as many lines as "
+"fit in its height."
+msgstr ""
+"Cada línea del panel **STACK** es una palabra de memoria, empezando cerca"
+" de la dirección que contiene SP. La línea sombreada es la palabra en SP,"
+" nombrada por su dirección. Las líneas de encima y de debajo se nombran "
+"por su distancia a SP: `-02:`, `+02:`, `+04:`, etc. El panel muestra "
+"tantas líneas como caben en su altura."
+
+msgid ""
+"The two arrows at the top move the lines by a word. The first line can be"
+" from 16 bytes before SP to 16 bytes after it. Where the panel starts is "
+"the **Stack offset** on the **Debugger** page of **Options**: `-2` by "
+"default, so the word just above SP is in view too."
+msgstr ""
+"Las dos flechas de arriba desplazan las líneas una palabra. La primera "
+"línea puede estar desde 16 bytes antes de SP hasta 16 bytes después. "
+"Dónde empieza el panel lo fija **Stack offset** en la página **Debugger**"
+" de **Options**: `-2` por defecto, para que también se vea la palabra "
+"justo encima de SP."
+
+msgid "Stack offset"
+msgstr "Stack offset"
+

@@ -1,0 +1,232 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:50+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Toolbar"
+msgstr "Панель інструментів"
+
+#, python-brace-format
+msgid ""
+"By default the toolbar has {icon}`fileopen` **Open**, {icon}`save_all` "
+"**Save**, {icon}`shutdown` **Reset**, {icon}`model-zx48` **Model**, "
+"{icon}`tape` **Tape Player**, {icon}`fdd_disk` **Disk Manager**, "
+"{icon}`fullscreen-16` **Fullscreen**, {icon}`vkeys` **Virtual Keyboard**,"
+" {icon}`gamepad` **Gamepads**, {icon}`bug` **Debugger**, {icon}`other` "
+"**Options** and {icon}`speaker` **Mute**, and at the right end {icon"
+"}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**, {icon"
+"}`time-pause` **Pause**, {icon}`time-ffwd` **Fast Forward** and {icon"
+"}`time-fast` **Fast Mode**."
+msgstr ""
+"Типово на панелі інструментів є {icon}`fileopen` **Open**, "
+"{icon}`save_all` **Save**, {icon}`shutdown` **Reset**, {icon}`model-zx48`"
+" **Model**, {icon}`tape` **Tape Player**, {icon}`fdd_disk` **Disk "
+"Manager**, {icon}`fullscreen-16` **Fullscreen**, {icon}`vkeys` **Virtual "
+"Keyboard**, {icon}`gamepad` **Gamepads**, {icon}`bug` **Debugger**, "
+"{icon}`other` **Options** і {icon}`speaker` **Mute**, а на правому кінці "
+"— {icon}`time-rewind` **Rewind**, {icon}`time-slow` **Slow Motion**, "
+"{icon}`time-pause` **Pause**, {icon}`time-ffwd` **Fast Forward** і {icon"
+"}`time-fast` **Fast Mode**."
+
+msgid "Right-click the toolbar to change it:"
+msgstr "Клацніть панель інструментів правою кнопкою, щоб змінити її:"
+
+msgid ""
+"**Buttons** - every command that can be a button, by group; tick the ones"
+" you want."
+msgstr ""
+"**Buttons** — усі команди, що можуть бути кнопками, за групами; позначте "
+"потрібні."
+
+msgid "**Remove** - removes the button you right-clicked."
+msgstr "**Remove** — прибирає кнопку, яку ви клацнули правою кнопкою миші."
+
+msgid ""
+"**Add Separator Here**, **Add Space Here** - a line or a gap between "
+"groups."
+msgstr ""
+"**Add Separator Here**, **Add Space Here** — лінія або проміжок між "
+"групами."
+
+msgid ""
+"**Icon Size** - **Auto**, the default: 24 x 24 while every button fits "
+"the window's width, 16 x 16 when it does not. Or always 16 x 16 or 24 x "
+"24."
+msgstr ""
+"**Icon Size** — **Auto**, типово: 24 x 24, поки всі кнопки вміщаються в "
+"ширину вікна, і 16 x 16, коли ні. Або завжди 16 x 16 чи 24 x 24."
+
+msgid "**Restore Default Buttons** - back to the set above."
+msgstr "**Restore Default Buttons** — повернути набір, описаний вище."
+
+msgid "**Lock Toolbar** - on by default, so a slip of the mouse moves no button."
+msgstr ""
+"**Lock Toolbar** — типово ввімкнено, тож випадковий рух миші не зсуне "
+"жодної кнопки."
+
+msgid "**Hide Toolbar** - **View > Toolbar** brings it back."
+msgstr "**Hide Toolbar** — **View > Toolbar** повертає панель."
+
+msgid "To move a button, untick **Lock Toolbar** and drag the button."
+msgstr ""
+"Щоб перемістити кнопку, зніміть позначку **Lock Toolbar** і перетягніть "
+"кнопку."
+
+msgid ""
+"The arrow beside **Mute** opens a volume slider. Alt with the mouse wheel"
+" over the picture changes the volume too."
+msgstr ""
+"Стрілка поруч із **Mute** відкриває повзунок гучності. Alt з коліщатком "
+"миші над зображенням теж змінює гучність."
+
+msgid "The buttons"
+msgstr "Кнопки"
+
+msgid ""
+"**Buttons** in the toolbar's right-click menu lists every command that "
+"can be a button, in groups. Each one is the command of the same name in a"
+" menu, described there:"
+msgstr ""
+"**Buttons** у меню правого клацання по панелі інструментів перелічує за "
+"групами всі команди, що можуть бути кнопками. Кожна — це команда з тією "
+"самою назвою в одному з меню, і описано її там:"
+
+msgid "Described in"
+msgstr "Де описано"
+
+msgid "Buttons"
+msgstr "Кнопки"
+
+msgid "[File menu](files.md), [Favorites menu](favorites.md)"
+msgstr "[Меню File](files.md), [Меню Favorites](favorites.md)"
+
+msgid ""
+"**Open...**, **Favorites**, **Reload**, **Save...**, **Save Changed "
+"Disks**, **Options...**"
+msgstr ""
+"**Open...**, **Favorites**, **Reload**, **Save...**, **Save Changed "
+"Disks**, **Options...**"
+
+msgid "[Capture menu](capture.md)"
+msgstr "[Меню Capture](capture.md)"
+
+msgid ""
+"**Screenshot**, **Record Video**, **Record Sound to WAV...**, "
+"**Record...** (RZX), **RZX Player**"
+msgstr ""
+"**Screenshot**, **Record Video**, **Record Sound to WAV...**, "
+"**Record...** (RZX), **RZX Player**"
+
+msgid "[Machine menu](machines.md)"
+msgstr "[Меню Machine](machines.md)"
+
+msgid "**Model**, **Reset**, **NMI**, **Turbo Mode**"
+msgstr "**Model**, **Reset**, **NMI**, **Turbo Mode**"
+
+msgid "[Speed and time](time.md)"
+msgstr "[Швидкість і час](time.md)"
+
+msgid "**Pause**, **Fast Mode**, **Fast Forward**, **Slow Motion**, **Rewind**"
+msgstr "**Pause**, **Fast Mode**, **Fast Forward**, **Slow Motion**, **Rewind**"
+
+msgid "[Media menu](media.md)"
+msgstr "[Меню Media](media.md)"
+
+msgid ""
+"**Tape Play/Stop**, **Tape Record/Stop**, **Tape Player**, **Disk "
+"Manager**, **Cartridge**, **divMMC**, **SD Card**, **Drives**"
+msgstr ""
+"**Tape Play/Stop**, **Tape Record/Stop**, **Tape Player**, **Disk "
+"Manager**, **Cartridge**, **divMMC**, **SD Card**, **Drives**"
+
+msgid "[View menu](view.md)"
+msgstr "[Меню View](view.md)"
+
+msgid ""
+"**Fullscreen**, **Keep Aspect Ratio in Fullscreen**, **Size**, "
+"**Shaders**, **ZX Palette**, **Virtual Keyboard**"
+msgstr ""
+"**Fullscreen**, **Keep Aspect Ratio in Fullscreen**, **Size**, "
+"**Shaders**, **ZX Palette**, **Virtual Keyboard**"
+
+msgid "[Input menu](input.md)"
+msgstr "[Меню Input](input.md)"
+
+msgid "**Grab Keyboard**, **Grab Mouse**, **Keymap**, **Gamepads**"
+msgstr "**Grab Keyboard**, **Grab Mouse**, **Keymap**, **Gamepads**"
+
+msgid "[Tools menu](tools.md)"
+msgstr "[Меню Tools](tools.md)"
+
+msgid "**Cheats...**, **Debugger**, **Screen**, **Sound Chips**"
+msgstr "**Cheats...**, **Debugger**, **Screen**, **Sound Chips**"
+
+msgid "[Mute](machines.md#mute)"
+msgstr "[Mute](machines.md#mute)"
+
+msgid "**Mute**"
+msgstr "**Mute**"
+
+msgid ""
+"A button for a menu - **Model**, **Turbo Mode**, **Size** and the like - "
+"opens that menu when clicked. A button with an arrow beside it does its "
+"command when clicked, and the arrow opens its menu: **Reset** lists the "
+"ROMs, **Disk Manager** the drives, **divMMC** the cards, **Gamepads** the"
+" joysticks, **Debugger** its windows, **Mute** the volume slider."
+msgstr ""
+"Кнопка меню — **Model**, **Turbo Mode**, **Size** і подібні — за "
+"клацанням відкриває це меню. Кнопка зі стрілкою поруч за клацанням "
+"виконує свою команду, а стрілка відкриває її меню: **Reset** — список "
+"ROM, **Disk Manager** — дисководи, **divMMC** — картки, **Gamepads** — "
+"джойстики, **Debugger** — свої вікна, **Mute** — повзунок гучності."
+
+msgid ""
+"**Rewind** has no menu item: it works while the button or its key is held"
+" down. The time buttons work as their keys do; see [How the keys "
+"work](time.md#how-the-keys-work)."
+msgstr ""
+"**Rewind** не має пункту меню: перемотування триває, поки кнопку або її "
+"клавішу утримують. Кнопки часу працюють так само, як їхні клавіші; див. "
+"[Як працюють клавіші](time.md#how-the-keys-work)."
+
+msgid "toolbar"
+msgstr "панель інструментів"
+
+msgid "customizing"
+msgstr "налаштування"
+
+msgid "Restore Default Buttons"
+msgstr "Restore Default Buttons"
+
+msgid "Icon Size"
+msgstr "Icon Size"
+
+msgid "Lock Toolbar"
+msgstr "Lock Toolbar"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "volume"
+msgstr "гучність"
+
+msgid "buttons"
+msgstr "кнопки"
+

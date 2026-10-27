@@ -1,0 +1,368 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Sound Chip panel"
+msgstr "Панель Sound Chip"
+
+msgid "![The Sound Chip panel](images/dbg-sound.png)"
+msgstr "![Панель Sound Chip](images/dbg-sound.png)"
+
+msgid "The Sound Chip panel"
+msgstr "Панель Sound Chip"
+
+msgid "**Chips** - a tab for each sound chip of the machine."
+msgstr "**Микросхемы** — по вкладке на каждую звуковую микросхему машины."
+
+#, python-brace-format
+msgid ""
+"{icon}`display` **Show in its own window** - moves the panel into the "
+"**Sound Chips** window."
+msgstr ""
+"{icon}`display` **Show in its own window** — переносит панель в окно "
+"**Sound Chips**."
+
+msgid "**Regs** - the 16 registers of the chip."
+msgstr "**Regs** — 16 регистров микросхемы."
+
+msgid ""
+"**Channels** - the tone channels A, B and C, the noise N and the envelope"
+" E."
+msgstr "**Каналы** — тональные каналы A, B и C, шум N и огибающая E."
+
+msgid "**Envelope** - the shape of the envelope."
+msgstr "**Огибающая** — форма огибающей."
+
+msgid ""
+"**Wave** - the peak level, the time span, and the **Fit** and **Log** "
+"check boxes."
+msgstr "**Wave** — пиковый уровень, отрезок времени и флажки **Fit** и **Log**."
+
+msgid "**Beeper** - the level of the beeper."
+msgstr "**Beeper** — уровень бипера."
+
+msgid "**Wave box** - the sound the machine puts out."
+msgstr "**Осциллограмма** — звук, который выдаёт машина."
+
+msgid ""
+"In the picture the title tune of Cybernoid (Dave Rogers, Hewson, 1988) "
+"plays."
+msgstr "На рисунке играет заглавная мелодия Cybernoid (Dave Rogers, Hewson, 1988)."
+
+msgid ""
+"The tabs are named **PSG1**, **PSG2** and so on, one for each AY or YM "
+"chip: a TurboSound machine has two. A chip with an FM part, as in "
+"TurboSound FM, has an **FM** tab beside its **PSG** tab. A machine with "
+"no sound chip has no tabs."
+msgstr ""
+"Вкладки называются **PSG1**, **PSG2** и так далее, по одной на каждую "
+"микросхему AY или YM: у машины с TurboSound их две. У микросхемы с "
+"FM-частью, как в TurboSound FM, рядом с вкладкой **PSG** есть вкладка "
+"**FM**. У машины без звуковой микросхемы вкладок нет."
+
+msgid "The PSG page"
+msgstr "Страница PSG"
+
+msgid ""
+"**Regs** shows the 16 registers in two rows: `#00` holds registers 0 to "
+"7, `#08` holds registers 8 to 15. Click a register and type a new value "
+"in hex. The value goes to the chip as if a program wrote it with an OUT "
+"to the chip's port, so the rest of the page changes with it."
+msgstr ""
+"**Regs** показывает 16 регистров в двух строках: в `#00` регистры с 0 по "
+"7, в `#08` — с 8 по 15. Щёлкните регистр и введите новое значение в "
+"шестнадцатеричном виде. Значение попадает в микросхему так, как если бы "
+"программа записала его через OUT в порт микросхемы, поэтому остальная "
+"страница меняется вместе с ним."
+
+msgid "The table below it shows the same registers by channel:"
+msgstr "Таблица под ними показывает те же регистры по каналам:"
+
+msgid "Column"
+msgstr "Столбец"
+
+msgid "What it shows"
+msgstr "Что показывает"
+
+msgid "**Period**"
+msgstr "**Period**"
+
+msgid ""
+"the tone period of A, B and C (up to FFF), the noise period of N (up to "
+"1F), the envelope period of E (up to FFFF)"
+msgstr ""
+"период тона A, B и C (до FFF), период шума N (до 1F), период огибающей E "
+"(до FFFF)"
+
+msgid "**Vol**"
+msgstr "**Vol**"
+
+msgid ""
+"the volume of A, B and C, 0 to F; on the E row, the level the envelope is"
+" at now"
+msgstr "громкость A, B и C, от 0 до F; в строке E — текущий уровень огибающей"
+
+msgid "**Mixer**"
+msgstr "**Mixer**"
+
+msgid ""
+"what the channel mixes: `T` tone, `N` noise, `E` the envelope in place of"
+" the volume; `-` for off"
+msgstr ""
+"что смешивает канал: `T` — тон, `N` — шум, `E` — огибающая вместо "
+"громкости; `-` — выключено"
+
+msgid "**Lev**"
+msgstr "**Lev**"
+
+msgid "how loud the channel is, as a bar"
+msgstr "громкость канала в виде полосы"
+
+msgid "**State**"
+msgstr "**State**"
+
+msgid "the output of the tone or noise generator, 0 or 1"
+msgstr "выход генератора тона или шума, 0 или 1"
+
+msgid "**Mute**"
+msgstr "**Mute**"
+
+msgid "tick to silence the channel"
+msgstr "отметьте, чтобы заглушить канал"
+
+msgid ""
+"**Period** and **Vol** can be changed as the registers can: click and "
+"type in hex."
+msgstr ""
+"**Period** и **Vol** можно менять, как и регистры: щёлкните и введите "
+"шестнадцатеричное значение."
+
+msgid ""
+"**Lev** is green, amber near the top and red at the end. While the "
+"machine runs, the bar shows the loudest level of the channel since the "
+"last refresh. While the machine stands still, the bar and the number on "
+"it show exactly what the channel puts out at that moment."
+msgstr ""
+"**Lev** зелёная, у верха янтарная, в конце красная. Пока машина работает,"
+" полоса показывает самый громкий уровень канала с последнего обновления. "
+"Пока машина стоит, полоса и число на ней показывают точно то, что канал "
+"выдаёт в этот момент."
+
+msgid ""
+"**State** is shown only while the machine stands still. A tone generator "
+"flips much too fast to be read while the machine runs, so the column "
+"shows `-` then."
+msgstr ""
+"**State** показывается, только пока машина стоит. Генератор тона "
+"переключается слишком быстро, чтобы его прочитать на ходу, поэтому тогда "
+"в столбце `-`."
+
+msgid ""
+"**Mute** silences a channel without touching the chip: the program goes "
+"on writing the same registers, and the other channels play as before. Use"
+" it to pick one voice out of a tune."
+msgstr ""
+"**Mute** глушит канал, не трогая микросхему: программа продолжает писать "
+"те же регистры, а остальные каналы играют, как раньше. Так можно выделить"
+" один голос из мелодии."
+
+msgid ""
+"The E row draws the envelope shape set in register 13: two cycles of it, "
+"so the eight shapes can be told apart."
+msgstr ""
+"Строка E рисует форму огибающей, заданную в регистре 13: два её цикла, "
+"чтобы восемь форм можно было различить."
+
+msgid "The FM page"
+msgstr "Страница FM"
+
+msgid "The FM page shows the FM part of a YM2203 chip. Across the top:"
+msgstr "Страница FM показывает FM-часть микросхемы YM2203. Вверху:"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "**Timer A**, **Timer B**"
+msgstr "**Timer A**, **Timer B**"
+
+msgid "the timer values in hex, and **on** or **off**"
+msgstr "значения таймеров в шестнадцатеричном виде и **on** или **off**"
+
+msgid "**Ch3**"
+msgstr "**Ch3**"
+
+msgid "the mode of channel 3: **off**, **special** or **CSM**"
+msgstr "режим канала 3: **off**, **special** или **CSM**"
+
+msgid "**1**, **2**, **3**"
+msgstr "**1**, **2**, **3**"
+
+msgid "tabs for the three FM channels"
+msgstr "вкладки трёх FM-каналов"
+
+msgid "**off**"
+msgstr "**off**"
+
+msgid "tick to silence this FM channel"
+msgstr "отметьте, чтобы заглушить этот FM-канал"
+
+msgid "**Alg**, **Fb**"
+msgstr "**Alg**, **Fb**"
+
+msgid "the algorithm and the feedback of the channel"
+msgstr "алгоритм и обратная связь канала"
+
+msgid "**Bk/Fq**"
+msgstr "**Bk/Fq**"
+
+msgid "the block and frequency of the channel"
+msgstr "блок и частота канала"
+
+msgid "**Out**"
+msgstr "**Out**"
+
+msgid "the channel's output now"
+msgstr "текущий выход канала"
+
+msgid ""
+"Under them is a row for each operator, **Op1** to **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** and "
+"**EG** are the operator's register fields: click one and type a new value"
+" in hex. **St** is the state of the operator's envelope (**OFF**, "
+"**ATK**, **DEC**, **SUS** or **REL**), **Bk/Fq** its block and frequency,"
+" and **Lev** its envelope level, where a bigger number is louder. A `*` "
+"in the last column marks the operators that reach the output in the "
+"channel's algorithm."
+msgstr ""
+"Под ними по строке на каждый оператор, с **Op1** по **Op4**. **DT**, "
+"**MUL**, **TL**, **RS**, **AR**, **DR**, **SL**, **SR**, **RR** и **EG** "
+"— поля регистров оператора: щёлкните поле и введите новое значение в "
+"шестнадцатеричном виде. **St** — состояние огибающей оператора (**OFF**, "
+"**ATK**, **DEC**, **SUS** или **REL**), **Bk/Fq** — его блок и частота, "
+"**Lev** — уровень его огибающей, где большее число громче. `*` в "
+"последнем столбце отмечает операторы, которые в алгоритме канала идут на "
+"выход."
+
+msgid "Wave and Beeper"
+msgstr "Wave и Beeper"
+
+msgid ""
+"The wave box at the bottom shows the sound the machine puts out, all "
+"sources mixed: the sound chips, the beeper and the rest. While the "
+"machine runs it holds the last 40 milliseconds, enough to see a tune "
+"move. While the machine stands still it holds the last 2 milliseconds, "
+"fine enough to count the edges of a beeper routine one step at a time."
+msgstr ""
+"Осциллограмма внизу показывает звук, который выдаёт машина, все источники"
+" вместе: звуковые микросхемы, бипер и остальное. Пока машина работает, в "
+"ней последние 40 миллисекунд — достаточно, чтобы видеть, как идёт "
+"мелодия. Пока машина стоит, в ней последние 2 миллисекунды — достаточно "
+"подробно, чтобы считать фронты бипер-процедуры по шагам."
+
+msgid ""
+"The number beside **Wave** is the highest level in the box, in hex, "
+"followed by the time the box holds. The scale at the left marks the "
+"levels."
+msgstr ""
+"Число рядом с **Wave** — наибольший уровень на осциллограмме в "
+"шестнадцатеричном виде, за ним — время, которое осциллограмма охватывает."
+" Шкала слева отмечает уровни."
+
+msgid ""
+"**Fit** - centers the wave and scales the box to it, so quiet sound fills"
+" the box too. With **Fit** off, the box keeps one fixed scale."
+msgstr ""
+"**Fit** — центрирует волну и масштабирует под неё осциллограмму, так что "
+"и тихий звук её заполняет. Когда **Fit** выключено, у осциллограммы один "
+"постоянный масштаб."
+
+msgid ""
+"**Log** - draws the wave on a curve, so a quiet tune is still visible "
+"beside a loud one."
+msgstr ""
+"**Log** — рисует волну по кривой, так что тихая мелодия видна рядом с "
+"громкой."
+
+msgid "**Beeper** is a bar of the beeper's level."
+msgstr "**Beeper** — полоса уровня бипера."
+
+msgid "Example"
+msgstr "Пример"
+
+msgid "Watch the AY registers while music plays"
+msgstr "Следить за регистрами AY, пока играет музыка"
+
+msgid "Choose **ZX Spectrum 128K** and pick **128 BASIC** in its menu."
+msgstr "Выберите **ZX Spectrum 128K** и в его меню выберите **128 BASIC**."
+
+msgid ""
+"Choose **Tools > Sound Chips**. The **Sound Chips** window opens on "
+"**PSG1**."
+msgstr ""
+"Выберите **Tools > Sound Chips**. Окно **Sound Chips** откроется на "
+"**PSG1**."
+
+msgid "Type `PLAY \"cdefgab\"` and press Enter."
+msgstr "Наберите `PLAY \"cdefgab\"` и нажмите Enter."
+
+msgid ""
+"Watch channel A: its **Period** changes with each note, its **Mixer** "
+"starts with `T` for the tone, and its **Lev** bar rises and falls. The "
+"wave box shows the square wave of the tone."
+msgstr ""
+"Следите за каналом A: его **Period** меняется с каждой нотой, его "
+"**Mixer** начинается с `T` — тон, а полоса **Lev** поднимается и "
+"опускается. Осциллограмма показывает прямоугольную волну тона."
+
+msgid ""
+"Tick **Mute** on the A row and play again: the registers still change "
+"with each note, but you hear nothing."
+msgstr ""
+"Отметьте **Mute** в строке A и сыграйте снова: регистры по-прежнему "
+"меняются с каждой нотой, но вы ничего не слышите."
+
+msgid "Untick **Mute** to hear the channel again."
+msgstr "Снимите **Mute**, чтобы снова слышать канал."
+
+msgid "AY"
+msgstr "AY"
+
+msgid "registers"
+msgstr "регистры"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "FM"
+msgstr "FM"
+
+msgid "YM2203"
+msgstr "YM2203"
+
+msgid "wave box"
+msgstr "осциллограмма"
+
+msgid "beeper"
+msgstr "бипер"
+
+msgid "level"
+msgstr "уровень"
+

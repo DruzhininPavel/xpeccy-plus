@@ -1,0 +1,240 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Media menu"
+msgstr "Меню Media"
+
+msgid ""
+"A machine can have floppy drives, hard disks, an SD card or a cartridge "
+"slot, depending on the hardware it copies. A divMMC can be added to the "
+"Sinclair models and the Pentagons. The **Media** menu lists only what the"
+" running machine has:"
+msgstr ""
+"Машина може мати дисководи, жорсткі диски, SD-картку або слот картриджа —"
+" залежно від обладнання, яке вона відтворює. divMMC можна додати до "
+"моделей Sinclair і до Pentagon. Меню **Media** показує лише те, що є в "
+"поточної машини:"
+
+msgid "Items"
+msgstr "Пункти"
+
+msgid "Described in"
+msgstr "Де описано"
+
+#, python-brace-format
+msgid "{icon}`tape` **Tape Player**, **Tape Play/Stop**, **Tape Record/Stop**"
+msgstr "{icon}`tape` **Tape Player**, **Tape Play/Stop**, **Tape Record/Stop**"
+
+msgid "[Tapes](tapes.md)"
+msgstr "[Стрічки](tapes.md)"
+
+#, python-brace-format
+msgid ""
+"{icon}`fdd_disk` **Disk Manager**, {icon}`fdd` **Floppy Drives**, **Fast "
+"Disk Access**"
+msgstr ""
+"{icon}`fdd_disk` **Disk Manager**, {icon}`fdd` **Floppy Drives**, **Fast "
+"Disk Access**"
+
+msgid "[Floppy disks](disks.md)"
+msgstr "[Дискети](disks.md)"
+
+#, python-brace-format
+msgid "{icon}`cartrige` **Cartridge**"
+msgstr "{icon}`cartrige` **Cartridge**"
+
+msgid "[Cartridge](#cartridge), below"
+msgstr "[Cartridge](#cartridge), нижче"
+
+#, python-brace-format
+msgid "{icon}`sdcard` **divMMC**"
+msgstr "{icon}`sdcard` **divMMC**"
+
+msgid "[divMMC](divmmc.md)"
+msgstr "[divMMC](divmmc.md)"
+
+#, python-brace-format
+msgid "{icon}`sdcard` **SD Card**, {icon}`hdd` **Drives**"
+msgstr "{icon}`sdcard` **SD Card**, {icon}`hdd` **Drives**"
+
+msgid "[SD cards and hard disks](sd-hdd.md)"
+msgstr "[SD-картки й жорсткі диски](sd-hdd.md)"
+
+msgid "Which machine has what"
+msgstr "Що є в якої машини"
+
+msgid "Machine"
+msgstr "Machine"
+
+msgid "Floppy"
+msgstr "Дискета"
+
+msgid "Hard disk"
+msgstr "Жорсткий диск"
+
+msgid "Other"
+msgstr "Інше"
+
+msgid "ZX Spectrum 48K"
+msgstr "ZX Spectrum 48K"
+
+msgid "-"
+msgstr "-"
+
+msgid "cartridge, divMMC"
+msgstr "картридж, divMMC"
+
+msgid "ZX Spectrum 128K, +2, +2A"
+msgstr "ZX Spectrum 128K, +2, +2A"
+
+msgid "divMMC"
+msgstr "divMMC"
+
+msgid "ZX Spectrum +3"
+msgstr "ZX Spectrum +3"
+
+msgid "+3 drives"
+msgstr "дисководи +3"
+
+msgid "ZX Spectrum Next"
+msgstr "ZX Spectrum Next"
+
+msgid "SD card, divMMC built in"
+msgstr "SD card, вбудований divMMC"
+
+msgid "Pentagon, Pentagon 1024 SL"
+msgstr "Pentagon, Pentagon 1024 SL"
+
+msgid "Beta Disk"
+msgstr "Beta Disk"
+
+msgid "Scorpion ZS 256"
+msgstr "Scorpion ZS 256"
+
+msgid "Scorpion ZS 256 Turbo+"
+msgstr "Scorpion ZS 256 Turbo+"
+
+msgid "SMUC"
+msgstr "SMUC"
+
+msgid "ATM Turbo 2+"
+msgstr "ATM Turbo 2+"
+
+msgid "ATM Turbo"
+msgstr "ATM Turbo"
+
+msgid "Profi v3"
+msgstr "Profi v3"
+
+msgid "Profi v5"
+msgstr "Profi v5"
+
+msgid "Profi"
+msgstr "Profi"
+
+msgid "ZX Evolution, both"
+msgstr "ZX Evolution, обидві"
+
+msgid "NemoIDE (ZX Evo)"
+msgstr "NemoIDE (ZX Evo)"
+
+msgid "SD card"
+msgstr "SD card"
+
+msgid "ZXM-Phoenix"
+msgstr "ZXM-Phoenix"
+
+msgid "ALF TV Game, ALF TV Game 128K"
+msgstr "ALF TV Game, ALF TV Game 128K"
+
+msgid "cartridge"
+msgstr "картридж"
+
+msgid ""
+"**Beta Disk** is the TR-DOS disk interface with up to four drives, A to "
+"D. The **+3** interface has two drives, A and B, and runs +3DOS."
+msgstr ""
+"**Beta Disk** — дисковий інтерфейс TR-DOS, до якого можна під'єднати до "
+"чотирьох дисководів, від A до D. Інтерфейс **+3** має два дисководи, A і "
+"B, і працює з +3DOS."
+
+msgid ""
+"A machine with no disk interface of its own can be given one. Open the "
+"[Machine page](options-machine.md) of **Options** and pick it in the "
+"**Disk** row: **None**, **Beta Disk (WD1793)** or **+3 (uPD765)**. The "
+"**Hard disk** row does the same for an IDE interface: **NemoIDE**, "
+"**NemoIDE A8**, **NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** or "
+"**Profi**. An interface that is part of the machine's board cannot be "
+"changed: the list is grayed out, and its tooltip says **Built into this "
+"board**. A Beta Disk cannot be added to the +2A and +3."
+msgstr ""
+"Машині без власного дискового інтерфейсу його можна додати. Відкрийте "
+"[розділ Machine](options-machine.md) вікна **Options** і виберіть його в "
+"рядку **Disk**: **None**, **Beta Disk (WD1793)** або **+3 (uPD765)**. "
+"Рядок **Hard disk** робить те саме для інтерфейсу IDE: **NemoIDE**, "
+"**NemoIDE A8**, **NemoIDE (ZX Evo)**, **SMUC**, **ATM Turbo** або "
+"**Profi**. Інтерфейс, що входить до плати машини, змінити не можна: "
+"список недоступний, а підказка каже **Built into this board**. Beta Disk "
+"не можна додати до +2A і +3."
+
+msgid "Cartridge"
+msgstr "Cartridge"
+
+msgid ""
+"The ZX Spectrum 48K has a slot for an Interface 2 ROM cartridge, and the "
+"ALF TV Game consoles have a slot for their own game cartridges. **Media >"
+" Cartridge** shows the cartridge in the slot, or **(empty)**, and has:"
+msgstr ""
+"ZX Spectrum 48K має гніздо для картриджа ROM Interface 2, а консолі ALF "
+"TV Game — гніздо для своїх ігрових картриджів. **Media > Cartridge** "
+"показує картридж у гнізді або **(empty)** і містить:"
+
+msgid ""
+"**Open...** - a cartridge image, `.rom` or `.bin`, up to 4 MB. The "
+"machine is reset with the cartridge in."
+msgstr ""
+"**Open...** — образ картриджа, `.rom` або `.bin`, до 4 МБ. Машина "
+"скидається з уже вставленим картриджем."
+
+msgid ""
+"**Eject** - take the cartridge out; the machine is reset if it was "
+"running from it."
+msgstr "**Eject** — вийняти картридж; машина скидається, якщо працювала з нього."
+
+msgid "disk"
+msgstr "диск"
+
+msgid "TR-DOS"
+msgstr "TR-DOS"
+
+msgid "+3DOS"
+msgstr "+3DOS"
+
+msgid "disk interface"
+msgstr "дисковий інтерфейс"
+
+msgid "NemoIDE"
+msgstr "NemoIDE"
+
+msgid "Interface 2"
+msgstr "Interface 2"
+

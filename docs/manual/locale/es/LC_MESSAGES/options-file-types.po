@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "File types page"
+msgstr "Sección File types"
+
+msgid "![The File types page](images/options-filetypes.png)"
+msgstr "![La página File types](images/options-filetypes.png)"
+
+msgid "The File types page"
+msgstr "La página File types"
+
+msgid ""
+"What opening a tape or a disk does - run it, mount it, or ask - and "
+"whether the media in the drives come back at the next start. The table "
+"says which machine each kind of file opens on."
+msgstr ""
+"Qué hace abrir una cinta o un disco — ejecutarlo, montarlo o preguntar — "
+"y si los soportes de las unidades vuelven en el siguiente inicio. La "
+"tabla dice en qué máquina se abre cada tipo de archivo."
+
+msgid ""
+"What a file needs and which machine it switches to are explained in [Run "
+"a program](getting-started.md#run-a-program). The **File types** page of "
+"**Options** sets this for each format."
+msgstr ""
+"Lo que necesita un archivo y la máquina a la que cambia se explican en "
+"[Ejecutar un programa](getting-started.md#run-a-program). La página "
+"**File types** de **Options** lo fija para cada formato."
+
+msgid "The **General** group at the top of the page:"
+msgstr "El grupo **General** de la parte superior de la página:"
+
+msgid ""
+"**Run opened media**, **Mount opened media** or **Ask: run or mount** - "
+"what opening a tape or a disk does. **Ask** shows the **Open Media** "
+"question; ticking **Remember my choice** there saves your answer in this "
+"setting."
+msgstr ""
+"**Run opened media**, **Mount opened media** o **Ask: run or mount** — "
+"qué hace abrir una cinta o un disco. **Ask** muestra la pregunta **Open "
+"Media**; marcar allí **Remember my choice** guarda tu respuesta en este "
+"ajuste."
+
+msgid ""
+"**Remember mounted media** - the tape and the disks in the drives are "
+"opened again at the next start."
+msgstr ""
+"**Remember mounted media** — la cinta y los discos de las unidades se "
+"vuelven a abrir en el siguiente arranque."
+
+msgid "The **File types** group has a row per format:"
+msgstr "El grupo **File types** tiene una fila por formato:"
+
+msgid "**Format** - the kind of file."
+msgstr "**Format** — el tipo de archivo."
+
+msgid ""
+"**Needs** - what a machine must have to run it: **any machine**, **Beta "
+"Disk (TR-DOS)**, **+3 disk drive**, **TSConf**, **ZX Spectrum Next**, "
+"**read from the file** (a `.z80` or `.sna` names its model), **exactly "
+"the one it was taken on** (SZX) or **exactly the one it was recorded on**"
+" (RZX)."
+msgstr ""
+"**Needs** — lo que debe tener una máquina para ejecutarlo: **any "
+"machine**, **Beta Disk (TR-DOS)**, **+3 disk drive**, **TSConf**, **ZX "
+"Spectrum Next**, **read from the file** (un `.z80` o `.sna` indica su "
+"modelo), **exactly the one it was taken on** (SZX) o **exactly the one it"
+" was recorded on** (RZX)."
+
+msgid ""
+"**Opened on** - **Auto**, **Ask**, **Keep current**, or one machine from "
+"the list."
+msgstr ""
+"**Opened on** — **Auto**, **Ask**, **Keep current** o una máquina de la "
+"lista."
+
+msgid ""
+"A tape runs on any machine, so its rows have no **Ask**: **Auto** in "
+"these rows only switches back to your own machine after another file "
+"switched away from it. A machine picked in **Opened on** is used for "
+"every file of that format that it can run. **Restore defaults** sets "
+"every row back to **Auto**."
+msgstr ""
+"Una cinta funciona en cualquier máquina, así que sus filas no tienen "
+"**Ask**: **Auto** en estas filas solo vuelve a tu propia máquina después "
+"de que otro archivo te haya cambiado a otra. Una máquina elegida en "
+"**Opened on** se usa para todos los archivos de ese formato que pueda "
+"ejecutar. **Restore defaults** devuelve todas las filas a **Auto**."
+
+msgid ""
+"Only a file that is about to run can switch the machine: a snapshot "
+"always, a tape or a disk only when it is run, and a disk only from drive "
+"A."
+msgstr ""
+"Solo un archivo que va a ejecutarse puede cambiar la máquina: una "
+"instantánea siempre, una cinta o un disco solo cuando se ejecutan, y un "
+"disco solo desde la unidad A."
+
+msgid "machine"
+msgstr "máquina"
+
+msgid "switched by a file"
+msgstr "cambiada por un archivo"
+
+msgid "Opened on"
+msgstr "Opened on"
+
+msgid "Run opened media"
+msgstr "Run opened media"
+
+msgid "Mount opened media"
+msgstr "Mount opened media"
+
+msgid "Remember mounted media"
+msgstr "Remember mounted media"
+

@@ -1,0 +1,98 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "FDD panel"
+msgstr "Panel FDD"
+
+msgid "![The FDD panel](images/dbg-fdd.png)"
+msgstr "![El panel FDD](images/dbg-fdd.png)"
+
+msgid "The FDD panel"
+msgstr "El panel FDD"
+
+msgid ""
+"The **FDD** panel shows a whole track of a floppy disk as it lies on the "
+"disk: the gaps, the sector headers, the data and the checksums, byte by "
+"byte. It is on a tab beside **DUMP**, and only on a machine with a disk "
+"interface."
+msgstr ""
+"El panel **FDD** muestra una pista entera de un disquete tal como está en"
+" el disco: los huecos, las cabeceras de sector, los datos y las sumas de "
+"comprobación, byte a byte. Está en una pestaña junto a **DUMP**, y solo "
+"en una máquina con interfaz de disco."
+
+msgid "**Drive** - the drive, **A** to **D**."
+msgstr "**Drive** — la unidad, de **A** a **D**."
+
+msgid ""
+"**Track** - the track to show, counted with both sides: 0 is the first "
+"track on side 0, 1 the same track on side 1, 2 the next track on side 0, "
+"and so on. On a single-sided drive the number steps by 2."
+msgstr ""
+"**Track** — la pista que se muestra, contando las dos caras: 0 es la "
+"primera pista de la cara 0, 1 la misma pista en la cara 1, 2 la pista "
+"siguiente en la cara 0, y así sucesivamente. En una unidad de una sola "
+"cara el número avanza de 2 en 2."
+
+msgid "**Bytes per row** - **Auto**, **8/row**, **12/row** or **16/row**."
+msgstr "**Bytes per row** — **Auto**, **8/row**, **12/row** o **16/row**."
+
+#, python-brace-format
+msgid ""
+"{icon}`target` The target button - jumps to the drive, the track and the "
+"byte the head is at now."
+msgstr ""
+"{icon}`target` El botón de diana — salta a la unidad, la pista y el byte "
+"en que está ahora el cabezal."
+
+msgid ""
+"Each row starts with the track and the place on the track, in hex: "
+"`02:0040`. The byte under the head is in bold. Sector headers are in the "
+"**ID / Label** color of the **Debugger** page of **Options**, sector data"
+" in the **Data** color and the checksums in the **CRC** color. With no "
+"disk in the drive every byte reads `FF`. The panel cannot be edited; to "
+"change a disk's files, use the **Disk Manager** (see [Floppy "
+"disks](disks.md))."
+msgstr ""
+"Cada fila empieza con la pista y el lugar en la pista, en hexadecimal: "
+"`02:0040`. El byte bajo el cabezal está en negrita. Las cabeceras de "
+"sector están en el color **ID / Label** de la página **Debugger** de "
+"**Options**, los datos de sector en el color **Data** y las sumas de "
+"comprobación en el color **CRC**. Sin disco en la unidad, todos los bytes"
+" se leen como `FF`. El panel no se puede editar; para cambiar los "
+"archivos de un disco, usa el **Disk Manager** (consulta "
+"[Disquetes](disks.md))."
+
+msgid ""
+"Use it to see how a disk is laid out: how many sectors a track has, how "
+"long they are, and whether a protected disk has a header or a checksum "
+"that is wrong on purpose."
+msgstr ""
+"Úsalo para ver cómo está organizado un disco: cuántos sectores tiene una "
+"pista, de qué tamaño son, y si un disco protegido tiene una cabecera o "
+"una suma de comprobación erróneas a propósito."
+
+msgid "track"
+msgstr "pista"
+
+msgid "raw bytes"
+msgstr "bytes en bruto"
+

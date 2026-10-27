@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Xpeccy+ 2026.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 03:44+0200\n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -20,8 +20,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "Hotkeys"
-msgstr "Гарячі клавіші"
+msgid "Hotkeys page"
+msgstr "Розділ Hotkeys"
+
+msgid "![The Hotkeys page](images/options-hotkeys.png)"
+msgstr "![Сторінка Hotkeys](images/options-hotkeys.png)"
+
+msgid "The Hotkeys page"
+msgstr "Сторінка Hotkeys"
+
+msgid ""
+"The keys of every command, in the Modern or Classic preset or one of your"
+" own. See [Hotkeys page](hotkeys.md)."
+msgstr ""
+"Клавіші кожної команди, у наборі Modern чи Classic або у вашому власному."
+" Див. [Розділ Hotkeys](hotkeys.md)."
 
 msgid ""
 "A command that has a key shows it beside its name in the menu. All the "
@@ -723,7 +736,7 @@ msgid "Alt+A"
 msgstr "Alt+A"
 
 msgid "Debugger keys"
-msgstr "Клавіші Debugger"
+msgstr "Клавіші налагоджувача"
 
 msgid ""
 "These work in the **Debugger** window. **Options**, **Open**, **Save**, "
@@ -1000,7 +1013,4 @@ msgstr "клавіша Cmd"
 
 msgid "list of all"
 msgstr "повний список"
-
-#~ msgid "Debug"
-#~ msgstr "Debug"
 

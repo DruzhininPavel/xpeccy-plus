@@ -1,0 +1,157 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "CPU panel"
+msgstr "Panel CPU"
+
+msgid "![The CPU panel](images/dbg-cpu.png)"
+msgstr "![El panel CPU](images/dbg-cpu.png)"
+
+msgid "The CPU panel"
+msgstr "El panel CPU"
+
+msgid ""
+"The **CPU** panel shows the Z80 registers: PC, AF, BC, DE, HL, SP, the "
+"alternate set AF', BC', DE', HL', then IX, IY, IR, IM and the interrupt "
+"switches IFF1 and IFF2. Under them are the flags S, Z, 5, H, 3, P, N and "
+"C."
+msgstr ""
+"El panel **CPU** muestra los registros del Z80: PC, AF, BC, DE, HL, SP, "
+"el juego alternativo AF', BC', DE', HL', luego IX, IY, IR, IM y los "
+"interruptores de interrupción IFF1 e IFF2. Debajo están los flags S, Z, "
+"5, H, 3, P, N y C."
+
+msgid ""
+"A register that changed in the last step is marked in the **Changed** "
+"color of the **Debugger** page of **Options**. With **Split pairs** on, "
+"only the byte that changed is marked: after an instruction that changes "
+"only A, only the A half of AF lights up."
+msgstr ""
+"Un registro que cambió en el último paso se marca con el color "
+"**Changed** de la página **Debugger** de **Options**. Con **Split pairs**"
+" activado, solo se marca el byte que cambió: tras una instrucción que "
+"cambia solo A, solo se ilumina la mitad A de AF."
+
+msgid "Changing registers"
+msgstr "Cambiar registros"
+
+msgid ""
+"Click a value and type over it in hex. The change takes effect at once. "
+"In a value field:"
+msgstr ""
+"Haz clic en un valor y escribe encima en hexadecimal. El cambio se aplica"
+" al instante. En un campo de valor:"
+
+msgid "Up and Down, or the mouse wheel, add or subtract 1;"
+msgstr "Up y Down, o la rueda del ratón, suman o restan 1;"
+
+msgid "PgUp and PgDn add or subtract 256;"
+msgstr "PgUp y PgDn suman o restan 256;"
+
+msgid "X switches the field between hex and decimal."
+msgstr "X cambia el campo entre hexadecimal y decimal."
+
+msgid "IFF1 and IFF2 are check boxes. Tick or untick a flag to change it in F."
+msgstr "IFF1 e IFF2 son casillas. Marca o desmarca un flag para cambiarlo en F."
+
+msgid ""
+"Click the name of a register to see, in the listing, the code at the "
+"address the register holds. Right-click the name to see that address in "
+"the **DUMP** panel."
+msgstr ""
+"Haz clic en el nombre de un registro para ver en el listado el código de "
+"la dirección que contiene el registro. Haz clic derecho en el nombre para"
+" ver esa dirección en el panel **DUMP**."
+
+msgid "Layouts"
+msgstr "Disposiciones"
+
+msgid ""
+"Right-click the panel's title bar to choose how the registers are laid "
+"out. A small dot in the corner of a title bar shows that the panel has "
+"such a menu."
+msgstr ""
+"Haz clic derecho en la barra de título del panel para elegir cómo se "
+"disponen los registros. Un pequeño punto en la esquina de una barra de "
+"título indica que el panel tiene ese menú."
+
+msgid "![The registers layout menu](images/dbg-cpu-menu.png)"
+msgstr "![El menú de disposición de los registros](images/dbg-cpu-menu.png)"
+
+msgid "The registers layout menu"
+msgstr "El menú de disposición de los registros"
+
+msgid ""
+"**Auto** (the default) - one column when the panel is narrow, two when it"
+" is wide enough. **Auto** also uses two columns when two panels stand "
+"side by side under the **CPU** panel."
+msgstr ""
+"**Auto** (por defecto) — una columna cuando el panel es estrecho, dos "
+"cuando es lo bastante ancho. **Auto** también usa dos columnas cuando hay"
+" dos paneles uno al lado del otro debajo del panel **CPU**."
+
+msgid "**1 column** - a register on each line."
+msgstr "**1 column** — un registro en cada línea."
+
+msgid ""
+"**2 columns** - two on a line, each beside its pair: AF beside AF', PC "
+"beside SP."
+msgstr ""
+"**2 columns** — dos por línea, cada uno junto a su pareja: AF junto a "
+"AF', PC junto a SP."
+
+msgid ""
+"**Wide** - a column for each kind: AF, BC, DE, HL; the alternate set; PC,"
+" SP, IX, IY; and IR, IM, IFF1, IFF2. The flags are one more column beside"
+" them, under the title **Flags**."
+msgstr ""
+"**Wide** — una columna para cada tipo: AF, BC, DE, HL; el juego "
+"alternativo; PC, SP, IX, IY; e IR, IM, IFF1, IFF2. Los flags son una "
+"columna más a su lado, bajo el título **Flags**."
+
+msgid ""
+"**Split pairs** - mark only the byte that changed, as above. On by "
+"default."
+msgstr ""
+"**Split pairs** — marca solo el byte que cambió, como arriba. Activado "
+"por defecto."
+
+msgid "![The CPU panel in the Wide layout](images/dbg-cpu-wide.png)"
+msgstr "![El panel CPU en la disposición Wide](images/dbg-cpu-wide.png)"
+
+msgid "The CPU panel in the Wide layout"
+msgstr "El panel CPU en la disposición Wide"
+
+msgid "register"
+msgstr "registro"
+
+msgid "flag"
+msgstr "flag"
+
+msgid "changing"
+msgstr "cambiar"
+
+msgid "layout"
+msgstr "disposición"
+
+msgid "Split pairs"
+msgstr "Split pairs"
+

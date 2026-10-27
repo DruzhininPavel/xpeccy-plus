@@ -1,0 +1,148 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Watcher"
+msgstr "Ventana Watcher"
+
+msgid "![The Watcher](images/dbg-watcher.png)"
+msgstr "![El Watcher](images/dbg-watcher.png)"
+
+msgid "The Watcher"
+msgstr "El Watcher"
+
+#, python-brace-format
+msgid ""
+"The **Watcher** window shows the registers and some places in memory, and"
+" follows them while the machine runs. Open it with **Tools > Watcher** in"
+" the main window, or **Watcher** under the {icon}`other` **Tools** button"
+" over the listing."
+msgstr ""
+"La ventana **Watcher** muestra los registros y algunos lugares de la "
+"memoria, y los sigue mientras la máquina funciona. Ábrela con **Tools > "
+"Watcher** en la ventana principal, o con **Watcher** bajo el botón "
+"{icon}`other` **Tools** sobre el listado."
+
+msgid "**CPU** - the registers."
+msgstr "**CPU** — los registros."
+
+msgid "**MEMORY** - the watches, two rows each."
+msgstr "**MEMORY** — las vigilancias, dos filas cada una."
+
+msgid "The four memory banks, from `#0000` to `#C000`: ROM or RAM, and the page."
+msgstr ""
+"Los cuatro bancos de memoria, de `#0000` a `#C000`: ROM o RAM, y la "
+"página."
+
+msgid ""
+"In the picture the game Exolon runs, with a file of labels for it. `AMMO`"
+" is its ammo counter: the first byte, `63`, is 99 rounds. `VITORC + 0x60`"
+" is the second frame of its hero's sprite. `SP` is the stack, and `[SP]` "
+"the code the routine will return to. `0x3D00` is the start of the font in"
+" ROM."
+msgstr ""
+"En la imagen se ejecuta el juego Exolon, con un archivo de etiquetas para"
+" él. `AMMO` es su contador de munición: el primer byte, `63`, son 99 "
+"disparos. `VITORC + 0x60` es el segundo fotograma del sprite de su héroe."
+" `SP` es la pila, y `[SP]` el código al que volverá la rutina. `0x3D00` "
+"es el inicio de la fuente en la ROM."
+
+msgid ""
+"Right-click the **MEMORY** list and choose **Add watcher** to add a "
+"watch, or **Delete watcher** to remove the selected one. Double-click a "
+"watch to change it."
+msgstr ""
+"Haz clic derecho en la lista **MEMORY** y elige **Add watcher** para "
+"añadir una vigilancia, o **Delete watcher** para eliminar la "
+"seleccionada. Haz doble clic en una vigilancia para cambiarla."
+
+msgid "![The Watcher Editor](images/dbg-watcher-editor.png)"
+msgstr "![El Watcher Editor](images/dbg-watcher-editor.png)"
+
+msgid "The Watcher Editor"
+msgstr "El Watcher Editor"
+
+msgid "The **Watcher Editor** has:"
+msgstr "El **Watcher Editor** tiene:"
+
+msgid ""
+"**Type** - **CPU addr** reads through the current CPU mapping; **RAM "
+"addr** and **ROM addr** read physical memory. A label in a physical watch"
+" supplies its page as well as its offset;"
+msgstr ""
+"**Type** — **CPU addr** lee a través del mapeo actual de la CPU; **RAM "
+"addr** y **ROM addr** leen la memoria física. Una etiqueta en una "
+"vigilancia física aporta su página además de su desplazamiento;"
+
+#, python-brace-format
+msgid ""
+"**Expression** - an address, in the same syntax as a condition (see "
+"[Conditions](debugger-breakpoints.md#conditions)): `HL`, `0x5C3A`, `IX + "
+"5`, `[0x5C53]`, a label. The {icon}`label` button beside it opens the "
+"list of labels; a label picked there goes into the field."
+msgstr ""
+"**Expression** — una dirección, con la misma sintaxis que una condición "
+"(consulta [Condiciones](debugger-breakpoints.md#conditions)): `HL`, "
+"`0x5C3A`, `IX + 5`, `[0x5C53]`, una etiqueta. El botón {icon}`label` a su"
+" lado abre la lista de etiquetas; una etiqueta elegida ahí va al campo."
+
+#, python-brace-format
+msgid ""
+"{icon}`checkbox` **OK** accepts the watch only when the expression is "
+"right. The first row of a watch shows its type and expression, and its "
+"value as an address; the second row the 13 bytes that start at that "
+"address. `??` means the expression cannot be worked out at the moment."
+msgstr ""
+"{icon}`checkbox` **OK** acepta la vigilancia solo cuando la expresión es "
+"correcta. La primera fila de una vigilancia muestra su tipo y su "
+"expresión, y su valor como dirección; la segunda fila, los 13 bytes que "
+"empiezan en esa dirección. `??` significa que la expresión no se puede "
+"evaluar en ese momento."
+
+msgid ""
+"On the Next, a label in a **CPU addr** watch follows MMU paging. If its "
+"page is not mapped, the watch shows `??`; a **RAM addr** watch still "
+"reads the label's own RAM page."
+msgstr ""
+"En el Next, una etiqueta en una vigilancia **CPU addr** sigue el mapeo de"
+" páginas de la MMU. Si su página no está mapeada, la vigilancia muestra "
+"`??`; una vigilancia **RAM addr** sigue leyendo la página de RAM propia "
+"de la etiqueta."
+
+msgid "The watches are not kept when the program closes."
+msgstr "Las vigilancias no se conservan al cerrar el programa."
+
+msgid "Watched ports"
+msgstr "Puertos vigilados"
+
+msgid ""
+"The **PORTS** block of the **MEMMAP** panel shows the last value on the "
+"ports you choose. See [Watched ports](debugger-memmap.md#watched-ports)."
+msgstr ""
+"El bloque **PORTS** del panel **MEMMAP** muestra el último valor en los "
+"puertos que elijas. Consulta [Puertos vigilados](debugger-memmap.md"
+"#watched-ports)."
+
+msgid "watch"
+msgstr "vigilancia"
+
+msgid "Watcher Editor"
+msgstr "Watcher Editor"
+

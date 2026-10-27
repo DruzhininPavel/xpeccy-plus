@@ -119,7 +119,7 @@ over, the machine goes back to the moment the loader finished, so the program st
 normal speed.
 
 Two more settings refine it. They are on the **Machine: Tape** sheet of **Options** (see
-[Tape settings](#tape-settings)), and work only with **Fast loading** on:
+[Machine: Tape](options-machine.md#machine-tape)), and work only with **Fast loading** on:
 
 - **Flash loading** - blocks read by the ROM's loading routine, or by a copy of it inside
   a program, go straight into memory without the tape playing. A SAVE through the ROM
@@ -220,24 +220,3 @@ click on it opens the **Tape Player**.
 With the status bar hidden, a light over the picture blinks while the tape plays (green) or
 records (red). **Tape** in the **Indicators** group of the **Appearance** page of
 **Options** turns this light on and off.
-
-## Tape settings
-
-```{index} tape; settings, Machine: Tape
-```
-
-On the **Machine** page of **Options**, the **Storage** group has a **Tape** row. It sums
-up the settings: **plain**, or the ones that are on: **fast**, **flash**, **edge**,
-**auto**. By default all four are on. The {icon}`settings` button at the end of the
-row opens the **Machine: Tape** sheet:
-
-- **Playback speed**;
-- **Auto play / stop**;
-- **Rewind at end**;
-- **Fast loading**, **Flash loading** and **Edge detection**.
-
-The first four are the same settings as in the **Tape Player**, where a change takes
-effect at once.
-
-The tape's loudness is **Tape** in the **Volumes** group of the **Sound** page (see
-[Sound](sound.md)).

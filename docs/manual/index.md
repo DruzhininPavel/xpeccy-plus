@@ -17,29 +17,10 @@ The {ref}`genindex` lists terms, commands and settings from A to Z.
 
 getting-started
 main-window
-machines
-zx-next
-files
-tapes
-disks
-input
-picture
-sound
-time
-capture
-cheats
+menu-bar
+toolbar
+context-menu
 options
-hotkeys
 command-line
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: Debugger
-
 debugger
-debugger-code
-debugger-memory
-debugger-breakpoints
-debugger-devices
 ```

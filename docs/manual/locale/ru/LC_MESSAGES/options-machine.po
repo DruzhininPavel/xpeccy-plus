@@ -1,0 +1,952 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Machine page"
+msgstr "Раздел Machine"
+
+msgid "![The Machine page](images/options-machine.png)"
+msgstr "![Страница Machine](images/options-machine.png)"
+
+msgid "The Machine page"
+msgstr "Страница Machine"
+
+#, python-brace-format
+msgid ""
+"This page sets up the running machine: **Model**, **Memory**, **ROM** and"
+" the **Speed** slider at the top, then its devices in four groups - "
+"**Storage**, **Input**, **Sound** and **Board**. The {icon}`settings` "
+"gear beside a device opens the rest of its settings."
+msgstr ""
+"Эта страница настраивает текущую машину: вверху **Model**, **Memory**, "
+"**ROM** и ползунок **Speed**, ниже — её устройства в четырёх группах: "
+"**Storage**, **Input**, **Sound** и **Board**. Шестерёнка "
+"{icon}`settings` рядом с устройством открывает остальные его настройки."
+
+#, python-brace-format
+msgid ""
+"What you change here is kept for this machine only. {icon}`save_all` "
+"**Save machine...**, {icon}`refresh` **Restore machine** and "
+"{icon}`cancel` **Delete this machine** are explained in [Your own "
+"machines](#your-own-machines)."
+msgstr ""
+"То, что вы здесь меняете, сохраняется только для этой машины. "
+"{icon}`save_all` **Save machine...**, {icon}`refresh` **Restore machine**"
+" и {icon}`cancel` **Delete this machine** описаны в разделе [Свои машины"
+"](#your-own-machines)."
+
+msgid ""
+"**File > Options...** opens **Options**; **Machine** is its first page. "
+"At the top:"
+msgstr ""
+"**File > Options...** открывает **Options**; **Machine** — его первая "
+"страница. Вверху:"
+
+#, python-brace-format
+msgid ""
+"**Model** - the machine. The {icon}`settings` gear beside it opens "
+"**Machine: Advanced Settings**."
+msgstr ""
+"**Model** — машина. Шестерёнка {icon}`settings` рядом открывает "
+"**Machine: Advanced Settings**."
+
+msgid "**Memory** - how much RAM the machine has."
+msgstr "**Memory** — сколько RAM у машины."
+
+#, python-brace-format
+msgid ""
+"**ROM** - the ROM files in use; the {icon}`settings` button opens "
+"**Machine: ROM**."
+msgstr ""
+"**ROM** — используемые файлы ROM; кнопка {icon}`settings` открывает "
+"**Machine: ROM**."
+
+msgid "**Speed** - the slider described in [Speed](#speed)."
+msgstr "**Speed** — ползунок, описанный в разделе [Speed](#speed)."
+
+#, python-brace-format
+msgid ""
+"{icon}`refresh` **Restore machine**, {icon}`save_all` **Save "
+"machine...**, {icon}`cancel` **Delete this machine** - see [Your own "
+"machines](#your-own-machines)."
+msgstr ""
+"{icon}`refresh` **Restore machine**, {icon}`save_all` **Save "
+"machine...**, {icon}`cancel` **Delete this machine** — см. [Свои машины"
+"](#your-own-machines)."
+
+#, python-brace-format
+msgid ""
+"Below them are the machine's devices, in four groups. Each row has a "
+"choice and a {icon}`settings` gear button; the gear opens the rest of "
+"that device's settings, in a window named after it, such as **Machine: "
+"Disk**. A gray gear means the device has nothing more to set. **OK** "
+"closes such a window and keeps what you set in it for **Apply**; "
+"**Cancel** (or Esc) puts back what it showed when it opened."
+msgstr ""
+"Под ними — устройства машины, в четырёх группах. В каждой строке выбор и "
+"кнопка-шестерёнка {icon}`settings`; шестерёнка открывает остальные "
+"настройки устройства в окне с его названием, например **Machine: Disk**. "
+"Серая шестерёнка значит, что больше у устройства настраивать нечего. "
+"**OK** закрывает такое окно и сохраняет заданное в нём до **Apply**; "
+"**Cancel** (или Esc) возвращает то, что окно показывало при открытии."
+
+msgid "Group"
+msgstr "Группа"
+
+msgid "Row"
+msgstr "Строка"
+
+msgid "What it sets"
+msgstr "Что задаёт"
+
+msgid "**Storage**"
+msgstr "**Storage**"
+
+msgid "**Tape**"
+msgstr "**Tape**"
+
+msgid "loading settings; the row shows which are on (see [Tapes](tapes.md))"
+msgstr "настройки загрузки; строка показывает включённые (см. [Ленты](tapes.md))"
+
+msgid "**Disk**"
+msgstr "**Disk**"
+
+msgid ""
+"**None**, **Beta Disk (WD1793)** or **+3 (uPD765)**; drives and the TR-"
+"DOS ROM in its window (see [Floppy disks](disks.md))"
+msgstr ""
+"**None**, **Beta Disk (WD1793)** или **+3 (uPD765)**; дисководы и TR-DOS "
+"ROM в его окне (см. [Дискеты](disks.md))"
+
+msgid "**Hard disk**"
+msgstr "**Hard disk**"
+
+msgid ""
+"the IDE interface; **Master** and **Slave** in its window (see [Hard "
+"disks](sd-hdd.md#hard-disks))"
+msgstr ""
+"интерфейс IDE; **Master** и **Slave** в его окне (см. [Жёсткие диски](sd-"
+"hdd.md#hard-disks))"
+
+msgid "**SD card**"
+msgstr "**SD card**"
+
+msgid ""
+"ZX Evolution and ZX Spectrum Next only: the card in use (for the Next, "
+"see [The SD card](zx-next.md#the-sd-card))"
+msgstr ""
+"Только ZX Evolution и ZX Spectrum Next: используемая карта (о Next см. "
+"[SD-карта](zx-next.md#the-sd-card))"
+
+msgid "**divMMC**"
+msgstr "**divMMC**"
+
+msgid ""
+"48K, 128K, +2, +2A, +3 and the Pentagons: **None** or **divMMC**; RAM, "
+"EEPROM jumper and the firmware in its window (see [divMMC](divmmc.md))"
+msgstr ""
+"48K, 128K, +2, +2A, +3 и Pentagon: **None** или **divMMC**; RAM, "
+"перемычка EEPROM и прошивка в её окне (см. [divMMC](divmmc.md))"
+
+msgid "**Cartridge**"
+msgstr "**Cartridge**"
+
+msgid "48K and ALF only: the cartridge in use"
+msgstr "только 48K и ALF: используемый картридж"
+
+msgid "**Input**"
+msgstr "**Input**"
+
+msgid "**Joystick**"
+msgstr "**Joystick**"
+
+msgid "**None**, **Kempston 5-bit**, **Kempston 8-bit**"
+msgstr "**None**, **Kempston 5-bit**, **Kempston 8-bit**"
+
+msgid "**Mouse**"
+msgstr "**Mouse**"
+
+msgid ""
+"**None** or **Kempston mouse**; sensitivity and wheel in its window (see "
+"[Mouse](input.md#mouse))"
+msgstr ""
+"**None** или **Kempston mouse**; чувствительность и колесо в его окне "
+"(см. [Мышь](input.md#mouse))"
+
+msgid "**PC keyboard**"
+msgstr "**PC keyboard**"
+
+msgid ""
+"ATM Turbo 2+ and ZX Evolution only: which scan codes the machine gets "
+"(see [Machines with a keyboard of their own](input.md#machines-with-a"
+"-keyboard-of-their-own))"
+msgstr ""
+"только ATM Turbo 2+ и ZX Evolution: какие скан-коды получает машина (см. "
+"[Машины со своей клавиатурой](input.md#machines-with-a-keyboard-of-their-"
+"own))"
+
+msgid "**Sound**"
+msgstr "**Sound**"
+
+msgid "**PSG**"
+msgstr "**PSG**"
+
+msgid ""
+"the AY/YM chips, from **None** to **x3 - ZX Next**; chip, clock and "
+"stereo in its window (see [PSG](#psg))"
+msgstr ""
+"микросхемы AY/YM, от **None** до **x3 - ZX Next**; микросхема, частота и "
+"стерео в его окне (см. [PSG](#psg))"
+
+msgid "**DAC**"
+msgstr "**DAC**"
+
+msgid "**None**, **Covox only**, **Soundrive 1.05 mode 1** or **mode 2**"
+msgstr "**None**, **Covox only**, **Soundrive 1.05 mode 1** или **mode 2**"
+
+msgid "**General Sound**"
+msgstr "**General Sound**"
+
+msgid "**Off** or **On**; its ROM in its window"
+msgstr "**Off** или **On**; его ROM в его окне"
+
+msgid "**SAA1099**"
+msgstr "**SAA1099**"
+
+msgid "**Off** or **On**"
+msgstr "**Off** или **On**"
+
+msgid "**Board**"
+msgstr "**Board**"
+
+msgid "**Turbo**"
+msgstr "**Turbo**"
+
+msgid "the turbo steps: **x1 (no turbo)**, **x1, x2** or **x1, x2, x4**"
+msgstr "ступени турбо: **x1 (no turbo)**, **x1, x2** или **x1, x2, x4**"
+
+msgid "**ESP UART**"
+msgstr "**ESP UART**"
+
+msgid ""
+"ZX Spectrum Next only: **Not connected**, **ESP-01 (emulated)** - the Wi-"
+"Fi module with Espressif's AT firmware 1.7.6, on this computer's network "
+"- or a serial port of this computer with a real module on it. In its "
+"window, **Server on the network** lets other computers reach a server the"
+" module opens; off, only this computer can, at 127.0.0.1"
+msgstr ""
+"Только ZX Spectrum Next: **Not connected**, **ESP-01 (emulated)** — "
+"модуль Wi-Fi с AT-прошивкой Espressif 1.7.6 в сети этого компьютера — или"
+" последовательный порт этого компьютера с подключённым настоящим модулем."
+" В его окне **Server on the network** позволяет другим компьютерам "
+"подключаться к серверу, который открывает модуль; если выключено, "
+"подключиться может только этот компьютер, по адресу 127.0.0.1"
+
+msgid "**Pi UART**"
+msgstr "**Pi UART**"
+
+msgid "ZX Spectrum Next only: a serial port of this computer for the Pi's UART"
+msgstr ""
+"Только ZX Spectrum Next: последовательный порт этого компьютера для UART "
+"Pi"
+
+#, python-brace-format
+msgid "Changes take effect when you press **Apply** or {icon}`ok-apply` **OK**."
+msgstr ""
+"Изменения вступают в силу, когда вы нажимаете **Apply** или {icon}`ok-"
+"apply` **OK**."
+
+msgid "Speed"
+msgstr "Speed"
+
+msgid ""
+"**Speed** on the **Machine** page of **Options** is a slider for the "
+"whole emulation:"
+msgstr ""
+"**Speed** на странице **Machine** окна **Options** — ползунок для всей "
+"эмуляции:"
+
+msgid ""
+"left of the middle, **Slow Motion 1/2**, **1/4** and **1/8** slow "
+"everything down, and the frame rate drops with it;"
+msgstr ""
+"левее середины **Slow Motion 1/2**, **1/4** и **1/8** замедляют всё, и "
+"частота кадров падает вместе с ним;"
+
+msgid "the middle is **Normal speed**;"
+msgstr "середина — **Normal speed**;"
+
+msgid ""
+"right of the middle, **Overclock x2**, **x4** and **x8** speed the CPU up"
+" and keep the frame rate."
+msgstr ""
+"правее середины **Overclock x2**, **x4** и **x8** ускоряют CPU и "
+"сохраняют частоту кадров."
+
+msgid ""
+"No real machine ran faster than 14 MHz, so past that the timing of a "
+"program is not guaranteed. The slider is not saved: the next start is at "
+"normal speed. The **Speed Up** and **Speed Down** hotkeys move it too. "
+"See also [Speed and time](time.md)."
+msgstr ""
+"Ни одна настоящая машина не работала быстрее 14 МГц, поэтому выше этого "
+"тайминги программы не гарантированы. Ползунок не сохраняется: следующий "
+"запуск — на обычной скорости. Его двигают и горячие клавиши **Speed Up** "
+"и **Speed Down**. См. также [Скорость и время](time.md)."
+
+msgid "Advanced settings"
+msgstr "Advanced settings"
+
+msgid ""
+"**Machine: Advanced Settings** holds the settings of the hardware itself,"
+" not of how you use it. Leave them alone unless you know the hardware."
+msgstr ""
+"**Machine: Advanced Settings** хранит настройки самого железа, а не того,"
+" как вы им пользуетесь. Не трогайте их, если не знаете железо."
+
+msgid ""
+"**CPU** - **Base clock**, the frequency of the crystal the board runs on."
+" The frame rate is derived from it too."
+msgstr ""
+"**CPU** — **Base clock**, частота кварца, на котором работает плата. От "
+"неё же выводится частота кадров."
+
+msgid ""
+"**ULA** - **Raster layout** (the size of the frame and where the "
+"interrupt falls in it), **ULA pattern**, **Floating bus**, **Ear input**,"
+" and check boxes for **Contended memory**, **Contended I/O**, **Early "
+"timings**, **4T border**, **ULA snow...**, **...and it crashes**, **MIC "
+"in the beeper** and **ULA plus**."
+msgstr ""
+"**ULA** — **Raster layout** (размер кадра и где в нём приходит "
+"прерывание), **ULA pattern**, **Floating bus**, **Ear input** и флажки "
+"**Contended memory**, **Contended I/O**, **Early timings**, **4T "
+"border**, **ULA snow...**, **...and it crashes**, **MIC in the beeper** и"
+" **ULA plus**."
+
+msgid "**Board** - **Even M1** (Scorpion ZS 256) and **DD palette** (Profi)."
+msgstr "**Board** — **Even M1** (Scorpion ZS 256) и **DD palette** (Profi)."
+
+msgid ""
+"Each one is explained beside it, or in a tooltip when you hold the mouse "
+"over it."
+msgstr ""
+"Каждая настройка объяснена рядом или в подсказке, когда вы наводите на "
+"неё мышь."
+
+msgid "Machine: Tape"
+msgstr "Machine: Tape"
+
+#, python-brace-format
+msgid ""
+"On the **Machine** page of **Options**, the **Storage** group has a "
+"**Tape** row. It sums up the settings: **plain**, or the ones that are "
+"on: **fast**, **flash**, **edge**, **auto**. By default all four are on. "
+"The {icon}`settings` button at the end of the row opens the **Machine: "
+"Tape** sheet:"
+msgstr ""
+"На странице **Machine** окна **Options** в группе **Storage** есть строка"
+" **Tape**. Она кратко показывает настройки: **plain** или включённые из "
+"них: **fast**, **flash**, **edge**, **auto**. Изначально включены все "
+"четыре. Кнопка {icon}`settings` в конце строки открывает лист **Machine: "
+"Tape**:"
+
+msgid "**Playback speed**;"
+msgstr "**Playback speed**;"
+
+msgid "**Auto play / stop**;"
+msgstr "**Auto play / stop**;"
+
+msgid "**Rewind at end**;"
+msgstr "**Rewind at end**;"
+
+msgid "**Fast loading**, **Flash loading** and **Edge detection**."
+msgstr "**Fast loading**, **Flash loading** и **Edge detection**."
+
+msgid ""
+"The first four are the same settings as in the **Tape Player**, where a "
+"change takes effect at once."
+msgstr ""
+"Первые четыре — те же настройки, что в **Tape Player**, где изменение "
+"действует сразу."
+
+msgid ""
+"The tape's loudness is **Tape** in the **Volumes** group of the **Sound**"
+" page (see [Sound page](options-sound.md))."
+msgstr ""
+"Громкость ленты — **Tape** в группе **Volumes** страницы **Sound** (см. "
+"[Раздел Sound](options-sound.md))."
+
+msgid "Machine: Disk"
+msgstr "Machine: Disk"
+
+#, python-brace-format
+msgid ""
+"The {icon}`settings` gear in the **Disk** row of the **Machine** page "
+"opens **Machine: Disk**:"
+msgstr ""
+"Шестерёнка {icon}`settings` в строке **Disk** на странице **Machine** "
+"открывает **Machine: Disk**:"
+
+msgid ""
+"**Fast disk access** - no waiting for the head to move or the disk to "
+"turn; see [Fast Disk Access](disks.md#fast-disk-access)."
+msgstr ""
+"**Fast disk access** — не ждать, пока сдвинется головка или повернётся "
+"диск; см. [Fast Disk Access](disks.md#fast-disk-access)."
+
+msgid "**Add boot loader** - see [The boot file](disks.md#the-boot-file)."
+msgstr "**Add boot loader** — см. [Загрузочный файл](disks.md#the-boot-file)."
+
+msgid "**TR-DOS ROM** - which ROM image the Beta Disk runs."
+msgstr "**TR-DOS ROM** — какой образ ROM работает в Beta Disk."
+
+msgid ""
+"**Interleave** - the order of sectors on each track of a `.trd` or `.scl`"
+" image, set when the image is opened. TR-DOS formats its own disks as 1, "
+"9, 2, 10..."
+msgstr ""
+"**Interleave** — порядок секторов на каждой дорожке образа `.trd` или "
+"`.scl`, задаётся при открытии образа. Свои диски TR-DOS форматирует как "
+"1, 9, 2, 10..."
+
+msgid ""
+"**Number of drives** - from one (A) to four (A to D); a +3 has two at "
+"most. A drive left out is not there at all, and programs find it missing."
+msgstr ""
+"**Number of drives** — от одного (A) до четырёх (от A до D); у +3 не "
+"больше двух. Отключённого дисковода нет вовсе, и программы его не "
+"находят."
+
+msgid "**Drives** - for each drive, **80 cylinders** and **Double side**."
+msgstr "**Drives** — для каждого дисковода **80 cylinders** и **Double side**."
+
+msgid "Sound devices"
+msgstr "Звуковые устройства"
+
+#, python-brace-format
+msgid ""
+"The **Sound** group on the **Machine** page of **Options** lists the "
+"sound devices of the running machine. Each machine keeps its own devices:"
+" a change here applies to this machine only. The button with the "
+"{icon}`settings` gear at the end of a row opens the device's further "
+"settings. How loud each device plays is set on the [Sound page](options-"
+"sound.md)."
+msgstr ""
+"Группа **Sound** на странице **Machine** окна **Options** перечисляет "
+"звуковые устройства текущей машины. Каждая машина хранит свои устройства:"
+" изменение здесь касается только этой машины. Кнопка с шестерёнкой "
+"{icon}`settings` в конце строки открывает остальные настройки устройства."
+" Громкость каждого устройства задаётся в [разделе Sound](options-"
+"sound.md)."
+
+msgid "PSG"
+msgstr "PSG"
+
+msgid ""
+"The PSG is the sound chip most music on the Spectrum is written for. The "
+"**PSG** row sets how many of them the machine has:"
+msgstr ""
+"PSG — звуковая микросхема, для которой написана большая часть музыки на "
+"Spectrum. Строка **PSG** задаёт, сколько их у машины:"
+
+msgid "Choice"
+msgstr "Выбор"
+
+msgid "What you get"
+msgstr "Что получается"
+
+msgid "**None**"
+msgstr "**None**"
+
+msgid "no sound chip"
+msgstr "нет звуковой микросхемы"
+
+msgid "**x1 - AY/YM**"
+msgstr "**x1 - AY/YM**"
+
+msgid "one chip, three voices - the 128K machines and most clones"
+msgstr "одна микросхема, три голоса — машины 128K и большинство клонов"
+
+msgid "**x2 - TurboSound**"
+msgstr "**x2 - TurboSound**"
+
+msgid "two chips, six voices, for music written for TurboSound"
+msgstr "две микросхемы, шесть голосов, для музыки, написанной под TurboSound"
+
+msgid "**x2 - TurboSound FM**"
+msgstr "**x2 - TurboSound FM**"
+
+msgid ""
+"two YM2203 chips: TurboSound with FM synthesis, for music written for "
+"TurboSound FM"
+msgstr ""
+"две микросхемы YM2203: TurboSound с FM-синтезом, для музыки, написанной "
+"под TurboSound FM"
+
+msgid "**x3 - ZX Next**"
+msgstr "**x3 - ZX Next**"
+
+msgid "three chips, nine voices"
+msgstr "три микросхемы, девять голосов"
+
+msgid ""
+"A program written for one chip plays on the first chip of two or three, "
+"and sounds the same."
+msgstr ""
+"Программа, написанная для одной микросхемы, играет на первой из двух или "
+"трёх и звучит так же."
+
+#, python-brace-format
+msgid "The {icon}`settings` gear opens **Machine: PSG**:"
+msgstr "Шестерёнка {icon}`settings` открывает **Machine: PSG**:"
+
+msgid ""
+"**Chip** - **AY-3-8910** or **YM2149**. The two sound alike; the YM2149 "
+"plays volume envelopes in finer steps. **YM2203** is the chip of "
+"TurboSound FM: choosing **x2 - TurboSound FM** sets it, and the list is "
+"then grayed out."
+msgstr ""
+"**Chip** — **AY-3-8910** или **YM2149**. Звучат они похоже; YM2149 "
+"воспроизводит огибающие громкости более мелкими шагами. **YM2203** — "
+"микросхема TurboSound FM: выбор **x2 - TurboSound FM** устанавливает её, "
+"и список тогда недоступен."
+
+msgid ""
+"**Clock** - the chip's clock in MHz, which sets the pitch. **Auto** is "
+"half the machine's base CPU clock, as the boards divide it, and the list "
+"shows the resulting value. **1.773447** is the clock of the ZX Spectrum "
+"128, +2 and +3; **1.75** that of most clones. Music written for one of "
+"them sounds a little out of tune on the other. You can also type a clock "
+"of your own."
+msgstr ""
+"**Clock** — тактовая частота микросхемы в МГц, она задаёт высоту звука. "
+"**Auto** — половина базовой частоты CPU машины, как её делят платы, и "
+"список показывает получившееся значение. **1.773447** — частота ZX "
+"Spectrum 128, +2 и +3; **1.75** — большинства клонов. Музыка, написанная "
+"для одной из них, на другой звучит немного расстроенно. Можно также "
+"ввести свою частоту."
+
+msgid ""
+"**Stereo** - **Mono**, or the order of the three voices from left to "
+"right: **ABC**, **ACB**, **BAC**, **BCA**, **CAB**, **CBA**. **ABC** puts"
+" the second voice in the middle; **ACB** puts the third voice there."
+msgstr ""
+"**Stereo** — **Mono** или порядок трёх голосов слева направо: **ABC**, "
+"**ACB**, **BAC**, **BCA**, **CAB**, **CBA**. **ABC** ставит в середину "
+"второй голос; **ACB** — третий."
+
+#, python-format
+msgid ""
+"**Separation** - how far apart the left and right sides are: 100% keeps "
+"them fully apart, 0% is mono. It is grayed out with **Mono**."
+msgstr ""
+"**Separation** — насколько разнесены левая и правая стороны: 100% — "
+"полностью раздельно, 0% — моно. При **Mono** недоступно."
+
+msgid "DAC"
+msgstr "DAC"
+
+msgid ""
+"A DAC plays digitized sound - speech, drums and samples - written to a "
+"port byte by byte:"
+msgstr ""
+"ЦАП воспроизводит оцифрованный звук — речь, ударные и сэмплы, — который "
+"побайтно пишется в порт:"
+
+msgid "**None** - no DAC;"
+msgstr "**None** — без ЦАП;"
+
+msgid "**Covox only** - one mono channel on port #FB;"
+msgstr "**Covox only** — один моноканал на порту #FB;"
+
+msgid ""
+"**Soundrive 1.05 mode 1** - four channels, two on each side, on ports "
+"#0F, #1F (left) and #4F, #5F (right);"
+msgstr ""
+"**Soundrive 1.05 mode 1** — четыре канала, по два на каждую сторону, на "
+"портах #0F, #1F (левый) и #4F, #5F (правый);"
+
+msgid ""
+"**Soundrive 1.05 mode 2** - the same four channels on ports #F1, #F3 "
+"(left) and #F9, #FB (right)."
+msgstr ""
+"**Soundrive 1.05 mode 2** — те же четыре канала на портах #F1, #F3 "
+"(левый) и #F9, #FB (правый)."
+
+msgid "Pick the one the program is written for."
+msgstr "Выберите тот, под который написана программа."
+
+msgid "General Sound"
+msgstr "General Sound"
+
+#, python-brace-format
+msgid ""
+"A sound card with a processor and memory of its own, which plays music "
+"modules and samples for the programs written for it. **On** puts it in "
+"the machine. The {icon}`settings` gear opens **Machine: General Sound**:"
+msgstr ""
+"Звуковая карта со своим процессором и памятью, которая играет музыкальные"
+" модули и сэмплы для написанных под неё программ. **On** вставляет её в "
+"машину. Шестерёнка {icon}`settings` открывает **Machine: General Sound**:"
+
+#, python-brace-format
+msgid ""
+"**ROM** - the card's own ROM, picked from the list or from a file with "
+"the {icon}`fileopen` folder button;"
+msgstr ""
+"**ROM** — собственный ROM карты, выбирается из списка или из файла "
+"кнопкой с папкой {icon}`fileopen`;"
+
+msgid "**Reset** - the card is reset together with the machine."
+msgstr "**Reset** — карта сбрасывается вместе с машиной."
+
+msgid "SAA1099"
+msgstr "SAA1099"
+
+msgid ""
+"A sound chip with six voices, found on some sound cards for the Spectrum."
+" **On** puts it in the machine."
+msgstr ""
+"Звуковая микросхема с шестью голосами, стоявшая на некоторых звуковых "
+"картах для Spectrum. **On** вставляет её в машину."
+
+msgid "Your own machines"
+msgstr "Свои машины"
+
+msgid ""
+"A change you make to a machine stays with that machine. It is saved when "
+"you apply it and when you switch to another machine, so when you come "
+"back to that machine, you find it as you left it. Each machine keeps its "
+"own: memory, the ROM set and the marked ROM, base clock, turbo steps, the"
+" **Advanced settings**, and its devices - disk interface and number of "
+"drives, hard disk interface, PSG, DAC, General Sound, SAA1099, joystick, "
+"mouse and PC keyboard. The other settings on the page, such as the tape "
+"settings, are the same for every machine."
+msgstr ""
+"Изменение, сделанное в машине, остаётся с этой машиной. Оно сохраняется, "
+"когда вы его применяете и когда переключаетесь на другую машину, так что,"
+" вернувшись к этой машине, вы найдёте её такой, какой оставили. Каждая "
+"машина хранит своё: память, набор ROM и отмеченный ROM, базовую частоту, "
+"ступени турбо, **Advanced settings** и свои устройства — дисковый "
+"интерфейс и число дисководов, интерфейс жёсткого диска, PSG, DAC, General"
+" Sound, SAA1099, джойстик, мышь и клавиатуру PC. Остальные настройки на "
+"странице, например настройки ленты, общие для всех машин."
+
+msgid ""
+"A built-in machine you have changed gets an asterisk after its name. It "
+"still gets the fixes that a new version of Xpeccy+ brings, in every "
+"setting you did not change."
+msgstr ""
+"Изменённая вами встроенная машина получает звёздочку после названия. Она "
+"по-прежнему получает исправления, которые приносит новая версия Xpeccy+, "
+"во всех настройках, которые вы не меняли."
+
+msgid "The three buttons on the **Machine** page:"
+msgstr "Три кнопки на странице **Machine**:"
+
+#, python-brace-format
+msgid ""
+"{icon}`save_all` **Save machine...** saves the current settings as a new "
+"machine under a name you give (Xpeccy+ suggests the machine's name with "
+"`(mine)` after it). The new machine appears in the machine list and runs "
+"at once. It is based on the machine it was made from, so it too gets that"
+" machine's fixes in every setting you did not change. The name must be "
+"one no other machine has."
+msgstr ""
+"{icon}`save_all` **Save machine...** сохраняет текущие настройки как "
+"новую машину под именем, которое вы дадите (Xpeccy+ предлагает название "
+"машины с `(mine)` после него). Новая машина появляется в списке машин и "
+"сразу запускается. Она основана на машине, из которой сделана, поэтому "
+"тоже получает исправления этой машины во всех настройках, которые вы не "
+"меняли. Имя должно быть таким, которого нет ни у одной другой машины."
+
+#, python-brace-format
+msgid ""
+"{icon}`refresh` **Restore machine** undoes every change. A built-in "
+"machine goes back to its original settings; one of your own goes back to "
+"the settings of the machine it was made from, and stays in the list."
+msgstr ""
+"{icon}`refresh` **Restore machine** отменяет все изменения. Встроенная "
+"машина возвращается к исходным настройкам; ваша собственная — к "
+"настройкам машины, из которой она сделана, и остаётся в списке."
+
+#, python-brace-format
+msgid ""
+"{icon}`cancel` **Delete this machine** removes a machine of your own, "
+"after asking, and switches to the one it was made from. Built-in machines"
+" cannot be deleted: use **Restore machine**."
+msgstr ""
+"{icon}`cancel` **Delete this machine** удаляет вашу собственную машину, "
+"спросив, и переключает на ту, из которой она сделана. Встроенные машины "
+"удалить нельзя: используйте **Restore machine**."
+
+#, python-brace-format
+msgid ""
+"Each machine you have changed or made is a small text file in the "
+"`machines` folder of the settings folder (see [Where the settings are"
+"](getting-started.md#where-the-settings-are)). It holds only what differs"
+" from the machine it is based on. Deleting the file of a built-in "
+"machine, with Xpeccy+ closed, does the same as **Restore machine**. "
+"{icon}`save_all` **Export settings...** on the **Application** page "
+"exports your own machines together with the settings."
+msgstr ""
+"Каждая изменённая или созданная вами машина — это небольшой текстовый "
+"файл в папке `machines` папки настроек (см. [Где хранятся настройки"
+"](getting-started.md#where-the-settings-are)). В нём только то, что "
+"отличается от машины, на которой она основана. Удалить файл встроенной "
+"машины при закрытом Xpeccy+ — то же, что **Restore machine**. "
+"{icon}`save_all` **Export settings...** на странице **Application** "
+"экспортирует ваши собственные машины вместе с настройками."
+
+msgid "ROM images"
+msgstr "Образы ROM"
+
+msgid ""
+"The ROM images are in the `roms` folder of the settings folder. Xpeccy+ "
+"comes with every image its machines need. The images come under their own"
+" license terms: `LICENSE` and `PROVENANCE.md` in the same folder say "
+"where each one came from."
+msgstr ""
+"Образы ROM лежат в папке `roms` папки настроек. Xpeccy+ поставляется со "
+"всеми образами, которые нужны его машинам. У образов свои условия "
+"лицензии: `LICENSE` и `PROVENANCE.md` в той же папке говорят, откуда взят"
+" каждый."
+
+msgid ""
+"To replace a ROM for every machine that uses it, put your file into "
+"`roms` under the same name. On Linux and macOS a new version of Xpeccy+ "
+"adds the images it is missing but never overwrites one that is already "
+"there, so your file stays."
+msgstr ""
+"Чтобы заменить ROM для всех машин, которые его используют, положите свой "
+"файл в `roms` под тем же именем. В Linux и macOS новая версия Xpeccy+ "
+"добавляет недостающие образы, но никогда не перезаписывает уже имеющиеся,"
+" так что ваш файл останется."
+
+#, python-brace-format
+msgid ""
+"To give one machine a different ROM, click the {icon}`settings` **ROM** "
+"button on the **Machine** page. The **Machine: ROM** window lists the "
+"machine's ROM banks, named after what is in each, such as **ROM 0 (Basic "
+"128)**:"
+msgstr ""
+"Чтобы дать одной машине другой ROM, нажмите кнопку {icon}`settings` "
+"**ROM** на странице **Machine**. Окно **Machine: ROM** перечисляет банки "
+"ROM машины, названные по содержимому, например **ROM 0 (Basic 128)**:"
+
+msgid ""
+"pick a file from the list, which holds every `.rom` and `.bin` file in "
+"the `roms` folder;"
+msgstr ""
+"выберите файл из списка, где есть все файлы `.rom` и `.bin` из папки "
+"`roms`;"
+
+#, python-brace-format
+msgid ""
+"or click the {icon}`fileopen` folder button beside it to pick a file from"
+" any folder;"
+msgstr ""
+"или нажмите кнопку папки {icon}`fileopen` рядом, чтобы выбрать файл из "
+"любой папки;"
+
+msgid "mark the bank a plain reset starts from (**Boots from the marked ROM**)."
+msgstr ""
+"отметьте банк, с которого стартует обычный сброс (**Boots from the marked"
+" ROM**)."
+
+msgid ""
+"**Font** is the text-mode font, for the machines that have one. The "
+"General Sound ROM is in the **Machine: General Sound** window, and the "
+"TR-DOS ROM in **Machine: Disk**."
+msgstr ""
+"**Font** — шрифт текстового режима, для машин, у которых он есть. ROM "
+"General Sound — в окне **Machine: General Sound**, а TR-DOS ROM — в "
+"**Machine: Disk**."
+
+#, python-brace-format
+msgid ""
+"{icon}`settings` **Expert settings** opens **Machine: ROM Files**, the "
+"same ROM set shown file by file: where each part starts in its file, how "
+"much of it is read, and where it is placed in the machine's ROM. Its "
+"buttons {icon}`add` add a file, {icon}`edit` edit or {icon}`cancel` "
+"remove the one selected, and {icon}`lamp` fill the set with the machine's"
+" standard ROMs again. Adding or editing opens the **Romset Editor** with "
+"**File**, **File offset**, **Size** (0 reads to the end of the file) and "
+"**ROM pos**, all in KB."
+msgstr ""
+"{icon}`settings` **Expert settings** открывает **Machine: ROM Files** — "
+"тот же набор ROM пофайлово: где каждая часть начинается в своём файле, "
+"сколько её читается и куда она помещается в ROM машины. Его кнопки: "
+"{icon}`add` добавить файл, {icon}`edit` изменить или {icon}`cancel` "
+"удалить выделенный и {icon}`lamp` снова заполнить набор стандартными ROM "
+"машины. Добавление или правка открывает **Romset Editor** с полями "
+"**File**, **File offset**, **Size** (0 — читать до конца файла) и **ROM "
+"pos**, всё в КБ."
+
+msgid ""
+"The new ROM is in place when you press **Apply**. Reset the machine to "
+"start from it."
+msgstr ""
+"Новый ROM встаёт на место, когда вы нажимаете **Apply**. Сбросьте машину,"
+" чтобы стартовать с него."
+
+msgid "Memory"
+msgstr "Память"
+
+msgid "machine"
+msgstr "машина"
+
+msgid "devices"
+msgstr "устройства"
+
+msgid "Covox"
+msgstr "Covox"
+
+msgid "Soundrive"
+msgstr "Soundrive"
+
+msgid "Speed slider"
+msgstr "ползунок Speed"
+
+msgid "Overclock"
+msgstr "Overclock"
+
+msgid "Speed Up"
+msgstr "Speed Up"
+
+msgid "Speed Down"
+msgstr "Speed Down"
+
+msgid "Machine: Advanced Settings"
+msgstr "Machine: Advanced Settings"
+
+msgid "Base clock"
+msgstr "Base clock"
+
+msgid "Raster layout"
+msgstr "Raster layout"
+
+msgid "Floating bus"
+msgstr "Floating bus"
+
+msgid "Contended memory"
+msgstr "Contended memory"
+
+msgid "contention"
+msgstr "задержки доступа к памяти"
+
+msgid "ULA snow"
+msgstr "ULA snow"
+
+msgid "ULA plus"
+msgstr "ULA plus"
+
+msgid "tape"
+msgstr "лента"
+
+msgid "settings"
+msgstr "настройки"
+
+msgid "Interleave"
+msgstr "Interleave"
+
+msgid "Number of drives"
+msgstr "Number of drives"
+
+msgid "TR-DOS ROM"
+msgstr "TR-DOS ROM"
+
+msgid "sound devices"
+msgstr "звуковые устройства"
+
+msgid "AY"
+msgstr "AY"
+
+msgid "YM"
+msgstr "YM"
+
+msgid "TurboSound"
+msgstr "TurboSound"
+
+msgid "TurboSound FM"
+msgstr "TurboSound FM"
+
+msgid "sound chip"
+msgstr "звуковая микросхема"
+
+msgid "Machine: PSG"
+msgstr "Machine: PSG"
+
+msgid "AY-3-8910"
+msgstr "AY-3-8910"
+
+msgid "YM2149"
+msgstr "YM2149"
+
+msgid "YM2203"
+msgstr "YM2203"
+
+msgid "clock"
+msgstr "частота"
+
+msgid "stereo"
+msgstr "стерео"
+
+msgid "Separation"
+msgstr "Separation"
+
+msgid "your own"
+msgstr "свои"
+
+msgid "Save machine"
+msgstr "Save machine"
+
+msgid "Restore machine"
+msgstr "Restore machine"
+
+msgid "Delete this machine"
+msgstr "Delete this machine"
+
+msgid "machines folder"
+msgstr "папка machines"
+
+msgid "ROM image"
+msgstr "образ ROM"
+
+msgid "roms folder"
+msgstr "папка roms"
+
+msgid "Machine: ROM"
+msgstr "Machine: ROM"
+
+msgid "Font"
+msgstr "Font"
+
+msgid "Expert settings"
+msgstr "Expert settings"
+
+msgid "Machine: ROM Files"
+msgstr "Machine: ROM Files"
+
+msgid "Romset Editor"
+msgstr "Romset Editor"
+

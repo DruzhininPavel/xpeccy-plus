@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C)
+# This file is distributed under the same license as the Xpeccy+ package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Xpeccy+ 2026.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 00:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Tape panel"
+msgstr "Панель Tape"
+
+msgid "![The Tape panel](images/dbg-tape.png)"
+msgstr "![Панель Tape](images/dbg-tape.png)"
+
+msgid "The Tape panel"
+msgstr "Панель Tape"
+
+msgid ""
+"The **Tape** panel draws the tape signal around the place the tape is at."
+" The red vertical line is the current position: on its left is the signal"
+" that has played, on its right what comes next. The picture covers about "
+"two milliseconds of tape at the machine's speed. In the picture Exolon is"
+" loading, with fast loading off."
+msgstr ""
+"Панель **Tape** малює сигнал стрічки довкола місця, де зараз стрічка. "
+"Червона вертикальна лінія — це поточна позиція: ліворуч від неї сигнал, "
+"що вже прозвучав, праворуч — те, що буде далі. Зображення охоплює близько"
+" двох мілісекунд стрічки на швидкості машини. На знімку завантажується "
+"Exolon з вимкненим швидким завантаженням."
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "What it shows"
+msgstr "Що показує"
+
+msgid "**Pos**"
+msgstr "**Pos**"
+
+msgid ""
+"the number of the pulse in the current block; `--` while the tape is "
+"stopped"
+msgstr "номер імпульсу в поточному блоці; `--`, коли стрічку зупинено"
+
+msgid "**Current**"
+msgstr "**Current**"
+
+msgid "how much of the current pulse is left; empty while the tape is stopped"
+msgstr "скільки лишилося від поточного імпульсу; порожньо, коли стрічку зупинено"
+
+msgid "**State**"
+msgstr "**State**"
+
+msgid "**play**, **rec** or **stop**"
+msgstr "**play**, **rec** або **stop**"
+
+msgid "**Tape in**"
+msgstr "**Tape in**"
+
+msgid "the level the tape plays into the machine's EAR input"
+msgstr "рівень, який стрічка подає на вхід EAR машини"
+
+msgid "**Tape out**"
+msgstr "**Tape out**"
+
+msgid "the bit the machine sends to the tape: the bar is full while it is 1"
+msgstr "біт, який машина надсилає на стрічку: смуга повна, поки він дорівнює 1"
+
+msgid ""
+"Use it while you step through a loader, to see which pulse it is reading "
+"and what comes next. The tape itself is controlled from the **Tape "
+"Player** (see [Tapes](tapes.md))."
+msgstr ""
+"Користуйтеся панеллю, коли покроково проходите завантажувач, щоб бачити, "
+"який імпульс він читає і що буде далі. Самою стрічкою керують з **Tape "
+"Player** (див. [Стрічки](tapes.md))."
+
+msgid "tape signal"
+msgstr "сигнал стрічки"
+
