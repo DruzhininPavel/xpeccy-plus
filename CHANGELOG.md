@@ -25,6 +25,16 @@ before that point is upstream's history and is not repeated here.
 
 ### Fixed
 
+- **A macOS build says which Qt it was configured with**: Qt 6.11.1 traps at startup inside
+  `QImage::toCGImage()`, which runs while the menu bar is built, and 6.11.2 and 6.11.3 start,
+  so the configure step now warns about the 6.11 series below 6.11.2 - and builds anyway.
+  *(reported by DruzhininPavel)*
+
+- **The macOS bundle installs when SDL3 comes from a read-only Homebrew keg**: Homebrew's `sdl2`
+  is a shim that loads SDL3, the SDL3 copied in beside it kept the keg's read-only permissions,
+  and the `xattr` pass over the finished bundle then failed on that one file, stopping the
+  install with the bundle half made.
+
 - **The Next's card and FFmpeg download on Windows 8.1** and wherever curl is missing;
   a cancelled FFmpeg download continues where it stopped. *(reported by DruzhininPavel)*
 
